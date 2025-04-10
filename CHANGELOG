@@ -1,0 +1,9 @@
+# CHANGELOG
+
+### 0.0.1
+
+* Installation du DSFR et début de migration de la homepage
+* Détail :
+  * Intégration d'un layout client
+  * Génération de svg de test
+  * Début de migration des components Vue du repo legacy : https://github.com/betagouv/aides-simulateur-front

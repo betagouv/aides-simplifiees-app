@@ -1,11 +1,16 @@
 /// <reference path="../../adonisrc.ts" />
 /// <reference path="../../config/inertia.ts" />
 
-import '../css/app.css';
+import '../css/app.css'
 import { createSSRApp, h } from 'vue'
 import type { DefineComponent } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+
+// Import DSFR styles and components
+import '@gouvfr/dsfr/dist/dsfr.min.css'
+import '@gouvfr/dsfr/dist/utility/utility.min.css'
+import VueDsfr from '@gouvminint/vue-dsfr'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
@@ -17,15 +22,15 @@ createInertiaApp({
   resolve: (name) => {
     return resolvePageComponent(
       `../pages/${name}.vue`,
-      import.meta.glob<DefineComponent>('../pages/**/*.vue'),
+      import.meta.glob<DefineComponent>('../pages/**/*.vue')
     )
   },
 
   setup({ el, App, props, plugin }) {
-    
-    createSSRApp({ render: () => h(App, props) })
-    
-      .use(plugin)
-      .mount(el)
+    const app = createSSRApp({ render: () => h(App, props) })
+
+    // Initialize DSFR
+    app.use(VueDsfr)
+    app.use(plugin).mount(el)
   },
 })

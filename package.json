@@ -1,6 +1,6 @@
 {
   "name": "as",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
@@ -68,9 +68,12 @@
     "@inertiajs/vue3": "^2.0.6",
     "@vinejs/vine": "^3.0.0",
     "@vue/server-renderer": "^3.5.13",
+    "@vueuse/core": "^13.1.0",
     "edge.js": "^6.2.1",
     "luxon": "^3.6.1",
     "pg": "^8.14.1",
+    "pinia": "^3.0.2",
+    "pinia-plugin-persistedstate": "^4.2.0",
     "reflect-metadata": "^0.2.2",
     "vue": "^3.5.13"
   },

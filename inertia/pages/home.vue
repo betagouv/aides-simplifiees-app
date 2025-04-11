@@ -1,8 +1,10 @@
 <script setup lang="ts">
   import { Head } from '@inertiajs/vue3'
-  import { DsfrAlert, DsfrTile, DsfrTiles, DsfrCard } from '@gouvminint/vue-dsfr'
+  import { DsfrTile, DsfrTiles, DsfrCard } from '@gouvminint/vue-dsfr'
   import type { DsfrTileProps } from '@gouvminint/vue-dsfr'
   import DefaultLayout from '../layouts/default.vue'
+  import BrandBackgroundContainer from '../components/layout/BrandBackgroundContainer.vue'
+  import SectionContainer from '../components/layout/SectionContainer.vue'
 
   const baselineTitle = 'Trouvez les aides&nbsp;adaptées à&nbsp;votre&nbsp;situation'
   const baselineSubtitle = 'Un service simple et rapide pour savoir à quelles aides vous avez droit.'
@@ -24,10 +26,13 @@
 </script>
 
 <template>
-  <Head title="La bonne aide, au bon moment, au bon endroit" />
+  <Head title="La bonne aide, au bon moment, au bon endroit : page d\'accueil | Aides simplifiées" description="Découvrez les aides adaptées à votre situation personnelle. Simulateurs pour le logement, le déménagement et plus encore. Un service public simple et rapide pour connaître vos droits." />
   <DefaultLayout>
-    <div class="brand-background-container brand-background-container--textured brand-background-container--blue">
-      <div class="fr-container">
+    <BrandBackgroundContainer
+      textured
+      blue
+    >
+      <SectionContainer>
         <div class="brand-home-banner fr-grid-row fr-grid-row--gutters">
           <div class="brand-home-banner__column fr-col-12 fr-col-lg-6">
             <h1
@@ -46,11 +51,14 @@
             />
           </div>
         </div>
-      </div>
-    </div>
+      </SectionContainer>
+    </BrandBackgroundContainer>
 
-    <div class="brand-background-container brand-background-container--textured brand-background-container--subtle">
-      <div class="fr-container">
+    <BrandBackgroundContainer
+      textured
+      subtle
+    >
+      <SectionContainer>
         <h2 class="fr-title">
           Pour aller plus loin, utilisez ces simulateurs pour évaluer tous vos droits
         </h2>
@@ -74,11 +82,14 @@
             />
           </div>
         </div>
-      </div>
-    </div>
+      </SectionContainer>
+    </BrandBackgroundContainer>
 
-    <div class="brand-background-container brand-background-container--textured brand-background-container--contrast">
-      <div class="fr-container">
+    <BrandBackgroundContainer
+      textured
+      contrast
+    >
+      <SectionContainer>
         <hgroup class="fr-mb-6w">
           <h2 class="fr-display--xs brand-contrast-text">
             <span class="brand-contrast-text--highlight">
@@ -113,37 +124,13 @@
             />
           </div>
         </div>
-      </div>
-    </div>
+      </SectionContainer>
+    </BrandBackgroundContainer>
   </DefaultLayout>
 </template>
 
 <style scoped lang="scss">
-.brand-background-container {
-  padding: 2rem 0;
-
-  &--textured {
-    background-image: url("/assets/images/texture.png");
-    background-repeat: repeat;
-  }
-
-  &--blue {
-    background-color: var(--blue-france-975-100);
-  }
-
-  &--subtle {
-    background-color: var(--grey-975-75);
-  }
-
-  &--contrast {
-    background-color: var(--blue-france-925-100);
-    color: white;
-  }
-}
-
 .brand-home-banner {
-  padding: 2rem 0;
-
   .brand-home-banner__column {
     display: flex;
     flex-direction: column;
@@ -151,10 +138,6 @@
   }
 
   .brand-site-title {
-    font-size: 2.5rem;
-    line-height: 3rem;
-    margin-bottom: 1rem;
-
     @media (min-width: 36em) {
       font-size: 3.5rem !important;
       line-height: 4rem !important;
@@ -167,34 +150,10 @@
   }
 
   & p.brand-home-banner__baseline {
-    margin-bottom: 2rem;
-
     @media (min-width: 48em) {
       font-size: 1.8rem !important;
       line-height: 1.4 !important;
     }
   }
-}
-
-.brand-title-gradient {
-  background: linear-gradient(90deg, var(--blue-france-sun-113-625) 0%, var(--blue-france-sun-113-625-hover) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-}
-
-.brand-contrast-text {
-  color: white;
-
-  &--highlight {
-    background-color: white;
-    color: var(--blue-france-925-100);
-    padding: 0 0.5rem;
-  }
-}
-
-.fr-mb-6w {
-  margin-bottom: 3rem;
 }
 </style>

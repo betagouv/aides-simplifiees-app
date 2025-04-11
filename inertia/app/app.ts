@@ -6,6 +6,8 @@ import { createSSRApp, h } from 'vue'
 import type { DefineComponent } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 // Import DSFR styles and components
 import '@gouvfr/dsfr/dist/dsfr.min.css'
@@ -28,9 +30,12 @@ createInertiaApp({
 
   setup({ el, App, props, plugin }) {
     const app = createSSRApp({ render: () => h(App, props) })
+    const pinia = createPinia()
+    pinia.use(piniaPluginPersistedstate)
 
     // Initialize DSFR
     app.use(VueDsfr)
+    app.use(pinia)
     app.use(plugin).mount(el)
   },
 })

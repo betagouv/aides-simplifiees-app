@@ -1,5 +1,13 @@
 # CHANGELOG
 
+
+### 0.1.0
+* (WIP) Refonte de la homepage
+* Détail :
+  * Réintégration du header et footer
+  * Réintégration du contenu de la page d'accueil
+
+
 ### 0.0.1
 
 * Installation du DSFR et début de migration de la homepage

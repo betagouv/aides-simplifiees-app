@@ -1,0 +1,19 @@
+@use 'dsfr-spacings' as dsfr;
+
+/**
+ * We want to generate y paddings classes for sm and lg breakpoints
+ * We do it for other breakpoints too, to preserve cascading order in the final CSS
+ */
+@each $bp, $widths in dsfr.$breakpoints {
+  @include dsfr.respond-from($bp) {
+    @each $key, $value in dsfr.$spacings {
+      .fr-pt-#{$bp}-#{$key}, .fr-py-#{$bp}-#{$key} {
+        padding-top: $value !important;
+      }
+
+      .fr-pb-#{$bp}-#{$key}, .fr-py-#{$bp}-#{$key} {
+        padding-bottom: $value !important;
+      }
+    }
+  }
+}

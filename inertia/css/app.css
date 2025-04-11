@@ -8,3 +8,58 @@ body {
   height: 100%;
   width: 100%;
 }
+
+/* TODO: @Lucas : quel est le sens de cette importation ? */
+@forward 'dsfr-patch';
+
+:root {
+
+  --grey-1000: #FFFFFF;
+  --grey-850: #CECECE;
+  --pink-macaron-850: #fcc0b4;
+  /* Semantic tokens */
+  --brand-contrast-text: var(--grey-1000);
+  --brand-contrast-text--disabled: var(--grey-850);
+  --brand-contrast-text--highlight: var(--pink-macaron-850);
+
+  --blue-france-950-100: #ececfe;
+
+  &[data-theme='dark'] {
+    --blue-france-950-100: #21213f;
+  }
+}
+html {
+  @media screen and (min-width: em) {
+    scroll-padding-top: 1rem;
+  }
+  @media screen and (min-width: 48em) {
+    scroll-padding-top: 2rem;
+  }
+}
+.brand-contrast-text {
+  color: var(--brand-contrast-text);
+}
+
+.brand-contrast-text--disabled {
+  color: var(--brand-contrast-text--disabled);
+}
+
+.brand-contrast-text--highlight {
+  color: var(--brand-contrast-text--highlight);
+}
+
+.brand-title-gradient,
+.fr-header__service-title {
+  [data-fr-theme="light"] & {
+    background: linear-gradient(45deg, #2828B2 30%, #8F8FFC 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  [data-fr-theme="dark"] & {
+    background: linear-gradient(45deg, #8585F6 30%, #CCCCFA 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}

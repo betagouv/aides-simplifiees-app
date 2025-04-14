@@ -1,0 +1,22 @@
+<svg width="80px" height="80px" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <style>
+		.fr-artwork-decorative {
+			fill: #ECECFF;
+		}
+		.fr-artwork-minor {
+			fill: #E1000F;
+		}
+		.fr-artwork-major {
+			fill: #000091;
+		}
+	</style>
+	<symbol id="artwork-major">
+  </symbol>
+  <symbol id="artwork-minor">
+  </symbol>
+  <symbol id="artwork-decorative">
+  </symbol>
+  <use class="fr-artwork-decorative" href="#artwork-decorative"/>
+  <use class="fr-artwork-minor" href="#artwork-minor"/>
+  <use class="fr-artwork-major" href="#artwork-major"/>
+</svg>

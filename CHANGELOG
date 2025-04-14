@@ -1,5 +1,13 @@
 # CHANGELOG
 
+### 0.2.0
+* Refonte de la homepage et des pages statiques
+* Détail :
+  * Intégration des assests css / js / icones
+  * Réintégration du contenu de la page d'accueil
+  * Réintégration du contenu des pages statiques
+  * Réintégration de la page statistiques
+
 
 ### 0.1.0
 * (WIP) Refonte de la homepage

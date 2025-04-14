@@ -14,13 +14,13 @@
       title: 'Déménagement & logement',
       to: '/simulateurs/demenagement-logement',
       titleTag: 'h2',
-      svgPath: '/artworks/custom-pictograms/demenagement.svg'
+      svgPath: '../../public/artworks/custom-pictograms/demenagement.svg'
     },
     {
       title: 'Rénovation du logement',
       titleTag: 'h2',
       to: 'https://mesaidesreno.beta.gouv.fr/',
-      svgPath: '/artworks/pictograms/buildings/house.svg'
+      svgPath: '../../public/artworks/pictograms/buildings/house.svg'
     }
   ]
 </script>
@@ -109,6 +109,7 @@
               description="Facilitez l'accès aux aides sur votre territoire ou sur votre domaine de compétence et optimisez le passage de la simulation au dépôt de dossier."
               title-tag="h3"
               to="/partenaires"
+              :href="'/partenaires'"
               horizontal
               svg-path="/artworks/pictograms/buildings/city-hall.svg"
             />

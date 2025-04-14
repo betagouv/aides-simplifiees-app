@@ -4,7 +4,7 @@
 import '../css/app.css'
 import { createSSRApp, h } from 'vue'
 import type { DefineComponent } from 'vue'
-import { createInertiaApp } from '@inertiajs/vue3'
+import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
@@ -36,6 +36,32 @@ createInertiaApp({
     // Initialize DSFR
     app.use(VueDsfr)
     app.use(pinia)
-    app.use(plugin).mount(el)
+    app.use(plugin)
+
+    // Replace RouterLink with a custom component that uses Inertia's Link
+    app.component('RouterLink', {
+      props: {
+        to: {
+          type: [String, Object],
+          required: true
+        },
+        // Add other props that RouterLink might have
+        replace: Boolean,
+        append: Boolean,
+        download: [Boolean, String],
+        target: String,
+        rel: String,
+      },
+      setup(props, { slots }) {
+        // Convert 'to' prop to 'href' for Inertia Link
+        const href = typeof props.to === 'string' ? props.to : props.to.path || ''
+        return () => h(Link, {
+          href: href,
+          replace: props.replace,
+          // Map other relevant props here
+        }, slots)
+      }
+    })
+    app.mount(el)
   },
 })

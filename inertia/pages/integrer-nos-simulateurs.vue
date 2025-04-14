@@ -1,15 +1,10 @@
 <script lang="ts" setup>
-const { setBreadcrumbs } = useBreadcrumbStore()
-setBreadcrumbs([
-  { text: 'Accueil', to: '/' },
-  { text: 'Intégrer nos simulateurs', to: '/integrer-nos-simulateurs' },
-])
-
-useSeoMeta({
-  title: 'Intégrer nos simulateurs d\'aides sur votre plateforme | Aides simplifiées',
-  description: 'Offrez à vos usagers un accès simple aux aides pertinentes en intégrant nos simulateurs via API ou iFrame. Solution clé en main, rapide à mettre en place.'
-})
-
+import { computed, onMounted, ref, watch } from 'vue'
+import { useBreadcrumbStore } from '~/stores/breadcrumbs'
+import DefaultLayout from '../layouts/default.vue'
+import BrandBackgroundContainer from '../components/layout/BrandBackgroundContainer.vue'
+import SectionContainer from '../components/layout/SectionContainer.vue'
+import BreadcrumbSectionContainer from '../components/layout/BreadcrumbSectionContainer.vue'
 // Choix des options d'affichage (inutilisé pour le moment)
 const displayOptions = ref([
   { label: 'En tête seulement', value: 'header-only' },
@@ -27,9 +22,7 @@ const selectedSimulator = ref('demenagement-logement')
 
 // Inclusion du script
 const scriptPath = '/iframe-integration.js'
-const fullScript = computed(() => {
-  return `<script src="${window?.location.origin}${scriptPath}" defer><\/script>`
-})
+const fullScript = ref('')
 
 // Récupérer la référence de la div
 const divReference = computed(() => {
@@ -63,13 +56,28 @@ watch([selectedDisplayOption, selectedSimulator], () => {
 
 onMounted(() => {
   setIframeContainer(selectedDisplayOption.value, selectedSimulator.value)
+
+  const { setBreadcrumbs } = useBreadcrumbStore()
+  setBreadcrumbs([
+    { text: 'Accueil', to: '/' },
+    { text: 'Intégrer nos simulateurs', to: '/integrer-nos-simulateurs' },
+  ])
+
+  fullScript.value = computed(() => {
+    return `<script src="${window?.location.origin}${scriptPath}" defer><\/script>`
+  })
+
+
+
 })
 
 const activeAccordion = ref<number>()
 </script>
 
 <template>
-  <BrandBackgroundContainer
+  <Head title="Intégrer nos simulateurs d\'aides sur votre plateforme | Aides simplifiées" description="Offrez à vos usagers un accès simple aux aides pertinentes en intégrant nos simulateurs via API ou iFrame. Solution clé en main, rapide à mettre en place." />
+  <DefaultLayout>
+    <BrandBackgroundContainer
     textured
     contrast
   >
@@ -219,4 +227,5 @@ const activeAccordion = ref<number>()
       </div>
     </SectionContainer>
   </BrandBackgroundContainer>
+  </DefaultLayout>
 </template>

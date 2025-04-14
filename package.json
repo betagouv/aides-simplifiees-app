@@ -1,6 +1,6 @@
 {
   "name": "as",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
@@ -69,6 +69,7 @@
     "@vinejs/vine": "^3.0.0",
     "@vue/server-renderer": "^3.5.13",
     "@vueuse/core": "^13.1.0",
+    "axios": "^1.8.4",
     "edge.js": "^6.2.1",
     "luxon": "^3.6.1",
     "pg": "^8.14.1",

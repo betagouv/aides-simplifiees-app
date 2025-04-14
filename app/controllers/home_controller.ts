@@ -16,4 +16,8 @@ export default class HomeController {
   public async contact({ inertia }: HttpContext) {
     return inertia.render('contact')
   }
+
+  public async statistiques({ inertia }: HttpContext) {
+    return inertia.render('statistiques')
+  }
 }

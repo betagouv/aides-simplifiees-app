@@ -1,6 +1,6 @@
 {
   "name": "as",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
@@ -72,6 +72,7 @@
     "axios": "^1.8.4",
     "edge.js": "^6.2.1",
     "luxon": "^3.6.1",
+    "marked": "^15.0.8",
     "pg": "^8.14.1",
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.2.0",

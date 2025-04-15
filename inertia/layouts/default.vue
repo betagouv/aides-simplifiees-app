@@ -1,9 +1,26 @@
 <script setup lang="ts">
 import { DsfrHeader, DsfrFooter, DsfrSkipLinks, DsfrNavigation, DsfrNotice, DsfrFooterLinkList } from '@gouvminint/vue-dsfr'
-import { Link, router as inertiaRouter } from '@inertiajs/vue3'
+import { Link, router as inertiaRouter, usePage } from '@inertiajs/vue3'
 import SchemeModal from '../components/SchemeModal.vue'
 import { useSchemeStore } from '~/stores/scheme'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+
+// Add auth related prop
+defineProps<{
+  auth?: {
+    user: {
+      id: number
+      email: string
+      fullName?: string
+    } | null
+  }
+}>()
+
+// Get the page props to access auth user
+const page = usePage()
+const isAuthenticated = computed(() => {
+  return !!page.props.auth && !!(page.props.auth as any).user
+})
 
 // Browser detection for SSR
 const isBrowser = typeof window !== 'undefined'
@@ -124,15 +141,47 @@ const navItems = [
 
 const noticeMessage = 'Ce site est en cours de développement. Certaines fonctionnalités peuvent ne pas être disponibles ou ne pas fonctionner correctement.'
 
+// Helper function to handle logout
+const handleLogout = () => {
+  if (isBrowser) {
+    inertiaRouter.post('/logout', {}, {
+      onSuccess: () => {
+        // Forcer le rechargement complet de la page après la déconnexion
+        window.location.href = '/'
+      }
+    })
+  }
+}
+
 // Use computed for quickLinks to ensure the handler is always fresh
-const quickLinks = computed(() => [
-  {
-    label: 'Affichage',
-    icon: { name: 'ri-sun-line', ssr: true },
-    button: true,
-    onClick: openSchemeModal,
-  },
-])
+const quickLinks = computed(() => {
+  const links = [
+    {
+      label: 'Affichage',
+      icon: { name: 'ri-sun-line', ssr: true },
+      button: true,
+      onClick: openSchemeModal,
+    }
+  ]
+
+  if (isAuthenticated.value) {
+    links.push({
+      label: 'Déconnexion',
+      icon: { name: 'ri-logout-box-line', ssr: true },
+      button: true,
+      onClick: handleLogout,
+    })
+  } else {
+    links.push({
+      label: 'Connexion',
+      icon: { name: 'ri-login-box-line', ssr: true },
+      button: true,
+      onClick: () => inertiaRouter.visit('/login'),
+    })
+  }
+
+  return links
+})
 </script>
 
 <template>

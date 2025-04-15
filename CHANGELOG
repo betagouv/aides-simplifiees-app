@@ -1,6 +1,14 @@
 # CHANGELOG
 
-### 0.2.0
+## 0.3.0
+* Intégration du login et de l'interface d'administration
+* Détail :
+  * Intégration d'un module de login
+  * Intégration d'un module d'administration CRUD des aides, des notions et des pages statiques
+  * Intégration d'un module de markdown editor
+  * Définition de seeders
+
+## 0.2.0
 * Refonte de la homepage et des pages statiques
 * Détail :
   * Intégration des assests css / js / icones

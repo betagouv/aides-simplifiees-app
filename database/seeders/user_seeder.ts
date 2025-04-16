@@ -5,7 +5,7 @@ import env from '#start/env'
 export default class UserSeeder extends BaseSeeder {
   async run() {
     // Récupération du mot de passe admin depuis l'env
-    const adminPassword = env.get('ADMIN_PASSWORD', '')
+    const adminPassword = env.get('ADMIN_PASSWORD')
 
     // Vérification si l'admin existe déjà
     const existingAdmin = await User.findBy('email', 'aides-simplifiees@numerique.gouv.fr')

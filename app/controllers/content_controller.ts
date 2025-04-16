@@ -12,16 +12,17 @@ export default class ContentController {
 
     const page = await Page.findBy('slug', slug)
 
+    console.log(page)
+
     if (!page) {
       return response.status(404).send('Page non trouvée')
     }
 
-    const html = await marked(page.content)
+    const content = await marked(page.content)
 
-    return inertia.render('content/show', {
-      type: 'page',
-      item: page,
-      html
+    return inertia.render('content/pages/page', {
+      page,
+      content
     })
   }
 
@@ -37,7 +38,7 @@ export default class ContentController {
 
     const html = await marked(notion.content)
 
-    return inertia.render('content/show', {
+    return inertia.render('content/notions/notion', {
       type: 'notion',
       item: notion,
       html
@@ -56,30 +57,23 @@ export default class ContentController {
 
     const html = await marked(aide.content)
 
-    return inertia.render('aides/show', {
+    return inertia.render('aides/aide', {
       aide,
       html
     })
-  }
-
-  // Liste des pages
-  public async listPages({ inertia }: HttpContext) {
-    const pages = await Page.all()
-
-    return inertia.render('content/list-pages', { pages })
   }
 
   // Liste des notions
   public async listNotions({ inertia }: HttpContext) {
     const notions = await Notion.all()
 
-    return inertia.render('content/list-notions', { notions })
+    return inertia.render('content/notions/notions', { notions })
   }
 
   // Liste des aides
   public async listAides({ inertia }: HttpContext) {
     const aides = await Aide.all()
 
-    return inertia.render('aides/list', { aides })
+    return inertia.render('aides/aides', { aides })
   }
 }

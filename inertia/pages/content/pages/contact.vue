@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
 import { useBreadcrumbStore } from '~/stores/breadcrumbs';
-import DefaultLayout from '../layouts/default.vue';
-import BrandBackgroundContainer from '../components/layout/BrandBackgroundContainer.vue';
-import BreadcrumbSectionContainer from '../components/layout/BreadcrumbSectionContainer.vue';
-import SectionContainer from '../components/layout/SectionContainer.vue';
+import DefaultLayout from '../../../layouts/default.vue';
+import BrandBackgroundContainer from '../../../components/layout/BrandBackgroundContainer.vue';
+import BreadcrumbSectionContainer from '../../../components/layout/BreadcrumbSectionContainer.vue';
+import SectionContainer from '../../../components/layout/SectionContainer.vue';
 
 onMounted(() => {
   const { setBreadcrumbs } = useBreadcrumbStore()

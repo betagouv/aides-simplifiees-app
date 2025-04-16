@@ -1,7 +1,7 @@
-import { ref, reactive, onMounted, watchEffect } from 'vue'
-import { defineStore } from 'pinia'
 import type { Preferences, UseSchemeResult } from '@gouvminint/vue-dsfr'
 import { useScheme } from '@gouvminint/vue-dsfr'
+import { defineStore } from 'pinia'
+import { onMounted, reactive, ref, watchEffect } from 'vue'
 
 export const useSchemeStore = defineStore('scheme', () => {
   const isModalOpen = ref(false)

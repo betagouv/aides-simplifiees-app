@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
-import DefaultLayout from '../layouts/default.vue'
-import BrandBackgroundContainer from '../components/layout/BrandBackgroundContainer.vue'
-import SectionContainer from '../components/layout/SectionContainer.vue'
-import BreadcrumbSectionContainer from '../components/layout/BreadcrumbSectionContainer.vue'
-import { useBreadcrumbStore } from '../stores/breadcrumbs'
+import DefaultLayout from '../../../layouts/default.vue'
+import BrandBackgroundContainer from '../../../components/layout/BrandBackgroundContainer.vue'
+import SectionContainer from '../../../components/layout/SectionContainer.vue'
+import BreadcrumbSectionContainer from '../../../components/layout/BreadcrumbSectionContainer.vue'
+import { useBreadcrumbStore } from '../../../stores/breadcrumbs'
 import { onMounted } from 'vue'
 
 // Move breadcrumbs initialization to onMounted

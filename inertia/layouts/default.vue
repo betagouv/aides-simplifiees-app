@@ -172,12 +172,12 @@ const quickLinks = computed(() => {
       onClick: handleLogout,
     })
   } else {
-    links.push({
+    /*links.push({
       label: 'Connexion',
       icon: { name: 'ri-login-box-line', ssr: true },
       button: true,
       onClick: () => inertiaRouter.visit('/login'),
-    })
+    })*/
   }
 
   return links

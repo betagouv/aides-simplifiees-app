@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-import DefaultLayout from '../layouts/default.vue'
-import BrandBackgroundContainer from '../components/layout/BrandBackgroundContainer.vue'
-import SectionContainer from '../components/layout/SectionContainer.vue'
-import BreadcrumbSectionContainer from '../components/layout/BreadcrumbSectionContainer.vue'
+import DefaultLayout from '../../../layouts/default.vue'
+import BrandBackgroundContainer from '../../../components/layout/BrandBackgroundContainer.vue'
+import SectionContainer from '../../../components/layout/SectionContainer.vue'
+import BreadcrumbSectionContainer from '../../../components/layout/BreadcrumbSectionContainer.vue'
 // Choix des options d'affichage (inutilisé pour le moment)
 const displayOptions = ref([
   { label: 'En tête seulement', value: 'header-only' },

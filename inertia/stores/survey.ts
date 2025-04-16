@@ -1,646 +1,660 @@
-export const useFormStore = defineStore('form', () => {
-  // Form answers storage
-  const answers = ref<SurveyAnswers>({})
+import { defineStore } from "pinia"
+import { useMatomo } from "~/composables/useMatomo"
+import { ref } from "vue"
 
-  // Current question being displayed
-  const currentQuestionId = ref<string | null>(null)
+export const useSurveysStore = defineStore('surveys', () => {
+  /**
+   * State
+   */
+  const answers = ref<{ [simulateurId: string]: SurveyAnswers }>({})
+  const currentQuestionId = ref<{ [simulateurId: string]: string | null }>({})
+  const surveySchemas = ref<{ [simulateurId: string]: SurveySchema | null }>({})
+  const schemaStatus = ref<{ [simulateurId: string]: 'idle' | 'pending' | 'error' | 'success' }>({})
+  const versions = ref<{ [simulateurId: string]: string }>({})
 
-  // Current category being displayed
-  const currentStepId = ref<string | null>(null)
+  /**
+   * Composables
+   */
+  const matomo = useMatomo()
+  const { debug } = useSurveyDebugStore()
 
-  // Track last answered question
-  const lastAnsweredQuestionId = ref<string | null>(null)
-  const lastAnsweredStepId = ref<string | null>(null)
-
-  // History of visited questions (for navigation)
-  // Each item in history represents a question the user has visited/viewed
-  const questionHistory = ref<Array<{ questionId: string, stepId: string }>>([])
-
-  // Form definition loaded from JSON
-  const surveySchema = ref<SurveySchema | null>(null)
-
-  // Pour gérer la navigation vers les pages d'information et le retour
-  const savedQuestionId = ref<string | null>(null)
-
-  // Store form versions
-  const formVersions = ref<Record<string, string>>({})
-
-  // Track if there's an in-progress form
-  const hasInProgressForm = computed(() => {
-    return Object.keys(answers.value).length > 0
-  })
-
-  // Function to set an answer
-  function setAnswer (questionId: string, value: any) {
-    answers.value[questionId] = value
-
-    // Update last answered question
-    lastAnsweredQuestionId.value = questionId
-    lastAnsweredStepId.value = currentStepId.value
-
-    // Track question answer in Matomo
-    if (typeof window !== 'undefined' && (window as any)._paq) {
-      const { question } = findQuestionById(questionId)
-      const questionTitle = `[${questionId}]${question?.title}`
-
-      // Get the current URL to extract parameters
-      let source = 'website'
-      let simulateurId = ''
-
-      if (typeof window !== 'undefined') {
-        const url = new URL(window.location.href)
-        // Check if in iframe
-        const isIframe = url.searchParams.get('iframe') === 'true'
-
-        // Use iframe detection and source from the composable
-        if (isIframe) {
-          // We can't directly use the composable here since we're in the store
-          // So we'll extract the source following the same logic
-          const utmSource = url.searchParams.get('utm_source')
-          if (utmSource) {
-            source = utmSource.replace('iframe@', '')
-          }
-        }
-
-        // Extract simulateurId from path
-        const pathParts = url.pathname.split('/')
-        const simulateurIndex = pathParts.findIndex(part => part === 'simulateurs')
-        if (simulateurIndex !== -1 && simulateurIndex + 1 < pathParts.length) {
-          simulateurId = pathParts[simulateurIndex + 1]
-        }
-      }
-
-      const category = `[${simulateurId}][${source}]Survey`
-      ;(window as any)._paq.push(['trackEvent', category, 'Answer', `[${simulateurId}][${source}]${questionTitle}`, 1])
-    }
-
-    // We no longer update history here - that happens in navigation methods
+  /**
+   * Schema related methods
+   */
+  const getSchema = (simulateurId: string): SurveySchema | null => {
+    return surveySchemas.value[simulateurId] || null
   }
 
-  // Load form definition from a JSON file
-  async function loadSurveySchema (formId: string) {
+  const setSchema = (simulateurId: string, schema: SurveySchema) => {
+    surveySchemas.value[simulateurId] = schema
+    debug.log(`[Surveys store][${simulateurId}] Schema set:`, schema)
+  }
+
+  const getSchemaStatus = (simulateurId: string): 'idle' | 'pending' | 'error' | 'success' => {
+    return schemaStatus.value[simulateurId] || 'idle'
+  }
+
+  function updateSchemaStatus (simulateurId: string, status: 'idle' | 'pending' | 'error' | 'success') {
+    if (status === 'error') {
+      console.error(`[Surveys store][${simulateurId}] Error loading survey schema`)
+    }
+    else {
+      debug.log(`[Surveys store][${simulateurId}] Schema status:`, status)
+    }
+    schemaStatus.value[simulateurId] = status
+  }
+
+  const getVersion = (simulateurId: string): string => {
+    const version = versions.value[simulateurId]
+    debug.log(`[Surveys store][${simulateurId}] Version:`, version)
+    return version
+  }
+
+  const setVersion = (simulateurId: string, version: string) => {
+    versions.value[simulateurId] = version
+    debug.log(`[Surveys store][${simulateurId}] Version set to:`, version)
+  }
+
+  function updateSchema (simulateurId: string, schema: SurveySchema) {
     try {
-      // You might need to adjust the path based on your project structure
-      const response = await fetch(`/forms/${formId}.json`)
-      const data = await response.json()
-
-      // Check if we need to reset the form based on version and forceRefresh
-      const storedVersion = formVersions.value[formId]
-      const newVersion = data.version
-
-      // If forceRefresh is true and the version is higher than stored version, reset the form
-      if (
-        data.forceRefresh === true
-        && storedVersion
-        && newVersion
-        && compareVersions(newVersion, storedVersion) > 0
-      ) {
-        // Log version change and reset form
-        console.error(`Form version changed from ${storedVersion} to ${newVersion} with forceRefresh. Resetting form.`)
-        resetForm()
+      if (schema.forceRefresh) {
+        debug.warn(`[Surveys store][${simulateurId}] Schema forceRefresh is true, resetting survey...`)
+        setVersion(simulateurId, schema.version)
+        setSchema(simulateurId, schema)
+        resetSurvey(simulateurId)
+      }
+      else {
+        const storedVersion = getVersion(simulateurId)
+        if (!storedVersion) {
+          debug.log(`[Surveys store][${simulateurId}] No stored version found, assuming first load`)
+          setVersion(simulateurId, schema.version)
+          setSchema(simulateurId, schema)
+          resetSurvey(simulateurId)
+        }
+        else if (compareVersions(schema.version, storedVersion) > 0) {
+          debug.warn(`[Surveys store][${simulateurId}] Schema version changed !`)
+          setVersion(simulateurId, schema.version)
+          setSchema(simulateurId, schema)
+          resetSurvey(simulateurId)
+        }
+        else {
+          debug.log(`[Surveys store][${simulateurId}] Schema version unchanged, no need to reset survey`)
+          setSchema(simulateurId, schema)
+        }
       }
 
-      // Store the new version
-      formVersions.value[formId] = newVersion
-
-      surveySchema.value = data
-
-      // Initialize with the first category and question if available AND we're starting fresh
-      if (
-        currentStepId.value === null
-        && data.steps && data.steps.length > 0
-      ) {
-        currentStepId.value = data.steps[0].id
-
-        if (data.steps[0].questions && data.steps[0].questions.length > 0) {
-          currentQuestionId.value = data.steps[0].questions[0].id
-
-          // Initialize question history with the first question
-          // Only do this if we don't already have history (starting fresh)
-          if (questionHistory.value.length === 0 && currentQuestionId.value && currentStepId.value) {
-            questionHistory.value = [{
-              questionId: currentQuestionId.value,
-              stepId: currentStepId.value
-            }]
-          }
-        }
+      // Initialize if this is first load
+      if (!getCurrentQuestionId(simulateurId)) {
+        setFirstQuestion(simulateurId)
       }
     }
     catch (error) {
-      console.error('Error loading form definition:', error)
+      console.error(`[Surveys store][${simulateurId}] Error updating schema:`, error)
     }
   }
 
-  // Utility to compare versions
-  function compareVersions (v1: string, v2: string): number {
-    const parts1 = v1.split('.').map(Number)
-    const parts2 = v2.split('.').map(Number)
-
-    for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
-      const part1 = i < parts1.length ? parts1[i] : 0
-      const part2 = i < parts2.length ? parts2[i] : 0
-
-      if (part1 > part2) {
-        return 1
+  async function loadSurveySchema (simulateurId: string) {
+    debug.log(`[Surveys store][${simulateurId}] Loading survey schema...`)
+    const { data: newSchema, status: schemaStatus } = useFetch<SurveySchema>(`/forms/${simulateurId}.json`, {
+      server: false,
+    })
+    watch(schemaStatus, (newStatus) => {
+      updateSchemaStatus(simulateurId, newStatus)
+    }, { immediate: true })
+    watch(newSchema, (newSchema) => {
+      if (newSchema) {
+        updateSchema(simulateurId, newSchema)
       }
-      if (part1 < part2) {
-        return -1
-      }
-    }
-
-    return 0
+    })
   }
 
-  // Get the current category
-  const currentStep = computed(() => {
-    if (!surveySchema.value || !currentStepId.value) {
+  /**
+   * Answers related methods
+   */
+  const getAnswers = (simulateurId: string): SurveyAnswers => {
+    return answers.value[simulateurId] || {}
+  }
+
+  const hasAnswers = (simulateurId: string): boolean => {
+    return Object.keys(getAnswers(simulateurId)).length > 0
+  }
+
+  const getAnswer = (simulateurId: string, questionId: string): any => {
+    const currentAnswers = getAnswers(simulateurId)
+    const answer = currentAnswers[questionId]
+    if (answer === undefined) {
+      // debug.warn(`[Surveys store][${simulateurId}] Answer not found for ${questionId}`)
       return null
     }
+    // debug.log(`[Surveys store][${simulateurId}] Answer for ${questionId}:`, answer)
+    return answer
+  }
 
-    return surveySchema.value.steps.find(
-      category => category.id === currentStepId.value
-    )
-  })
-
-  const nextCategory = computed(() => {
-    if (!surveySchema.value || !currentStepId.value) {
-      return null
-    }
-
-    // Find the index of the current category
-    const currentStepIndex = surveySchema.value.steps.findIndex(
-      category => category.id === currentStepId.value
-    )
-
-    // Check if there is a next category
-    if (currentStepIndex < surveySchema.value.steps.length - 1) {
-      return surveySchema.value.steps[currentStepIndex + 1]
-    }
-
-    // No next category available
-    return null
-  })
-
-  // Get the current question
-  const currentQuestion = computed(() => {
-    // First check if it's a triggered question
-    const triggeredQuestion = currentQuestionId.value ? findTriggeredQuestion(currentQuestionId.value) : null
-    if (triggeredQuestion) {
-      console.warn('Current question is a triggered question:', triggeredQuestion)
-      return triggeredQuestion
-    }
-
-    // If not, look in the current step
-    if (!currentStep.value || !currentQuestionId.value) {
-      console.warn('No current step or question ID')
-      return null
-    }
-
-    const found = currentStep.value.questions.find(
-      question => question.id === currentQuestionId.value
-    )
-
-    console.warn('Found Current question ?', found)
-    return found
-  })
-
-  // Check if current question is a triggered question
-  const isTriggeredQuestion = computed(() => {
-    if (!currentQuestionId.value) {
+  const hasAnswer = (simulateurId: string, questionId: string): boolean => {
+    const currentAnswers = getAnswers(simulateurId)
+    const answer = currentAnswers[questionId]
+    if (answer === undefined) {
+      // debug.warn(`[Surveys store][${simulateurId}] Answer not found for ${questionId}`)
       return false
     }
-    return !!findTriggeredQuestion(currentQuestionId.value)
-  })
-
-  // Find a question by ID across all questions (steps and triggered)
-  function findQuestionById (questionId: string): { question: SurveyQuestion | null, stepId: string | null } {
-    if (!surveySchema.value) {
-      return { question: null, stepId: null }
-    }
-
-    // First, search in the normal steps
-    for (const step of surveySchema.value.steps) {
-      const question = step.questions.find(q => q.id === questionId)
-      if (question) {
-        return { question, stepId: step.id }
-      }
-    }
-
-    // If not found, check in triggered questions
-    if (surveySchema.value.triggeredQuestions) {
-      const question = surveySchema.value.triggeredQuestions.find(q => q.id === questionId)
-      if (question) {
-        return { question, stepId: null } // Triggered questions don't belong to any step
-      }
-    }
-
-    return { question: null, stepId: null }
-  }
-
-  // Find a triggered question by ID
-  function findTriggeredQuestion (questionId: string): SurveyQuestion | null {
-    if (!surveySchema.value || !surveySchema.value.triggeredQuestions) {
-      return null
-    }
-
-    return surveySchema.value.triggeredQuestions.find(q => q.id === questionId) || null
-  }
-
-  // Evaluate a condition string
-  function evaluateCondition (conditionStr: string): boolean {
-    if (!conditionStr) {
-      return true
-    }
-
-    // Create a context with answers
-    const getAnswerValue = (questionId: string): any => {
-      return answers.value[questionId]
-    }
-
-    try {
-      // Handle logical OR conditions by splitting and evaluating each part
-      if (conditionStr.includes('||')) {
-        const orConditions = conditionStr.split('||').map(c => c.trim())
-        return orConditions.some(condition => evaluateCondition(condition))
-      }
-
-      // Handle logical AND conditions
-      if (conditionStr.includes('&&')) {
-        const andConditions = conditionStr.split('&&').map(c => c.trim())
-        return andConditions.every(condition => evaluateCondition(condition))
-      }
-
-      // Handle includes syntax for checkboxes
-      // Example: "services-interets.includes("aide-demenagement", "aide-caution")"
-      if (conditionStr.includes('.includes(')) {
-        const matches = conditionStr.match(/^(.+)\.includes\((.+)\)$/)
-        if (matches && matches.length === 3) {
-          const questionId = matches[1].trim()
-          // Parse the comma-separated values inside the parentheses
-          const valuesToCheck = matches[2]
-            .split(',')
-            .map(v => v.trim().replace(/^["'](.+)["']$/, '$1')) // Remove quotes
-
-          const selectedValues = getAnswerValue(questionId)
-
-          // If no selection made yet, return false
-          if (!selectedValues) {
-            return false
-          }
-
-          // For a single value (radio buttons), check if it's in the values to check
-          if (typeof selectedValues === 'string') {
-            return valuesToCheck.includes(selectedValues)
-          }
-
-          // For multiple values (checkboxes), check if at least one value is in the selected values
-          if (Array.isArray(selectedValues)) {
-            return valuesToCheck.some(v => selectedValues.includes(v))
-          }
-
-          return false
-        }
-      }
-
-      // Handle comparison operations
-      const comparisonOperators = ['>=', '<=', '>', '<', '=', '!=']
-      for (const operator of comparisonOperators) {
-        if (conditionStr.includes(operator)) {
-          const [leftSide, rightSide] = conditionStr.split(operator).map(s => s.trim())
-          const leftValue = getAnswerValue(leftSide)
-
-          // If the question hasn't been answered yet, return false
-          if (leftValue === undefined) {
-            return false
-          }
-
-          // Parse right side value
-          let rightValue: any = rightSide
-
-          // Convert string 'true'/'false' to boolean if comparing with a boolean value
-          if (typeof leftValue === 'boolean' && (rightValue === 'true' || rightValue === 'false')) {
-            rightValue = rightValue === 'true'
-          }
-
-          // Try to convert to number if applicable
-          else if (!Number.isNaN(Number(rightValue))) {
-            rightValue = Number(rightValue)
-          }
-
-          // Handle date comparison
-          const isLeftDate = typeof leftValue === 'string'
-            && /^\d{4}-\d{2}-\d{2}$/.test(leftValue)
-          const isRightDate = typeof rightValue === 'string'
-            && /^\d{4}-\d{2}-\d{2}$/.test(rightValue)
-
-          if (isLeftDate && isRightDate) {
-            const leftDate = new Date(leftValue)
-            const rightDate = new Date(rightValue)
-
-            switch (operator) {
-              case '>': return leftDate > rightDate
-              case '>=': return leftDate >= rightDate
-              case '<': return leftDate < rightDate
-              case '<=': return leftDate <= rightDate
-              case '=': return leftDate.getTime() === rightDate.getTime()
-              case '!=': return leftDate.getTime() !== rightDate.getTime()
-            }
-          }
-
-          // Compare numbers or strings
-          switch (operator) {
-            case '>': return leftValue > rightValue
-            case '>=': return leftValue >= rightValue
-            case '<': return leftValue < rightValue
-            case '<=': return leftValue <= rightValue
-            case '=': return leftValue === rightValue
-            case '!=': return leftValue !== rightValue
-          }
-        }
-      }
-
-      // If no operators matched, check if the condition is a single value
-      // This handles cases like checking if a checkbox is checked
-      return !!getAnswerValue(conditionStr)
-    }
-    catch (error) {
-      console.error('Error evaluating condition:', conditionStr, error)
-      return false
-    }
-  }
-
-  // Determine the next question based on answers
-  function getNextQuestionId (): { nextQuestionId: string | null, nextStepId: string | null } {
-    if (!currentQuestionId.value) {
-      return { nextQuestionId: null, nextStepId: null }
-    }
-
-    // Find the current question (can be in steps or triggered questions)
-    const { question: currentQ, stepId: currentStepId } = findQuestionById(currentQuestionId.value)
-
-    if (!currentQ) {
-      return { nextQuestionId: null, nextStepId: null }
-    }
-
-    // If there's a bypassToQuestion array with conditions
-    if (currentQ.bypassToQuestion && currentQ.bypassToQuestion.length > 0) {
-      // Find the first matching condition
-      for (const next of currentQ.bypassToQuestion) {
-        if (evaluateCondition(next.condition)) {
-          // Find which step contains this question (if any)
-          const { stepId: nextStepId } = findQuestionById(next.question)
-          return { nextQuestionId: next.question, nextStepId }
-        }
-      }
-    }
-
-    // For triggered questions, use the nextQuestion field if available
-    if (findTriggeredQuestion(currentQuestionId.value) && currentQ.nextQuestion) {
-      const { stepId: nextStepId } = findQuestionById(currentQ.nextQuestion)
-      return { nextQuestionId: currentQ.nextQuestion, nextStepId }
-    }
-
-    // If no conditions matched and not a triggered question, find the next question in the current step
-    if (currentStepId && currentStep.value) {
-      const currentQuestionIndex = currentStep.value.questions.findIndex(
-        (q: any) => q.id === currentQuestionId.value
-      )
-
-      if (currentQuestionIndex >= 0 && currentQuestionIndex < currentStep.value.questions.length - 1) {
-        return {
-          nextQuestionId: currentStep.value.questions[currentQuestionIndex + 1].id,
-          nextStepId: currentStepId
-        }
-      }
-    }
-
-    // If there are no more questions in this step, move to the next step
-    if (surveySchema.value && currentStepId) {
-      const currentStepIndex = surveySchema.value.steps.findIndex(
-        (step: any) => step.id === currentStepId
-      )
-
-      if (currentStepIndex >= 0 && currentStepIndex < surveySchema.value.steps.length - 1) {
-        const nextStep = surveySchema.value.steps[currentStepIndex + 1]
-        if (nextStep.questions && nextStep.questions.length > 0) {
-          return {
-            nextQuestionId: nextStep.questions[0].id,
-            nextStepId: nextStep.id
-          }
-        }
-      }
-    }
-
-    // No more questions
-    return { nextQuestionId: null, nextStepId: null }
-  }
-
-  // Go to the next question
-  function goToNextQuestion () {
-    const result = getNextQuestionId()
-
-    if (result.nextQuestionId) {
-      // Update step ID if we're moving to a different step
-      if (result.nextStepId && result.nextStepId !== currentStepId.value) {
-        currentStepId.value = result.nextStepId
-      }
-      else if (!result.nextStepId) {
-        // We're moving to a triggered question
-        // Keep the current step as context, but make the UI show the triggered question
-      }
-
-      // Update the current question
-      currentQuestionId.value = result.nextQuestionId
-
-      // Add the NEW question to history (not the one we're leaving)
-      if (currentQuestionId.value && currentStepId.value) {
-        const newHistoryItem = {
-          questionId: currentQuestionId.value,
-          stepId: currentStepId.value
-        }
-
-        // Only add if not already the last item in history
-        if (questionHistory.value.length === 0
-          || questionHistory.value[questionHistory.value.length - 1].questionId !== currentQuestionId.value) {
-          questionHistory.value.push(newHistoryItem)
-        }
-      }
-
-      return true
-    }
-    return false
-  }
-
-  // Go to the previous question using history
-  function goToPreviousQuestion () {
-    // Can't go back if we have no history or are at the beginning
-    if (questionHistory.value.length <= 1) {
-      return false
-    }
-
-    // Remove the current question from history
-    questionHistory.value.pop()
-
-    // Get the previous question from history
-    const previousItem = questionHistory.value[questionHistory.value.length - 1]
-
-    // Navigate to it
-    currentQuestionId.value = previousItem.questionId
-    currentStepId.value = previousItem.stepId
-
+    // debug.log(`[Surveys store][${simulateurId}] Answer for ${questionId}:`, answer)
     return true
   }
 
-  // Function to go to the last answered question
-  function goToLastAnsweredQuestion () {
-    // If we have history, use that (most reliable)
-    if (questionHistory.value.length > 0) {
-      const lastHistoryItem = questionHistory.value[questionHistory.value.length - 1]
-      currentQuestionId.value = lastHistoryItem.questionId
-      currentStepId.value = lastHistoryItem.stepId
-      return true
+  function setAnswer (simulateurId: string, questionId: string, value: any) {
+    // Initialize answers object for this simulateur if it doesn't exist
+    if (!answers.value[simulateurId]) {
+      answers.value[simulateurId] = {}
     }
 
-    // Fallback to using lastAnsweredQuestionId
-    if (lastAnsweredQuestionId.value && lastAnsweredStepId.value) {
-      currentQuestionId.value = lastAnsweredQuestionId.value
-      currentStepId.value = lastAnsweredStepId.value
-      return true
+    answers.value[simulateurId][questionId] = value
+
+    debug.log(`[Surveys store][${simulateurId}] Answer set for ${questionId}:`, value)
+
+    // Track the answer in analytics
+    const question = findQuestionById(simulateurId, questionId)
+    if (question) {
+      matomo.trackSurveyAnswer(simulateurId, questionId, question.title)
+    }
+  }
+
+  const { getHistory } = useAutoCompleteHistoryStore()
+  const formatAnswer = (simulateurId: string, questionId: string, value: any): string => {
+    // get choice title
+    const question = findQuestionById(simulateurId, questionId)
+    if (question) {
+      switch (question.type) {
+        case 'boolean': {
+          return value ? 'Oui' : 'Non'
+        }
+        case 'number': {
+          return value?.toString() ?? ''
+        }
+        case 'checkbox': {
+          const choices = question.choices
+            ?.filter((choice) => {
+              return value.includes(choice.id)
+            })
+            .map((choice) => {
+              return choice.title
+            })
+          return choices?.join(', ') ?? ''
+        }
+        case 'combobox': {
+          const history = getHistory(questionId, value)
+          if (history) {
+            return history as string
+          }
+          break
+        }
+      }
+      const choice = question.choices
+        ?.find((choice) => {
+          return choice.id === value
+        })
+      if (choice?.title) {
+        return choice.title
+      }
+    }
+    return getAnswer(simulateurId, questionId)
+  }
+
+  /**
+   * Question related methods
+   */
+  function getCurrentQuestionId (simulateurId: string): string | null {
+    return currentQuestionId.value[simulateurId] || null
+  }
+
+  const setCurrentQuestionId = (simulateurId: string, questionId: string) => {
+    currentQuestionId.value[simulateurId] = questionId
+    debug.log(`[Surveys store][${simulateurId}] Current question ID set to:`, questionId)
+  }
+
+  const getQuestions = (simulateurId: string): SurveyQuestion[] => {
+    const currentSchema = getSchema(simulateurId)
+    return currentSchema?.steps
+      .flatMap((step) => {
+        return step.questions
+      }) ?? []
+  }
+
+  const getGroupedQuestions = (simulateurId: string): QuestionGroup[] => {
+    const currentSchema = getSchema(simulateurId)
+
+    return currentSchema?.steps
+      .map((step) => {
+        const questions = step.questions
+          .map((question) => {
+            return {
+              id: question.id,
+              title: question.title,
+              answer: getAnswer(simulateurId, question.id),
+              visible: isQuestionVisible(simulateurId, question.id),
+            }
+          })
+        return {
+          title: step.title,
+          questions,
+        }
+      }) ?? []
+  }
+
+  const getAnsweredQuestions = (simulateurId: string): SurveyQuestion[] => {
+    const currentSchema = getSchema(simulateurId)
+
+    return currentSchema?.steps
+      .flatMap((step) => {
+        return step.questions
+          .filter((question) => {
+            return hasAnswer(simulateurId, question.id)
+          })
+      }) ?? []
+  }
+
+  const getGroupedAnsweredQuestions = (simulateurId: string): QuestionGroup[] => {
+    const currentSchema = getSchema(simulateurId)
+    const currentAnswers = getAnswers(simulateurId)
+    return currentSchema?.steps.map((step) => {
+      const questions = step.questions
+        .filter((question) => {
+          // Check if the question is answered or is the current question
+          return hasAnswer(simulateurId, question.id) || currentQuestionId.value[simulateurId] === question.id
+        })
+        .map((question) => {
+          const answer = currentAnswers[question.id]
+          return {
+            id: question.id,
+            title: question.title,
+            answer,
+            visible: isQuestionVisible(simulateurId, question.id),
+          }
+        })
+      return {
+        title: step.title,
+        questions,
+      }
+    }) ?? []
+  }
+
+  const getVisibleQuestions = (simulateurId: string): SurveyQuestion[] => {
+    const currentSchema = getSchema(simulateurId)
+    if (!currentSchema) {
+      return []
+    }
+    // Get all required questions
+    const requiredQuestions = currentSchema.steps
+      .flatMap((step) => {
+        return step.questions
+          .filter((question) => {
+            return isQuestionVisible(simulateurId, question.id)
+          })
+      })
+
+    return requiredQuestions
+  }
+
+  function areAllRequiredQuestionsAnswered (simulateurId: string): boolean {
+    const currentSchema = getSchema(simulateurId)
+    if (!currentSchema) {
+      return false
+    }
+    // Check if all required questions are answered
+    const allAnswered = getVisibleQuestions(simulateurId)
+      .every((question) => {
+        return hasAnswer(simulateurId, question.id)
+      })
+    return allAnswered
+  }
+
+  function isSomeRequiredQuestionsAnswered (simulateurId: string): boolean {
+    const currentSchema = getSchema(simulateurId)
+    if (!currentSchema) {
+      return false
+    }
+    // Check if some required questions are answered
+    const someAnswered = getVisibleQuestions(simulateurId)
+      .some((question) => {
+        return hasAnswer(simulateurId, question.id)
+      })
+    return someAnswered
+  }
+
+  const getCurrentQuestion = (simulateurId: string): SurveyQuestion | null => {
+    const currentQuestionId = getCurrentQuestionId(simulateurId)
+    if (!currentQuestionId) {
+      debug.log(`[Surveys Store][${simulateurId}] No current question ID found`)
+      return null
     }
 
-    // If no last answered question, go to first question
-    if (surveySchema.value && surveySchema.value.steps.length > 0) {
-      currentStepId.value = surveySchema.value.steps[0].id
-      if (surveySchema.value.steps[0].questions.length > 0) {
-        currentQuestionId.value = surveySchema.value.steps[0].questions[0].id
-        return true
+    // Find the current question in the ordered list
+    const questions = getQuestions(simulateurId)
+    const currentQuestion = questions
+      .find((question) => {
+        return question.id === currentQuestionId
+      })
+
+    if (!currentQuestion) {
+      debug.warn(`[Surveys Store][${simulateurId}] Current question ${currentQuestionId} not found in ordered list`)
+      return null
+    }
+
+    debug.log(`[Surveys store][${simulateurId}] Current question: ${currentQuestion.id}`)
+
+    return currentQuestion
+  }
+
+  const getNextVisibleQuestion = (simulateurId: string): SurveyQuestion | null => {
+    const currentQuestionId = getCurrentQuestionId(simulateurId)
+    if (!currentQuestionId) {
+      return null
+    }
+
+    const questions = getQuestions(simulateurId)
+    // Find the current question's index in the ordered list
+    const currentIndex = questions
+      .findIndex((question) => {
+        return question.id === currentQuestionId
+      })
+
+    if (currentIndex === -1) {
+      debug.warn(`[Surveys Store][${simulateurId}] Current question ${currentQuestionId} not found in ordered list`)
+      return null
+    }
+
+    // Look for the next visible question in the ordered list
+    for (let i = currentIndex + 1; i < questions.length; i++) {
+      const nextQuestion = questions[i]
+      if (isQuestionVisible(simulateurId, nextQuestion.id)) {
+        debug.log(`[Surveys store][${simulateurId}] Next visible question in schema order: ${nextQuestion.id}`)
+
+        return nextQuestion
       }
     }
 
+    return null
+  }
+
+  const getPreviousVisibleQuestion = (simulateurId: string): SurveyQuestion | null => {
+    const currentQuestionId = getCurrentQuestionId(simulateurId)
+    if (!currentQuestionId) {
+      return null
+    }
+
+    const questions = getQuestions(simulateurId)
+    // Find the current question's index in the ordered list
+    const currentIndex = questions
+      .findIndex((question) => {
+        return question.id === currentQuestionId
+      })
+
+    if (currentIndex === -1) {
+      debug.warn(`[surveysStore][${simulateurId}] Current question ${currentQuestionId} not found in ordered list`)
+      return null
+    }
+
+    // Look for the previous visible question in the ordered list
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      const previousQuestion = questions[i]
+      if (isQuestionVisible(simulateurId, previousQuestion.id)) {
+        debug.log(`[surveysStore][${simulateurId}] Previous visible question in schema order: ${previousQuestion.id}`)
+
+        return previousQuestion
+      }
+    }
+
+    return null
+  }
+
+  const isFirstQuestion = (simulateurId: string): boolean => {
+    return getPreviousVisibleQuestion(simulateurId) === null
+  }
+
+  const isLastQuestion = (simulateurId: string): boolean => {
+    return getNextVisibleQuestion(simulateurId) === null
+  }
+
+  function setFirstQuestion (simulateurId: string) {
+    const questions = getQuestions(simulateurId)
+    setCurrentQuestionId(simulateurId, questions[0]?.id ?? null)
+  }
+
+  function findQuestionById (simulateurId: string, questionId: string): SurveyQuestion | null {
+    const questions = getQuestions(simulateurId)
+
+    // Find the question in the ordered list
+    const question = questions
+      .find((question) => {
+        return question.id === questionId
+      })
+    return question ?? null
+  }
+
+  function isQuestionVisible (simulateurId: string, questionId: string): boolean {
+    const question = findQuestionById(simulateurId, questionId)
+    const currentAnswers = getAnswers(simulateurId)
+
+    if (!question) {
+      return false
+    }
+
+    // If the question has a visibility condition, evaluate it
+    if (question.visibleWhen) {
+      const isVisible = evaluateCondition(question.visibleWhen, currentAnswers)
+
+      // debug.log(`[surveysStore][${simulateurId}] Visibility check for ${questionId}: ${isVisible} (condition: ${question.visibleWhen})`)
+
+      return isVisible
+    }
+
+    // By default, a question is visible
+    return true
+  }
+
+  function goToNextQuestion (simulateurId: string) {
+    const nextQuestion = getNextVisibleQuestion(simulateurId)
+    if (nextQuestion) {
+      // Update the current question
+      setCurrentQuestionId(simulateurId, nextQuestion.id)
+      return true
+    }
     return false
   }
 
-  // Reset the form
-  function resetForm () {
-    answers.value = {}
-    lastAnsweredQuestionId.value = null
-    lastAnsweredStepId.value = null
-    questionHistory.value = []
-
-    // Reset to first category/question
-    if (surveySchema.value && surveySchema.value.steps.length > 0) {
-      currentStepId.value = surveySchema.value.steps[0].id
-
-      if (surveySchema.value.steps[0].questions.length > 0) {
-        currentQuestionId.value = surveySchema.value.steps[0].questions[0].id
-
-        // Add initial question to history
-        if (currentQuestionId.value && currentStepId.value) {
-          questionHistory.value.push({
-            questionId: currentQuestionId.value,
-            stepId: currentStepId.value
-          })
-        }
-      }
+  function goToPreviousQuestion (simulateurId: string) {
+    const prevQuestion = getPreviousVisibleQuestion(simulateurId)
+    if (prevQuestion) {
+      // Update the current question
+      setCurrentQuestionId(simulateurId, prevQuestion.id)
+      return true
     }
+    return false
   }
 
-  // Calculate progress
-  const progress = computed(() => {
-    if (!surveySchema.value) {
+  /**
+   * Step related methods
+   */
+
+  const getCurrentStep = (simulateurId: string): SurveyStep | null => {
+    const currentSchema = getSchema(simulateurId)
+    const currentQuestionId = getCurrentQuestionId(simulateurId)
+
+    const step = currentSchema?.steps
+      .find((step) => {
+        return step.questions
+          .some((question) => {
+            return question.id === currentQuestionId
+          })
+      })
+    return step ?? null
+  }
+
+  const getCurrentStepId = (simulateurId: string): string | null => {
+    return getCurrentStep(simulateurId)?.id ?? null
+  }
+
+  const getCurrentStepIndex = (simulateurId: string): number | null => {
+    const currentSchema = getSchema(simulateurId)
+    if (!currentSchema) {
+      return null
+    }
+
+    const stepIndex = currentSchema.steps.findIndex((step) => {
+      return step.id === getCurrentStepId(simulateurId)
+    })
+
+    if (stepIndex === -1) {
+      return null
+    }
+
+    return stepIndex + 1 // +1 to match the number of steps
+  }
+
+  /**
+   * Progress related methods
+   */
+
+  const getProgress = (simulateurId: string): number => {
+    const currentSchema = getSchema(simulateurId)
+    const currentAnswers = getAnswers(simulateurId)
+
+    if (!currentSchema) {
       return 0
     }
 
-    // Count all regular questions in steps
-    const stepsQuestionsCount = surveySchema.value.steps.reduce(
-      (count: number, step: any) => count + (step.questions ? step.questions.length : 0),
-      0
-    )
+    const questions = getQuestions(simulateurId)
 
-    // We don't include triggered questions in the total count for progress calculation
-    // since they are optional and not part of the main flow
-    const totalQuestions = stepsQuestionsCount
+    // Count all visible questions
+    let visibleQuestionsCount = questions
+      .filter((question) => {
+        return isQuestionVisible(simulateurId, question.id)
+      })
+      .length ?? 0
 
-    // Count answered questions (including triggered questions that have been answered)
-    const answeredQuestions = Object.keys(answers.value).length
-
-    return Math.min(Math.round((answeredQuestions / totalQuestions) * 100), 100)
-  })
-
-  // Check if we're at the last question
-  const isLastQuestion = computed(() => {
-    return getNextQuestionId().nextQuestionId === null
-  })
-
-  // Current step tracking (category index + 1)
-  const currentStepIndex = computed(() => {
-    if (!surveySchema.value || !currentStep.value) {
-      return 1
+    // If there are no visible questions (unlikely but possible), use total questions count
+    if (visibleQuestionsCount === 0) {
+      visibleQuestionsCount = questions.length
     }
-    const index = surveySchema.value.steps.findIndex(cat => cat.id === currentStep.value?.id)
-    return index + 1
-  })
+
+    // Count answered questions - but only count those that are visible
+    const answeredVisibleQuestionsCount = Object.keys(currentAnswers)
+      .filter((questionId) => {
+        return isQuestionVisible(simulateurId, questionId)
+      })
+      .length
+
+    return Math.min(Math.round((answeredVisibleQuestionsCount / visibleQuestionsCount) * 100), 100)
+  }
 
   /**
-   * Permet de naviguer directement vers une question spécifique
-   * (utilisé pour revenir d'une page d'information)
+   * Global survey related methods
    */
-  function navigateToQuestion (questionId: string) {
-    const { question, stepId } = findQuestionById(questionId)
 
-    if (question && stepId) {
-      currentQuestionId.value = questionId
-      currentStepId.value = stepId
+  function resetSurvey (simulateurId: string) {
+    debug.log(`[Surveys store][${simulateurId}] Resetting survey...`)
+    answers.value[simulateurId] = {}
+
+    // Reset to first category/question
+    setFirstQuestion(simulateurId)
+  }
+
+  // Welcome screen
+  const showWelcomeScreen = ref<{ [simulateurId: string]: boolean }>({})
+  function getShowWelcomeScreen (simulateurId: string): boolean {
+    return showWelcomeScreen.value[simulateurId] ?? true
+  }
+  function setShowWelcomeScreen (simulateurId: string, value: boolean) {
+    showWelcomeScreen.value[simulateurId] = value
+  }
+
+  // Choice screen
+  const showChoiceScreen = ref<{ [simulateurId: string]: boolean }>({})
+  function getShowChoiceScreen (simulateurId: string): boolean {
+    return showChoiceScreen.value[simulateurId] ?? true
+  }
+  function setShowChoiceScreen (simulateurId: string, value: boolean) {
+    showChoiceScreen.value[simulateurId] = value
+  }
+
+  /**
+   * Event listeners / emitters
+   */
+  const completeListeners = ref<{ [simulateurId: string]: Set<(simulateurId: string) => void> }>({})
+
+  function onComplete (simulateurId: string, listener: () => void) {
+    if (!completeListeners.value[simulateurId]) {
+      completeListeners.value[simulateurId] = new Set()
     }
-    else {
-      // Si la question n'est pas trouvée, on vérifie si c'est une question déclenchée
-      const triggeredQuestion = findTriggeredQuestion(questionId)
-      if (triggeredQuestion) {
-        currentQuestionId.value = questionId
-      }
-      else {
-        console.warn(`Question ${questionId} non trouvée`)
-      }
+    completeListeners.value[simulateurId].add(listener)
+  }
+
+  function offComplete (simulateurId: string, listener: () => void) {
+    if (completeListeners.value[simulateurId]) {
+      completeListeners.value[simulateurId].delete(listener)
+    }
+  }
+
+  function tryComplete (simulateurId: string) {
+    // Check if all questions are answered
+    // We might need better form validation later
+    const allAnswered = areAllRequiredQuestionsAnswered(simulateurId)
+
+    if (allAnswered) {
+      // Trigger completion event
+      completeListeners.value[simulateurId]?.forEach((listener) => {
+        listener(simulateurId)
+      })
+
+      debug.log(`[Surveys store][${simulateurId}] Survey completed!`)
     }
   }
 
   return {
     answers,
     currentQuestionId,
-    currentStepId,
-    lastAnsweredQuestionId,
-    lastAnsweredStepId,
-    questionHistory,
-    surveySchema,
-    currentStep,
-    nextCategory,
-    currentQuestion,
-    progress,
-    isLastQuestion,
-    isTriggeredQuestion,
-    hasInProgressForm,
-    formVersions,
-    // For Interface display
-    currentStepIndex,
-    setAnswer,
+    versions,
+    areAllRequiredQuestionsAnswered,
+    isSomeRequiredQuestionsAnswered,
+    getSchema,
+    getSchemaStatus,
     loadSurveySchema,
+    hasAnswers,
+    getAnswers,
+    getAnswer,
+    hasAnswer,
+    setAnswer,
+    formatAnswer,
+    getCurrentQuestionId,
+    setCurrentQuestionId,
+    getCurrentStep,
+    getCurrentStepId,
+    getCurrentStepIndex,
+    getCurrentQuestion,
+    getNextVisibleQuestion,
+    getPreviousVisibleQuestion,
+    getGroupedQuestions,
+    getAnsweredQuestions,
+    getGroupedAnsweredQuestions,
+    isFirstQuestion,
+    isLastQuestion,
+    resetSurvey,
     goToNextQuestion,
     goToPreviousQuestion,
-    resetForm,
-    savedQuestionId: readonly(savedQuestionId),
-    navigateToQuestion,
-    goToLastAnsweredQuestion
+    getProgress,
+    setShowChoiceScreen,
+    getShowChoiceScreen,
+    getShowWelcomeScreen,
+    setShowWelcomeScreen,
+    onComplete,
+    offComplete,
+    tryComplete,
   }
 }, {
   persist: {
     pick: [
       'answers',
+      'versions',
       'currentQuestionId',
-      'currentStepId',
-      'formVersions',
-      'lastAnsweredQuestionId',
-      'lastAnsweredStepId',
-      'questionHistory'
     ]
   }
 })

@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import type { DsfrCardProps } from '@gouvminint/vue-dsfr'
+import TypeAideTag from './TypeAideTag.vue'
+
 
 type AideCardProps = {
   link: string
-  titre: string
+  title: string
   description: string
-  typeAide: TypeAide
+  typeAide: string
   montant?: number
   instructeur: string
 } & Pick<DsfrCardProps, 'horizontal' | 'size' | 'titleTag'>
@@ -15,7 +17,7 @@ defineProps<AideCardProps>()
 
 <template>
   <DsfrCard
-    :title="titre"
+    :title="title"
     :description="description"
     :link="link"
     :detail="instructeur"

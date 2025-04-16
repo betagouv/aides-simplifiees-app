@@ -15,7 +15,7 @@ const ApiController = () => import('#controllers/api_controller')
 const AdminController = () => import('#controllers/admin_controller')
 const ContentController = () => import('#controllers/content_controller')
 const AuthController = () => import('#controllers/auth_controller')
-
+const SimulateurController = () => import('#controllers/simulateur_controller')
 // Auth routes
 router.get('/login', [AuthController, 'showLogin'])
 router.post('/login', [AuthController, 'login'])
@@ -30,12 +30,15 @@ router.get('/statistiques', [HomeController, 'statistiques'])
 router.get('/api/statistics', [ApiController, 'statistics'])
 
 // Routes publiques
-router.get('/content/pages', [ContentController, 'listPages'])
 router.get('/content/:slug', [ContentController, 'showPage'])
 router.get('/notions', [ContentController, 'listNotions'])
 router.get('/notions/:slug', [ContentController, 'showNotion'])
 router.get('/aides', [ContentController, 'listAides'])
 router.get('/aides/:slug', [ContentController, 'showAide'])
+
+//Simulateurs
+router.get('/simulateurs/:slug', [SimulateurController, 'showSimulateur'])
+
 
 // Routes d'administration protégées
 router.group(() => {

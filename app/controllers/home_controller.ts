@@ -6,15 +6,15 @@ export default class HomeController {
   }
 
   public async partenaires({ inertia }: HttpContext) {
-    return inertia.render('partenaires')
+    return inertia.render('content/pages/partenaires')
   }
 
   public async integrerNosSimulateurs({ inertia }: HttpContext) {
-    return inertia.render('integrer-nos-simulateurs')
+    return inertia.render('content/pages/integrer-nos-simulateurs')
   }
 
   public async contact({ inertia }: HttpContext) {
-    return inertia.render('contact')
+    return inertia.render('content/pages/contact')
   }
 
   public async statistiques({ inertia }: HttpContext) {

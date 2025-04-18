@@ -1,12 +1,8 @@
 <script lang="ts" setup>
 definePageMeta({
   layout: 'user-simulation',
-  middleware: [
-    'check-iframe-layout',
-    'load-simulateur',
-    'load-results'
-  ],
-  validate: getContentRouteValidator('simulateur_id')
+  middleware: ['check-iframe-layout', 'load-simulateur', 'load-results'],
+  validate: getContentRouteValidator('simulateur_id'),
 })
 
 const route = useRoute()
@@ -20,12 +16,12 @@ setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Simulateurs', to: '/simulateurs' },
   { text: simulateurTitle, to: `/simulateurs/${simulateurId}#simulateur-title` },
-  { text: 'Résultats', to: `/simulateurs/${simulateurId}/resultats#simulateur-title` }
+  { text: 'Résultats', to: `/simulateurs/${simulateurId}/resultats#simulateur-title` },
 ])
 
 useSeoMeta({
   title: `Résultats de votre simulation "${simulateurTitle}" | Aides simplifiées`,
-  description: `Découvrez les aides auxquelles vous êtes eligibles avec les résultats de votre simulation "${simulateurTitle}".`
+  description: `Découvrez les aides auxquelles vous êtes eligibles avec les résultats de votre simulation "${simulateurTitle}".`,
 })
 
 const richResults = nuxtApp.payload.data[`rich-results-${simulateurId}`]
@@ -36,12 +32,20 @@ const hasMontants = richResults.montants.length > 0
 const hasAidesNonEligibles = richResults.aidesNonEligibles.length > 0
 const hasTextesDeLoi = richResults.textesLoi.length > 0
 
-const segmentedSetOptions: { label: string, value: string, icon: string }[] = []
+const segmentedSetOptions: { label: string; value: string; icon: string }[] = []
 if (hasEcheances) {
-  segmentedSetOptions.unshift({ label: 'Échéances estimées', value: 'echeances', icon: 'ri:calendar-2-line' })
+  segmentedSetOptions.unshift({
+    label: 'Échéances estimées',
+    value: 'echeances',
+    icon: 'ri:calendar-2-line',
+  })
 }
 if (hasMontants) {
-  segmentedSetOptions.unshift({ label: 'Montants estimés', value: 'montants', icon: 'ri:money-euro-circle-line' })
+  segmentedSetOptions.unshift({
+    label: 'Montants estimés',
+    value: 'montants',
+    icon: 'ri:money-euro-circle-line',
+  })
 }
 
 const visibleTabName = ref<'montants' | 'echeances'>('montants')
@@ -61,12 +65,7 @@ if (hasAides) {
       <div>
         <!-- <div class="fr-col-9"> -->
         <hgroup>
-          <h2
-            v-if="simulateurTitle"
-            class="results__title"
-          >
-            Résultats de votre simulation
-          </h2>
+          <h2 v-if="simulateurTitle" class="results__title">Résultats de votre simulation</h2>
           <p
             v-if="richResults.createAt?.date && richResults.createAt?.time"
             class="results__datetime fr-mt-n2w"
@@ -102,19 +101,15 @@ if (hasAides) {
         />
       </div> -->
     </header>
-    <SectionSeparator
-      v-if="hasAides"
-      fluid
-      class="fr-mt-6w"
-    />
+    <SectionSeparator v-if="hasAides" fluid class="fr-mt-6w" />
     <div class="results__content fr-mt-4w">
       <template v-if="hasAides">
         <div class="results__content-resume">
           <hgroup>
             <h3>1. En résumé</h3>
             <p class="fr-text--lg">
-              Voici un récapitulatif des aides auxquelles vous pourriez être éligible en fonction des informations
-              renseignées :
+              Voici un récapitulatif des aides auxquelles vous pourriez être éligible en fonction
+              des informations renseignées :
             </p>
           </hgroup>
           <DsfrSegmentedSet
@@ -147,57 +142,34 @@ if (hasAides) {
             <!-- todo -->
           </div>
         </div>
-        <SectionSeparator
-          fluid
-          class="fr-mt-8w"
-        />
+        <SectionSeparator fluid class="fr-mt-8w" />
         <div class="results__liste-aides fr-mt-8w">
           <h3>2. Les aides que nous avons identifiées</h3>
           <p>
             Selon les informations que vous avez fournies, vous pourriez être éligible à ces aides.
-            Ces résultats sont basés uniquement sur les données communiquées et ne constituent pas un engagement
-            officiel de la part des organismes mentionnés.
+            Ces résultats sont basés uniquement sur les données communiquées et ne constituent pas
+            un engagement officiel de la part des organismes mentionnés.
           </p>
           <AidesList :aides="richResults.aides" />
         </div>
         <template v-if="hasAidesNonEligibles || hasTextesDeLoi || showMethodology">
-          <SectionSeparator
-            fluid
-            class="fr-mt-8w"
-          />
+          <SectionSeparator fluid class="fr-mt-8w" />
           <div class="results__liste-annexes fr-mt-8w">
             <h3>3. Pour aller plus loin</h3>
             <div class="fr-card">
               <div class="fr-card__body">
                 <div class="fr-card__content">
                   <DsfrAccordionsGroup v-model="activeAccordion">
-                    <DsfrAccordion
-                      v-if="showMethodology"
-                      id="methodologie"
-                    >
+                    <DsfrAccordion v-if="showMethodology" id="methodologie">
                       <template #title>
-                        <VIcon
-                          name="ri:question-line"
-                          ssr
-                        />
-                        <span class="fr-ml-1w">
-                          Comment avons nous estimé ces aides ?
-                        </span>
+                        <VIcon name="ri:question-line" ssr />
+                        <span class="fr-ml-1w"> Comment avons nous estimé ces aides ? </span>
                       </template>
-                      <template #default>
-                        Contenu à venir
-                      </template>
+                      <template #default> Contenu à venir </template>
                     </DsfrAccordion>
-                    <DsfrAccordion
-                      v-if="hasAidesNonEligibles"
-                      id="aides-non-eligibles"
-                      title=""
-                    >
+                    <DsfrAccordion v-if="hasAidesNonEligibles" id="aides-non-eligibles" title="">
                       <template #title>
-                        <VIcon
-                          name="ri:chat-delete-line"
-                          ssr
-                        />
+                        <VIcon name="ri:chat-delete-line" ssr />
                         <span class="fr-ml-1w">
                           Les aides auxquelles vous n'avez pas été estimé·e éligible
                         </span>
@@ -212,18 +184,13 @@ if (hasAides) {
                       title="Textes de référence"
                     >
                       <template #title>
-                        <VIcon
-                          name="ri:scales-3-line"
-                          ssr
-                        />
-                        <span class="fr-ml-1w">
-                          Textes de référence
-                        </span>
+                        <VIcon name="ri:scales-3-line" ssr />
+                        <span class="fr-ml-1w"> Textes de référence </span>
                       </template>
                       <template #default>
                         <ul>
                           <li
-                            v-for="texteItem, i in richResults.textesLoi"
+                            v-for="(texteItem, i) in richResults.textesLoi"
                             :key="i"
                             class="fr-mb-1w"
                           >
@@ -231,9 +198,7 @@ if (hasAides) {
                               {{ texteItem }}
                             </template>
                             <template v-else-if="texteItem && texteItem.url && texteItem.label">
-                              <span v-if="texteItem.prefixe">
-                                {{ texteItem.prefixe }} :
-                              </span>
+                              <span v-if="texteItem.prefixe"> {{ texteItem.prefixe }} : </span>
                               <DsfrLink
                                 :to="texteItem.url"
                                 :icon="{ name: 'ri:external-link-line', ssr: true }"
@@ -253,23 +218,15 @@ if (hasAides) {
       </template>
       <template v-else>
         <div class="results__no-aides fr-card fr-p-3w">
-          <h3>
-            Nous n'avons pas trouvé d'aides correspondant à votre situation.
-          </h3>
+          <h3>Nous n'avons pas trouvé d'aides correspondant à votre situation.</h3>
           <p>
-            Cela peut être dû à des critères auxquels vous ne répondez pas, mais également à un erreur de notre part.
-            Notre service est en construction, n'hésitez pas à consulter le détail des aides suivantes pour vérifier :
+            Cela peut être dû à des critères auxquels vous ne répondez pas, mais également à un
+            erreur de notre part. Notre service est en construction, n'hésitez pas à consulter le
+            détail des aides suivantes pour vérifier :
           </p>
-          <DsfrAccordion
-            v-if="hasAidesNonEligibles"
-            id="aides-non-eligibles"
-            title=""
-          >
+          <DsfrAccordion v-if="hasAidesNonEligibles" id="aides-non-eligibles" title="">
             <template #title>
-              <VIcon
-                name="ri:chat-delete-line"
-                ssr
-              />
+              <VIcon name="ri:chat-delete-line" ssr />
               <span class="fr-ml-1w">
                 Les aides auxquelles vous n'avez pas été estimé·e éligible
               </span>

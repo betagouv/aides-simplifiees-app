@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
-  "forceRefresh": true,
+  "version": "2.0.0",
+  "forceRefresh": false,
   "id": "demenagement-logement",
   "title": "Déménagement et logement",
   "description": "Répondez à ces questions pour découvrir les aides au logement et déménagement auxquelles vous pourriez être éligible",
@@ -35,10 +35,42 @@
               "id": "inactif",
               "title": "Autre"
             }
-          ],
-          "bypassToQuestion": [
-            { "condition": "statut-professionnel=etudiant", "question": "situation-professionnelle" }
           ]
+        },
+        {
+          "id": "situation-professionnelle",
+          "title": "Quelle est votre situation professionnelle ?",
+          "type": "radio",
+          "visibleWhen": "statut-professionnel=etudiant",
+          "choices": [
+            { "id": "stage", "title": "En stage" },
+            { "id": "alternance", "title": "En alternance" },
+            { "id": "salarie-hors-alternance", "title": "Étudiant salarié" },
+            { "id": "sans-emploi", "title": "Je n'ai pas d'emploi" }
+          ]
+        },
+        {
+          "id": "etudiant-mobilite",
+          "title": "Êtes-vous dans l'un des cas suivants ?",
+          "type": "radio",
+          "visibleWhen": "statut-professionnel=etudiant",
+          "choices": [
+            {
+              "id": "parcoursup-nouvelle-region",
+              "title": "Je commence des études après avoir été accepté(e) sur Parcoursup dans une autre Région"
+            },
+            {
+              "id": "master-nouvelle-zone",
+              "title": "Je commence un Master 1 dans une autre ville ou université"
+            },
+            { "id": "pas-de-mobilite", "title": "Aucun des deux" }
+          ]
+        },
+        {
+          "id": "boursier",
+          "title": "Êtes-vous boursier ?",
+          "type": "boolean",
+          "visibleWhen": "etudiant-mobilite=parcoursup-nouvelle-region||etudiant-mobilite=master-nouvelle-zone"
         },
         {
           "id": "date-naissance",
@@ -52,7 +84,7 @@
             "id": "handicap",
             "buttonLabel": "En savoir plus"
           },
-          "title": "Avez-vous une reconnaissance administrative de votre situation de handicap ?",
+          "title": "Avez-vous une reconnaissance administrative d'une situation de handicap ?",
           "type": "boolean"
         }
       ]
@@ -72,8 +104,8 @@
             { "id": "marie", "title": "Marié(e)" },
             { "id": "divorce", "title": "Divorcé(e)" },
             { "id": "veuf", "title": "Veuf(ve)" },
-            { "id": "jeune_veuf", "title": "Veuf(ve) d’un(e) conjoint(e) décédé(e) dans l’année" },
-            { "id": "non_renseigne", "title": "Je préfère ne pas renseigner" }
+            { "id": "jeune_veuf", "title": "Veuf(ve) d'un(e) conjoint(e) décédé(e) dans l'année" },
+            { "id": "non_renseigne", "title": "Je préfère ne pas renseigner cette information" }
           ]
         }
       ]
@@ -85,8 +117,8 @@
         {
           "id": "code-postal-nouvelle-ville",
           "title": "Dans quelle ville allez-vous résider ?",
-          "description": "Veuillez saisir le code postal ou le nom de la commune de la ville dans laquelle vous allez résider. Nous saisirons alors automatiquement le code INSEE pour vous.",
-          "type": "text",
+          "description": "Veuillez saisir le nom ou le code postal de la commune dans laquelle vous allez résider.",
+          "type": "combobox",
           "autocompleteFunction": "getInseeNumber"
         },
         {
@@ -111,11 +143,84 @@
               "id": "sans-domicile",
               "title": "Sans domicile stable"
             }
-          ],
-          "bypassToQuestion": [
-            { "condition": "situation-logement=locataire", "question": "type-logement" },
-            { "condition": "situation-logement=proprietaire", "question": "primo-accedant" }
           ]
+        },
+        {
+          "id": "type-logement",
+          "title": "Quel sera le type de logement ?",
+          "type": "radio",
+          "visibleWhen": "situation-logement=locataire",
+          "choices": [
+            { "id": "logement-non-meuble", "title": "Logement non meublé" },
+            { "id": "logement-meuble", "title": "Logement meublé" },
+            {
+              "id": "logement-foyer",
+              "title": "Foyer (résidence CROUS, etc.) ou logement conventionné"
+            },
+            { "id": "logement-chambre", "title": "Chambre chez un particulier" }
+          ]
+        },
+        {
+          "id": "logement-conventionne",
+          "title": "Votre logement est-il conventionné pour les Aides Personnalisées au Logement (APL) ?",
+          "description": "Les logements conventionnés sont des logements collectifs ou des logements individuels qui ont fait l'objet d'une convention avec l'État pour recevoir des aides financières.",
+          "type": "boolean",
+          "visibleWhen": "situation-logement=locataire",
+          "notion": {
+            "id": "logement-conventionne",
+            "buttonLabel": "En savoir plus"
+          }
+        },
+        {
+          "id": "colocation",
+          "title": "Allez-vous habiter en colocation ?",
+          "type": "boolean",
+          "visibleWhen": "situation-logement=locataire"
+        },
+        {
+          "id": "logement-parente-proprietaire",
+          "title": "Avez-vous un lien de parenté direct avec le propriétaire ?",
+          "description": "Est-il un(e) ascendant(e) ou un(e) descendant(e) de vous ou de votre conjoint(e), par exemple, enfant ou grand-parent ?",
+          "type": "boolean",
+          "visibleWhen": "situation-logement=locataire"
+        },
+        {
+          "id": "nombre-personnes-logement",
+          "title": "Combien de personnes habiteront dans le logement (y compris vous-même) ?",
+          "type": "number",
+          "min": 1,
+          "default": 1,
+          "visibleWhen": "situation-logement=locataire"
+        },
+        {
+          "id": "loyer-montant-mensuel",
+          "title": "Quel est le montant de votre part du loyer (charges non comprises) ?",
+          "description": "Indiquez le montant en euros par mois, sans déduire vos aides au logement si vous en recevez.",
+          "type": "number",
+          "visibleWhen": "situation-logement=locataire"
+        },
+        {
+          "id": "loyer-montant-charges",
+          "notion": {
+            "id": "loyer-montant-charges",
+            "buttonLabel": "En savoir plus"
+          },
+          "title": "Quel est le montant des charges locatives ?",
+          "description": "Indiquez le montant en euros par mois. Cela peut inclure l'eau froide, le chauffage collectif, l'entretien des parties communes.",
+          "type": "number",
+          "visibleWhen": "situation-logement=locataire"
+        },
+        {
+          "id": "loyer-difficile-payer",
+          "title": "Rencontrez-vous des difficultés importantes pour accéder à un logement ou payer votre loyer ?",
+          "type": "boolean",
+          "visibleWhen": "situation-logement=locataire"
+        },
+        {
+          "id": "primo-accedant",
+          "title": "Êtes-vous un primo-accédant ?",
+          "type": "boolean",
+          "visibleWhen": "situation-logement=proprietaire"
         }
       ]
     },
@@ -125,7 +230,7 @@
       "questions": [
         {
           "id": "type-revenus",
-          "title": "Quels sont les types de revenus qui s'appliquent à votre situation ?",
+          "title": "Quels sont les types de revenus qui s'appliquent à votre situation ? (plusieurs choix possibles)",
           "description": "Sélectionnez tous les types de revenus que vous avez perçus dans les 12 derniers mois. Vous pourrez ensuite saisir les montants.",
           "type": "checkbox",
           "choices": [
@@ -135,212 +240,78 @@
             { "id": "revenus-entreprise", "title": "Revenus professionnels non salariés" },
             { "id": "revenus-parents", "title": "Ressources des parents" },
             { "id": "aucun-autres-revenus", "title": "Aucun autre revenu à déclarer" }
-          ],
-          "bypassToQuestion": [
-            { "condition": "type-revenus.includes('revenus-activite')", "question": "salaire-imposable" },
-            { "condition": "type-revenus.includes('revenus-chomage')", "question": "montant-chomage" },
-            { "condition": "type-revenus.includes('revenus-bourses')", "question": "montant-bourse-lycee" },
-            { "condition": "type-revenus.includes('revenus-entreprise')", "question": "montant-ca-micro-entreprise" },
-            { "condition": "type-revenus.includes('revenus-parents')", "question": "montant-parents" }
           ]
+        },
+        {
+          "id": "salaire-imposable",
+          "title": "Salaire net imposable : montant total sur les 12 derniers mois (dont primes et indemnités de fin de contrat)",
+          "description": "Indiquez le montant en euros de vos revenus d'activité salariale au cours des 12 derniers mois, net avant impôts.",
+          "notion": {
+            "id": "salaire-imposable",
+            "buttonLabel": "En savoir plus"
+          },
+          "type": "number",
+          "visibleWhen": "type-revenus.includes('revenus-activite')"
+        },
+        {
+          "id": "montant-chomage",
+          "title": "Allocations chômage perçues au cours des 12 derniers mois",
+          "description": "Indiquez le montant total des allocations chômage (Allocation de Retour à l'Emploi (ARE), Allocation de Solidarité Spécifique (ASS)) que vous avez perçues au cours des 12 derniers mois.",
+          "type": "number",
+          "visibleWhen": "type-revenus.includes('revenus-chomage')",
+          "notion": {
+            "id": "montant-chomage",
+            "buttonLabel": "En savoir plus"
+          }
+        },
+        {
+          "id": "montant-bourse-lycee",
+          "title": "Bourses de lycée perçues au cours des 12 derniers mois",
+          "description": "Indiquez le montant total des bourses de lycée que vous avez perçues au cours des 12 derniers mois. Indiquez 0 si vous n'en avez pas perçu. Si vous n'avez pas perçu de bourse de lycée, mais une bourse d'enseignement supérieur, veuillez indiquer 0 et passer à la question suivante.",
+          "type": "number",
+          "visibleWhen": "type-revenus.includes('revenus-bourses')"
+        },
+        {
+          "id": "montant-bourse-superieur",
+          "title": "Bourses d'enseignement supérieur perçues au cours des 12 derniers mois",
+          "description": "Indiquez le montant total des bourses d'enseignement supérieur que vous avez perçues au cours des 12 derniers mois. Indiquez 0 si vous n'en avez pas perçu.",
+          "type": "number",
+          "visibleWhen": "type-revenus.includes('revenus-bourses')",
+          "notion": {
+            "id": "montant-chomage",
+            "buttonLabel": "En savoir plus"
+          }
+        },
+        {
+          "id": "montant-ca-micro-entreprise",
+          "title": "Chiffre d'affaires généré via une micro-entreprise",
+          "description": "Indiquez le dernier chiffre d'affaires annuel déclaré au service des impôts.",
+          "type": "number",
+          "visibleWhen": "type-revenus.includes('revenus-entreprise')",
+          "notion": {
+            "id": "montant-ca-micro-entreprise",
+            "buttonLabel": "En savoir plus"
+          }
+        },
+        {
+          "id": "montant-parents",
+          "title": "Ressources des parents au cours des 12 derniers mois",
+          "description": "Indiquez le montant total des ressources de vos parents au cours des 12 derniers mois, si vous êtes rattaché(e) à leur foyer fiscal et que vous ne déclarez pas vos propres revenus.",
+          "type": "number",
+          "visibleWhen": "type-revenus.includes('revenus-parents')",
+          "notion": {
+            "id": "montant-parents",
+            "buttonLabel": "En savoir plus"
+          }
         },
         {
           "id": "confirmation-end",
           "title": "Voulez-vous confirmer ces informations ?",
           "description": "En poursuivant, vous affirmez être conscients que les informations d'eligibilité sont données à titre indicatif et ne sont pas contractuelles.",
           "type": "checkbox",
-          "choices": [
-            { "id": "confirmation-end-oui", "title": "Oui" }
-          ]
+          "choices": [{ "id": "confirmation-end-oui", "title": "Oui" }]
         }
       ]
-    }
-  ],
-  "triggeredQuestions": [
-    {
-      "id": "situation-professionnelle",
-      "title": "Quelle est votre situation professionnelle ?",
-      "type": "radio",
-      "choices": [
-        { "id": "stage", "title": "En stage" },
-        { "id": "alternance", "title": "En alternance" },
-        { "id": "salarie-hors-alternance", "title": "Étudiant salarié" },
-        { "id": "sans-emploi", "title": "Je n'ai pas d'emploi" }
-      ],
-      "nextQuestion": "etudiant-mobilite"
-    },
-    {
-      "id": "etudiant-mobilite",
-      "title": "Êtes-vous dans l'un des cas suivants ?",
-      "type": "radio",
-      "choices": [
-        { "id": "parcoursup-nouvelle-region", "title": "Je commence des études après avoir été accepté(e) sur Parcoursup dans une autre Région" },
-        { "id": "master-nouvelle-zone", "title": "Je commence un Master 1 dans une autre ville ou université" },
-        { "id": "pas-de-mobilite", "title": "Aucun des deux" }
-      ],
-      "bypassToQuestion": [
-        { "condition": "etudiant-mobilite=parcoursup-nouvelle-region", "question": "boursier" },
-        { "condition": "etudiant-mobilite=master-nouvelle-zone", "question": "boursier" }
-      ],
-      "nextQuestion": "date-naissance"
-    },
-    {
-      "id": "boursier",
-      "title": "Etes vous boursier ?",
-      "type": "boolean",
-      "nextQuestion": "date-naissance"
-    },
-    {
-      "id": "primo-accedant",
-      "title": "Êtes-vous un primo-accédant ?",
-      "type": "boolean",
-      "nextQuestion": "type-revenus"
-    },
-    {
-      "id": "type-logement",
-      "title": "Quel sera le type de logement ?",
-      "type": "radio",
-      "choices": [
-        { "id": "logement-non-meuble", "title": "Logement non meublé" },
-        { "id": "logement-meuble", "title": "Logement meublé" },
-        { "id": "logement-foyer", "title": "Foyer (résidence CROUS, etc.) ou logement conventionné" },
-        { "id": "logement-chambre", "title": "Chambre chez un particulier" }
-      ],
-      "nextQuestion": "logement-conventionne"
-    },
-    {
-      "id": "logement-conventionne",
-      "title": "Votre logement est-il conventionné pour les Aides Personalisées au Logement (APL) ?",
-      "description": "Les logements conventionnés sont des logements collectifs ou des logements individuels qui ont fait l'objet d'une convention avec l'État pour recevoir des aides financières.",
-      "type": "boolean",
-      "nextQuestion": "colocation",
-      "notion": {
-        "id": "logement-conventionne",
-        "buttonLabel": "En savoir plus"
-      }
-    },
-    {
-      "id": "colocation",
-      "title": "Allez-vous habiter en colocation ?",
-      "type": "boolean",
-      "nextQuestion": "logement-parente-proprietaire"
-    },
-    {
-      "id": "logement-parente-proprietaire",
-      "title": "Avez-vous un lien de parenté direct avec le propriétaire ?",
-      "description": "Est-il un(e) ascendant(e) ou un(e) descendant(e) de vous ou de votre conjoint(e), par exemple, enfant ou grand-parent ?",
-      "type": "boolean",
-      "nextQuestion": "nombre-personnes-logement"
-    },
-    {
-      "id": "nombre-personnes-logement",
-      "title": "Combien de personnes habiteront dans le logement (y compris vous-même) ?",
-      "type": "number",
-      "nextQuestion": "loyer-montant-mensuel"
-    },
-    {
-      "id": "loyer-montant-mensuel",
-      "title": "Quel est le montant de votre part du loyer (charges non comprises) ?",
-      "description": "Indiquez le montant en euros par mois, sans déduire vos aides au logement si vous en recevez.",
-      "type": "number",
-      "nextQuestion": "loyer-montant-charges"
-    },
-    {
-      "id": "loyer-montant-charges",
-      "notion": {
-        "id": "loyer-montant-charges",
-        "buttonLabel": "En savoir plus"
-      },
-      "title": "Quel est le montant des charges locatives ?",
-      "description": "Indiquez le montant en euros par mois. Cela peut inclure l'eau froide, le chauffage collectif, l'entretien des parties communes.",
-      "type": "number",
-      "nextQuestion": "loyer-difficile-payer"
-    },
-    {
-      "id": "loyer-difficile-payer",
-      "title": "Rencontrez-vous des difficultés importantes pour accéder à un logement ou payer votre loyer ?",
-      "type": "boolean",
-      "nextQuestion": "type-revenus"
-    },
-    {
-      "id": "salaire-imposable",
-      "title": "Salaire : montant total sur les 12 derniers mois (dont primes et indemnités de fin de contrat)",
-      "description": "Indiquez le montant en euros de vos revenus d'activité salariale au cours des 12 derniers mois avant impôts.",
-      "notion": {
-        "id": "salaire-imposable",
-        "buttonLabel": "En savoir plus"
-      },
-      "type": "number",
-      "nextQuestion": "confirmation-end",
-      "bypassToQuestion": [
-        { "condition": "type-revenus.includes('revenus-chomage')", "question": "montant-chomage" },
-        { "condition": "type-revenus.includes('revenus-bourses')", "question": "montant-bourse-lycee" },
-        { "condition": "type-revenus.includes('revenus-entreprise')", "question": "montant-ca-micro-entreprise" },
-        { "condition": "type-revenus.includes('revenus-parents')", "question": "montant-parents" }
-      ]
-    },
-    {
-      "id": "montant-chomage",
-      "title": "Allocations chômage perçues au cours des 12 derniers mois",
-      "description": "Indiquez le montant total des allocations chômage (Allocation de Retour à l'Emploi (ARE), Allocation de Solidarité Spécifique (ASS)) que vous avez perçues au cours des 12 derniers mois.",
-      "type": "number",
-      "nextQuestion": "confirmation-end",
-      "notion": {
-        "id": "montant-chomage",
-        "buttonLabel": "En savoir plus"
-      },
-      "bypassToQuestion": [
-        { "condition": "type-revenus.includes('revenus-bourses')", "question": "montant-bourse-lycee" },
-        { "condition": "type-revenus.includes('revenus-entreprise')", "question": "montant-ca-micro-entreprise" },
-        { "condition": "type-revenus.includes('revenus-parents')", "question": "montant-parents" }
-      ]
-    },
-    {
-      "id": "montant-bourse-lycee",
-      "title": "Bourses de lycée perçues au cours des 12 derniers mois",
-      "description": "Indiquez le montant total des bourses de lycée que vous avez perçues au cours des 12 derniers mois. Indiquez 0 si vous n'en avez pas perçu. Si vous n'avez pas perçu de bourse de lycée, mais une bourse d'enseignement supérieur, veuillez indiquer 0 et passer à la question suivante.",
-      "type": "number",
-      "nextQuestion": "montant-bourse-superieur"
-    },
-    {
-      "id": "montant-bourse-superieur",
-      "title": "Bourses d'enseignement supérieur perçues au cours des 12 derniers mois",
-      "description": "Indiquez le montant total des bourses d'enseignement supérieur que vous avez perçues au cours des 12 derniers mois. Indiquez 0 si vous n'en avez pas perçu.",
-      "type": "number",
-      "nextQuestion": "confirmation-end",
-      "notion": {
-        "id": "montant-chomage",
-        "buttonLabel": "En savoir plus"
-      },
-      "bypassToQuestion": [
-        { "condition": "type-revenus.includes('revenus-entreprise')", "question": "montant-ca-micro-entreprise" },
-        { "condition": "type-revenus.includes('revenus-parents')", "question": "montant-parents" }
-      ]
-    },
-    {
-      "id": "montant-ca-micro-entreprise",
-      "title": "Chiffre d'affaires généré via une micro-entreprise",
-      "description": "Indiquez le dernier chiffre d’affaires annuel déclaré au service des impôts.",
-      "type": "number",
-      "nextQuestion": "confirmation-end",
-      "bypassToQuestion": [
-        { "condition": "type-revenus.includes('revenus-parents')", "question": "montant-parents" }
-      ],
-      "notion": {
-        "id": "montant-ca-micro-entreprise",
-        "buttonLabel": "En savoir plus"
-      }
-    },
-    {
-      "id": "montant-parents",
-      "title": "Ressources des parents au cours des 12 derniers mois",
-      "description": "Indiquez le montant total des ressources de vos parents au cours des 12 derniers mois, si vous êtes rattaché(e) à leur foyer fiscal et que vous ne déclarez pas vos propres revenus.",
-      "type": "number",
-      "nextQuestion": "confirmation-end",
-      "notion": {
-        "id": "montant-parents",
-        "buttonLabel": "En savoir plus"
-      }
     }
   ],
   "tests": [
@@ -373,12 +344,8 @@
         "loyer-montant-mensuel": 700,
         "loyer-montant-charges": 100,
         "loyer-difficile-payer": true,
-        "type-revenus": [
-          "aucun-autres-revenus"
-        ],
-        "confirmation-end": [
-          "confirmation-end-oui"
-        ]
+        "type-revenus": ["aucun-autres-revenus"],
+        "confirmation-end": ["confirmation-end-oui"]
       },
       "results": {
         "mobilite-master-1": 0,
@@ -421,13 +388,9 @@
         "loyer-montant-mensuel": 600,
         "loyer-montant-charges": 70,
         "loyer-difficile-payer": true,
-        "type-revenus": [
-          "revenus-activite"
-        ],
+        "type-revenus": ["revenus-activite"],
         "salaire-imposable": 12000,
-        "confirmation-end": [
-          "confirmation-end-oui"
-        ]
+        "confirmation-end": ["confirmation-end-oui"]
       },
       "results": {
         "locapass-eligibilite": true,
@@ -471,15 +434,10 @@
         "loyer-montant-mensuel": 900,
         "loyer-montant-charges": 150,
         "loyer-difficile-payer": true,
-        "type-revenus": [
-          "revenus-activite",
-          "revenus-entreprise"
-        ],
+        "type-revenus": ["revenus-activite", "revenus-entreprise"],
         "salaire-imposable": 5000,
         "montant-ca-micro-entreprise": 1500,
-        "confirmation-end": [
-          "confirmation-end-oui"
-        ]
+        "confirmation-end": ["confirmation-end-oui"]
       },
       "results": {
         "locapass-eligibilite": true,
@@ -520,13 +478,9 @@
         "loyer-montant-mensuel": 1000,
         "loyer-montant-charges": 100,
         "loyer-difficile-payer": true,
-        "type-revenus": [
-          "revenus-activite"
-        ],
+        "type-revenus": ["revenus-activite"],
         "salaire-imposable": 15000,
-        "confirmation-end": [
-          "confirmation-end-oui"
-        ]
+        "confirmation-end": ["confirmation-end-oui"]
       },
       "results": {
         "locapass-eligibilite": true,
@@ -567,13 +521,9 @@
         "loyer-montant-mensuel": 700,
         "loyer-montant-charges": 70,
         "loyer-difficile-payer": true,
-        "type-revenus": [
-          "revenus-activite"
-        ],
+        "type-revenus": ["revenus-activite"],
         "salaire-imposable": 25000,
-        "confirmation-end": [
-          "confirmation-end-oui"
-        ]
+        "confirmation-end": ["confirmation-end-oui"]
       },
       "results": {
         "locapass-eligibilite": true,
@@ -607,13 +557,9 @@
         "code-postal-nouvelle-ville": "69381",
         "situation-logement": "proprietaire",
         "primo-accedant": true,
-        "type-revenus": [
-          "revenus-activite"
-        ],
+        "type-revenus": ["revenus-activite"],
         "salaire-imposable": 60000,
-        "confirmation-end": [
-          "confirmation-end-oui"
-        ]
+        "confirmation-end": ["confirmation-end-oui"]
       },
       "results": {
         "locapass-eligibilite": false,
@@ -654,13 +600,9 @@
         "loyer-montant-mensuel": 1800,
         "loyer-montant-charges": 160,
         "loyer-difficile-payer": true,
-        "type-revenus": [
-          "revenus-chomage"
-        ],
+        "type-revenus": ["revenus-chomage"],
         "montant-chomage": 50000,
-        "confirmation-end": [
-          "confirmation-end-oui"
-        ]
+        "confirmation-end": ["confirmation-end-oui"]
       },
       "results": {
         "locapass-eligibilite": false,

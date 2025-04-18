@@ -1,22 +1,18 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
-  montant: number
-  size?: 'md' | 'medium' | 'large' | 'lg' | 'sm' | 'small' | undefined
-}>(), {
-  size: 'md',
-})
+withDefaults(
+  defineProps<{
+    montant: number
+    size?: 'md' | 'medium' | 'large' | 'lg' | 'sm' | 'small' | undefined
+  }>(),
+  {
+    size: 'md',
+  }
+)
 </script>
 
 <template>
-  <div
-    class="brand-montant fr-text--alt"
-    :class="[
-      `brand-montant--${size}`,
-    ]"
-  >
-    <div class="brand-montant__label">
-      {{ montant.toFixed(0) }}€
-    </div>
+  <div class="brand-montant fr-text--alt" :class="[`brand-montant--${size}`]">
+    <div class="brand-montant__label">{{ montant.toFixed(0) }}€</div>
   </div>
 </template>
 

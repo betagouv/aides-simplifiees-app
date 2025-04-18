@@ -11,7 +11,8 @@ export default class SimulateurSeeder extends BaseSeeder {
     const simulateur = await Simulateur.create({
       slug: 'demenagement-logement',
       title: 'Déménagement et logement',
-      description: 'Répondez à ces questions pour découvrir les aides au logement et déménagement auxquelles vous pourriez être éligible',
+      description:
+        'Répondez à ces questions pour découvrir les aides au logement et déménagement auxquelles vous pourriez être éligible',
       shortTitle: 'Logement',
       pictogramPath: '/icons/logement.svg',
       status: 'published',
@@ -44,7 +45,8 @@ export default class SimulateurSeeder extends BaseSeeder {
     const ageQuestion = await profilStep.related('questions').create({
       slug: 'date-naissance',
       title: 'Quelle est votre date de naissance ?',
-      description: "Renseignez le jour, le mois et l'année sous le format jj/mm/aaaa (exemple : 15/08/1995)",
+      description:
+        "Renseignez le jour, le mois et l'année sous le format jj/mm/aaaa (exemple : 15/08/1995)",
       type: 'date',
     })
 
@@ -65,7 +67,8 @@ export default class SimulateurSeeder extends BaseSeeder {
     const codePostalQuestion = await logementStep.related('questions').create({
       slug: 'code-postal-nouvelle-ville',
       title: 'Dans quelle ville allez-vous résider ?',
-      description: 'Veuillez saisir le nom ou le code postal de la commune dans laquelle vous allez résider.',
+      description:
+        'Veuillez saisir le nom ou le code postal de la commune dans laquelle vous allez résider.',
       type: 'combobox',
     })
 
@@ -80,7 +83,10 @@ export default class SimulateurSeeder extends BaseSeeder {
     await situationLogementQuestion.related('choices').createMany([
       { slug: 'locataire', title: 'Locataire (figurant sur le bail, en foyer ou en résidence)' },
       { slug: 'proprietaire', title: 'Propriétaire ou en location-accession' },
-      { slug: 'heberge', title: 'Hébergé(e) chez vos parents, un particulier ou en logement de fonction' },
+      {
+        slug: 'heberge',
+        title: 'Hébergé(e) chez vos parents, un particulier ou en logement de fonction',
+      },
       { slug: 'sans-domicile', title: 'Sans domicile stable' },
     ])
 
@@ -108,8 +114,10 @@ export default class SimulateurSeeder extends BaseSeeder {
     // Questions de l'étape Revenus
     const typeRevenusQuestion = await revenusStep.related('questions').create({
       slug: 'type-revenus',
-      title: "Quels sont les types de revenus qui s'appliquent à votre situation ? (plusieurs choix possibles)",
-      description: 'Sélectionnez tous les types de revenus que vous avez perçus dans les 12 derniers mois. Vous pourrez ensuite saisir les montants.',
+      title:
+        "Quels sont les types de revenus qui s'appliquent à votre situation ? (plusieurs choix possibles)",
+      description:
+        'Sélectionnez tous les types de revenus que vous avez perçus dans les 12 derniers mois. Vous pourrez ensuite saisir les montants.',
       type: 'checkbox',
     })
 
@@ -127,18 +135,21 @@ export default class SimulateurSeeder extends BaseSeeder {
     const confirmationQuestion = await revenusStep.related('questions').create({
       slug: 'confirmation-end',
       title: 'Voulez-vous confirmer ces informations ?',
-      description: "En poursuivant, vous affirmez être conscients que les informations d'eligibilité sont données à titre indicatif et ne sont pas contractuelles.",
+      description:
+        "En poursuivant, vous affirmez être conscients que les informations d'eligibilité sont données à titre indicatif et ne sont pas contractuelles.",
       type: 'checkbox',
     })
 
     // Choix pour la question "confirmation-end"
-    await confirmationQuestion.related('choices').createMany([
-      { slug: 'confirmation-end-oui', title: 'Oui' },
-    ])
+    await confirmationQuestion
+      .related('choices')
+      .createMany([{ slug: 'confirmation-end-oui', title: 'Oui' }])
 
     // Générer le builtJson
     await simulateurService.generateBuiltJson(simulateur.id)
 
-    console.log(`Simulateur "${simulateur.title}" créé avec succès (id: ${simulateur.id}, slug: ${simulateur.slug})`)
+    console.log(
+      `Simulateur "${simulateur.title}" créé avec succès (id: ${simulateur.id}, slug: ${simulateur.slug})`
+    )
   }
 }

@@ -7,11 +7,13 @@
 @each $bp, $widths in dsfr.$breakpoints {
   @include dsfr.respond-from($bp) {
     @each $key, $value in dsfr.$spacings {
-      .fr-pt-#{$bp}-#{$key}, .fr-py-#{$bp}-#{$key} {
+      .fr-pt-#{$bp}-#{$key},
+      .fr-py-#{$bp}-#{$key} {
         padding-top: $value !important;
       }
 
-      .fr-pb-#{$bp}-#{$key}, .fr-py-#{$bp}-#{$key} {
+      .fr-pb-#{$bp}-#{$key},
+      .fr-py-#{$bp}-#{$key} {
         padding-bottom: $value !important;
       }
     }

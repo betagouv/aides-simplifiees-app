@@ -2,6 +2,7 @@ import { HttpContext } from '@adonisjs/core/http'
 import axios from 'axios'
 import matomoConfig from '#config/matomo'
 import { dd } from '@adonisjs/core/services/dumper'
+import env from '#start/env'
 
 // Configuration constants
 const WEEKS_TO_FETCH = 4
@@ -58,12 +59,12 @@ export default class ApiController {
       const allWeekEnds: string[] = []
       for (let i = 0; i < WEEKS_TO_FETCH; i++) {
         const weekEnd = new Date(lastSunday)
-        weekEnd.setDate(lastSunday.getDate() - (7 * i))
+        weekEnd.setDate(lastSunday.getDate() - 7 * i)
         allWeekEnds.push(weekEnd.toISOString().split('T')[0])
       }
 
       // Add retry logic for API calls
-      async function fetchWithRetry (params: any, maxRetries = 3) {
+      async function fetchWithRetry(params: any, maxRetries = 3) {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
           try {
             console.error(url)
@@ -71,33 +72,38 @@ export default class ApiController {
               ...params,
               token_auth: MATOMO_TOKEN,
             })
-            const response = await axios.post(url, {
-              ...params,
-              token_auth: MATOMO_TOKEN
-            }, {
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded'
+            const axiosResponse = await axios.post(
+              url,
+              {
+                ...params,
+                token_auth: MATOMO_TOKEN,
               },
-              transformRequest: [(data) => {
-                return Object.keys(data)
-                  .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
-                  .join('&')
-              }],
-              validateStatus (status) {
-                return status < 500
-              },
-              timeout: 5000 // Increased timeout to 5 seconds
-            })
+              {
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                transformRequest: [
+                  (data) => {
+                    return Object.keys(data)
+                      .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
+                      .join('&')
+                  },
+                ],
+                validateStatus(status) {
+                  return status < 500
+                },
+                timeout: 5000, // Increased timeout to 5 seconds
+              }
+            )
 
-            return response
-          }
-          catch (error: any) {
+            return axiosResponse
+          } catch (error: any) {
             if (attempt === maxRetries) {
               throw error
             }
             console.warn(`Attempt ${attempt} failed, retrying...`, error.message)
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
+            await new Promise((resolve) => setTimeout(resolve, 1000 * attempt))
           }
         }
         throw new Error('All retry attempts failed')
@@ -207,16 +213,14 @@ export default class ApiController {
             console.warn(action)
             if (isStart) {
               statistics[simulatorId].starts += action.nb_events || 1
-            }
-            else if (isSubmit) {
+            } else if (isSubmit) {
               statistics[simulatorId].completions += action.nb_events || 1
-            }
-            else if (isEligibility) {
+            } else if (isEligibility) {
               statistics[simulatorId].eligibilities += action.nb_visits || 1
             }
 
             // Update weekly stats
-            let weekStat = statistics[simulatorId].weeklyStats.find(w => w.week === weekKey)
+            let weekStat = statistics[simulatorId].weeklyStats.find((w) => w.week === weekKey)
             if (!weekStat) {
               weekStat = { week: weekKey, completions: 0, eligibilities: 0, starts: 0 }
               statistics[simulatorId].weeklyStats.push(weekStat)
@@ -224,11 +228,9 @@ export default class ApiController {
 
             if (isStart) {
               weekStat.starts = (weekStat.starts || 0) + (action.nb_events || 1)
-            }
-            else if (isSubmit) {
+            } else if (isSubmit) {
               weekStat.completions += action.nb_events || 1
-            }
-            else if (isEligibility) {
+            } else if (isEligibility) {
               weekStat.eligibilities += action.nb_visits || 1
             }
           }
@@ -276,6 +278,37 @@ export default class ApiController {
         error: 'Failed to fetch statistics',
         details: error.message,
       })
+    }
+  }
+
+  public async autocompleteCommunes({ request, response }: HttpContext) {
+    // Get query parameter from the request
+    const q = request.qs().q as string
+
+    if (!q) {
+      return response.status(200).json({ suggestions: [] })
+    }
+
+    // Get leximpact URL from environment
+    const leximpactUrl = env.get('LEXIMPACT_URL')
+
+    try {
+      // Make request to leximpact service
+      const apiResponse = await axios.get(
+        `${leximpactUrl}/communes/autocomplete?q=${encodeURIComponent(q)}&field=commune&field=distributions_postales`,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'X-Client-ID': 'aides-simplifiees',
+          },
+        }
+      )
+
+      // Return the result
+      return response.status(200).json(apiResponse.data)
+    } catch (error) {
+      console.error('Error fetching communes:', error)
+      return response.status(200).json({ suggestions: [] })
     }
   }
 }

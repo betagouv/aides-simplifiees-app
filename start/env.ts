@@ -44,4 +44,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   MATOMO_URL: Env.schema.string.optional(),
   MATOMO_TOKEN: Env.schema.string.optional(),
   MATOMO_SITE_ID: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for external API services
+  |----------------------------------------------------------
+  */
+  LEXIMPACT_URL: Env.schema.string(),
 })

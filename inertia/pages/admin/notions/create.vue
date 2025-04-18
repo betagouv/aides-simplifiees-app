@@ -10,7 +10,7 @@ const form = useForm({
   title: '',
   description: '',
   content: '',
-  category: ''
+  category: '',
 })
 
 const editorTab = ref('editor')
@@ -40,7 +40,7 @@ const handleSubmit = () => {
   <DefaultLayout>
     <BrandBackgroundContainer textured contrast>
       <SectionContainer type="page-header">
-        <h1 class="brand-contrast-text"><br/>Créer une notion</h1>
+        <h1 class="brand-contrast-text"><br />Créer une notion</h1>
       </SectionContainer>
     </BrandBackgroundContainer>
 
@@ -53,7 +53,7 @@ const handleSubmit = () => {
                 :links="[
                   { text: 'Administration', to: '/admin' },
                   { text: 'Notions', to: '/admin/notions' },
-                  { text: 'Nouvelle notion', to: '/admin/notions/create' }
+                  { text: 'Nouvelle notion', to: '/admin/notions/create' },
                 ]"
               />
             </div>
@@ -63,11 +63,7 @@ const handleSubmit = () => {
             <form @submit.prevent="handleSubmit">
               <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12">
-                  <DsfrInput
-                    v-model="form.title"
-                    label="Titre"
-                    required
-                  />
+                  <DsfrInput v-model="form.title" label="Titre" required />
                 </div>
               </div>
 
@@ -122,11 +118,7 @@ const handleSubmit = () => {
                     required
                   ></textarea>
 
-                  <div
-                    v-else
-                    class="markdown-preview fr-p-3w"
-                    v-html="previewHtml"
-                  ></div>
+                  <div v-else class="markdown-preview fr-p-3w" v-html="previewHtml"></div>
                 </div>
               </div>
 
@@ -140,11 +132,7 @@ const handleSubmit = () => {
                     class="fr-mr-2w"
                   />
 
-                  <DsfrButton
-                    type="submit"
-                    label="Enregistrer"
-                    :disabled="form.processing"
-                  />
+                  <DsfrButton type="submit" label="Enregistrer" :disabled="form.processing" />
                 </div>
               </div>
             </form>

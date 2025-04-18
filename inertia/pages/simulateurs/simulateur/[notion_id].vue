@@ -1,12 +1,8 @@
 <script lang="ts" setup>
 definePageMeta({
   layout: 'user-simulation',
-  middleware: [
-    'check-iframe-layout',
-    'load-simulateur',
-    'load-notion'
-  ],
-  validate: getContentRouteValidator(['notion_id', 'simulateur_id'])
+  middleware: ['check-iframe-layout', 'load-simulateur', 'load-notion'],
+  validate: getContentRouteValidator(['notion_id', 'simulateur_id']),
 })
 
 const route = useRoute()
@@ -23,12 +19,14 @@ setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Simulateurs', to: '/simulateurs' },
   { text: simulateurTitle, to: `/simulateurs/${simulateurId}#simulateur-title` },
-  { text: notionTitle, to: `/simulateurs/${simulateurId}/${notionId}#simulateur-title` }
+  { text: notionTitle, to: `/simulateurs/${simulateurId}/${notionId}#simulateur-title` },
 ])
 
 useSeoMeta({
   title: `Informations sur la notion "${notionTitle}" | Aides simplifiées`,
-  description: notion.description || `Découvrez toutes les informations sur la notion "${notionTitle}" pour vous accompagner dans vos démarches.`
+  description:
+    notion.description ||
+    `Découvrez toutes les informations sur la notion "${notionTitle}" pour vous accompagner dans vos démarches.`,
 })
 </script>
 

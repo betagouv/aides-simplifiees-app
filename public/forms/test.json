@@ -1,0 +1,106 @@
+{
+  "version": "1.2.0",
+  "forceRefresh": false,
+  "id": "demenagement-logement",
+  "title": "Test court",
+  "description": "Répondez à ces questions pour découvrir les aides au logement et déménagement auxquelles vous pourriez être éligible",
+  "steps": [
+    {
+      "id": "profil",
+      "title": "Votre profil",
+      "questions": [
+        {
+          "id": "statut-professionnel",
+          "title": "Êtes-vous :",
+          "description": "Sélectionnez votre situation actuelle",
+          "type": "radio",
+          "notion": {
+            "id": "logement-conventionne",
+            "buttonLabel": "En savoir plus"
+          },
+          "choices": [
+            {
+              "id": "etudiant",
+              "title": "En études ou en alternance"
+            },
+            {
+              "id": "actif",
+              "title": "Salarié(e) ou Indépendant(e)"
+            },
+            {
+              "id": "chomeur",
+              "title": "Inscrit(e) comme demandeur d'emploi"
+            },
+            {
+              "id": "retraite",
+              "title": "Retraité(e)"
+            },
+            {
+              "id": "inactif",
+              "title": "Autre"
+            }
+          ]
+        },
+        {
+          "id": "situation-familiale",
+          "title": "Votre situation familiale",
+          "description": "Sélectionnez votre situation actuelle",
+          "type": "radio",
+          "visibleWhen": "statut-professionnel=actif",
+          "notion": {
+            "id": "logement-conventionne",
+            "buttonLabel": "En savoir plus"
+          },
+          "choices": [
+            {
+              "id": "celibataire",
+              "title": "Célibataire"
+            },
+            {
+              "id": "marie",
+              "title": "Marié(e) ou Pacsé(e)"
+            },
+            {
+              "id": "divorce",
+              "title": "Divorcé(e) ou séparé(e)"
+            },
+            {
+              "id": "veuf",
+              "title": "Veuf(ve)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "logement",
+      "title": "Votre logement",
+      "questions": [
+        {
+          "id": "situation-logement",
+          "title": "Êtes-vous :",
+          "description": "Sélectionnez votre situation actuelle",
+          "type": "radio",
+          "choices": [
+            {
+              "id": "locataire",
+              "title": "Locataire (figurant sur le bail, en foyer ou en résidence)"
+            },
+            {
+              "id": "proprietaire",
+              "title": "Propriétaire ou en location-accession"
+            },
+            {
+              "id": "heberge",
+              "title": "Hébergé(e) chez vos parents, un particulier ou en logement de fonction"
+            },
+            {
+              "id": "sans-domicile",
+              "title": "Sans domicile stable"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2,11 +2,7 @@
 definePageMeta({
   layout: 'user-simulation',
   validate: getContentRouteValidator(['aide_id', 'simulateur_id']),
-  middleware: [
-    'check-iframe-layout',
-    'load-simulateur',
-    'load-aide'
-  ],
+  middleware: ['check-iframe-layout', 'load-simulateur', 'load-aide'],
 })
 
 const route = useRoute()
@@ -25,12 +21,14 @@ setBreadcrumbs([
   { text: 'Simulateurs', to: '/simulateurs' },
   { text: simulateurTitle, to: `/simulateurs/${simulateurId}#simulateur-title` },
   { text: 'Résultats', to: `/simulateurs/${simulateurId}/resultats#simulateur-title` },
-  { text: aideTitle, to: `/simulateurs/${simulateurId}/resultats/${aideId}#simulateur-title` }
+  { text: aideTitle, to: `/simulateurs/${simulateurId}/resultats/${aideId}#simulateur-title` },
 ])
 
 useSeoMeta({
   title: `Aide "${aideTitle}" | Aides simplifiées`,
-  description: aide.description || `Découvrez toutes les informations sur l'aide "${aideTitle}" pour vous accompagner dans vos démarches.`
+  description:
+    aide.description ||
+    `Découvrez toutes les informations sur l'aide "${aideTitle}" pour vous accompagner dans vos démarches.`,
 })
 </script>
 

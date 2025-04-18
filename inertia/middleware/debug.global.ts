@@ -4,8 +4,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
       ...to,
       query: {
         ...to.query,
-        debug: from.query.debug
-      }
+        debug: from.query.debug,
+      },
     })
   }
 })

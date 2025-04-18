@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.4.0
+* Imports des utils et affichage du formulaire
+* Détail :
+  * Import des utils
+  * Utilisation de prettier pour la mise en forme des fichiers
+  * Ajout des questions et type de questions
+  * Chargement dynamique du formulaire et correctif des stores
+
 ## 0.3.0
 * Intégration du login et de l'interface d'administration
 * Détail :

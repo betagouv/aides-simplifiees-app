@@ -37,7 +37,7 @@ const hasFieldErrors = computed(() => {
 
 const form = useForm({
   email: oldValues.value.email || '',
-  password: ''
+  password: '',
 })
 
 const submitForm = () => {
@@ -48,7 +48,10 @@ const submitForm = () => {
 </script>
 
 <template>
-  <Head title="Connexion | Aides simplifiées" description="Connectez-vous à votre compte Aides simplifiées pour accéder à votre espace administrateur." />
+  <Head
+    title="Connexion | Aides simplifiées"
+    description="Connectez-vous à votre compte Aides simplifiées pour accéder à votre espace administrateur."
+  />
   <DefaultLayout>
     <BrandBackgroundContainer textured blue>
       <SectionContainer>
@@ -87,7 +90,9 @@ const submitForm = () => {
                           type="password"
                           required
                         />
-                        <p v-if="allErrors.password" class="fr-error-text">{{ allErrors.password }}</p>
+                        <p v-if="allErrors.password" class="fr-error-text">
+                          {{ allErrors.password }}
+                        </p>
                       </div>
 
                       <div class="fr-fieldset__element fr-mt-5w">

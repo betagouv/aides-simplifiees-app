@@ -2,7 +2,6 @@
 import type { DsfrCardProps } from '@gouvminint/vue-dsfr'
 import TypeAideTag from './TypeAideTag.vue'
 
-
 type AideCardProps = {
   link: string
   title: string
@@ -32,20 +31,11 @@ defineProps<AideCardProps>()
       <div class="brand-aide-card__details">
         <div class="brand-aide-card__details-left">
           <ul class="fr-tags-group">
-            <TypeAideTag
-              :size="size"
-              :type="typeAide"
-            />
+            <TypeAideTag :size="size" :type="typeAide" />
           </ul>
         </div>
-        <div
-          v-if="montant"
-          class="brand-aide-card__details-right"
-        >
-          <AideMontant
-            :montant="montant"
-            :size="size"
-          />
+        <div v-if="montant" class="brand-aide-card__details-right">
+          <AideMontant :montant="montant" :size="size" />
         </div>
       </div>
     </template>
@@ -60,6 +50,6 @@ defineProps<AideCardProps>()
 }
 
 :deep(.fr-card__detail svg) {
-  margin-right: .5rem;
+  margin-right: 0.5rem;
 }
 </style>

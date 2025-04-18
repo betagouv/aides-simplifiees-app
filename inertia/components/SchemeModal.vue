@@ -9,7 +9,7 @@ import { useSchemeStore } from '../stores/scheme'
 // Default values for SSR
 const defaultPreferences = {
   scheme: 'light',
-  theme: 'light'
+  theme: 'light',
 }
 
 // Only use the store in browser environment
@@ -19,7 +19,7 @@ const { preferences, isModalOpen } = isBrowser
   ? storeToRefs(schemeStore!)
   : {
       preferences: ref(defaultPreferences),
-      isModalOpen: ref(false)
+      isModalOpen: ref(false),
     }
 
 const options = [

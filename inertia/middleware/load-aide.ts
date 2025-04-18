@@ -5,21 +5,19 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   const aideId = to.params.aide_id as string
   const { data, error } = await useAsyncData(`aide-${aideId}`, () => {
-    return queryCollection('aides')
-      .where('stem', '=', `aides/${aideId}`)
-      .first()
+    return queryCollection('aides').where('stem', '=', `aides/${aideId}`).first()
   })
   if (!data.value) {
     throw createError({
       statusCode: 404,
-      message: 'Aide non trouvée'
+      message: 'Aide non trouvée',
     })
   }
   if (error.value) {
-    console.error('Erreur lors de la récupération de l\'aide :', error)
+    console.error("Erreur lors de la récupération de l'aide :", error)
     throw createError({
       statusCode: 500,
-      message: 'Erreur lors de la récupération de l\'aide'
+      message: "Erreur lors de la récupération de l'aide",
     })
   }
 })

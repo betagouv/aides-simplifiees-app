@@ -24,15 +24,24 @@ const autocompleteFunctions: Record<string, Function> = {
       if (!response.ok) throw new Error('Erreur lors de la recherche')
 
       const data = await response.json()
-      return data.map((item: any) => ({
-        value: item.code,
-        label: `${item.nom} (${item.code})`,
-      }))
+
+      // Handle the structure that comes from our API
+      if (data.suggestions && Array.isArray(data.suggestions)) {
+        return data.suggestions.map((item: any) => {
+          const postalCode = item.distributions_postales?.[0]?.code_postal || ''
+          return {
+            value: item.code,
+            text: `${postalCode} - ${item.libelle}`,
+          }
+        })
+      }
+
+      return []
     } catch (error) {
-      console.error('Erreur d\'autocomplétion:', error)
+      console.error("Erreur d'autocomplétion:", error)
       return []
     }
-  }
+  },
 }
 
 // Configurations d'autocomplétion
@@ -42,7 +51,7 @@ const autocompleteConfigs: Record<string, any> = {
     noResultsText: 'Aucune commune trouvée',
     loadingText: 'Recherche en cours...',
     minChars: 2,
-  }
+  },
 }
 
 const props = defineProps<{
@@ -57,7 +66,9 @@ const surveysStore = useSurveysStore()
 const currentQuestion = computed(() => surveysStore.getCurrentQuestion(simulateurId.value))
 const surveySchema = computed(() => surveysStore.getSchema(simulateurId.value))
 const isLastQuestion = computed(() => surveysStore.isLastQuestion(simulateurId.value))
-const areAllRequiredQuestionsAnswered = computed(() => surveysStore.areAllRequiredQuestionsAnswered(simulateurId.value))
+const areAllRequiredQuestionsAnswered = computed(() =>
+  surveysStore.areAllRequiredQuestionsAnswered(simulateurId.value)
+)
 const currentStepIndex = computed(() => surveysStore.getCurrentStepIndex(simulateurId.value))
 
 // Fonction pour vérifier si une réponse est valide
@@ -86,15 +97,20 @@ const hasValidAnswer = computed(() => {
   if (!currentQuestion.value) {
     return false
   }
-  return isAnswerValid(currentQuestion.value, surveysStore.getAnswer(simulateurId.value, currentQuestion.value.id))
+  return isAnswerValid(
+    currentQuestion.value,
+    surveysStore.getAnswer(simulateurId.value, currentQuestion.value.id)
+  )
 })
 
 const stepTitles = computed(() => {
-  return surveySchema.value?.steps
-    .map((step) => {
-      return step.title
-    })
-    .filter(Boolean) || []
+  return (
+    surveySchema.value?.steps
+      .map((step) => {
+        return step.title
+      })
+      .filter(Boolean) || []
+  )
 })
 
 // Get autocomplete function for current question
@@ -111,7 +127,7 @@ const autocompleteConfig = computed(() => {
     // Merge default config with any custom config from question
     return {
       ...autocompleteConfigs[currentQuestion.value.autocompleteFunction],
-      ...currentQuestion.value.autocompleteConfig || {},
+      ...(currentQuestion.value.autocompleteConfig || {}),
     }
   }
   return undefined
@@ -119,7 +135,7 @@ const autocompleteConfig = computed(() => {
 
 // Heading levels based on iframe context
 const { isIframe } = useIframeDisplay()
-const surveyH2 = computed(() => isIframe.value ? 'h2' : 'h3')
+const surveyH2 = computed(() => (isIframe.value ? 'h2' : 'h3'))
 
 // Focus on the question container after navigation
 const questionContainer = ref<HTMLElement | null>(null)
@@ -141,20 +157,24 @@ onMounted(() => {
   focusRenderedQuestion()
 })
 
-onKeyDown('Enter', (event: KeyboardEvent) => {
-  if (hasValidAnswer.value && !isLastQuestion.value) {
-    // Only trigger if the source is not a button or textarea or [type="search"] input or select
-    if (
-      !(event.target instanceof HTMLButtonElement)
-      && !(event.target instanceof HTMLTextAreaElement)
-      && !(event.target instanceof HTMLInputElement && event.target.type === 'search')
-      && !(event.target instanceof HTMLSelectElement)
-    ) {
-      event.preventDefault()
-      handleNext()
+onKeyDown(
+  'Enter',
+  (event: KeyboardEvent) => {
+    if (hasValidAnswer.value && !isLastQuestion.value) {
+      // Only trigger if the source is not a button or textarea or [type="search"] input or select
+      if (
+        !(event.target instanceof HTMLButtonElement) &&
+        !(event.target instanceof HTMLTextAreaElement) &&
+        !(event.target instanceof HTMLInputElement && event.target.type === 'search') &&
+        !(event.target instanceof HTMLSelectElement)
+      ) {
+        event.preventDefault()
+        handleNext()
+      }
     }
-  }
-}, { target: questionContainer })
+  },
+  { target: questionContainer }
+)
 
 // Navigate to next question or submit form
 function handleNext() {
@@ -169,8 +189,7 @@ function handlePrevious() {
   const wentToPrev = surveysStore.goToPreviousQuestion(simulateurId.value)
   if (wentToPrev) {
     focusRenderedQuestion()
-  }
-  else {
+  } else {
     surveysStore.setShowWelcomeScreen(simulateurId.value, true)
   }
 }
@@ -190,7 +209,7 @@ const questionModel = customRef((track, trigger) => {
       }
       surveysStore.setAnswer(simulateurId.value, currentQuestion.value?.id, value)
       trigger()
-    }
+    },
   }
 })
 
@@ -198,14 +217,16 @@ const questionComponent = computed(() => {
   if (!currentQuestion.value) {
     return undefined
   }
-  return {
-    radio: RadioButtonQuestion,
-    boolean: BooleanQuestion,
-    checkbox: MultiSelectQuestion,
-    number: NumberQuestion,
-    date: DateQuestion,
-    combobox: ComboboxQuestion,
-  }[currentQuestion.value.type] || ComboboxQuestion
+  return (
+    {
+      radio: RadioButtonQuestion,
+      boolean: BooleanQuestion,
+      checkbox: MultiSelectQuestion,
+      number: NumberQuestion,
+      date: DateQuestion,
+      combobox: ComboboxQuestion,
+    }[currentQuestion.value.type] || ComboboxQuestion
+  )
 })
 
 function handleComplete() {
@@ -229,11 +250,7 @@ function navigateToPage(path: string) {
       aria-atomic="true"
     />
 
-    <DsfrStepper
-      v-if="currentStepIndex"
-      :steps="stepTitles"
-      :current-step="currentStepIndex"
-    />
+    <DsfrStepper v-if="currentStepIndex" :steps="stepTitles" :current-step="currentStepIndex" />
     <div
       v-if="surveySchema && currentQuestion"
       ref="questionContainer"
@@ -241,14 +258,13 @@ function navigateToPage(path: string) {
       tabindex="-1"
       class="fr-card fr-p-4w fr-mb-3w"
     >
-      <hgroup
-        :id="`question-${currentQuestion.id}`"
-        class="fr-mb-3w"
-      >
+      <hgroup :id="`question-${currentQuestion.id}`" class="fr-mb-3w">
         <component
           :is="surveyH2"
           class="fr-h5 fr-mb-1w"
-          :aria-describedby="currentQuestion?.description ? `question-description-${currentQuestion.id}` : undefined"
+          :aria-describedby="
+            currentQuestion?.description ? `question-description-${currentQuestion.id}` : undefined
+          "
         >
           {{ currentQuestion?.title }}
         </component>
@@ -267,9 +283,13 @@ function navigateToPage(path: string) {
         secondary
         icon-right
         class="fr-mb-2w"
-        @click="() => {
-          navigateToPage(`/simulateurs/${simulateurId}/${currentQuestion?.notion.id}#simulateur-title`)
-        }"
+        @click="
+          () => {
+            navigateToPage(
+              `/simulateurs/${simulateurId}/${currentQuestion?.notion.id}#simulateur-title`
+            )
+          }
+        "
       />
       <component
         :is="questionComponent"
@@ -284,33 +304,36 @@ function navigateToPage(path: string) {
       size="lg"
       inline-layout-when="md"
       align="right"
-      :buttons="([
-        {
-          label: 'Récapitulatif',
-          secondary: true,
-          icon: { name: 'ri:menu-line', ssr: true },
-          onClick: () => navigateToPage(`/simulateurs/${simulateurId}/recapitulatif#simulateur-title`),
-        },
-        {
-          label: 'Précédent',
-          secondary: true,
-          icon: { name: 'ri:arrow-left-line', ssr: true },
-          onClick: handlePrevious,
-        },
-        !isLastQuestion && {
-          label: 'Suivant',
-          iconRight: true,
-          icon: { name: 'ri:arrow-right-line', ssr: true },
-          disabled: !hasValidAnswer,
-          onClick: handleNext,
-        },
-        areAllRequiredQuestionsAnswered && {
-          label: 'Terminer',
-          iconRight: true,
-          icon: { name: 'ri:arrow-right-line', ssr: true },
-          onClick: handleComplete,
-        },
-      ].filter(Boolean) as DsfrButtonProps[])"
+      :buttons="
+        [
+          {
+            label: 'Récapitulatif',
+            secondary: true,
+            icon: { name: 'ri:menu-line', ssr: true },
+            onClick: () =>
+              navigateToPage(`/simulateurs/${simulateurId}/recapitulatif#simulateur-title`),
+          },
+          {
+            label: 'Précédent',
+            secondary: true,
+            icon: { name: 'ri:arrow-left-line', ssr: true },
+            onClick: handlePrevious,
+          },
+          !isLastQuestion && {
+            label: 'Suivant',
+            iconRight: true,
+            icon: { name: 'ri:arrow-right-line', ssr: true },
+            disabled: !hasValidAnswer,
+            onClick: handleNext,
+          },
+          areAllRequiredQuestionsAnswered && {
+            label: 'Terminer',
+            iconRight: true,
+            icon: { name: 'ri:arrow-right-line', ssr: true },
+            onClick: handleComplete,
+          },
+        ].filter(Boolean) as DsfrButtonProps[]
+      "
     />
   </div>
 </template>

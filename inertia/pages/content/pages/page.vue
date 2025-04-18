@@ -8,7 +8,7 @@ import BreadcrumbSectionContainer from '../../../components/layout/BreadcrumbSec
 
 const props = defineProps({
   page: Object,
-  content: String
+  content: String,
 })
 
 onMounted(() => {
@@ -16,22 +16,26 @@ onMounted(() => {
   const { setBreadcrumbs } = useBreadcrumbStore()
   setBreadcrumbs([
     { text: 'Accueil', to: '/' },
-    { text: props.page?.title || props.page?.slug, to: `/content/${props.page?.slug}` }
+    { text: props.page?.title || props.page?.slug, to: `/content/${props.page?.slug}` },
   ])
 })
 </script>
 
 <template>
-  <Head :title="`${page?.title} | Aides simplifiées`" :description="page?.meta_description ? `${page.meta_description.slice(0, 155)}...` : `Informations sur ${page?.title || page?.slug}`" />
+  <Head
+    :title="`${page?.title} | Aides simplifiées`"
+    :description="
+      page?.meta_description
+        ? `${page.meta_description.slice(0, 155)}...`
+        : `Informations sur ${page?.title || page?.slug}`
+    "
+  />
   <DefaultLayout>
     <template v-if="!page">
       <div>Contenu introuvable</div>
     </template>
     <template v-else>
-      <BrandBackgroundContainer
-        textured
-        subtle
-      >
+      <BrandBackgroundContainer textured subtle>
         <BreadcrumbSectionContainer />
         <SectionContainer type="page-header">
           <article>
@@ -39,7 +43,6 @@ onMounted(() => {
               <h1>{{ page.title }}</h1>
             </header>
             <div v-html="content" />
-
           </article>
         </SectionContainer>
       </BrandBackgroundContainer>
@@ -70,7 +73,8 @@ onMounted(() => {
   }
 }
 
-:deep(th), :deep(td) {
+:deep(th),
+:deep(td) {
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-default-grey);
 }

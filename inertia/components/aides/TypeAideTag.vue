@@ -1,13 +1,16 @@
 <script lang="ts" setup>
 import type { DsfrTagProps } from '@gouvminint/vue-dsfr'
 
-const props = withDefaults(defineProps<
-  Omit<DsfrTagProps, 'icon'> & {
-    type?: TypeAide
+const props = withDefaults(
+  defineProps<
+    Omit<DsfrTagProps, 'icon'> & {
+      type?: TypeAide
+    }
+  >(),
+  {
+    type: 'pret',
   }
->(), {
-  type: 'pret',
-})
+)
 interface TypeAideTag {
   type: TypeAide
   iconName: string

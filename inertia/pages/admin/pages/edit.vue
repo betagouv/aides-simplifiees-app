@@ -9,10 +9,10 @@ import { marked } from 'marked'
 
 const props = defineProps<{
   page: {
-    id: number,
-    title: string,
-    slug: string,
-    content: string,
+    id: number
+    title: string
+    slug: string
+    content: string
     metaDescription: string | null
   }
 }>()
@@ -20,7 +20,7 @@ const props = defineProps<{
 const form = useForm({
   title: props.page.title,
   content: props.page.content,
-  metaDescription: props.page.metaDescription || ''
+  metaDescription: props.page.metaDescription || '',
 })
 
 const editorTab = ref('editor')
@@ -50,7 +50,7 @@ const handleSubmit = () => {
   <DefaultLayout>
     <BrandBackgroundContainer textured contrast>
       <SectionContainer type="page-header">
-        <h1 class="brand-contrast-text"><br>Modifier la page</h1>
+        <h1 class="brand-contrast-text"><br />Modifier la page</h1>
       </SectionContainer>
     </BrandBackgroundContainer>
 
@@ -63,7 +63,7 @@ const handleSubmit = () => {
                 :links="[
                   { text: 'Administration', to: '/admin' },
                   { text: 'Pages', to: '/admin/pages' },
-                  { text: `Modifier - ${page.title}`, to: `/admin/pages/${page.id}/edit` }
+                  { text: `Modifier - ${page.title}`, to: `/admin/pages/${page.id}/edit` },
                 ]"
               />
             </div>
@@ -73,18 +73,16 @@ const handleSubmit = () => {
             <form @submit.prevent="handleSubmit">
               <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-md-8">
-                  <DsfrInput
-                    v-model="form.title"
-                    label="Titre"
-                    required
-                  />
+                  <DsfrInput v-model="form.title" label="Titre" required />
                 </div>
 
                 <div class="fr-col-12 fr-col-md-4">
                   <div class="fr-input-group">
                     <label class="fr-label">Slug</label>
                     <div class="fr-input">{{ page.slug }}</div>
-                    <p class="fr-hint-text">Le slug est généré automatiquement à partir du titre initial</p>
+                    <p class="fr-hint-text">
+                      Le slug est généré automatiquement à partir du titre initial
+                    </p>
                   </div>
                 </div>
               </div>
@@ -130,11 +128,7 @@ const handleSubmit = () => {
                     required
                   ></textarea>
 
-                  <div
-                    v-else
-                    class="markdown-preview fr-p-3w"
-                    v-html="previewHtml"
-                  ></div>
+                  <div v-else class="markdown-preview fr-p-3w" v-html="previewHtml"></div>
                 </div>
               </div>
 
@@ -148,11 +142,7 @@ const handleSubmit = () => {
                     class="fr-mr-2w"
                   />
 
-                  <DsfrButton
-                    type="submit"
-                    label="Enregistrer"
-                    :disabled="form.processing"
-                  />
+                  <DsfrButton type="submit" label="Enregistrer" :disabled="form.processing" />
                 </div>
               </div>
             </form>

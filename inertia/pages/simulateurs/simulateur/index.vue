@@ -11,7 +11,7 @@ definePageMeta({
       const shouldForceResume = [
         'simulateurs-simulateur_id-recapitulatif',
         'simulateurs-simulateur_id-notion_id',
-        'simulateurs-simulateur_id-resultats'
+        'simulateurs-simulateur_id-resultats',
       ].includes(fromName)
 
       /**
@@ -36,9 +36,9 @@ definePageMeta({
         delete query.resume
         return navigateTo({ path: to.path, query, hash: to.hash })
       }
-    }
+    },
   ],
-  validate: getContentRouteValidator('simulateur_id')
+  validate: getContentRouteValidator('simulateur_id'),
 })
 
 const route = useRoute()
@@ -51,12 +51,14 @@ const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Simulateurs', to: '/simulateurs' },
-  { text: simulateurTitle, to: `/simulateurs/${simulateurId}#simulateur-title` }
+  { text: simulateurTitle, to: `/simulateurs/${simulateurId}#simulateur-title` },
 ])
 
 useSeoMeta({
   title: `Simulateur "${simulateurTitle}" | Aides simplifiées`,
-  description: simulateur?.description || `En quelques clics sur le simulateur "${simulateurTitle}", découvrez si vous pouvez bénéficier d'aides financières.`
+  description:
+    simulateur?.description ||
+    `En quelques clics sur le simulateur "${simulateurTitle}", découvrez si vous pouvez bénéficier d'aides financières.`,
 })
 
 // Load iframe-resizer script when in iframe mode

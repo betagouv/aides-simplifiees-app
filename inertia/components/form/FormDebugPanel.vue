@@ -12,34 +12,18 @@ const progress = computed(() => surveysStore.getProgress(simulateurId.value))
 </script>
 
 <template>
-  <div
-    class="debug-panel fr-p-2w"
-  >
-    <h3 class="fr-h5 fr-mb-1w">
-      Inspecteur du formulaire
-    </h3>
+  <div class="debug-panel fr-p-2w">
+    <h3 class="fr-h5 fr-mb-1w">Inspecteur du formulaire</h3>
     <div class="fr-text--sm">
-      <div v-if="simulateurId">
-        <strong>Simulateur:</strong> {{ simulateurId }}
-      </div>
-      <div>
-        <strong>Étape actuelle :</strong> {{ currentStepId }}
-      </div>
-      <div>
-        <strong>Question courante :</strong> {{ currentQuestionId }}
-      </div>
-      <div>
-        <strong>Progression :</strong> {{ progress }}%
-      </div>
+      <div v-if="simulateurId"><strong>Simulateur:</strong> {{ simulateurId }}</div>
+      <div><strong>Étape actuelle :</strong> {{ currentStepId }}</div>
+      <div><strong>Question courante :</strong> {{ currentQuestionId }}</div>
+      <div><strong>Progression :</strong> {{ progress }}%</div>
     </div>
 
-    <div
-      v-if="groupedQuestions.length"
-    >
+    <div v-if="groupedQuestions.length">
       <div class="debug-panel__questions-header fr-mb-3v">
-        <h4 class="fr-h6 fr-mb-0">
-          Questions
-        </h4>
+        <h4 class="fr-h6 fr-mb-0">Questions</h4>
         <div class="debug-panel__legend fr-text--xs fr-mb-0">
           <span class="debug-panel__legend-item debug-panel__question--current">courante</span>
           <span class="debug-panel__legend-item debug-panel__question--invisible">masquée</span>

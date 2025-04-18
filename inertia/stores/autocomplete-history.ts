@@ -1,3 +1,6 @@
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+
 export const useAutoCompleteHistoryStore = defineStore('autocomplete-history', () => {
   const history = ref<{
     [questionId: string]: {

@@ -9,15 +9,15 @@ import Survey from '../../components/form/Survey.vue'
 // Récupérer les données du simulateur depuis les props
 const props = defineProps<{
   simulateur: {
-    id: number,
-    slug: string,
-    title: string,
-    description: string,
-    shortTitle: string,
-    pictogramPath: string,
-    status: 'published' | 'draft',
+    id: number
+    slug: string
+    title: string
+    description: string
+    shortTitle: string
+    pictogramPath: string
+    status: 'published' | 'draft'
     builtJson: string
-  },
+  }
   simulateurJson: Record<string, any>
 }>()
 
@@ -34,11 +34,9 @@ onMounted(() => {
   // Pour simuler l'effet du middleware de Nuxt pour la reprise auto
   const fromPathname = document.referrer
 
-  const shouldForceResume = [
-    '/recapitulatif',
-    '/notion',
-    '/resultats'
-  ].some(path => fromPathname.includes(path))
+  const shouldForceResume = ['/recapitulatif', '/notion', '/resultats'].some((path) =>
+    fromPathname.includes(path)
+  )
 
   if (shouldForceResume && !currentParams.value.has('resume')) {
     // Ajouter resume=true et rafraîchir la page
@@ -61,7 +59,7 @@ onMounted(() => {
   setBreadcrumbs([
     { text: 'Accueil', to: '/' },
     { text: 'Simulateurs', to: '/simulateurs' },
-    { text: props.simulateur.title, to: `/simulateurs/${props.simulateur.slug}#simulateur-title` }
+    { text: props.simulateur.title, to: `/simulateurs/${props.simulateur.slug}#simulateur-title` },
   ])
 
   // Script iframe-resizer pour mode iframe
@@ -78,12 +76,15 @@ onMounted(() => {
 <template>
   <Head
     :title="`Simulateur '${simulateur.title}' | Aides simplifiées`"
-    :description="simulateur.description || `En quelques clics sur le simulateur '${simulateur.title}', découvrez si vous pouvez bénéficier d'aides financières.`"
+    :description="
+      simulateur.description ||
+      `En quelques clics sur le simulateur '${simulateur.title}', découvrez si vous pouvez bénéficier d'aides financières.`
+    "
   />
   <DefaultLayout>
     <div id="simulateur-title"></div>
     <template v-if="simulateur">
-      <Survey v-if="true" :simulateur-id="simulateur.slug" />
+      <Survey :simulateur-id="simulateur.slug" />
     </template>
   </DefaultLayout>
 </template>

@@ -8,21 +8,21 @@ Le **responsable de traitement des données** est la **DINUM**, représentée pa
 
 ## Pourquoi et comment vos données à caractère personnel sont traitées ?
 
-| **Données**              | **Finalité poursuivie** | **Fondement juridique** | **Durées de conservation** | **Destinataires** |
-|--------------------------|-------------------------|-------------------------|----------------------------|-------------------|
-| **Date de naissance**    | Proposer l’aide adéquate en fonction de l’âge de la personne concernée et calculer le montant adéquat | Mission d’intérêt public relevant de la compétence de la DINUM (article 6 du décret n° 2019-1088 du 25 octobre 2019) | Les données sont supprimées tous les deux mois | Les membres habilités de l’équipe aides simplifiées |
-| **Adresse courriel**     | Répondre à toute demande d’information ou d’assistance notamment pour intégrer le simulateur via API | Mission d’intérêt public relevant de la compétence de la DINUM (article 6 du décret n° 2019-1088 du 25 octobre 2019) | 6 mois à partir du dernier contact avec la personne concernée | Les membres habilités de l’équipe aides simplifiées |
-| **Adresse courriel, champs libres** | Proposer aux personnes concernées ayant répondu au questionnaire de satisfaction d’être contactées | Mission d’intérêt public relevant de la compétence de la DINUM (article 6 du décret n° 2019-1088 du 25 octobre 2019) | 6 mois à partir du dernier contact avec la personne concernée | Les membres habilités de l’équipe aides simplifiées |
+| **Données**                         | **Finalité poursuivie**                                                                               | **Fondement juridique**                                                                                              | **Durées de conservation**                                    | **Destinataires**                                   |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------- |
+| **Date de naissance**               | Proposer l’aide adéquate en fonction de l’âge de la personne concernée et calculer le montant adéquat | Mission d’intérêt public relevant de la compétence de la DINUM (article 6 du décret n° 2019-1088 du 25 octobre 2019) | Les données sont supprimées tous les deux mois                | Les membres habilités de l’équipe aides simplifiées |
+| **Adresse courriel**                | Répondre à toute demande d’information ou d’assistance notamment pour intégrer le simulateur via API  | Mission d’intérêt public relevant de la compétence de la DINUM (article 6 du décret n° 2019-1088 du 25 octobre 2019) | 6 mois à partir du dernier contact avec la personne concernée | Les membres habilités de l’équipe aides simplifiées |
+| **Adresse courriel, champs libres** | Proposer aux personnes concernées ayant répondu au questionnaire de satisfaction d’être contactées    | Mission d’intérêt public relevant de la compétence de la DINUM (article 6 du décret n° 2019-1088 du 25 octobre 2019) | 6 mois à partir du dernier contact avec la personne concernée | Les membres habilités de l’équipe aides simplifiées |
 
 ---
 
 ## Qui nous aide à traiter vos données à caractère personnel ?
 
-| **Sous-traitant** | **Pays destinataire** | **Traitement réalisé** | **Garanties** |
-|-------------------|----------------------|----------------------|-------------|
-| **Scalingo** | France | Hébergement des données | [Contrat de gestion des traitements de données personnelles](https://scalingo.com/fr/contrat-gestion-traitements-donnees-personnelles) |
-| **Tally** | Belgique | Réponses au questionnaire de satisfaction | [Accord de traitement des données](https://tally.so/help/data-processing-agreement) |
-| **Crisp** | France | Gestion du support | [Politique de confidentialité](https://crisp.chat/fr/privacy/) |
+| **Sous-traitant** | **Pays destinataire** | **Traitement réalisé**                    | **Garanties**                                                                                                                          |
+| ----------------- | --------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Scalingo**      | France                | Hébergement des données                   | [Contrat de gestion des traitements de données personnelles](https://scalingo.com/fr/contrat-gestion-traitements-donnees-personnelles) |
+| **Tally**         | Belgique              | Réponses au questionnaire de satisfaction | [Accord de traitement des données](https://tally.so/help/data-processing-agreement)                                                    |
+| **Crisp**         | France                | Gestion du support                        | [Politique de confidentialité](https://crisp.chat/fr/privacy/)                                                                         |
 
 ---
 

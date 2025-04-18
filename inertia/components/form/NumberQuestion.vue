@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { customRef } from 'vue'
+
 const props = defineProps<{
   question: SurveyQuestion
 }>()
@@ -15,7 +17,7 @@ if (props.question.default !== undefined) {
 /**
  * Prevent non-numeric characters from being entered
  */
-function onKeypress (e: KeyboardEvent) {
+function onKeypress(e: KeyboardEvent) {
   const chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
   if (!chars.includes(e.key)) {
     e.preventDefault()
@@ -27,15 +29,14 @@ function onKeypress (e: KeyboardEvent) {
  */
 const stringModel = customRef((track, trigger) => {
   return {
-    get () {
+    get() {
       return numberModel.value === undefined ? undefined : String(numberModel.value)
     },
-    set (value: string | undefined) {
+    set(value: string | undefined) {
       track()
       if (value === undefined || value === '') {
         numberModel.value = undefined
-      }
-      else {
+      } else {
         // Ensure the value is a valid number
         const num = Number(value)
         if (!Number.isNaN(num)) {

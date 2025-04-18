@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { DsfrHeader, DsfrFooter, DsfrSkipLinks, DsfrNavigation, DsfrNotice, DsfrFooterLinkList } from '@gouvminint/vue-dsfr'
+import {
+  DsfrHeader,
+  DsfrFooter,
+  DsfrSkipLinks,
+  DsfrNavigation,
+  DsfrNotice,
+  DsfrFooterLinkList,
+} from '@gouvminint/vue-dsfr'
 import { Link, router as inertiaRouter, usePage } from '@inertiajs/vue3'
 import SchemeModal from '../components/SchemeModal.vue'
 import { useSchemeStore } from '~/stores/scheme'
@@ -38,18 +45,20 @@ const createButtonLink = (label: string, path: string) => {
       if (isBrowser) {
         inertiaRouter.visit(path)
       }
-    }
+    },
   }
 }
 
 // Initialize with an empty array but with the correct type
-const afterMandatoryLinks = ref<Array<{
-  label: string,
-  button?: boolean,
-  class?: string,
-  onclick?: () => void,
-  to?: string
-}>>([]);
+const afterMandatoryLinks = ref<
+  Array<{
+    label: string
+    button?: boolean
+    class?: string
+    onclick?: () => void
+    to?: string
+  }>
+>([])
 
 // Update the current path when mounted and listen for changes
 onMounted(() => {
@@ -64,8 +73,8 @@ onMounted(() => {
     createButtonLink('Données personnelles', '/content/donnees-personnelles'),
     createButtonLink('Gestion des cookies', '/content/cookies'),
     createButtonLink('CGU', '/content/cgu'),
-    createButtonLink('Statistiques', '/statistiques')
-  ];
+    createButtonLink('Statistiques', '/statistiques'),
+  ]
 
   // Listen for Inertia navigation events
   const updatePath = () => {
@@ -139,17 +148,22 @@ const navItems = [
   },
 ]
 
-const noticeMessage = 'Ce site est en cours de développement. Certaines fonctionnalités peuvent ne pas être disponibles ou ne pas fonctionner correctement.'
+const noticeMessage =
+  'Ce site est en cours de développement. Certaines fonctionnalités peuvent ne pas être disponibles ou ne pas fonctionner correctement.'
 
 // Helper function to handle logout
 const handleLogout = () => {
   if (isBrowser) {
-    inertiaRouter.post('/logout', {}, {
-      onSuccess: () => {
-        // Forcer le rechargement complet de la page après la déconnexion
-        window.location.href = '/'
+    inertiaRouter.post(
+      '/logout',
+      {},
+      {
+        onSuccess: () => {
+          // Forcer le rechargement complet de la page après la déconnexion
+          window.location.href = '/'
+        },
       }
-    })
+    )
   }
 }
 
@@ -161,7 +175,7 @@ const quickLinks = computed(() => {
       icon: { name: 'ri-sun-line', ssr: true },
       button: true,
       onClick: openSchemeModal,
-    }
+    },
   ]
 
   if (isAuthenticated.value) {
@@ -194,41 +208,26 @@ const quickLinks = computed(() => {
     :quickLinks="quickLinks"
   >
     <template #service-title>
-      <Link
-        href="/"
-        class="fr-header__service-title"
-      >
-        aides simplifiées
-      </Link>
+      <Link href="/" class="fr-header__service-title"> aides simplifiées </Link>
     </template>
     <template #mainnav>
       <nav class="fr-nav" role="navigation" aria-label="Menu principal">
         <ul class="fr-nav__list">
-          <li
-            v-for="(item, index) in navItems"
-            :key="index"
-            class="fr-nav__item"
-          >
+          <li v-for="(item, index) in navItems" :key="index" class="fr-nav__item">
             <Link
               v-if="!item.target"
               :href="item.to"
               class="fr-nav__link"
               :class="{
                 'router-link-active': isActive(item.to),
-                'router-link-exact-active': isExactActive(item.to)
+                'router-link-exact-active': isExactActive(item.to),
               }"
               :aria-current="isActive(item.to) ? 'page' : undefined"
               data-testid="nav-inertia-link"
             >
               {{ item.text }}
             </Link>
-            <a
-              v-else
-              :href="item.to"
-              class="fr-nav__link"
-              :target="item.target"
-              rel="noopener"
-            >
+            <a v-else :href="item.to" class="fr-nav__link" :target="item.target" rel="noopener">
               {{ item.text }}
             </a>
           </li>
@@ -236,15 +235,8 @@ const quickLinks = computed(() => {
       </nav>
     </template>
   </DsfrHeader>
-  <DsfrNotice
-    v-if="noticeMessage"
-    :title="noticeMessage"
-  />
-  <main
-    id="content"
-    role="main"
-    tabindex="-1"
-  >
+  <DsfrNotice v-if="noticeMessage" :title="noticeMessage" />
+  <main id="content" role="main" tabindex="-1">
     <slot />
   </main>
 

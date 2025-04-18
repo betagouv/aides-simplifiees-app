@@ -14,12 +14,15 @@ Vous pouvez obtenir l'avance Loca-Pass si vous vous trouvez dans au moins 1 des 
 - Personne de moins de 30 ans et ayant un emploi non permanent (vacataire, contractuel, auxiliaire…), quel que soit le secteur (privé ou public).
 
 Pour en bénéficier, vous devez également :
+
 - Ne pas être fonctionnaire.
 
 Si vous êtes salarié ou préretraité d'une entreprise du secteur privé agricole, vous pouvez demander l'avance [Agri-Loca-Pass](https://www.actionlogement.fr/le-secteur-agricole).
 
 ## En savoir plus
+
 - [Service-public.fr](https://www.service-public.fr/particuliers/vosdroits/F18490)
 
 ## Faire une demande
+
 - [Plateforme de demande en ligne](https://locapass.actionlogement.fr/)

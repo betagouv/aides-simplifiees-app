@@ -8,42 +8,40 @@ import BreadcrumbSectionContainer from '../../../components/layout/BreadcrumbSec
 
 // Define props based on ContentController.showNotion
 const props = defineProps<{
-  type: string,
+  type: string
   item: {
-    id: string,
-    slug: string,
-    title: string,
-    description: string,
+    id: string
+    slug: string
+    title: string
+    description: string
     content: string
-  },
+  }
   html: string
 }>()
-
-
 
 onMounted(() => {
   const { setBreadcrumbs } = useBreadcrumbStore()
 
   setBreadcrumbs([
-      { text: 'Accueil', to: '/' },
-      { text: 'Notions', to: '/notions' },
-      { text: props.item.title, to: `/notions/${props.item.slug}` }
-    ])
+    { text: 'Accueil', to: '/' },
+    { text: 'Notions', to: '/notions' },
+    { text: props.item.title, to: `/notions/${props.item.slug}` },
+  ])
 })
 </script>
 
 <template>
   <Head
     :title="`Informations sur la ${type} '${item.title}' | Aides simplifiées`"
-    :description="item.description || `Découvrez toutes les informations sur la ${type} '${item.title}' pour vous accompagner dans vos démarches.`"
+    :description="
+      item.description ||
+      `Découvrez toutes les informations sur la ${type} '${item.title}' pour vous accompagner dans vos démarches.`
+    "
   />
   <DefaultLayout>
     <BrandBackgroundContainer>
       <BreadcrumbSectionContainer />
-      <SectionContainer
-        v-if="item"
-        type="page-header"
-      >
+      <SectionContainer v-if="item" type="page-header">
         <article>
           <header class="fr-mb-4w">
             <h1>
@@ -80,7 +78,8 @@ onMounted(() => {
   }
 }
 
-:deep(th), :deep(td) {
+:deep(th),
+:deep(td) {
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-default-grey);
 }

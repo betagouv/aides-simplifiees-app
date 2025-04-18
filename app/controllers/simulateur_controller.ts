@@ -34,7 +34,7 @@ export default class SimulateurController {
 
     return inertia.render('simulateurs/show', {
       simulateur,
-      simulateurJson: JSON.parse(simulateur.builtJson || '{}')
+      simulateurJson: JSON.parse(simulateur.builtJson || '{}'),
     })
   }
 
@@ -46,13 +46,13 @@ export default class SimulateurController {
       const builtJson = await this.simulateurService.generateBuiltJson(id)
       return response.json({
         success: true,
-        data: JSON.parse(builtJson)
+        data: JSON.parse(builtJson),
       })
     } catch (error) {
       return response.status(404).json({
         success: false,
         message: `Simulateur with id ${id} not found`,
-        error: error.message
+        error: error.message,
       })
     }
   }
@@ -64,13 +64,13 @@ export default class SimulateurController {
       return response.json({
         success: true,
         message: 'Sample simulateur created successfully',
-        simulateur
+        simulateur,
       })
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to create sample simulateur',
-        error: error.message
+        error: error.message,
       })
     }
   }

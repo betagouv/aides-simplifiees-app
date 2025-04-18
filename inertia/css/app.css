@@ -13,9 +13,8 @@ body {
 @forward 'dsfr-patch';
 
 :root {
-
-  --grey-1000: #FFFFFF;
-  --grey-850: #CECECE;
+  --grey-1000: #ffffff;
+  --grey-850: #cecece;
   --pink-macaron-850: #fcc0b4;
   /* Semantic tokens */
   --brand-contrast-text: var(--grey-1000);
@@ -50,14 +49,14 @@ html {
 
 .brand-title-gradient,
 .fr-header__service-title {
-  [data-fr-theme="light"] & {
-    background: linear-gradient(45deg, #2828B2 30%, #8F8FFC 100%);
+  [data-fr-theme='light'] & {
+    background: linear-gradient(45deg, #2828b2 30%, #8f8ffc 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  [data-fr-theme="dark"] & {
-    background: linear-gradient(45deg, #8585F6 30%, #CCCCFA 100%);
+  [data-fr-theme='dark'] & {
+    background: linear-gradient(45deg, #8585f6 30%, #ccccfa 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

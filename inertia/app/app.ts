@@ -43,7 +43,7 @@ createInertiaApp({
       props: {
         to: {
           type: [String, Object],
-          required: true
+          required: true,
         },
         // Add other props that RouterLink might have
         replace: Boolean,
@@ -55,12 +55,17 @@ createInertiaApp({
       setup(props, { slots }) {
         // Convert 'to' prop to 'href' for Inertia Link
         const href = typeof props.to === 'string' ? props.to : props.to.path || ''
-        return () => h(Link, {
-          href: href,
-          replace: props.replace,
-          // Map other relevant props here
-        }, slots)
-      }
+        return () =>
+          h(
+            Link,
+            {
+              href: href,
+              replace: props.replace,
+              // Map other relevant props here
+            },
+            slots
+          )
+      },
     })
     app.mount(el)
   },

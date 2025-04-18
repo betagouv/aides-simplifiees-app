@@ -1,18 +1,20 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
-  text?: string
-}>(), {
-  text: 'Chargement...'
-})
+withDefaults(
+  defineProps<{
+    text?: string
+  }>(),
+  {
+    text: 'Chargement...',
+  }
+)
 </script>
 
 <template>
   <div class="state-panel">
     <p class="loading-indicator fr-text--xl fr-mt-3w">
-      <span
-        class="fr-icon-refresh-line fr-icon fr-icon--md fr-mr-1v"
-        aria-hidden="true"
-      />{{ text }}
+      <span class="fr-icon-refresh-line fr-icon fr-icon--md fr-mr-1v" aria-hidden="true" />{{
+        text
+      }}
     </p>
   </div>
 </template>
@@ -34,7 +36,7 @@ withDefaults(defineProps<{
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .loading-indicator .fr-icon {

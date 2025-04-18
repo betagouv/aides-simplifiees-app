@@ -16,25 +16,47 @@ export default class NotionSeeder extends BaseSeeder {
     const rootDir = import.meta.dirname
 
     // Lecture des fichiers markdown
-    const handicapContent = fs.readFileSync(path.join(rootDir, 'content/notions/handicap.md'), 'utf-8')
-    const montantCaMicroEntrepriseContent = fs.readFileSync(path.join(rootDir, 'content/notions/montant-ca-micro-entreprise.md'), 'utf-8')
-    const montantChomageContent = fs.readFileSync(path.join(rootDir, 'content/notions/montant-chomage.md'), 'utf-8')
-    const montantParentsContent = fs.readFileSync(path.join(rootDir, 'content/notions/montant-parents.md'), 'utf-8')
-    const logementConventionneContent = fs.readFileSync(path.join(rootDir, 'content/notions/logement-conventionne.md'), 'utf-8')
-    const loyerMontantChargesContent = fs.readFileSync(path.join(rootDir, 'content/notions/loyer-montant-charges.md'), 'utf-8')
-    const salaireImposableContent = fs.readFileSync(path.join(rootDir, 'content/notions/salaire-imposable.md'), 'utf-8')
+    const handicapContent = fs.readFileSync(
+      path.join(rootDir, 'content/notions/handicap.md'),
+      'utf-8'
+    )
+    const montantCaMicroEntrepriseContent = fs.readFileSync(
+      path.join(rootDir, 'content/notions/montant-ca-micro-entreprise.md'),
+      'utf-8'
+    )
+    const montantChomageContent = fs.readFileSync(
+      path.join(rootDir, 'content/notions/montant-chomage.md'),
+      'utf-8'
+    )
+    const montantParentsContent = fs.readFileSync(
+      path.join(rootDir, 'content/notions/montant-parents.md'),
+      'utf-8'
+    )
+    const logementConventionneContent = fs.readFileSync(
+      path.join(rootDir, 'content/notions/logement-conventionne.md'),
+      'utf-8'
+    )
+    const loyerMontantChargesContent = fs.readFileSync(
+      path.join(rootDir, 'content/notions/loyer-montant-charges.md'),
+      'utf-8'
+    )
+    const salaireImposableContent = fs.readFileSync(
+      path.join(rootDir, 'content/notions/salaire-imposable.md'),
+      'utf-8'
+    )
 
     // Create sample notions
     await Notion.createMany([
       {
         title: 'Avez-vous une reconnaissance administrative de votre situation de handicap ?',
         slug: 'handicap',
-        description: "Pour bénéficier de certaines aides financières, il est nécessaire de disposer d'une reconnaissance administrative de votre situation de handicap.",
+        description:
+          "Pour bénéficier de certaines aides financières, il est nécessaire de disposer d'une reconnaissance administrative de votre situation de handicap.",
         content: handicapContent,
         category: 'definitions',
       },
       {
-        title: 'En savoir plus sur le chiffre d\'affaires généré via une micro-entreprise',
+        title: "En savoir plus sur le chiffre d'affaires généré via une micro-entreprise",
         slug: 'montant-ca-micro-entreprise',
         description: 'Connaître les règles de calcul applicables',
         content: montantCaMicroEntrepriseContent,
@@ -55,7 +77,8 @@ export default class NotionSeeder extends BaseSeeder {
         category: 'calcul',
       },
       {
-        title: 'Comment savoir si mon logement est conventionné pour l\'Aide Personnalisée au Logement (APL) ?',
+        title:
+          "Comment savoir si mon logement est conventionné pour l'Aide Personnalisée au Logement (APL) ?",
         slug: 'logement-conventionne',
         description: 'Informations sur la convention APL',
         content: logementConventionneContent,
@@ -64,17 +87,19 @@ export default class NotionSeeder extends BaseSeeder {
       {
         title: 'Précisions sur le calcul du montant des charges locatives',
         slug: 'loyer-montant-charges',
-        description: 'Les charges locatives sont des dépenses liées à l\'entretien et au fonctionnement de votre logement.',
+        description:
+          "Les charges locatives sont des dépenses liées à l'entretien et au fonctionnement de votre logement.",
         content: loyerMontantChargesContent,
         category: 'logement',
       },
       {
         title: 'Comment connaître votre revenu imposable sur les 12 derniers mois ?',
         slug: 'salaire-imposable',
-        description: 'Pour bénéficier de certaines aides financières, il est nécessaire de déclarer votre revenu imposable sur les 12 derniers mois.',
+        description:
+          'Pour bénéficier de certaines aides financières, il est nécessaire de déclarer votre revenu imposable sur les 12 derniers mois.',
         content: salaireImposableContent,
         category: 'revenus',
-      }
+      },
     ])
 
     console.log('✓ Notions created from markdown files')

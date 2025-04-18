@@ -26,25 +26,16 @@ export default class PageSeeder extends BaseSeeder {
       'utf-8'
     )
 
-    const cguContent = fs.readFileSync(
-      path.join(rootDir, 'content/pages/cgu.md'),
-      'utf-8'
-    )
+    const cguContent = fs.readFileSync(path.join(rootDir, 'content/pages/cgu.md'), 'utf-8')
 
     const mentionsLegalesContent = fs.readFileSync(
       path.join(rootDir, 'content/pages/mentions-legales.md'),
       'utf-8'
     )
 
-    const aproposContent = fs.readFileSync(
-      path.join(rootDir, 'content/pages/apropos.md'),
-      'utf-8'
-    )
+    const aproposContent = fs.readFileSync(path.join(rootDir, 'content/pages/apropos.md'), 'utf-8')
 
-    const cookiesContent = fs.readFileSync(
-      path.join(rootDir, 'content/pages/cookies.md'),
-      'utf-8'
-    )
+    const cookiesContent = fs.readFileSync(path.join(rootDir, 'content/pages/cookies.md'), 'utf-8')
 
     // Create sample pages
     await Page.createMany([
@@ -52,19 +43,21 @@ export default class PageSeeder extends BaseSeeder {
         title: 'Accessibilité',
         slug: 'accessibilite',
         content: accessibiliteContent,
-        metaDescription: 'Informations sur l\'accessibilité de la plateforme Aides Simplifiées',
+        metaDescription: "Informations sur l'accessibilité de la plateforme Aides Simplifiées",
       },
       {
         title: 'Politique de confidentialité et données personnelles',
         slug: 'donnees-personnelles',
         content: donneesPersonnellesContent,
-        metaDescription: 'Notre politique de confidentialité et le traitement des données personnelles',
+        metaDescription:
+          'Notre politique de confidentialité et le traitement des données personnelles',
       },
       {
-        title: 'Conditions Générales d\'Utilisation',
+        title: "Conditions Générales d'Utilisation",
         slug: 'cgu',
         content: cguContent,
-        metaDescription: 'Les conditions générales d\'utilisation de la plateforme Aides Simplifiées',
+        metaDescription:
+          "Les conditions générales d'utilisation de la plateforme Aides Simplifiées",
       },
       {
         title: 'Mentions légales',

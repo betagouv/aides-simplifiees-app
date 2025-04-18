@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue';
-import { useBreadcrumbStore } from '~/stores/breadcrumbs';
-import DefaultLayout from '../../../layouts/default.vue';
-import BrandBackgroundContainer from '../../../components/layout/BrandBackgroundContainer.vue';
-import BreadcrumbSectionContainer from '../../../components/layout/BreadcrumbSectionContainer.vue';
-import SectionContainer from '../../../components/layout/SectionContainer.vue';
+import { onMounted } from 'vue'
+import { useBreadcrumbStore } from '~/stores/breadcrumbs'
+import DefaultLayout from '../../../layouts/default.vue'
+import BrandBackgroundContainer from '../../../components/layout/BrandBackgroundContainer.vue'
+import BreadcrumbSectionContainer from '../../../components/layout/BreadcrumbSectionContainer.vue'
+import SectionContainer from '../../../components/layout/SectionContainer.vue'
 
 onMounted(() => {
   const { setBreadcrumbs } = useBreadcrumbStore()
@@ -16,23 +16,21 @@ onMounted(() => {
 </script>
 
 <template>
-  <Head title="Nous contacter pour toute question sur vos droits | Aides simplifiées"
-      description="Besoin d\'aide pour utiliser nos simulateurs ou comprendre vos résultats ? Notre équipe est à votre disposition pour vous accompagner dans vos démarches." />
+  <Head
+    title="Nous contacter pour toute question sur vos droits | Aides simplifiées"
+    description="Besoin d\'aide pour utiliser nos simulateurs ou comprendre vos résultats ? Notre équipe est à votre disposition pour vous accompagner dans vos démarches."
+  />
   <DefaultLayout>
-      <BrandBackgroundContainer
-        textured
-        subtle
-    >
+    <BrandBackgroundContainer textured subtle>
       <BreadcrumbSectionContainer />
       <SectionContainer type="page-full">
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12">
-            <h1>
-              Contactez-nous
-            </h1>
+            <h1>Contactez-nous</h1>
             <p class="fr-text--lg">
-              Nous facilitons l’accès aux aides en vous proposant les services les plus simples et clairs possibles.
-              <br>
+              Nous facilitons l’accès aux aides en vous proposant les services les plus simples et
+              clairs possibles.
+              <br />
               Besoin d’informations ou d’assistance ? Nous sommes là pour vous aider.
             </p>
             <p class="fr-text--lg">

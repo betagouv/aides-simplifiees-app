@@ -23,7 +23,12 @@ export default class extends BaseSchema {
       table.increments('id')
       table.string('slug').notNullable()
       table.string('title').notNullable()
-      table.integer('simulateur_id').unsigned().references('id').inTable('simulateurs').onDelete('CASCADE')
+      table
+        .integer('simulateur_id')
+        .unsigned()
+        .references('id')
+        .inTable('simulateurs')
+        .onDelete('CASCADE')
       table.timestamp('created_at')
       table.timestamp('updated_at')
 
@@ -51,7 +56,12 @@ export default class extends BaseSchema {
       table.increments('id')
       table.string('slug').notNullable()
       table.string('title').notNullable()
-      table.integer('question_id').unsigned().references('id').inTable('questions').onDelete('CASCADE')
+      table
+        .integer('question_id')
+        .unsigned()
+        .references('id')
+        .inTable('questions')
+        .onDelete('CASCADE')
       table.timestamp('created_at')
       table.timestamp('updated_at')
 

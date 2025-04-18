@@ -6,8 +6,8 @@ import SectionContainer from '../../components/layout/SectionContainer.vue'
 
 defineProps<{
   counts: {
-    pages: number,
-    notions: number,
+    pages: number
+    notions: number
     aides: number
   }
 }>()
@@ -17,18 +17,11 @@ defineProps<{
   <Head title="Administration | Aides simplifiées" />
 
   <DefaultLayout>
-    <BrandBackgroundContainer
-    textured
-    contrast
-  >
-    <SectionContainer
-      type="page-header"
-    >
-      <h1 class="brand-contrast-text">
-        <br>Administration
-      </h1>
-    </SectionContainer>
-  </BrandBackgroundContainer>
+    <BrandBackgroundContainer textured contrast>
+      <SectionContainer type="page-header">
+        <h1 class="brand-contrast-text"><br />Administration</h1>
+      </SectionContainer>
+    </BrandBackgroundContainer>
 
     <BrandBackgroundContainer textured subtle>
       <SectionContainer type="page-block">

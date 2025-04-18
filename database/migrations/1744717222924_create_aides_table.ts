@@ -16,7 +16,6 @@ export default class extends BaseSchema {
       table.json('textes_loi').defaultTo('[]')
       table.text('content').notNullable()
 
-
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })

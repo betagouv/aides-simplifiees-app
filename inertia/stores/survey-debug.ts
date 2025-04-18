@@ -1,6 +1,13 @@
+import { defineStore } from 'pinia'
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
+
 export const useSurveyDebugStore = defineStore('survey-debug', () => {
-  const route = useRoute()
-  const debugMode = computed(() => route.query.debug === 'true')
+  const page = usePage()
+
+  const debugMode = computed(() => {
+    return page.props.route?.query?.debug === 'true'
+  })
 
   const debug = {
     log: (...messages: any[]) => {
@@ -18,7 +25,7 @@ export const useSurveyDebugStore = defineStore('survey-debug', () => {
       if (debugMode.value) {
         console.warn(...messages)
       }
-    }
+    },
   }
   return {
     debugMode,

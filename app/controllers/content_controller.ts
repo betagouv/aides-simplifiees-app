@@ -22,7 +22,7 @@ export default class ContentController {
 
     return inertia.render('content/pages/page', {
       page,
-      content
+      content,
     })
   }
 
@@ -41,7 +41,7 @@ export default class ContentController {
     return inertia.render('content/notions/notion', {
       type: 'notion',
       item: notion,
-      html
+      html,
     })
   }
 
@@ -59,7 +59,7 @@ export default class ContentController {
 
     return inertia.render('aides/aide', {
       aide,
-      html
+      html,
     })
   }
 

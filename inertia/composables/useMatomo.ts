@@ -1,11 +1,11 @@
 /**
  * Composable for tracking user interactions with Matomo
  */
-export function useMatomo () {
+export function useMatomo() {
   /**
    * Track an event in Matomo
    */
-  function trackEvent (category: string, action: string, name?: string, value?: number) {
+  function trackEvent(category: string, action: string, name?: string, value?: number) {
     if (import.meta.server) {
       return
     }
@@ -13,13 +13,13 @@ export function useMatomo () {
       return
     }
 
-    (window as any)._paq.push(['trackEvent', category, action, name, value ?? 1])
+    ;(window as any)._paq.push(['trackEvent', category, action, name, value ?? 1])
   }
 
   /**
    * Get Matomo category string based on current page context
    */
-  function getMatomoCategory (baseId: string): string {
+  function getMatomoCategory(baseId: string): string {
     let source = 'website'
 
     if (typeof window !== 'undefined') {
@@ -42,7 +42,7 @@ export function useMatomo () {
   /**
    * Track an answer to a survey question
    */
-  function trackSurveyAnswer (simulateurId: string, questionId: string, questionTitle: string) {
+  function trackSurveyAnswer(simulateurId: string, questionId: string, questionTitle: string) {
     if (import.meta.server) {
       return
     }
@@ -57,7 +57,7 @@ export function useMatomo () {
   /**
    * Track the start of a survey
    */
-  function trackSurveyStart (simulateurId: string) {
+  function trackSurveyStart(simulateurId: string) {
     if (import.meta.server) {
       return
     }
@@ -69,7 +69,7 @@ export function useMatomo () {
   /**
    * Track the submission of a survey
    */
-  function trackSurveySubmit (simulateurId: string) {
+  function trackSurveySubmit(simulateurId: string) {
     if (import.meta.server) {
       return
     }
@@ -81,7 +81,7 @@ export function useMatomo () {
   /**
    * Track Eligibility
    */
-  function trackEligibility (simulateurId: string, aidesLength: number) {
+  function trackEligibility(simulateurId: string, aidesLength: number) {
     if (import.meta.server) {
       return
     }
@@ -91,8 +91,14 @@ export function useMatomo () {
     if (utmSource) {
       source = utmSource.replace('iframe@', '')
     }
-    const category = `[${simulateurId}][${source}]Survey`;
-    (window as any)._paq.push(['trackEvent', category, 'Eligibility', `[${simulateurId}][${source}]`, aidesLength])
+    const category = `[${simulateurId}][${source}]Survey`
+    ;(window as any)._paq.push([
+      'trackEvent',
+      category,
+      'Eligibility',
+      `[${simulateurId}][${source}]`,
+      aidesLength,
+    ])
   }
 
   return {
@@ -101,6 +107,6 @@ export function useMatomo () {
     trackSurveyAnswer,
     trackSurveyStart,
     trackSurveySubmit,
-    trackEligibility
+    trackEligibility,
   }
 }

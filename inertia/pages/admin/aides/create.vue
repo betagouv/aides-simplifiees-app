@@ -13,7 +13,7 @@ const form = useForm({
   type: '',
   usage: '',
   instructeur: '',
-  textesLoi: [] as Array<{ prefix: string, label: string, url: string }>
+  textesLoi: [] as Array<{ prefix: string; label: string; url: string }>,
 })
 
 const editorTab = ref('editor')
@@ -52,7 +52,7 @@ const handleSubmit = () => {
   <DefaultLayout>
     <BrandBackgroundContainer textured contrast>
       <SectionContainer type="page-header">
-        <h1 class="brand-contrast-text"><br/>Créer une aide</h1>
+        <h1 class="brand-contrast-text"><br />Créer une aide</h1>
       </SectionContainer>
     </BrandBackgroundContainer>
 
@@ -65,7 +65,7 @@ const handleSubmit = () => {
                 :links="[
                   { text: 'Administration', to: '/admin' },
                   { text: 'Aides', to: '/admin/aides' },
-                  { text: 'Nouvelle aide', to: '/admin/aides/create' }
+                  { text: 'Nouvelle aide', to: '/admin/aides/create' },
                 ]"
               />
             </div>
@@ -75,11 +75,7 @@ const handleSubmit = () => {
             <form @submit.prevent="handleSubmit">
               <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12">
-                  <DsfrInput
-                    v-model="form.title"
-                    label="Titre"
-                    required
-                  />
+                  <DsfrInput v-model="form.title" label="Titre" required />
                 </div>
               </div>
 
@@ -123,13 +119,14 @@ const handleSubmit = () => {
                   <p>Aucun texte de loi associé</p>
                 </div>
 
-                <div v-else v-for="(texteLoi, index) in form.textesLoi" :key="index" class="fr-grid-row fr-grid-row--gutters fr-mb-2w texte-loi-item">
+                <div
+                  v-else
+                  v-for="(texteLoi, index) in form.textesLoi"
+                  :key="index"
+                  class="fr-grid-row fr-grid-row--gutters fr-mb-2w texte-loi-item"
+                >
                   <div class="fr-col-12 fr-col-md-2">
-                    <DsfrInput
-                      v-model="texteLoi.prefix"
-                      label="Préfixe"
-                      placeholder="Art."
-                    />
+                    <DsfrInput v-model="texteLoi.prefix" label="Préfixe" placeholder="Art." />
                   </div>
                   <div class="fr-col-12 fr-col-md-4">
                     <DsfrInput
@@ -145,8 +142,14 @@ const handleSubmit = () => {
                       placeholder="https://www.legifrance.gouv.fr/..."
                     />
                   </div>
-                  <div class="fr-col-12 fr-col-md-1 fr-flex fr-flex--center fr-flex--middle remove-button-container">
-                    <button type="button" class="fr-btn fr-btn--secondary fr-btn--sm remove-button" @click="removeTexteLoi(index)">
+                  <div
+                    class="fr-col-12 fr-col-md-1 fr-flex fr-flex--center fr-flex--middle remove-button-container"
+                  >
+                    <button
+                      type="button"
+                      class="fr-btn fr-btn--secondary fr-btn--sm remove-button"
+                      @click="removeTexteLoi(index)"
+                    >
                       <span class="fr-icon-delete-line" aria-hidden="true"></span>
                     </button>
                   </div>
@@ -194,11 +197,7 @@ const handleSubmit = () => {
                     required
                   ></textarea>
 
-                  <div
-                    v-else
-                    class="markdown-preview fr-p-3w"
-                    v-html="previewHtml"
-                  ></div>
+                  <div v-else class="markdown-preview fr-p-3w" v-html="previewHtml"></div>
                 </div>
               </div>
 
@@ -212,11 +211,7 @@ const handleSubmit = () => {
                     class="fr-mr-2w"
                   />
 
-                  <DsfrButton
-                    type="submit"
-                    label="Enregistrer"
-                    :disabled="form.processing"
-                  />
+                  <DsfrButton type="submit" label="Enregistrer" :disabled="form.processing" />
                 </div>
               </div>
             </form>

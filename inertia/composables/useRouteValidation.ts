@@ -27,7 +27,7 @@ export function useContentRouteValidation(
  * Given a key or an array of keys (param names),
  * returns a function that will actually validate the route
  */
-export function getContentRouteValidator (key: string | string[]) {
+export function getContentRouteValidator(key: string | string[]) {
   const paramNames = Array.isArray(key) ? key : [key]
   return (route: RouteLocationNormalizedGeneric) => {
     return useContentRouteValidation(paramNames, route)

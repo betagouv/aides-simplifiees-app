@@ -8,11 +8,11 @@ import { marked } from 'marked'
 
 const props = defineProps<{
   notion: {
-    id: number,
-    title: string,
-    slug: string,
-    content: string,
-    description: string | null,
+    id: number
+    title: string
+    slug: string
+    content: string
+    description: string | null
     category: string | null
   }
 }>()
@@ -21,7 +21,7 @@ const form = useForm({
   title: props.notion.title,
   content: props.notion.content,
   description: props.notion.description || '',
-  category: props.notion.category || ''
+  category: props.notion.category || '',
 })
 
 const editorTab = ref('editor')
@@ -51,7 +51,7 @@ const handleSubmit = () => {
   <DefaultLayout>
     <BrandBackgroundContainer textured contrast>
       <SectionContainer type="page-header">
-        <h1 class="brand-contrast-text"><br/>Modifier la notion</h1>
+        <h1 class="brand-contrast-text"><br />Modifier la notion</h1>
       </SectionContainer>
     </BrandBackgroundContainer>
 
@@ -64,7 +64,7 @@ const handleSubmit = () => {
                 :links="[
                   { text: 'Administration', to: '/admin' },
                   { text: 'Notions', to: '/admin/notions' },
-                  { text: `Modifier - ${notion.title}`, to: `/admin/notions/${notion.id}/edit` }
+                  { text: `Modifier - ${notion.title}`, to: `/admin/notions/${notion.id}/edit` },
                 ]"
               />
             </div>
@@ -74,18 +74,16 @@ const handleSubmit = () => {
             <form @submit.prevent="handleSubmit">
               <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-md-8">
-                  <DsfrInput
-                    v-model="form.title"
-                    label="Titre"
-                    required
-                  />
+                  <DsfrInput v-model="form.title" label="Titre" required />
                 </div>
 
                 <div class="fr-col-12 fr-col-md-4">
                   <div class="fr-input-group">
                     <label class="fr-label">Slug</label>
                     <div class="fr-input">{{ notion.slug }}</div>
-                    <p class="fr-hint-text">Le slug est généré automatiquement à partir du titre initial</p>
+                    <p class="fr-hint-text">
+                      Le slug est généré automatiquement à partir du titre initial
+                    </p>
                   </div>
                 </div>
               </div>
@@ -141,11 +139,7 @@ const handleSubmit = () => {
                     required
                   ></textarea>
 
-                  <div
-                    v-else
-                    class="markdown-preview fr-p-3w"
-                    v-html="previewHtml"
-                  ></div>
+                  <div v-else class="markdown-preview fr-p-3w" v-html="previewHtml"></div>
                 </div>
               </div>
 
@@ -159,11 +153,7 @@ const handleSubmit = () => {
                     class="fr-mr-2w"
                   />
 
-                  <DsfrButton
-                    type="submit"
-                    label="Enregistrer"
-                    :disabled="form.processing"
-                  />
+                  <DsfrButton type="submit" label="Enregistrer" :disabled="form.processing" />
                 </div>
               </div>
             </form>

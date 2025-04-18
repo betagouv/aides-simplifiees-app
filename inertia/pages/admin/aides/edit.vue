@@ -8,16 +8,16 @@ import { marked } from 'marked'
 
 const props = defineProps<{
   aide: {
-    id: number,
-    title: string,
-    slug: string,
-    content: string,
-    description: string | null,
-    type: string | null,
-    usage: string | null,
-    instructeur: string | null,
-    montant: number | null,
-    textesLoi: Array<{ prefix: string, label: string, url: string }> | null
+    id: number
+    title: string
+    slug: string
+    content: string
+    description: string | null
+    type: string | null
+    usage: string | null
+    instructeur: string | null
+    montant: number | null
+    textesLoi: Array<{ prefix: string; label: string; url: string }> | null
   }
 }>()
 
@@ -28,7 +28,7 @@ const form = useForm({
   type: props.aide.type || '',
   usage: props.aide.usage || '',
   instructeur: props.aide.instructeur || '',
-  textesLoi: props.aide.textesLoi || []
+  textesLoi: props.aide.textesLoi || [],
 })
 
 const editorTab = ref('editor')
@@ -67,7 +67,7 @@ const handleSubmit = () => {
   <DefaultLayout>
     <BrandBackgroundContainer textured contrast>
       <SectionContainer type="page-header">
-        <h1 class="brand-contrast-text"><br/>Modifier l'aide</h1>
+        <h1 class="brand-contrast-text"><br />Modifier l'aide</h1>
       </SectionContainer>
     </BrandBackgroundContainer>
 
@@ -80,7 +80,7 @@ const handleSubmit = () => {
                 :links="[
                   { text: 'Administration', to: '/admin' },
                   { text: 'Aides', to: '/admin/aides' },
-                  { text: `Modifier - ${aide.title}`, to: `/admin/aides/${aide.id}/edit` }
+                  { text: `Modifier - ${aide.title}`, to: `/admin/aides/${aide.id}/edit` },
                 ]"
               />
             </div>
@@ -90,18 +90,16 @@ const handleSubmit = () => {
             <form @submit.prevent="handleSubmit">
               <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-md-8">
-                  <DsfrInput
-                    v-model="form.title"
-                    label="Titre"
-                    required
-                  />
+                  <DsfrInput v-model="form.title" label="Titre" required />
                 </div>
 
                 <div class="fr-col-12 fr-col-md-4">
                   <div class="fr-input-group">
                     <label class="fr-label">Slug</label>
                     <div class="fr-input">{{ aide.slug }}</div>
-                    <p class="fr-hint-text">Le slug est généré automatiquement à partir du titre initial</p>
+                    <p class="fr-hint-text">
+                      Le slug est généré automatiquement à partir du titre initial
+                    </p>
                   </div>
                 </div>
               </div>
@@ -142,13 +140,13 @@ const handleSubmit = () => {
 
               <div class="fr-mt-4w">
                 <h3>Textes de loi associés</h3>
-                <div v-for="(texteLoi, index) in form.textesLoi" :key="index" class="fr-grid-row fr-grid-row--gutters fr-mb-2w texte-loi-item">
+                <div
+                  v-for="(texteLoi, index) in form.textesLoi"
+                  :key="index"
+                  class="fr-grid-row fr-grid-row--gutters fr-mb-2w texte-loi-item"
+                >
                   <div class="fr-col-12 fr-col-md-2">
-                    <DsfrInput
-                      v-model="texteLoi.prefix"
-                      label="Préfixe"
-                      placeholder="Art."
-                    />
+                    <DsfrInput v-model="texteLoi.prefix" label="Préfixe" placeholder="Art." />
                   </div>
                   <div class="fr-col-12 fr-col-md-4">
                     <DsfrInput
@@ -164,8 +162,14 @@ const handleSubmit = () => {
                       placeholder="https://www.legifrance.gouv.fr/..."
                     />
                   </div>
-                  <div class="fr-col-12 fr-col-md-1 fr-flex fr-flex--center fr-flex--middle remove-button-container">
-                    <button type="button" class="fr-btn fr-btn--secondary fr-btn--sm remove-button" @click="removeTexteLoi(index)">
+                  <div
+                    class="fr-col-12 fr-col-md-1 fr-flex fr-flex--center fr-flex--middle remove-button-container"
+                  >
+                    <button
+                      type="button"
+                      class="fr-btn fr-btn--secondary fr-btn--sm remove-button"
+                      @click="removeTexteLoi(index)"
+                    >
                       <span class="fr-icon-delete-line" aria-hidden="true"></span>
                     </button>
                   </div>
@@ -212,11 +216,7 @@ const handleSubmit = () => {
                     required
                   ></textarea>
 
-                  <div
-                    v-else
-                    class="markdown-preview fr-p-3w"
-                    v-html="previewHtml"
-                  ></div>
+                  <div v-else class="markdown-preview fr-p-3w" v-html="previewHtml"></div>
                 </div>
               </div>
 
@@ -230,11 +230,7 @@ const handleSubmit = () => {
                     class="fr-mr-2w"
                   />
 
-                  <DsfrButton
-                    type="submit"
-                    label="Enregistrer"
-                    :disabled="form.processing"
-                  />
+                  <DsfrButton type="submit" label="Enregistrer" :disabled="form.processing" />
                 </div>
               </div>
             </form>

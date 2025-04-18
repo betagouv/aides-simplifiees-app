@@ -1,63 +1,55 @@
 <script setup lang="ts">
-  import { Head } from '@inertiajs/vue3'
-  import { DsfrTile, DsfrTiles, DsfrCard } from '@gouvminint/vue-dsfr'
-  import type { DsfrTileProps } from '@gouvminint/vue-dsfr'
-  import DefaultLayout from '../layouts/default.vue'
-  import BrandBackgroundContainer from '../components/layout/BrandBackgroundContainer.vue'
-  import SectionContainer from '../components/layout/SectionContainer.vue'
+import { Head } from '@inertiajs/vue3'
+import { DsfrTile, DsfrTiles, DsfrCard } from '@gouvminint/vue-dsfr'
+import type { DsfrTileProps } from '@gouvminint/vue-dsfr'
+import DefaultLayout from '../layouts/default.vue'
+import BrandBackgroundContainer from '../components/layout/BrandBackgroundContainer.vue'
+import SectionContainer from '../components/layout/SectionContainer.vue'
 
-  const baselineTitle = 'Trouvez les aides&nbsp;adaptées à&nbsp;votre&nbsp;situation'
-  const baselineSubtitle = 'Un service simple et rapide pour savoir à quelles aides vous avez droit.'
+const baselineTitle = 'Trouvez les aides&nbsp;adaptées à&nbsp;votre&nbsp;situation'
+const baselineSubtitle = 'Un service simple et rapide pour savoir à quelles aides vous avez droit.'
 
-  const simulationTiles: DsfrTileProps[] = [
-    {
-      title: 'Déménagement & logement',
-      to: '/simulateurs/demenagement-logement',
-      titleTag: 'h2',
-      svgPath: '../../public/artworks/custom-pictograms/demenagement.svg'
-    },
-    {
-      title: 'Rénovation du logement',
-      titleTag: 'h2',
-      to: 'https://mesaidesreno.beta.gouv.fr/',
-      svgPath: '../../public/artworks/pictograms/buildings/house.svg'
-    }
-  ]
+const simulationTiles: DsfrTileProps[] = [
+  {
+    title: 'Déménagement & logement',
+    to: '/simulateurs/demenagement-logement',
+    titleTag: 'h2',
+    svgPath: '../../public/artworks/custom-pictograms/demenagement.svg',
+  },
+  {
+    title: 'Rénovation du logement',
+    titleTag: 'h2',
+    to: 'https://mesaidesreno.beta.gouv.fr/',
+    svgPath: '../../public/artworks/pictograms/buildings/house.svg',
+  },
+]
 </script>
 
 <template>
-  <Head title="La bonne aide, au bon moment, au bon endroit : page d\'accueil | Aides simplifiées" description="Découvrez les aides adaptées à votre situation personnelle. Simulateurs pour le logement, le déménagement et plus encore. Un service public simple et rapide pour connaître vos droits." />
+  <Head
+    title="La bonne aide, au bon moment, au bon endroit : page d\'accueil | Aides simplifiées"
+    description="Découvrez les aides adaptées à votre situation personnelle. Simulateurs pour le logement, le déménagement et plus encore. Un service public simple et rapide pour connaître vos droits."
+  />
   <DefaultLayout>
-    <BrandBackgroundContainer
-      textured
-      blue
-    >
+    <BrandBackgroundContainer textured blue>
       <SectionContainer>
         <div class="brand-home-banner fr-grid-row fr-grid-row--gutters">
           <div class="brand-home-banner__column fr-col-12 fr-col-lg-6">
-            <h1
-              class="brand-site-title brand-title-gradient"
-              v-html="baselineTitle"
-            />
+            <h1 class="brand-site-title brand-title-gradient" v-html="baselineTitle" />
             <p class="fr-text--xl brand-home-banner__baseline">
               {{ baselineSubtitle }}
             </p>
           </div>
-          <div class="brand-home-banner__column fr-col-12 fr-col-md-6 fr-col-offset-xl-1 fr-col-xl-5">
-            <DsfrTiles
-              :tiles="simulationTiles"
-              horizontal
-              title-tag="h2"
-            />
+          <div
+            class="brand-home-banner__column fr-col-12 fr-col-md-6 fr-col-offset-xl-1 fr-col-xl-5"
+          >
+            <DsfrTiles :tiles="simulationTiles" horizontal title-tag="h2" />
           </div>
         </div>
       </SectionContainer>
     </BrandBackgroundContainer>
 
-    <BrandBackgroundContainer
-      textured
-      subtle
-    >
+    <BrandBackgroundContainer textured subtle>
       <SectionContainer>
         <h2 class="fr-title">
           Pour aller plus loin, utilisez ces simulateurs pour évaluer tous vos droits
@@ -85,21 +77,19 @@
       </SectionContainer>
     </BrandBackgroundContainer>
 
-    <BrandBackgroundContainer
-      textured
-      contrast
-    >
+    <BrandBackgroundContainer textured contrast>
       <SectionContainer>
         <hgroup class="fr-mb-6w">
           <h2 class="fr-display--xs brand-contrast-text">
             <span class="brand-contrast-text--highlight">
-              Vous souhaitez améliorer l'accès aux aides ?
-            </span><br>Aides simplifiées vous accompagne !
+              Vous souhaitez améliorer l'accès aux aides ? </span
+            ><br />Aides simplifiées vous accompagne !
           </h2>
           <p class="fr-text--xl brand-contrast-text">
-            Aides simplifiées permet aux citoyens de trouver facilement les aides auxquelles ils sont éligibles et de
-            simplifier leur parcours administratif. Nous collaborons avec des acteurs publics et des plateformes en ligne
-            pour intégrer notre service et fluidifier l'accès aux dispositifs existants.
+            Aides simplifiées permet aux citoyens de trouver facilement les aides auxquelles ils
+            sont éligibles et de simplifier leur parcours administratif. Nous collaborons avec des
+            acteurs publics et des plateformes en ligne pour intégrer notre service et fluidifier
+            l'accès aux dispositifs existants.
           </p>
         </hgroup>
         <div class="fr-grid-row fr-grid-row--gutters">

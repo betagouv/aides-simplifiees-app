@@ -9,16 +9,16 @@ import BreadcrumbSectionContainer from '../../components/layout/BreadcrumbSectio
 // Define props based on what's passed from ContentController.showAide
 const props = defineProps<{
   aide: {
-    id: number,
-    title: string,
-    slug: string,
-    type: string,
-    usage: string,
-    instructeur: string,
-    description: string,
-    content: string,
+    id: number
+    title: string
+    slug: string
+    type: string
+    usage: string
+    instructeur: string
+    description: string
+    content: string
     textesLoi?: Array<{ prefix: string; label: string; url: string }>
-  },
+  }
   html: string
 }>()
 
@@ -27,7 +27,7 @@ onMounted(() => {
   setBreadcrumbs([
     { text: 'Accueil', to: '/' },
     { text: 'Aides', to: '/aides' },
-    { text: props.aide.title, to: `/aides/${props.aide.slug}` }
+    { text: props.aide.title, to: `/aides/${props.aide.slug}` },
   ])
 })
 </script>
@@ -35,15 +35,15 @@ onMounted(() => {
 <template>
   <Head
     :title="`Aide '${aide.title}' | Aides simplifiées`"
-    :description="aide.description || `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`"
+    :description="
+      aide.description ||
+      `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`
+    "
   />
   <DefaultLayout>
     <BrandBackgroundContainer>
       <BreadcrumbSectionContainer />
-      <SectionContainer
-        v-if="aide"
-        type="page-header"
-      >
+      <SectionContainer v-if="aide" type="page-header">
         <article>
           <header class="fr-mb-4w">
             <h1>
@@ -92,7 +92,8 @@ onMounted(() => {
   }
 }
 
-:deep(th), :deep(td) {
+:deep(th),
+:deep(td) {
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-default-grey);
 }

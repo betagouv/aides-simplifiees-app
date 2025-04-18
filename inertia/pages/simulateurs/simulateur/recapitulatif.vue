@@ -1,11 +1,8 @@
 <script lang="ts" setup>
 definePageMeta({
   layout: 'user-simulation',
-  middleware: [
-    'check-iframe-layout',
-    'load-simulateur',
-  ],
-  validate: getContentRouteValidator(['simulateur_id'])
+  middleware: ['check-iframe-layout', 'load-simulateur'],
+  validate: getContentRouteValidator(['simulateur_id']),
 })
 
 const route = useRoute()
@@ -19,7 +16,10 @@ setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Simulateurs', to: '/simulateurs' },
   { text: simulateurTitle, to: `/simulateurs/${simulateurId}#simulateur-title` },
-  { text: 'Récapitulatif', to: `/simulateurs/${simulateurId}/${route.params.notion_id}#simulateur-title` }
+  {
+    text: 'Récapitulatif',
+    to: `/simulateurs/${simulateurId}/${route.params.notion_id}#simulateur-title`,
+  },
 ])
 
 const surveysStore = useSurveysStore()
@@ -32,21 +32,17 @@ const currentQuestionId = computed(() => surveysStore.getCurrentQuestionId(simul
 const activeQuestionGroupIndex = computed(() => {
   const questionGroups = groupedQuestions.value
   const currentQuestionIdValue = currentQuestionId.value
-  return questionGroups.findIndex(group =>
-    group.questions.some(question => question.id === currentQuestionIdValue)
+  return questionGroups.findIndex((group) =>
+    group.questions.some((question) => question.id === currentQuestionIdValue)
   )
 })
 const activeAccordion = ref<number>(activeQuestionGroupIndex.value)
 </script>
 
 <template>
-  <div
-    v-if="simulateur"
-  >
+  <div v-if="simulateur">
     <hgroup class="fr-mb-4w">
-      <h2>
-        Récapitulatif des informations que vous avez renseignées
-      </h2>
+      <h2>Récapitulatif des informations que vous avez renseignées</h2>
       <DsfrLink
         class="results__backlink"
         icon-before
@@ -55,18 +51,10 @@ const activeAccordion = ref<number>(activeQuestionGroupIndex.value)
         :icon="{ name: 'ri:arrow-left-line', ssr: true }"
       />
     </hgroup>
-    <div
-      class="fr-card fr-p-3w"
-    >
+    <div class="fr-card fr-p-3w">
       <DsfrAccordionsGroup v-model="activeAccordion">
-        <template
-          v-for="(group, i) in groupedQuestions"
-          :key="group.title"
-        >
-          <DsfrAccordion
-            v-if="group.questions.length"
-            :title="`${i + 1}. ${group.title}`"
-          >
+        <template v-for="(group, i) in groupedQuestions" :key="group.title">
+          <DsfrAccordion v-if="group.questions.length" :title="`${i + 1}. ${group.title}`">
             <div
               v-for="question in group.questions"
               :key="question.id"
@@ -97,10 +85,12 @@ const activeAccordion = ref<number>(activeQuestionGroupIndex.value)
                 :icon="{ name: 'ri:edit-line', ssr: true }"
                 icon-right
                 :label="surveysStore.hasAnswer(simulateurId, question.id) ? 'Modifier' : 'Répondre'"
-                @click.prevent="() => {
-                  surveysStore.setCurrentQuestionId(simulateurId, question.id)
-                  navigateTo(`/simulateurs/${simulateurId}#simulateur-title`)
-                }"
+                @click.prevent="
+                  () => {
+                    surveysStore.setCurrentQuestionId(simulateurId, question.id)
+                    navigateTo(`/simulateurs/${simulateurId}#simulateur-title`)
+                  }
+                "
               />
             </div>
           </DsfrAccordion>

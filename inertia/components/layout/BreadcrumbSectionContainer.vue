@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { computed, ref, onMounted, watch } from 'vue';
-import { useBreadcrumbStore } from '~/stores/breadcrumbs';
-import SectionContainer from './SectionContainer.vue';
-import { DsfrBreadcrumb } from '@gouvminint/vue-dsfr';
+import { storeToRefs } from 'pinia'
+import { computed, ref, onMounted, watch } from 'vue'
+import { useBreadcrumbStore } from '~/stores/breadcrumbs'
+import SectionContainer from './SectionContainer.vue'
+import { DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
 
-const props = withDefaults(defineProps<{
-  contrast?: boolean
-}>(), {
-  contrast: false
-})
+const props = withDefaults(
+  defineProps<{
+    contrast?: boolean
+  }>(),
+  {
+    contrast: false,
+  }
+)
 
 // Create a ref to hold breadcrumbs
 const breadcrumbsData = ref([])
@@ -28,9 +31,12 @@ onMounted(() => {
     breadcrumbsData.value = breadcrumbs.value
 
     // Watch for changes to the breadcrumbs in the store
-    watch(() => breadcrumbs.value, (newBreadcrumbs) => {
-      breadcrumbsData.value = newBreadcrumbs
-    })
+    watch(
+      () => breadcrumbs.value,
+      (newBreadcrumbs) => {
+        breadcrumbsData.value = newBreadcrumbs
+      }
+    )
   }
 })
 
@@ -48,9 +54,7 @@ const styles = computed(() => {
 <template>
   <SectionContainer type="page-breadcrumb">
     <div class="fr-grid-row fr-grid-row--gutters">
-      <div
-        class="fr-col-12 breadcrumb-container"
-      >
+      <div class="fr-col-12 breadcrumb-container">
         <DsfrBreadcrumb
           v-if="breadcrumbsData.length"
           class="fr-m-0"

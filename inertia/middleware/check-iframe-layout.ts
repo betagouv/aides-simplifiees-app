@@ -5,8 +5,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
       ...to,
       query: {
         ...to.query,
-        iframe: from.query.iframe
-      }
+        iframe: from.query.iframe,
+      },
     })
   }
   if (isIframeRoute(to)) {

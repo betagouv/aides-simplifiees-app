@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, toRef, ref } from 'vue'
+import { computed, onMounted, onUnmounted, toRef, ref, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import { useIframeDisplay } from '~/composables/useIframeDisplay'
@@ -28,12 +28,12 @@ const surveyH2 = ref('h3')
 const isClient = typeof window !== 'undefined'
 
 // Initialiser les stores uniquement côté client
-let surveysStore = null
-let submissionStore = null
-let matomo = null
+let surveysStore: any = null
+let submissionStore: any = null
+let matomo: any = null
 
 // Fonction pour faire défiler jusqu'à l'ancre spécifiée
-function scrollToAnchor(anchorId) {
+function scrollToAnchor(anchorId: string): void {
   if (!isClient) return
 
   setTimeout(() => {
@@ -89,37 +89,49 @@ function restartForm() {
 }
 
 // Gérer la soumission du formulaire
-function handleFormComplete() {
+function handleFormComplete(): void {
   if (!isClient || !surveysStore || !submissionStore) return
 
   const simulateurAnswers = surveysStore.getAnswers(simulateurId.value)
-  submissionStore.submitForm(simulateurId.value, simulateurAnswers)
-    .then((success) => {
-      if (success) {
-        setTimeout(() => {
-          window.location.href = `/simulateurs/${simulateurId.value}/resultats#simulateur-title`
-        }, 1000)
-      } else {
-        setTimeout(() => {
-          resumeForm()
-        }, 1500)
-      }
-    })
+  submissionStore.submitForm(simulateurId.value, simulateurAnswers).then((success: boolean) => {
+    if (success) {
+      setTimeout(() => {
+        window.location.href = `/simulateurs/${simulateurId.value}/resultats#simulateur-title`
+      }, 1000)
+    } else {
+      setTimeout(() => {
+        resumeForm()
+      }, 1500)
+    }
+  })
 }
 
 // Initialisation côté client uniquement
 onMounted(() => {
   // Importer les stores
-  import('~/stores/survey').then(module => {
+  import('~/stores/survey').then((module) => {
     const { useSurveysStore } = module
     surveysStore = useSurveysStore()
 
-    import('~/stores/submissions').then(module => {
+    import('~/stores/submissions').then((module) => {
       const { useSubmissionStore } = module
       submissionStore = useSubmissionStore()
 
+      // Initialize submission status to 'idle' if not already set
+      if (!submissionStore.getSubmissionStatus(simulateurId.value)) {
+        submissionStore.setSubmissionStatus(simulateurId.value, 'idle')
+      }
+
+      // Setup a watcher for schema status changes
+      watch(
+        () => surveysStore.getSchemaStatus(simulateurId.value),
+        (status: string) => {
+          schemaStatus.value = status
+        },
+        { immediate: true }
+      )
+
       // Mettre à jour les états réactifs
-      schemaStatus.value = surveysStore.getSchemaStatus(simulateurId.value)
       progress.value = surveysStore.getProgress(simulateurId.value)
       showWelcomeScreen.value = surveysStore.getShowWelcomeScreen(simulateurId.value)
       showChoiceScreen.value = surveysStore.getShowChoiceScreen(simulateurId.value)
@@ -167,12 +179,7 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <component
-      :is="surveyH1"
-      class="fr-sr-only"
-    >
-      Votre simulation
-    </component>
+    <component :is="surveyH1" class="fr-sr-only"> Votre simulation </component>
 
     <LoadingSpinner v-if="schemaStatus === 'pending'" />
     <DsfrAlert
@@ -186,17 +193,10 @@ onUnmounted(() => {
       <!-- Choice screen for resuming or restarting -->
       <div v-if="showChoiceScreen">
         <div class="fr-card fr-p-4w">
-          <component
-            :is="surveyH2"
-            class="fr-h4"
-          >
+          <component :is="surveyH2" class="fr-h4">
             Vous avez déjà commencé une simulation
           </component>
-          <DsfrBadge
-            class="fr-mt-n1w fr-mb-2w"
-            type="info"
-            :label="`Progression : ${progress}%`"
-          />
+          <DsfrBadge class="fr-mt-n1w fr-mb-2w" type="info" :label="`Progression : ${progress}%`" />
           <p class="fr-text--lg fr-mb-0">
             Souhaitez-vous reprendre votre simulation ou la recommencer ?
           </p>
@@ -226,16 +226,11 @@ onUnmounted(() => {
       <!-- Welcome screen for starting the survey -->
       <div v-else-if="showWelcomeScreen">
         <div class="fr-card fr-p-4w">
-          <component
-            :is="surveyH2"
-            class="fr-h4"
-          >
-            Un simulateur en construction
-          </component>
+          <component :is="surveyH2" class="fr-h4"> Un simulateur en construction </component>
           <p>
             <span class="fr-text--bold">Bienvenue !</span>
-            Ce simulateur vous permet d'estimer 5 aides financières pour le logement et le déménagement, en particulier
-            destinées aux étudiants.
+            Ce simulateur vous permet d'estimer 5 aides financières pour le logement et le
+            déménagement, en particulier destinées aux étudiants.
             <DsfrLink
               to="/aides"
               target="_blank"
@@ -243,9 +238,7 @@ onUnmounted(() => {
               :icon="{ name: 'ri:arrow-right-line', ssr: true }"
             />
           </p>
-          <p>
-            Nous continuons à l'améliorer. Vos retours sont précieux :
-          </p>
+          <p>Nous continuons à l'améliorer. Vos retours sont précieux :</p>
           <ul class="fr-mt-n2w fr-mb-2w">
             <li>
               Par mail à l'adresse
@@ -265,9 +258,7 @@ onUnmounted(() => {
               />
             </li>
           </ul>
-          <p>
-            Merci pour votre aide !
-          </p>
+          <p>Merci pour votre aide !</p>
           <p>
             En accédant à ce service, vous reconnaissez avoir pris connaissance et accepté les
             <DsfrLink
@@ -296,10 +287,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Results status panel -->
-      <div
-        v-else-if="resultsFetchStatus !== 'idle'"
-        class="status-panel"
-      >
+      <div v-else-if="resultsFetchStatus !== 'idle'" class="status-panel">
         <LoadingSpinner
           v-if="resultsFetchStatus === 'pending'"
           text="Estimation en cours..."
@@ -308,26 +296,27 @@ onUnmounted(() => {
         <DsfrBadge
           v-if="resultsFetchStatus === 'error' || resultsFetchStatus === 'success'"
           class="survey-fetch-status-badge"
-          :type="({
-            // idle: 'info',
-            loading: 'info',
-            success: 'success',
-            error: 'error',
-          }[resultsFetchStatus] as 'info' | 'success' | 'error')"
-          :label="{
-            // idle: `progression : ${progress}%`,
-            loading: 'Estimation en cours...',
-            success: 'Estimation terminée',
-            error: 'Erreur lors de l\'estimation',
-          }[resultsFetchStatus]"
+          :type="
+            {
+              // idle: 'info',
+              loading: 'info',
+              success: 'success',
+              error: 'error',
+            }[resultsFetchStatus] as 'info' | 'success' | 'error'
+          "
+          :label="
+            {
+              // idle: `progression : ${progress}%`,
+              loading: 'Estimation en cours...',
+              success: 'Estimation terminée',
+              error: 'Erreur lors de l\'estimation',
+            }[resultsFetchStatus]
+          "
         />
       </div>
 
       <!-- Survey form -->
-      <SurveyForm
-        v-else
-        :simulateur-id="simulateurId"
-      />
+      <SurveyForm v-else :simulateur-id="simulateurId" />
     </template>
   </div>
 </template>
@@ -349,7 +338,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .loading-indicator .fr-icon {

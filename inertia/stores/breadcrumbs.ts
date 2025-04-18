@@ -15,6 +15,6 @@ export const useBreadcrumbStore = defineStore('breadcrumbs', () => {
 
   return {
     breadcrumbs,
-    setBreadcrumbs
+    setBreadcrumbs,
   }
 })

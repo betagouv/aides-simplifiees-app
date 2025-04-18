@@ -26,7 +26,7 @@ export default class SimulateurService {
       id: simulateur.slug,
       title: simulateur.title,
       description: simulateur.description,
-      steps: []
+      steps: [],
     }
 
     // Add steps
@@ -34,7 +34,7 @@ export default class SimulateurService {
       const stepJson: any = {
         id: step.slug,
         title: step.title,
-        questions: []
+        questions: [],
       }
 
       // Add questions for each step
@@ -42,7 +42,7 @@ export default class SimulateurService {
         const questionJson: any = {
           id: question.slug,
           title: question.title,
-          type: question.type
+          type: question.type,
         }
 
         // Add description if available
@@ -54,7 +54,7 @@ export default class SimulateurService {
         if (['radio', 'checkbox', 'select'].includes(question.type)) {
           questionJson.choices = question.choices.map((choice) => ({
             id: choice.slug,
-            title: choice.title
+            title: choice.title,
           }))
         }
 
@@ -85,13 +85,13 @@ export default class SimulateurService {
       description: 'Découvrez les aides disponibles pour votre logement et votre mobilité',
       shortTitle: 'Logement',
       pictogramPath: '/icons/logement.svg',
-      status: 'draft'
+      status: 'draft',
     })
 
     // Create first step
     const step1 = await simulateur.related('steps').create({
       slug: 'profil',
-      title: 'Votre profil'
+      title: 'Votre profil',
     })
 
     // Create questions for first step
@@ -99,22 +99,22 @@ export default class SimulateurService {
       slug: 'statut-professionnel',
       title: 'Êtes-vous :',
       description: 'Sélectionnez votre situation actuelle',
-      type: 'radio'
+      type: 'radio',
     })
 
     // Create choices for question 1
     await question1.related('choices').createMany([
       { slug: 'etudiant', title: 'En études ou en alternance' },
       { slug: 'actif', title: 'Salarié(e) ou Indépendant(e)' },
-      { slug: 'chomeur', title: 'Inscrit(e) comme demandeur d\'emploi' },
+      { slug: 'chomeur', title: "Inscrit(e) comme demandeur d'emploi" },
       { slug: 'retraite', title: 'Retraité(e)' },
-      { slug: 'inactif', title: 'Autre' }
+      { slug: 'inactif', title: 'Autre' },
     ])
 
     // Create second step
     const step2 = await simulateur.related('steps').create({
       slug: 'logement',
-      title: 'Votre logement'
+      title: 'Votre logement',
     })
 
     // Create a question for second step
@@ -122,15 +122,18 @@ export default class SimulateurService {
       slug: 'situation-logement',
       title: 'Serez-vous :',
       description: 'Sélectionnez votre situation à venir',
-      type: 'radio'
+      type: 'radio',
     })
 
     // Create choices for question 2
     await question2.related('choices').createMany([
       { slug: 'locataire', title: 'Locataire (figurant sur le bail, en foyer ou en résidence)' },
       { slug: 'proprietaire', title: 'Propriétaire ou en location-accession' },
-      { slug: 'heberge', title: 'Hébergé(e) chez vos parents, un particulier ou en logement de fonction' },
-      { slug: 'sans-domicile', title: 'Sans domicile stable' }
+      {
+        slug: 'heberge',
+        title: 'Hébergé(e) chez vos parents, un particulier ou en logement de fonction',
+      },
+      { slug: 'sans-domicile', title: 'Sans domicile stable' },
     ])
 
     // Generate the built JSON

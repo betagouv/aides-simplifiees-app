@@ -6,10 +6,10 @@ import SectionContainer from '../../../components/layout/SectionContainer.vue'
 
 defineProps<{
   pages: {
-    id: number,
-    title: string,
-    slug: string,
-    createdAt: string,
+    id: number
+    title: string
+    slug: string
+    createdAt: string
     updatedAt: string
   }[]
 }>()
@@ -19,18 +19,11 @@ defineProps<{
   <Head title="Pages | Administration" />
 
   <DefaultLayout>
-    <BrandBackgroundContainer
-    textured
-    contrast
-  >
-    <SectionContainer
-      type="page-header"
-    >
-      <h1 class="brand-contrast-text">
-        <br>Administration des pages
-      </h1>
-    </SectionContainer>
-  </BrandBackgroundContainer>
+    <BrandBackgroundContainer textured contrast>
+      <SectionContainer type="page-header">
+        <h1 class="brand-contrast-text"><br />Administration des pages</h1>
+      </SectionContainer>
+    </BrandBackgroundContainer>
 
     <BrandBackgroundContainer textured subtle>
       <SectionContainer type="page-block">
@@ -40,7 +33,7 @@ defineProps<{
               <DsfrBreadcrumb
                 :links="[
                   { text: 'Administration', to: '/admin' },
-                  { text: 'Pages', to: '/admin/pages' }
+                  { text: 'Pages', to: '/admin/pages' },
                 ]"
               />
             </div>
@@ -51,7 +44,11 @@ defineProps<{
               <DsfrButton
                 label="Créer une page"
                 icon="fr-icon-add-line"
-                :onclick="() => {router.visit(`/admin/pages/create`)}"
+                :onclick="
+                  () => {
+                    router.visit(`/admin/pages/create`)
+                  }
+                "
               />
             </div>
 
@@ -62,32 +59,50 @@ defineProps<{
             </div>
 
             <div v-else class="page-list">
-              <div v-for="page in pages" :key="page.id" class="fr-grid-row fr-grid-row--gutters fr-mb-2w page-item">
+              <div
+                v-for="page in pages"
+                :key="page.id"
+                class="fr-grid-row fr-grid-row--gutters fr-mb-2w page-item"
+              >
                 <div class="fr-col-12 fr-p-2w">
                   <div class="fr-grid-row fr-grid-row--middle">
                     <div class="fr-col-12 fr-col-md-8">
                       <h3 class="fr-mb-0">{{ page.title }}</h3>
                       <p class="fr-mb-0">
-                        <span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-mr-1w">#{{ page.id }}</span>
+                        <span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-mr-1w"
+                          >#{{ page.id }}</span
+                        >
                         <span class="fr-text--sm fr-mr-1w">Slug: {{ page.slug }}</span>
-                        <span class="fr-text--sm fr-text--italic">Mise à jour: {{ new Date(page.updatedAt).toLocaleDateString() }}</span>
+                        <span class="fr-text--sm fr-text--italic"
+                          >Mise à jour: {{ new Date(page.updatedAt).toLocaleDateString() }}</span
+                        >
                       </p>
                     </div>
 
-                    <div class="fr-col-12 fr-col-md-4 fr-grid-row fr-grid-row--right fr-mt-2w fr-mt-md-0">
+                    <div
+                      class="fr-col-12 fr-col-md-4 fr-grid-row fr-grid-row--right fr-mt-2w fr-mt-md-0"
+                    >
                       <div class="fr-btns-group fr-btns-group--inline">
                         <DsfrButton
                           label="Éditer"
                           icon="fr-icon-edit-line"
                           size="sm"
-                          :onclick="() => {router.visit(`/admin/pages/${page.id}/edit`)}"
+                          :onclick="
+                            () => {
+                              router.visit(`/admin/pages/${page.id}/edit`)
+                            }
+                          "
                         />
                         <DsfrButton
                           label="Voir"
                           icon="fr-icon-eye-line"
                           size="sm"
                           secondary
-                          :onclick="() => {router.visit(`/content/${page.slug}`)}"
+                          :onclick="
+                            () => {
+                              router.visit(`/content/${page.slug}`)
+                            }
+                          "
                         />
                       </div>
                     </div>

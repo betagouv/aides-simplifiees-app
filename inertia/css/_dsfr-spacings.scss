@@ -1,5 +1,5 @@
-@use "sass:map";
-@use "sass:list";
+@use 'sass:map';
+@use 'sass:list';
 
 $spacings: (
   1v: 0.25rem,
@@ -14,7 +14,7 @@ $spacings: (
   8w: 4rem,
   9w: 4.5rem,
   12w: 6rem,
-  15w: 7.5rem
+  15w: 7.5rem,
 );
 
 $breakpoints: (
@@ -32,14 +32,12 @@ $breakpoints: (
     @media (min-width: list.nth($limits, 1)) {
       @content;
     }
-  }
-  @else {
+  } @else {
     @content;
   }
 }
 
 @mixin respond-to($media) {
-
   // afin de rester mobile first, n‘utiliser la mixin respond-to uniquement s‘il n‘y a pas d‘autre alternative, lui préférer systématiquement la mixin respond-from';
 
   $limits: map_get($breakpoints, $media);
@@ -48,8 +46,7 @@ $breakpoints: (
     @media (max-width: list.nth($limits, 2)) {
       @content;
     }
-  }
-  @else {
+  } @else {
     @content;
   }
 }

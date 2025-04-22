@@ -9,6 +9,7 @@ export default class UserSeeder extends BaseSeeder {
     const adminLogin = env.get('ADMIN_LOGIN')
     // Vérification si l'admin existe déjà
     const existingAdmin = await User.findBy('email', adminLogin)
+    
 
     if (!existingAdmin) {
       // Création d'un nouvel utilisateur admin

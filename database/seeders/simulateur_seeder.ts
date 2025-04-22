@@ -10,11 +10,11 @@ export default class SimulateurSeeder extends BaseSeeder {
     // Créer le simulateur principal
     const simulateur = await Simulateur.create({
       slug: 'demenagement-logement',
-      title: 'Déménagement et logement',
+      title: 'Aides financières au déménagement et au logement',
       description:
         'Répondez à ces questions pour découvrir les aides au logement et déménagement auxquelles vous pourriez être éligible',
       shortTitle: 'Logement',
-      pictogramPath: '/icons/logement.svg',
+      pictogramPath: '/artworks/custom-pictograms/demenagement.svg',
       status: 'published',
     })
 

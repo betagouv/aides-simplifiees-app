@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ref, computed, toRef } from 'vue'
+import { useSurveysStore } from '~/stores/survey'
+
 const props = defineProps<{
   simulateurId: string
 }>()

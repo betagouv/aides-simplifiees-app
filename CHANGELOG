@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.5.0
+* Dsfr Link
+* Détail :
+  * Adaptation du layout du formulaire
+  * Ajout d\'utils du formulaire
+
 ## 0.4.0
 * Imports des utils et affichage du formulaire
 * Détail :

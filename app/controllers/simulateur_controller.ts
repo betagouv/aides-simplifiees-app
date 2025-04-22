@@ -74,4 +74,9 @@ export default class SimulateurController {
       })
     }
   }
+
+  public async resultats({ inertia }: HttpContext) {
+    dd(inertia)
+    return inertia.render('resultats/resultats')
+  }
 }

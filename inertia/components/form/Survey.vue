@@ -6,6 +6,7 @@ import { useIframeDisplay } from '~/composables/useIframeDisplay'
 import { useMatomo } from '~/composables/useMatomo'
 import SurveyForm from './SurveyForm.vue'
 import LoadingSpinner from '~/components/shared/LoadingSpinner.vue'
+import DsfrLink from '../DsfrLink.vue'
 
 // Définir les props
 const props = defineProps<{

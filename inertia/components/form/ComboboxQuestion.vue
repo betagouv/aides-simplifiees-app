@@ -2,6 +2,7 @@
 import { ComponentPublicInstance, computed, nextTick, ref, watch } from 'vue'
 import { useAutoCompleteHistoryStore } from '~/stores/autocomplete-history'
 import { AutocompleteFn } from '~/utils/autocompleteFunctions'
+import LoadingSpinner from '../shared/LoadingSpinner.vue'
 const props = withDefaults(
   defineProps<{
     question: SurveyQuestion

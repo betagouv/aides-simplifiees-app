@@ -5,10 +5,13 @@ import env from '#start/env'
 export default class UserSeeder extends BaseSeeder {
   async run() {
     // Récupération du mot de passe admin depuis l'env
+    //Configure in .env
     const adminPassword = env.get('ADMIN_PASSWORD')
     const adminLogin = env.get('ADMIN_LOGIN')
     // Vérification si l'admin existe déjà
     const existingAdmin = await User.findBy('email', adminLogin)
+    
+    
 
     if (!existingAdmin) {
       // Création d'un nouvel utilisateur admin
@@ -20,6 +23,7 @@ export default class UserSeeder extends BaseSeeder {
       })
 
       console.log('✓ Admin user created')
+      
     } else {
       // Mise à jour de l'utilisateur existant si nécessaire
       if (!existingAdmin.isAdmin) {

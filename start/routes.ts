@@ -29,6 +29,8 @@ router.get('/statistiques', [HomeController, 'statistiques'])
 
 router.get('/api/statistics', [ApiController, 'statistics'])
 router.get('/api/autocomplete/communes', [ApiController, 'autocompleteCommunes'])
+router.post('/api/calculate', [ApiController, 'openFiscaCalculate'])
+router.post('/api/store-form-data', [ApiController, 'storeFormData'])
 
 // Routes publiques
 router.get('/content/:slug', [ContentController, 'showPage'])
@@ -39,6 +41,7 @@ router.get('/aides/:slug', [ContentController, 'showAide'])
 
 //Simulateurs
 router.get('/simulateurs/:slug', [SimulateurController, 'showSimulateur'])
+router.get('/simulateurs/:slug/resultats/:hash', [SimulateurController, 'resultats'])
 
 // Routes d'administration protégées
 router

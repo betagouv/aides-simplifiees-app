@@ -12,6 +12,8 @@ import {
   menagesVariables,
 } from '~/utils/aides-mapping-inputs'
 
+import axios from 'axios'
+
 function initDates() {
   const today = new Date()
   const todayAsString = today.toISOString() // YYYY-MM-DD
@@ -596,27 +598,34 @@ export async function fetchOpenFiscaFranceCalculation(
   // eslint-disable-next-line no-console
   console.debug(request)
 
-  const requestSettings = {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  }
+  try {
+    // Utiliser Axios pour faire la requête avec des en-têtes supplémentaires
+    const response = await axios.post('/api/calculate', request, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', // Indique une requête AJAX
+      },
+    })
 
-  // Utiliser notre API serveur pour faire la requête
-  const response = await fetch('/api/calculate', requestSettings)
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching calculation:', error)
 
-  let result = await response.json()
-  if (!response.ok) {
-    result = {
-      error: response.status,
-      message: result,
+    // Si l'erreur contient une réponse du serveur
+    if (error.response) {
+      return {
+        error: error.response.status,
+        message: error.response.data,
+      }
+    }
+
+    // Erreur générique
+    return {
+      error: 'network_error',
+      message: error.message,
     }
   }
-
-  return result
 }
 
 /**

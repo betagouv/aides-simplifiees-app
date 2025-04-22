@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, toRef, ref, watch } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import { useIframeDisplay } from '~/composables/useIframeDisplay'
 import { useMatomo } from '~/composables/useMatomo'
@@ -97,7 +97,11 @@ function handleFormComplete(): void {
   submissionStore.submitForm(simulateurId.value, simulateurAnswers).then((success: boolean) => {
     if (success) {
       setTimeout(() => {
-        window.location.href = `/simulateurs/${simulateurId.value}/resultats#simulateur-title`
+        //Inertia router redirection instead of window.location.href
+        const secureHash = submissionStore.getSecureHash(simulateurId.value)
+        router.visit(`/simulateurs/${simulateurId.value}/resultats/${secureHash}#simulateur-title`)
+
+        //window.location.href = `/simulateurs/${simulateurId.value}/resultats#simulateur-title`
       }, 1000)
     } else {
       setTimeout(() => {

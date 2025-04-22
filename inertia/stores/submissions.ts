@@ -4,12 +4,15 @@ import { useMatomo } from '~/composables/useMatomo'
 import { useSurveyDebugStore } from '~/stores/survey-debug'
 import { extractAidesResults } from '~/utils/beautify-results'
 import { buildRequest, fetchOpenFiscaFranceCalculation } from '~/utils/calculate-aides'
+import axios from 'axios'
+import { router } from '@inertiajs/vue3'
 
 export const useSubmissionStore = defineStore(
   'submissions',
   () => {
     const results = ref<{ [id: string]: SurveyResults }>({})
     const submissionStatus = ref<{ [id: string]: 'idle' | 'pending' | 'success' | 'error' }>({})
+    const secureHashes = ref<{ [id: string]: string }>({})
 
     const { debug } = useSurveyDebugStore()
 
@@ -37,6 +40,14 @@ export const useSubmissionStore = defineStore(
       submissionStatus.value[simulateurId] = status
     }
 
+    const getSecureHash = (simulateurId: string) => {
+      return secureHashes.value[simulateurId]
+    }
+
+    const setSecureHash = (simulateurId: string, hash: string) => {
+      secureHashes.value[simulateurId] = hash
+    }
+
     const submitForm = async (simulateurId: string, answers: any) => {
       debug.log('[Submission Store] submitForm', simulateurId, answers)
 
@@ -58,15 +69,13 @@ export const useSubmissionStore = defineStore(
 
         debug.log('[Submission Store] openfiscaResponse', openfiscaResponse)
 
-        const results: SimulationResultsAides = extractAidesResults(
+        const aidesResults: SimulationResultsAides = extractAidesResults(
           openfiscaResponse,
           questionsToApi
         )
 
-        debug.log('Results from OpenFisca:', results)
-
-        if (results) {
-          setResults(simulateurId, results)
+        if (aidesResults) {
+          setResults(simulateurId, aidesResults)
           setSubmissionStatus(simulateurId, 'success')
 
           // Track form submission in Matomo
@@ -75,19 +84,39 @@ export const useSubmissionStore = defineStore(
 
           // Store form data and results
           try {
-            const storeResponse = await $fetch('/api/store-form-data', {
-              method: 'POST',
-              body: {
+            const storeResponse = await axios.post(
+              '/api/store-form-data',
+              {
                 simulateurId,
                 answers,
-                results,
+                results: aidesResults,
               },
-            })
+              {
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'X-Requested-With': 'XMLHttpRequest',
+                },
+              }
+            )
 
-            if (storeResponse.success) {
-              debug.log('[Submission Store] Form data stored successfully:', storeResponse)
+            if (storeResponse.data.success) {
+              debug.log('[Submission Store] Form data stored successfully:', storeResponse.data)
+
+              // Store the secure hash for potential future use
+              if (storeResponse.data.secureHash) {
+                setSecureHash(simulateurId, storeResponse.data.secureHash)
+              }
+
+              // If we have a results URL, navigate to it
+              if (storeResponse.data.resultsUrl) {
+                router.visit(storeResponse.data.resultsUrl)
+              } else {
+                // Fallback to the standard results page
+                router.visit(`/simulateurs/${simulateurId}/resultats`)
+              }
             } else {
-              console.error('[Submission Store] Failed to store form data:', storeResponse)
+              console.error('[Submission Store] Failed to store form data:', storeResponse.data)
             }
           } catch (storageError) {
             console.error('[Submission Store] Error storing form data:', storageError)
@@ -109,16 +138,19 @@ export const useSubmissionStore = defineStore(
     return {
       results,
       submissionStatus,
+      secureHashes,
       setResults,
       getResults,
       getSubmissionStatus,
       setSubmissionStatus,
+      getSecureHash,
+      setSecureHash,
       submitForm,
     }
   },
   {
     persist: {
-      pick: ['results'],
+      pick: ['results', 'secureHashes'],
     },
   }
 )

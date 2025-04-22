@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import type { DsfrCardProps } from '@gouvminint/vue-dsfr'
+import { ref, computed } from 'vue'
+import AideCard from '~/components/aides/AideCard.vue'
 
 type AidesListProps = {
   aides: RichAide[]

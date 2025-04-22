@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+
 withDefaults(
   defineProps<{
     montant: number
@@ -12,7 +14,7 @@ withDefaults(
 
 <template>
   <div class="brand-montant fr-text--alt" :class="[`brand-montant--${size}`]">
-    <div class="brand-montant__label">{{ montant.toFixed(0) }}€</div>
+    <p class="brand-montant__label fr-m-0">{{ montant.toFixed(0) }}€</p>
   </div>
 </template>
 
@@ -39,6 +41,7 @@ withDefaults(
   .brand-montant__label {
     position: relative;
     z-index: 1;
+    font-size: inherit;
   }
   &::after {
     content: '';

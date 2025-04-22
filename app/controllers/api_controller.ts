@@ -3,6 +3,7 @@ import axios from 'axios'
 import matomoConfig from '#config/matomo'
 import { dd } from '@adonisjs/core/services/dumper'
 import env from '#start/env'
+import FormSubmission from '#models/form_submission'
 
 // Configuration constants
 const WEEKS_TO_FETCH = 4
@@ -319,7 +320,6 @@ export default class ApiController {
 
       // Get OpenFisca API URL from environment
       const openFiscaUrl = env.get('OPENFISCA_URL')
-      console.log('openFiscaUrl:', openFiscaUrl)
 
       // Make request to OpenFisca API
       const apiResponse = await axios.post(openFiscaUrl, requestBody, {
@@ -330,6 +330,7 @@ export default class ApiController {
       })
 
       // Return the result
+
       return response.status(200).json(apiResponse.data)
     } catch (error: any) {
       console.error('Error in OpenFisca calculation API:', error)
@@ -346,6 +347,50 @@ export default class ApiController {
       return response.status(500).json({
         error: 500,
         message: 'Internal Server Error',
+      })
+    }
+  }
+
+  public async storeFormData({ request, response }: HttpContext) {
+    try {
+      // Get the JSON body from the request
+      const { simulateurId, answers, results } = request.body()
+
+      // Log the received data
+      console.log(`[API] Storing form data for simulator: ${simulateurId}`)
+
+      // Debug: Log the type and structure of the results for debugging
+      console.log('Results data type:', typeof results)
+      console.log('Results data is array?', Array.isArray(results))
+
+      // Create a new FormSubmission record
+      const submission = await FormSubmission.create({
+        simulatorId: simulateurId,
+        answers,
+        results,
+      })
+
+      // Get the URL for viewing results
+      const resultsUrl = submission.getResultsUrl()
+
+      // Debug: Log the created submission
+      console.log('Created submission ID:', submission.id)
+      console.log('Created submission secureHash:', submission.secureHash)
+
+      return response.status(200).json({
+        success: true,
+        message: 'Form data stored successfully',
+        submissionId: submission.id,
+        secureHash: submission.secureHash,
+        resultsUrl,
+      })
+    } catch (error: any) {
+      console.error('Error storing form data:', error)
+
+      return response.status(500).json({
+        success: false,
+        error: 'Failed to store form data',
+        details: error.message,
       })
     }
   }

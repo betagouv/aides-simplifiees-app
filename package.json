@@ -1,6 +1,6 @@
 {
   "name": "as",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
@@ -40,6 +40,7 @@
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.2.0",
     "@swc/core": "1.10.16",
+    "@types/crypto-js": "^4.2.2",
     "@types/luxon": "^3.6.0",
     "@types/node": "^22.13.2",
     "@vitejs/plugin-vue": "^5.2.3",
@@ -70,6 +71,7 @@
     "@vue/server-renderer": "^3.5.13",
     "@vueuse/core": "^13.1.0",
     "axios": "^1.8.4",
+    "crypto-js": "^4.2.0",
     "edge.js": "^6.2.1",
     "luxon": "^3.6.1",
     "marked": "^15.0.8",

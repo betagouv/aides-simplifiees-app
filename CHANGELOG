@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 0.6.0
+* Intégration du flux de résultats
+* Détail :
+  * Intégration de la page de résultats
+  * Adaptation des modèles (formSubmission)
+  * Affichage dynamique des aides et résultats de simulation
+  * Ajout d'un hash pour le partage des résultats
+
+
 ## 0.5.0
 * Dsfr Link
 * Détail :

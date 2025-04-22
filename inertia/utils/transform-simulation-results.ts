@@ -1,10 +1,13 @@
+import { formatDateTime } from './date-time.js'
+
 /**
  * Transforms raw aides data from OpenFisca into rich content for UI display
  */
 export async function transformSimulationResults(
   calculationResponse: SimulationResultsAides,
   createdAt: Date,
-  simulateurId: string
+  simulateurId: string,
+  aidesBySlug: unknown
 ): Promise<RichSimulationResults> {
   const simulationDateTime = formatDateTime(createdAt)
   const rawAides: RawAide[] = Object.entries(calculationResponse).reduce((acc, [key, value]) => {
@@ -44,9 +47,7 @@ export async function transformSimulationResults(
   }
 
   async function getRichAide(rawAide: RawAide): Promise<RichAide | null> {
-    const aideDetails = await queryCollection('aides')
-      .where('stem', '=', `aides/${rawAide.id}`)
-      .first()
+    const aideDetails = aidesBySlug[rawAide.id]
 
     if (!aideDetails) {
       return null

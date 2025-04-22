@@ -1,22 +1,25 @@
 <script lang="ts" setup>
 import type { DsfrCardProps } from '@gouvminint/vue-dsfr'
-import TypeAideTag from './TypeAideTag.vue'
+import TypeAideTag from '~/components/aides/TypeAideTag.vue'
+import AideMontant from '~/components/aides/AideMontant.vue'
 
 type AideCardProps = {
   link: string
-  title: string
+  titre: string
   description: string
-  typeAide: string
+  typeAide: TypeAide
   montant?: number
   instructeur: string
 } & Pick<DsfrCardProps, 'horizontal' | 'size' | 'titleTag'>
 
-defineProps<AideCardProps>()
+const props = defineProps<AideCardProps>()
+
+const periode = props.titre?.match('APL') ? '/mois' : undefined
 </script>
 
 <template>
   <DsfrCard
-    :title="title"
+    :title="titre"
     :description="description"
     :link="link"
     :detail="instructeur"
@@ -35,7 +38,11 @@ defineProps<AideCardProps>()
           </ul>
         </div>
         <div v-if="montant" class="brand-aide-card__details-right">
+          <span class="fr-mr-3v">jusqu'à</span>
           <AideMontant :montant="montant" :size="size" />
+          <p v-if="periode" class="brand-montant-periode fr-mb-n1v fr-text--bold fr-text--alt">
+            {{ periode }}
+          </p>
         </div>
       </div>
     </template>
@@ -51,5 +58,9 @@ defineProps<AideCardProps>()
 
 :deep(.fr-card__detail svg) {
   margin-right: 0.5rem;
+}
+
+.brand-montant-periode {
+  display: inline-block;
 }
 </style>

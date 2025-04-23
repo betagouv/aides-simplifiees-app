@@ -53,7 +53,7 @@ router
       // Recapitulatif
     router.get('/simulateurs/:slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
     router.get('/simulateurs/:slug/resultats/:hash', [SimulateurController, 'resultats'])
-    router.get('/simulateurs/:slug/details', [SimulateurController, 'showDetails'])
+    router.get('/simulateurs/:simulateur_slug/notions/:notion_slug', [ContentController, 'showSimulateurNotion'])
   })
   .middleware([middleware.preserveDebugParam()])
 

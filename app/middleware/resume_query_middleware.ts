@@ -18,7 +18,7 @@ export default class ResumeQueryMiddleware {
     // Check if coming from pages where we should force resume
     const shouldForceResume = [
       /\/simulateurs\/[^/]+\/recapitulatif$/,
-      /\/simulateurs\/[^/]+\/notion\/[^/]+$/,
+      /\/simulateurs\/[^/]+\/notions\/[^/]+$/,
       /\/simulateurs\/[^/]+\/resultats$/,
     ].some(pattern => pattern.test(refererUrl.pathname))
 

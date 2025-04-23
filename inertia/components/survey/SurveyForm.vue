@@ -118,7 +118,8 @@ function handlePrevious() {
   const wentToPrev = surveysStore.goToPreviousQuestion(simulateurId.value)
   if (wentToPrev) {
     focusRenderedQuestion()
-  } else {
+  }
+  else {
     surveysStore.setShowWelcomeScreen(simulateurId.value, true)
   }
 }
@@ -211,7 +212,7 @@ function handleComplete() {
         icon-right
         class="fr-mb-2w"
         @click="() => {
-          router.visit(`/simulateurs/${simulateurId}/${currentQuestion?.notion.id}#simulateur-title`)
+          router.visit(`/simulateurs/${simulateurId}/notions/${currentQuestion?.notion.id}#simulateur-title`)
         }"
       />
       <component

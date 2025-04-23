@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "node bin/server.js",
-    "build": "node ace build",
+    "build": "node ace build && pnpm build:iframe-integration",
     "build:iframe-integration": "vite build --config vite.iframe-integration.config.ts",
     "dev": "node ace serve --hmr",
     "test": "node ace test",
@@ -47,6 +47,7 @@
     "@gouvfr/dsfr-chart": "^2.0.3",
     "@gouvminint/vue-dsfr": "^8.3.1",
     "@iframe-resizer/child": "^5.4.5",
+    "@iframe-resizer/parent": "^5.4.5",
     "@inertiajs/vue3": "^2.0.6",
     "@vinejs/vine": "^3.0.0",
     "@vue/server-renderer": "^3.5.13",

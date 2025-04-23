@@ -50,6 +50,9 @@ importers:
       '@iframe-resizer/child':
         specifier: ^5.4.5
         version: 5.4.5
+      '@iframe-resizer/parent':
+        specifier: ^5.4.5
+        version: 5.4.5
       '@inertiajs/vue3':
         specifier: ^2.0.6
         version: 2.0.8(vue@3.5.13(typescript@5.7.3))
@@ -807,6 +810,12 @@ packages:
 
   '@iframe-resizer/child@5.4.5':
     resolution: {integrity: sha512-VgTq7YkfjHgv3Iqr4+Px3dp2NdBVM4AyS3qpaYGL5vThXCEEKDwq4k/XxxcyiyMrUfEOawQqfKLAfEWh3O9cwg==}
+
+  '@iframe-resizer/core@5.4.5':
+    resolution: {integrity: sha512-Z5euppksu94VgJ+kM15eE3H0LDHpYjEq9Hh64HpswL2N3dt9i0ryD4AKAq0AcqJMDAUls4tkRfS9bGd1ZC+t4w==}
+
+  '@iframe-resizer/parent@5.4.5':
+    resolution: {integrity: sha512-pyukh5DJILIylEiEvWTKdsN2bS9z75QAObkAGXxEbeXEwUvSsHC/CR06W3yW9J3WIYgdven6V4GlEVoAfnK/9g==}
 
   '@inertiajs/core@2.0.8':
     resolution: {integrity: sha512-YE+b5FktbSSaWJt4CjCHy7z3t+IV97G/8kD33mkj2Fqqf+Jfsypd/jsOuxrQGSMDpIyAGR6EDoaiuss6+JuIPA==}
@@ -4941,6 +4950,15 @@ snapshots:
 
   '@iframe-resizer/child@5.4.5':
     dependencies:
+      auto-console-group: 1.2.9
+
+  '@iframe-resizer/core@5.4.5':
+    dependencies:
+      auto-console-group: 1.2.9
+
+  '@iframe-resizer/parent@5.4.5':
+    dependencies:
+      '@iframe-resizer/core': 5.4.5
       auto-console-group: 1.2.9
 
   '@inertiajs/core@2.0.8':

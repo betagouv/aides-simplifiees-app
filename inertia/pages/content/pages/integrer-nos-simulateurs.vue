@@ -1,23 +1,17 @@
 <script lang="ts" setup>
 import { DsfrAccordion, DsfrAccordionsGroup, DsfrCallout, DsfrSelect, DsfrTable } from '@gouvminint/vue-dsfr'
-import { Head, usePage } from '@inertiajs/vue3'
+import { Head } from '@inertiajs/vue3'
 import { computed, onMounted, ref, watch } from 'vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-const IFRAME_SCRIPT_VERSION = '1.0.0'
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Intégrer nos simulateurs', to: '/integrer-nos-simulateurs' },
 ])
-
-// useSeoMeta({
-//   title: 'Intégrer nos simulateurs d\'aides sur votre plateforme | Aides simplifiées',
-//   description: 'Offrez à vos usagers un accès simple aux aides pertinentes en intégrant nos simulateurs via API ou iFrame. Solution clé en main, rapide à mettre en place.',
-// })
 
 // Choix du simulateur
 const simulateurs = ref([
@@ -25,11 +19,13 @@ const simulateurs = ref([
 ])
 const selectedSimulateur = ref('demenagement-logement')
 
-const page = usePage()
 // Inclusion du script
-const scriptPath = `/iframe-integration@${IFRAME_SCRIPT_VERSION}.js`
+const scriptPath = `/iframe-integration.js`
 const fullScript = computed(() => {
-  const origin = page.props.origin
+  if (import.meta.env.SSR) {
+    return ''
+  }
+  const origin = window.location.origin
   let script = `<script src="${origin}${scriptPath}"`
 
   script += ` data-simulateur="${selectedSimulateur.value}"`
@@ -46,13 +42,10 @@ function setIframeContainer(): void {
   }
   // Nettoyer le conteneur
   iframeContainer.value.innerHTML = ''
-
+  const origin = window.location.origin
   // Créer et ajouter le script d'intégration
   const script = document.createElement('script')
-  const origin = page.props.origin
   script.src = `${origin}${scriptPath}`
-
-  // Ajouter les attributs data-* selon les options sélectionnées
   script.dataset.simulateur = selectedSimulateur.value
   iframeContainer.value.appendChild(script)
 }
@@ -127,7 +120,7 @@ window.addEventListener('aides-simplifiees-message', function(event) {
       </hgroup>
       <div :style="{ maxWidth: '48em' }">
         <DsfrAccordionsGroup
-          :expanded-id="activeAccordion"
+          v-model="activeAccordion"
         >
           <DsfrAccordion
             id="accordion-1"

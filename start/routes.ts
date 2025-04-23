@@ -32,6 +32,11 @@ router.get('/api/autocomplete/communes', [ApiController, 'autocompleteCommunes']
 router.post('/api/calculate', [ApiController, 'openFiscaCalculate'])
 router.post('/api/store-form-data', [ApiController, 'storeFormData'])
 
+const IFRAME_SCRIPT_VERSION = '1.0.1'
+router.get('/iframe-integration.js', ({ response }) => {
+  response.redirect(`/assets/iframe-integration@${IFRAME_SCRIPT_VERSION}.js`)
+})
+
 // Routes publiques
 router.get('/content/:slug', [ContentController, 'showPage'])
 router.get('/notions', [ContentController, 'listNotions'])

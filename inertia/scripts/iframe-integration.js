@@ -35,17 +35,8 @@ import iframeResize from '@iframe-resizer/parent'
   const waitForLoad = currentScript.dataset.waitForLoad !== 'false'
   const containerId = currentScript.dataset.containerId || 'aides-simplifiees-iframe-container'
 
-  // Construire l'URL du simulateur
-  let baseUrl
-  if (currentScript.src.includes('localhost')) {
-    // Environnement de développement
-    baseUrl = 'http://localhost:3000'
-  }
-  else {
-    // Extraire l'origine de l'URL du script
-    const scriptUrl = new URL(currentScript.src)
-    baseUrl = scriptUrl.origin
-  }
+  const scriptUrl = new URL(currentScript.src)
+  const baseUrl = scriptUrl.origin
 
   const src = new URL(`${baseUrl}/simulateurs/${selectedSimulator}`)
 

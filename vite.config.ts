@@ -20,4 +20,12 @@ export default defineConfig({
       '~/': `${getDirname(import.meta.url)}/inertia/`,
     },
   },
+
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '@use \'~/styles/dsfr-spacings\' as dsfr;',
+      },
+    },
+  },
 })

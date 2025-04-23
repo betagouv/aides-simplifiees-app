@@ -111,7 +111,7 @@ const activeAccordion = ref<number>(activeQuestionGroupIndex.value)
   </div>
 </template>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 .question-row {
   display: flex;
   justify-content: space-between;

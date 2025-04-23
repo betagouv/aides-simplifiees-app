@@ -9,13 +9,14 @@ import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createSSRApp, h } from 'vue'
 import VueMatomo from 'vue-matomo'
-
 import { getLayout } from './shared'
-import '../css/app.css'
-// Import DSFR styles and components
-import '@gouvfr/dsfr/dist/dsfr.min.css'
 
-import '@gouvfr/dsfr/dist/utility/utility.min.css'
+import '@gouvfr/dsfr/dist/core/core.main.min.css'
+import '@gouvfr/dsfr/dist/component/component.main.min.css'
+import '@gouvfr/dsfr/dist/utility/utility.main.min.css'
+import '@gouvfr/dsfr/dist/scheme/scheme.min.css'
+import '@gouvminint/vue-dsfr/styles'
+import '~/styles/main.scss'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 

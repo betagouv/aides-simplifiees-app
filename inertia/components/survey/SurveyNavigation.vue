@@ -29,7 +29,6 @@ defineProps<{
 </template>
 
 <style scoped lang="scss">
-@use '~/css/dsfr-spacings' as dsfr;
 .survey-btns {
   justify-content: flex-end;
   .survey-btn {

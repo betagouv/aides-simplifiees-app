@@ -1,22 +1,11 @@
-* {
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  height: 100%;
-  width: 100%;
-}
-
-/* TODO: @Lucas : quel est le sens de cette importation ? */
 @forward 'dsfr-patch';
 
 :root {
-  --grey-1000: #ffffff;
-  --grey-850: #cecece;
+  // Colors
+  --grey-1000: #FFFFFF;
+  --grey-850: #CECECE;
   --pink-macaron-850: #fcc0b4;
-  /* Semantic tokens */
+  // Semantic tokens
   --brand-contrast-text: var(--grey-1000);
   --brand-contrast-text--disabled: var(--grey-850);
   --brand-contrast-text--highlight: var(--pink-macaron-850);
@@ -49,14 +38,14 @@ html {
 
 .brand-title-gradient,
 .fr-header__service-title {
-  [data-fr-theme='light'] & {
-    background: linear-gradient(45deg, #2828b2 30%, #8f8ffc 100%);
+  [data-fr-theme="light"] & {
+    background: linear-gradient(45deg, #2828B2 30%, #8F8FFC 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  [data-fr-theme='dark'] & {
-    background: linear-gradient(45deg, #8585f6 30%, #ccccfa 100%);
+  [data-fr-theme="dark"] & {
+    background: linear-gradient(45deg, #8585F6 30%, #CCCCFA 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

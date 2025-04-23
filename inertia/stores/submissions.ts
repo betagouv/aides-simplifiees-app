@@ -1,4 +1,3 @@
-import { router } from '@inertiajs/vue3'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -107,20 +106,15 @@ export const useSubmissionStore = defineStore(
                 setSecureHash(simulateurId, storeResponse.data.secureHash)
               }
 
-              // If we have a results URL, navigate to it
-              if (storeResponse.data.resultsUrl) {
-                router.visit(storeResponse.data.resultsUrl)
-              }
-              else {
-                // Fallback to the standard results page
-                router.visit(`/simulateurs/${simulateurId}/resultats`)
-              }
+              return true
             }
             else {
+              setSubmissionStatus(simulateurId, 'error')
               console.error('[Submission Store] Failed to store form data:', storeResponse.data)
             }
           }
           catch (storageError) {
+            setSubmissionStatus(simulateurId, 'error')
             console.error('[Submission Store] Error storing form data:', storageError)
           }
 

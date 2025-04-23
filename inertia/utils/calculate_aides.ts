@@ -653,21 +653,7 @@ export async function fetchOpenFiscaFranceCalculation(
     return response.data
   }
   catch (error: any) {
-    console.error('Error fetching calculation:', error)
-
-    // Si l'erreur contient une réponse du serveur
-    if (error.response) {
-      return {
-        error: error.response.status,
-        message: error.response.data,
-      }
-    }
-
-    // Erreur générique
-    return {
-      error: 'network_error',
-      message: error.message,
-    }
+    throw new Error(error)
   }
 }
 

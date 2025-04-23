@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build",
+    "build:iframe-integration": "vite build --config vite.iframe-integration.config.ts",
     "dev": "node ace serve --hmr",
     "test": "node ace test",
     "lint": "eslint .",

@@ -213,7 +213,9 @@ const quickLinks = computed(() => {
         aides simplifiées
       </Link>
     </template>
-    <template #mainnav>
+    <template
+      #mainnav="{ hidemodal }"
+    >
       <nav
         class="fr-nav"
         role="navigation"
@@ -224,6 +226,7 @@ const quickLinks = computed(() => {
             v-for="(item, index) in navItems"
             :key="index"
             class="fr-nav__item"
+            @click="hidemodal"
           >
             <Link
               v-if="!item.target"

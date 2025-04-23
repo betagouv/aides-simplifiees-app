@@ -1,5 +1,4 @@
 import type { DsfrSelectProps } from '@gouvminint/vue-dsfr'
-import { useRuntimeConfig } from '#app'
 
 /**
  * Fonctions d'autocomplétion pour les formulaires

@@ -1,18 +1,19 @@
 <script lang="ts" setup generic="T, U">
-import { ComponentPublicInstance, computed, nextTick, ref, watch } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
+import type { AutocompleteFn } from '~/utils/autocompleteFunctions'
+import { DsfrAlert, DsfrInput, DsfrSearchBar, DsfrSelect } from '@gouvminint/vue-dsfr'
+import { useAsyncState } from '@vueuse/core'
+import { computed, nextTick, ref, watch } from 'vue'
+import LoadingSpinner from '~/components/LoadingSpinner.vue'
 import { useAutoCompleteHistoryStore } from '~/stores/autocomplete-history'
-import { AutocompleteFn } from '~/utils/autocompleteFunctions'
-import LoadingSpinner from '../shared/LoadingSpinner.vue'
-const props = withDefaults(
-  defineProps<{
-    question: SurveyQuestion
-    autocompleteFn: AutocompleteFn
-    autocompleteConfig?: SurveyQuestionAutocompleteConfig
-  }>(),
-  {
-    autocompleteConfig: () => ({}),
-  }
-)
+
+const props = withDefaults(defineProps<{
+  question: SurveyQuestion
+  autocompleteFn: AutocompleteFn
+  autocompleteConfig?: SurveyQuestionAutocompleteConfig
+}>(), {
+  autocompleteConfig: () => ({}),
+})
 
 const defaultConfig = {
   placeholder: 'Rechercher',
@@ -49,59 +50,24 @@ const activeDescendant = ref<string | null>(null)
 const optionsContainerId = `options-list-${props.question.id}`
 const comboboxId = `combobox-${props.question.id}`
 
-// Custom implementation to replace useAsyncData
-function useCustomAsyncData(
-  key: string,
-  fn: () => Promise<any>,
-  options: { lazy?: boolean; immediate?: boolean; default?: () => any } = {}
-) {
-  // Create reactive refs for data and status
-  const data = ref(options.default ? options.default() : null)
-  const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
+const { state: selectOptions, isLoading, isReady, error, execute: refresh } = useAsyncState(
+  () => props.autocompleteFn(query.value),
+  [], // initial state
+  { immediate: false },
+)
 
-  // Function to execute the fetch operation
-  const refresh = async () => {
-    try {
-      status.value = 'pending'
-      const result = await fn()
-      data.value = result
-      status.value = 'success'
-      return result
-    } catch (error) {
+const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
+watch([isLoading, isReady, error], () => {
+  if (isLoading.value) {
+    status.value = 'pending'
+  } else if (isReady.value) {
+    if (error.value) {
       status.value = 'error'
-      console.error('Error in useCustomAsyncData:', error)
-      return null
+    } else {
+      status.value = 'success'
     }
   }
-
-  // Clear function to reset the data
-  const clear = () => {
-    data.value = options.default ? options.default() : null
-    status.value = 'idle'
-  }
-
-  // Auto-execute if not lazy and immediate
-  if (!options.lazy && options.immediate !== false) {
-    refresh()
-  }
-
-  return { data, status, refresh, clear }
-}
-
-const {
-  data: selectOptions,
-  status,
-  refresh,
-  clear,
-} = useCustomAsyncData(
-  `autocomplete-${props.question.id}`,
-  () => props.autocompleteFn(query.value),
-  {
-    lazy: true,
-    immediate: false,
-    default: () => [],
-  }
-)
+})
 
 const debounceStatus = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 const statusMessage = ref<string>('')
@@ -133,9 +99,9 @@ watch(status, (newStatus) => {
   }
 })
 
-async function handleSearch() {
+function handleSearch() {
   if (query.value.trim()) {
-    await refresh()
+    refresh()
     lastSentQuery.value = query.value
     model.value = undefined
   }
@@ -144,7 +110,6 @@ async function handleSearch() {
 function clearInput() {
   query.value = ''
   model.value = undefined
-  clear()
   statusMessage.value = 'Recherche réinitialisée'
   // Return focus to search input after clearing
   nextTick(() => {
@@ -160,7 +125,7 @@ function handleOptionFocus(optionId: string) {
 const { getHistory, addHistory } = useAutoCompleteHistoryStore()
 // Track when options are selected
 function handleOptionSelect(value: string | number) {
-  const option = selectOptions.value.find((opt: any) => {
+  const option = selectOptions.value.find((opt) => {
     return (opt as { value: string; text: string }).value === value
   }) as { value: string; text: string }
   addHistory(props.question.id, value, option.text)
@@ -200,17 +165,31 @@ const selectedValue = computed(() => {
     />
 
     <!-- Status announcer for screen readers -->
-    <div aria-live="polite" class="sr-only" role="status">
+    <div
+      aria-live="polite"
+      class="sr-only"
+      role="status"
+    >
       {{ statusMessage }}
     </div>
 
     <!-- Results region -->
-    <div :id="searchResultsId" aria-atomic="true">
-      <div v-if="debounceStatus === 'pending'" class="fr-mt-6w fr-mb-2w">
+    <div
+      :id="searchResultsId"
+      aria-atomic="true"
+    >
+      <div
+        v-if="debounceStatus === 'pending'"
+        class="fr-mt-6w fr-mb-2w"
+      >
         <LoadingSpinner :text="config.loadingText" />
       </div>
 
-      <div v-else-if="debounceStatus === 'error'" class="fr-mt-3w" aria-live="assertive">
+      <div
+        v-else-if="debounceStatus === 'error'"
+        class="fr-mt-3w"
+        aria-live="assertive"
+      >
         <DsfrAlert
           :id="`error-${question.id}`"
           type="error"
@@ -232,11 +211,7 @@ const selectedValue = computed(() => {
           v-model="model"
           :options="selectOptions"
           :label="config.selectLabel"
-          :hint="
-            typeof config.selectHint === 'function'
-              ? config.selectHint(lastSentQuery)
-              : config.selectHint
-          "
+          :hint="typeof config.selectHint === 'function' ? config.selectHint(lastSentQuery) : config.selectHint"
           :default-unselected-text="config.defaultUnselectedText"
           aria-required="false"
           @update:model-value="handleOptionSelect"
@@ -256,8 +231,12 @@ const selectedValue = computed(() => {
           :description="config.noResultsText"
         />
       </div>
-      <template v-if="debounceStatus === 'idle' && model">
-        <div class="fr-mt-3w">
+      <template
+        v-if="debounceStatus === 'idle' && model"
+      >
+        <div
+          class="fr-mt-3w"
+        >
           <DsfrInput
             aria-hidden
             type="text"
@@ -266,15 +245,17 @@ const selectedValue = computed(() => {
             :model-value="selectedValue"
             disabled
           />
-          <p class="fr-sr-only">Votre sélection actuelle est : {{ selectedValue }}</p>
+          <p class="fr-sr-only">
+            Votre sélection actuelle est : {{ selectedValue }}
+          </p>
         </div>
       </template>
       <div
-        v-if="
-          debounceStatus === 'error' ||
-          (debounceStatus === 'idle' && model) ||
-          (debounceStatus === 'success' && model && lastSentQuery)
-        "
+        v-if="(
+          debounceStatus === 'error'
+          || (debounceStatus === 'idle' && model)
+          || (debounceStatus === 'success' && model && lastSentQuery)
+        )"
       >
         <DsfrButton
           :label="config.resetButtonLabel"

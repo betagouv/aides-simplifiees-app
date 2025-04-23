@@ -7,11 +7,6 @@ import UserSimulationLayout from '~/layouts/user-simulation.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import { useSurveysStore } from '~/stores/surveys'
 
-// definePageMeta({
-//   layout: 'user-simulation',
-//   middleware: ['check-iframe-layout', 'load-simulateur'],
-//   validate: getContentRouteValidator(['simulateur_id']),
-// })
 const page = usePage<{
   simulateur: {
     pictogramPath: string
@@ -39,13 +34,11 @@ surveysStore.loadSurveySchema(simulateurId.value)
 
 const groupedQuestions = computed(() => surveysStore.getGroupedAnsweredQuestions(simulateurId.value))
 const currentQuestionId = computed(() => surveysStore.getCurrentQuestionId(simulateurId.value))
-// const currentStepId = computed(() => surveysStore.getCurrentStepId(simulateurId.value))
-// const progress = computed(() => surveysStore.getProgress(simulateurId.value))
 const activeQuestionGroupIndex = computed(() => {
   const questionGroups = groupedQuestions.value
   const currentQuestionIdValue = currentQuestionId.value
-  return questionGroups.findIndex((group) =>
-    group.questions.some((question) => question.id === currentQuestionIdValue),
+  return questionGroups.findIndex(group =>
+    group.questions.some(question => question.id === currentQuestionIdValue),
   )
 })
 const activeAccordion = ref<number>(activeQuestionGroupIndex.value)

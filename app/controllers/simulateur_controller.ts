@@ -31,7 +31,7 @@ export default class SimulateurController {
       })
     })
 
-    return inertia.render('simulateurs/show', {
+    return inertia.render('simulateurs/simulateur', {
       simulateur,
       simulateurJson: JSON.parse(simulateur.builtJson || '{}'),
     })
@@ -58,7 +58,8 @@ export default class SimulateurController {
         success: true,
         data: JSON.parse(builtJson),
       })
-    } catch (error) {
+    }
+    catch (error) {
       return response.status(404).json({
         success: false,
         message: `Simulateur with id ${id} not found`,
@@ -76,7 +77,8 @@ export default class SimulateurController {
         message: 'Sample simulateur created successfully',
         simulateur,
       })
-    } catch (error) {
+    }
+    catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to create sample simulateur',
@@ -172,7 +174,8 @@ export default class SimulateurController {
           // Group by eligibility
           if (rawAide.eligibilite) {
             eligibleAides.push(richAide)
-          } else {
+          }
+          else {
             nonEligibleAides.push(richAide)
           }
         }
@@ -183,7 +186,7 @@ export default class SimulateurController {
 
       for (const aide of eligibleAides) {
         if (!aide.usage)
-continue
+          continue
 
         const currentTotal = montantsByUsage.get(aide.usage) || 0
         montantsByUsage.set(aide.usage, currentTotal + aide.montant)

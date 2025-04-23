@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Head } from '@inertiajs/vue3'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import Survey from '~/components/survey/Survey.vue'
 import { useIframeDisplay } from '~/composables/useIframeDisplay'
 import UserSimulationLayout from '~/layouts/user-simulation.vue'
@@ -21,12 +21,6 @@ const props = defineProps<{
   simulateurJson: Record<string, any>
 }>()
 
-// État local pour le paramètre resume
-const shouldResume = ref(false)
-
-// Récupérer la route courante
-const currentParams = computed(() => new URLSearchParams(window.location.search))
-
 // Définir les breadcrumbs
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -35,31 +29,7 @@ setBreadcrumbs([
   { text: props.simulateur.title, to: `/simulateurs/${props.simulateur.slug}#simulateur-title` },
 ])
 
-// Vérification si on vient d'une page qui justifie une reprise automatique
 onMounted(() => {
-  // Pour simuler l'effet du middleware de Nuxt pour la reprise auto
-  const fromPathname = document.referrer
-
-  const shouldForceResume = ['/recapitulatif', '/notion', '/resultats'].some((path) =>
-    fromPathname.includes(path),
-  )
-
-  if (shouldForceResume && !currentParams.value.has('resume')) {
-    // Ajouter resume=true et rafraîchir la page
-    const newUrl = new URL(window.location.href)
-    newUrl.searchParams.set('resume', 'true')
-    window.history.pushState({}, '', newUrl)
-    shouldResume.value = true
-  } else if (currentParams.value.get('resume') === 'true' && !shouldForceResume) {
-    // Supprimer le paramètre resume si on ne vient pas des pages concernées
-    const newUrl = new URL(window.location.href)
-    newUrl.searchParams.delete('resume')
-    window.history.pushState({}, '', newUrl)
-    shouldResume.value = false
-  } else if (currentParams.value.get('resume') === 'true') {
-    shouldResume.value = true
-  }
-
   // Script iframe-resizer pour mode iframe
   const { isIframe } = useIframeDisplay()
   if (isIframe.value) {

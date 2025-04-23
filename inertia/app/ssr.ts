@@ -1,9 +1,11 @@
 import type { DefineComponent } from 'vue'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import { addCollection } from '@iconify/vue'
 import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { renderToString } from '@vue/server-renderer'
 import { createPinia } from 'pinia'
 import { createSSRApp, h } from 'vue'
+import collections from '~/icon-collections'
 import { getLayout } from './shared'
 
 export default function render(page: any) {
@@ -25,6 +27,11 @@ export default function render(page: any) {
       ssrApp.use(plugin)
       const pinia = createPinia()
       ssrApp.use(pinia)
+
+      for (const collection of collections) {
+        addCollection(collection)
+      }
+
       ssrApp.component('RouterLink', {
         props: {
           to: {

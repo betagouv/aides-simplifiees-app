@@ -20,7 +20,6 @@ import VueMatomo from 'vue-matomo'
 
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
-console.log(import.meta.env)
 
 createInertiaApp({
   progress: { color: '#5468FF' },

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.7.1
+* Debug de Matomo
+* Détail :
+  * Ajout des  variabls d'environnement MATOMO_SITE_ID, MATOMO_URL dans le middleware inertia
+  * Ajout de la librairie vue-matomo
+
 ## 0.7.0
 * Debug et intégration de la liste des simulateurs
 * Détail :

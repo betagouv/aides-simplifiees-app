@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { Head } from '@inertiajs/vue3'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-import DefaultLayout from '../../layouts/default.vue'
-import BrandBackgroundContainer from '../../components/layout/BrandBackgroundContainer.vue'
-import SectionContainer from '../../components/layout/SectionContainer.vue'
-import BreadcrumbSectionContainer from '../../components/layout/BreadcrumbSectionContainer.vue'
+import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
+import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
+import SectionContainer from '~/components/layout/SectionContainer.vue'
 
 // Define props based on what's passed from ContentController.showAide
 const props = defineProps<{
@@ -22,51 +21,60 @@ const props = defineProps<{
   html: string
 }>()
 
-onMounted(() => {
-  const { setBreadcrumbs } = useBreadcrumbStore()
-  setBreadcrumbs([
-    { text: 'Accueil', to: '/' },
-    { text: 'Aides', to: '/aides' },
-    { text: props.aide.title, to: `/aides/${props.aide.slug}` },
-  ])
-})
+const { setBreadcrumbs } = useBreadcrumbStore()
+setBreadcrumbs([
+  { text: 'Accueil', to: '/' },
+  { text: 'Aides', to: '/aides' },
+  { text: props.aide.title, to: `/aides/${props.aide.slug}` },
+])
 </script>
 
 <template>
   <Head
     :title="`Aide '${aide.title}' | Aides simplifiées`"
     :description="
-      aide.description ||
-      `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`
+      aide.description
+        || `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`
     "
   />
-  <DefaultLayout>
-    <BrandBackgroundContainer>
-      <BreadcrumbSectionContainer />
-      <SectionContainer v-if="aide" type="page-header">
-        <article>
-          <header class="fr-mb-4w">
-            <h1>
-              {{ aide.title }}
-            </h1>
-          </header>
-          <div v-html="html"></div>
+  <BrandBackgroundContainer>
+    <BreadcrumbSectionContainer />
+    <SectionContainer
+      v-if="aide"
+      type="page-header"
+    >
+      <article>
+        <header class="fr-mb-4w">
+          <h1>
+            {{ aide.title }}
+          </h1>
+        </header>
+        <div v-html="html" />
 
-          <!-- Display textes de loi if available -->
-          <div v-if="aide.textesLoi && aide.textesLoi.length > 0" class="fr-mt-4w">
-            <h2>Textes de loi associés</h2>
-            <ul>
-              <li v-for="(texte, index) in aide.textesLoi" :key="index">
-                <a :href="texte.url" target="_blank" rel="noopener">
-                  {{ texte.prefix }} {{ texte.label }}
-                </a>
-              </li>
-            </ul>
-          </div>
-        </article>
-      </SectionContainer>
-    </BrandBackgroundContainer>
-  </DefaultLayout>
+        <!-- Display textes de loi if available -->
+        <div
+          v-if="aide.textesLoi && aide.textesLoi.length > 0"
+          class="fr-mt-4w"
+        >
+          <h2>Textes de loi associés</h2>
+          <ul>
+            <li
+              v-for="(texte, index) in aide.textesLoi"
+              :key="index"
+            >
+              <a
+                :href="texte.url"
+                target="_blank"
+                rel="noopener"
+              >
+                {{ texte.prefix }} {{ texte.label }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </article>
+    </SectionContainer>
+  </BrandBackgroundContainer>
 </template>
 
 <style scoped lang="scss">

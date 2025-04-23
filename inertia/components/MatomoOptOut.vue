@@ -1,53 +1,53 @@
-<script setup>
-import { onMounted, ref } from 'vue'
-import { getCookie, setCookie } from '~/utils/cookies'
+<script setup lang="ts">
+import { useMutationObserver, useScriptTag } from '@vueuse/core'
+import { nextTick, ref } from 'vue'
 
-const isModalOpen = ref(false)
-
-// Check if user has already consented
-function hasUserAnswered() {
-  return getCookie('has_answered_mtm_consent') === 'true'
-}
-
-function openModal() {
-  isModalOpen.value = true
-
-  // Use setTimeout to ensure the modal is rendered before we check
-  setTimeout(() => {
-    // Check if matomo-opt-out is filled
-    const optOut = document.getElementById('matomo-opt-out')
-    if (optOut && !optOut.innerHTML.length) {
-      const script = document.createElement('script')
-      script.src =
-        'https://stats.beta.gouv.fr/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=auto&showIntro=1'
-      script.async = true
-      document.body.appendChild(script)
-    }
-  }, 100)
-}
-
-function closeModal() {
-  // When the user closes the modal, set the cookie to indicate they've answered
-  setCookie('has_answered_mtm_consent', 'true')
-  isModalOpen.value = false
-}
-
-// Check on mount if the user has already answered
-onMounted(() => {
-  if (!hasUserAnswered()) {
-    // If user hasn't answered yet, automatically open the modal
-    openModal()
-  }
+const props = withDefaults(defineProps<{
+  showIntro?: boolean
+}>(), {
+  showIntro: true,
 })
+
+/**
+ * @see https://developer.matomo.org/guides/tracking-optout
+ */
+useScriptTag(
+  `https://stats.beta.gouv.fr/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=auto&showIntro=${props.showIntro ? '1' : '0'}`,
+)
+
+/**
+ * The loaded matomo script will create some HTML in the #matomo-opt-out div.
+ * We use mutation observer to style the HTML to match the DSFR.
+ */
+const matomoOptOut = ref(null)
+let ignoreMutation = false
+useMutationObserver(matomoOptOut, (mutations) => {
+  if (ignoreMutation) {
+    return
+  }
+  ignoreMutation = true // Ignore mutations until the next tick to avoid infinite loop
+  mutations.forEach((mutation) => {
+    const target = mutation.target as HTMLElement
+    const input = target.querySelector('input[type="checkbox"]')
+    const label = target.querySelector('label')
+    if (input && label) {
+      const wrapper = document.createElement('div')
+      wrapper.className = 'fr-checkbox-group fr-checkbox-group--sm'
+      label.className = 'fr-label'
+      wrapper.appendChild(input)
+      wrapper.appendChild(label)
+      mutation.target.appendChild(wrapper)
+    }
+  })
+  nextTick(() => {
+    ignoreMutation = false // Observe mutations again
+  })
+}, { childList: true })
 </script>
 
 <template>
-  <div>
-    <DsfrModal :opened="isModalOpen" title="Gestion du suivi de navigation" @close="closeModal">
-      <div id="matomo-opt-out" />
-      <div class="fr-mt-4w fr-text--right">
-        <DsfrButton label="Mettre à jour mes préférences de suivi" @click="closeModal" />
-      </div>
-    </DsfrModal>
-  </div>
+  <div
+    id="matomo-opt-out"
+    ref="matomoOptOut"
+  />
 </template>

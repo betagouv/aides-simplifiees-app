@@ -1,44 +1,17 @@
 <script setup lang="ts">
+import { DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
 import { storeToRefs } from 'pinia'
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed } from 'vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import SectionContainer from './SectionContainer.vue'
-import { DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
 
-const props = withDefaults(
-  defineProps<{
-    contrast?: boolean
-  }>(),
-  {
-    contrast: false,
-  }
-)
-
-// Create a ref to hold breadcrumbs
-const breadcrumbsData = ref([])
-
-// Check if we're in browser environment
-const isBrowser = typeof window !== 'undefined'
-
-// Create a ref to store
-const breadcrumbStore = ref<ReturnType<typeof useBreadcrumbStore> | null>(null)
-
-// Only use the store in browser environment or inside onMounted
-onMounted(() => {
-  if (isBrowser) {
-    breadcrumbStore.value = useBreadcrumbStore()
-    const { breadcrumbs } = storeToRefs(breadcrumbStore.value)
-    breadcrumbsData.value = breadcrumbs.value
-
-    // Watch for changes to the breadcrumbs in the store
-    watch(
-      () => breadcrumbs.value,
-      (newBreadcrumbs) => {
-        breadcrumbsData.value = newBreadcrumbs
-      }
-    )
-  }
+const props = withDefaults(defineProps<{
+  contrast?: boolean
+}>(), {
+  contrast: false,
 })
+
+const { breadcrumbs } = storeToRefs(useBreadcrumbStore())
 
 const styles = computed(() => {
   if (!props.contrast) {
@@ -54,13 +27,15 @@ const styles = computed(() => {
 <template>
   <SectionContainer type="page-breadcrumb">
     <div class="fr-grid-row fr-grid-row--gutters">
-      <div class="fr-col-12 breadcrumb-container">
+      <div
+        class="fr-col-12 breadcrumb-container"
+      >
         <DsfrBreadcrumb
-          v-if="breadcrumbsData.length"
+          v-if="breadcrumbs.length"
           class="fr-m-0"
           :style="styles"
           breadcrumb-id="fil-ariane"
-          :links="breadcrumbsData"
+          :links="breadcrumbs"
         />
       </div>
     </div>

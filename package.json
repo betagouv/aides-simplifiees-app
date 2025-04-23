@@ -49,6 +49,7 @@
     "@vue/server-renderer": "^3.5.13",
     "@vueuse/core": "^13.1.0",
     "axios": "^1.8.4",
+    "crisp-sdk-web": "^1.0.25",
     "crypto-js": "^4.2.0",
     "edge.js": "^6.2.1",
     "luxon": "^3.6.1",

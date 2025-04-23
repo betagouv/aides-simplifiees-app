@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { RouteLocationRaw } from 'vue-router'
 
 interface Breadcrumb {
   text: string
-  to: RouteLocationRaw
+  to: string
 }
 export const useBreadcrumbStore = defineStore('breadcrumbs', () => {
   const breadcrumbs = ref<Breadcrumb[]>([])

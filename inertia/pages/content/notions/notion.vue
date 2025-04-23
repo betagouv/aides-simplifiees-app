@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { Head } from '@inertiajs/vue3'
+import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
+import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
+import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-import DefaultLayout from '../../../layouts/default.vue'
-import BrandBackgroundContainer from '../../../components/layout/BrandBackgroundContainer.vue'
-import SectionContainer from '../../../components/layout/SectionContainer.vue'
-import BreadcrumbSectionContainer from '../../../components/layout/BreadcrumbSectionContainer.vue'
 
 // Define props based on ContentController.showNotion
 const props = defineProps<{
@@ -19,40 +18,39 @@ const props = defineProps<{
   html: string
 }>()
 
-onMounted(() => {
-  const { setBreadcrumbs } = useBreadcrumbStore()
+const { setBreadcrumbs } = useBreadcrumbStore()
 
-  setBreadcrumbs([
-    { text: 'Accueil', to: '/' },
-    { text: 'Notions', to: '/notions' },
-    { text: props.item.title, to: `/notions/${props.item.slug}` },
-  ])
-})
+setBreadcrumbs([
+  { text: 'Accueil', to: '/' },
+  { text: 'Notions', to: '/notions' },
+  { text: props.item.title, to: `/notions/${props.item.slug}` },
+])
 </script>
 
 <template>
   <Head
     :title="`Informations sur la ${type} '${item.title}' | Aides simplifiées`"
     :description="
-      item.description ||
-      `Découvrez toutes les informations sur la ${type} '${item.title}' pour vous accompagner dans vos démarches.`
+      item.description
+        || `Découvrez toutes les informations sur la ${type} '${item.title}' pour vous accompagner dans vos démarches.`
     "
   />
-  <DefaultLayout>
-    <BrandBackgroundContainer>
-      <BreadcrumbSectionContainer />
-      <SectionContainer v-if="item" type="page-header">
-        <article>
-          <header class="fr-mb-4w">
-            <h1>
-              {{ item.title }}
-            </h1>
-          </header>
-          <div v-html="html"></div>
-        </article>
-      </SectionContainer>
-    </BrandBackgroundContainer>
-  </DefaultLayout>
+  <BrandBackgroundContainer>
+    <BreadcrumbSectionContainer />
+    <SectionContainer
+      v-if="item"
+      type="page-header"
+    >
+      <article>
+        <header class="fr-mb-4w">
+          <h1>
+            {{ item.title }}
+          </h1>
+        </header>
+        <div v-html="html" />
+      </article>
+    </SectionContainer>
+  </BrandBackgroundContainer>
 </template>
 
 <style scoped lang="scss">

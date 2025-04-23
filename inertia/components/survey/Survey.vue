@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { DsfrAlert, DsfrBadge } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, onUnmounted } from 'vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
 import SurveyChoiceScreen from '~/components/survey/SurveyChoiceScreen.vue'
 import SurveyForm from '~/components/survey/SurveyForm.vue'
@@ -105,8 +105,8 @@ function handleFormComplete(): void {
 onMounted(() => {
   surveysStore.onComplete(simulateurId.value, handleFormComplete)
 })
-onUnmounted(() => {
-  surveysStore.offComplete(simulateurId.value, handleFormComplete)
+onBeforeUnmount(() => {
+  surveysStore.deleteCompleteListeners()
 })
 
 // Heading levels based on iframe context

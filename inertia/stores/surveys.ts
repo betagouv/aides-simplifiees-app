@@ -646,10 +646,19 @@ export const useSurveysStore = defineStore(
       completeListeners.value[simulateurId].add(listener)
     }
 
+    /**
+     * Right now cannot be used because simulateurId is unkown on unmount
+     */
     function offComplete(simulateurId: string, listener: () => void) {
       if (completeListeners.value[simulateurId]) {
         completeListeners.value[simulateurId].delete(listener)
       }
+    }
+
+    function deleteCompleteListeners() {
+      Object.keys(completeListeners.value).forEach((id) => {
+        completeListeners.value[id].clear()
+      })
     }
 
     function tryComplete(simulateurId: string) {
@@ -671,6 +680,7 @@ export const useSurveysStore = defineStore(
       answers,
       currentQuestionIds,
       versions,
+      deleteCompleteListeners,
       areAllRequiredQuestionsAnswered,
       isSomeRequiredQuestionsAnswered,
       getSchema,

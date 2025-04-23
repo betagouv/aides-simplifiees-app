@@ -1,9 +1,10 @@
 <script lang="ts" setup>
+import { DsfrCard } from '@gouvminint/vue-dsfr'
 import { Head } from '@inertiajs/vue3'
-import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
+import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 // Define props based on what's passed from ContentController.listNotions
 defineProps<{
   notions: Array<{

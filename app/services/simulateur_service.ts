@@ -1,5 +1,5 @@
+import type { ModelObject } from '@adonisjs/lucid/types/model'
 import Simulateur from '#models/simulateur'
-import { ModelObject } from '@adonisjs/lucid/types/model'
 
 export default class SimulateurService {
   /**
@@ -52,7 +52,7 @@ export default class SimulateurService {
 
         // Add choices for question types that need them (radio, checkbox, etc.)
         if (['radio', 'checkbox', 'select'].includes(question.type)) {
-          questionJson.choices = question.choices.map((choice) => ({
+          questionJson.choices = question.choices.map(choice => ({
             id: choice.slug,
             title: choice.title,
           }))
@@ -106,7 +106,7 @@ export default class SimulateurService {
     await question1.related('choices').createMany([
       { slug: 'etudiant', title: 'En études ou en alternance' },
       { slug: 'actif', title: 'Salarié(e) ou Indépendant(e)' },
-      { slug: 'chomeur', title: "Inscrit(e) comme demandeur d'emploi" },
+      { slug: 'chomeur', title: 'Inscrit(e) comme demandeur d\'emploi' },
       { slug: 'retraite', title: 'Retraité(e)' },
       { slug: 'inactif', title: 'Autre' },
     ])

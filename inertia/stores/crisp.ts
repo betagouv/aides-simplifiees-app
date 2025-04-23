@@ -14,7 +14,8 @@ export const useCrispStore = defineStore('crisp', () => {
   function toggleChat() {
     if (isChatOpen.value) {
       Crisp.chat.close()
-    } else {
+    }
+    else {
       Crisp.chat.open()
     }
     isChatOpen.value = !isChatOpen.value

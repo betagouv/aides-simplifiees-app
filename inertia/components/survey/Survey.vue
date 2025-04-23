@@ -1,17 +1,18 @@
 <script lang="ts" setup>
 import { DsfrAlert, DsfrBadge } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, onUnmounted } from 'vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
 import SurveyChoiceScreen from '~/components/survey/SurveyChoiceScreen.vue'
 import SurveyForm from '~/components/survey/SurveyForm.vue'
 import SurveyNavigation from '~/components/survey/SurveyNavigation.vue'
 import SurveyWelcomeScreen from '~/components/survey/SurveyWelcomeScreen.vue'
-import { useIframeDisplay } from '~/composables/useIframeDisplay'
-import { useMatomo } from '~/composables/useMatomo'
+import { useIframeDisplay } from '~/composables/use_is_iframe'
+import { useMatomo } from '~/composables/use_matomo'
 import { useSubmissionStore } from '~/stores/submissions'
 import { useSurveysStore } from '~/stores/surveys'
 import { scrollToAnchor } from '~/utils/dom'
+import { getParam } from '~/utils/url'
 
 const page = usePage<{
   simulateur: {
@@ -36,28 +37,30 @@ const submissionStore = useSubmissionStore()
 const resultsFetchStatus = computed(() => submissionStore.getSubmissionStatus(simulateurId.value))
 
 const forceResume = computed(() => {
-  const urlParams = new URLSearchParams(page.url.split('?')[1])
-  return urlParams.get('resume') === 'true'
+  return getParam(page.url, 'resume') === 'true'
 })
 
-if (forceResume.value) {
+// Fetch the survey schema
+surveysStore.loadSurveySchema(simulateurId.value)
+
+if (forceResume.value && hasAnswers.value) {
   // Resume the form if the query parameter is present
   resumeForm()
-} else {
+}
+else {
   initSurvey()
 }
 
-// Full survey initialization, including schema loading and Matomo tracking
+// Full survey initialization, including Matomo tracking
 function initSurvey() {
-  // Fetch the survey schema
-  surveysStore.loadSurveySchema(simulateurId.value)
   // Track form start in Matomo
   useMatomo().trackSurveyStart(simulateurId.value)
   // Show the choice screen if there are answers
   if (hasAnswers.value) {
     surveysStore.setShowChoiceScreen(simulateurId.value, true)
     surveysStore.setShowWelcomeScreen(simulateurId.value, false)
-  } else {
+  }
+  else {
     // Show the welcome screen if there are no answers
     surveysStore.setShowChoiceScreen(simulateurId.value, false)
     surveysStore.setShowWelcomeScreen(simulateurId.value, true)
@@ -90,7 +93,8 @@ function handleFormComplete(): void {
         const secureHash = submissionStore.getSecureHash(simulateurId.value)
         router.visit(`/simulateurs/${simulateurId.value}/resultats/${secureHash}#simulateur-title`)
       }, 1000)
-    } else {
+    }
+    else {
       setTimeout(() => {
         resumeForm()
       }, 1500)
@@ -101,8 +105,8 @@ function handleFormComplete(): void {
 onMounted(() => {
   surveysStore.onComplete(simulateurId.value, handleFormComplete)
 })
-onUnmounted(() => {
-  surveysStore.offComplete(simulateurId.value, handleFormComplete)
+onBeforeUnmount(() => {
+  surveysStore.deleteCompleteListeners()
 })
 
 // Heading levels based on iframe context

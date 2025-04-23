@@ -1,7 +1,7 @@
-import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import Page from '#models/page'
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
+import Page from '#models/page'
+import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class PageSeeder extends BaseSeeder {
   async run() {
@@ -18,19 +18,19 @@ export default class PageSeeder extends BaseSeeder {
     // Lecture des fichiers markdown
     const accessibiliteContent = fs.readFileSync(
       path.join(rootDir, 'content/pages/accessibilite.md'),
-      'utf-8'
+      'utf-8',
     )
 
     const donneesPersonnellesContent = fs.readFileSync(
       path.join(rootDir, 'content/pages/donnees-personnelles.md'),
-      'utf-8'
+      'utf-8',
     )
 
     const cguContent = fs.readFileSync(path.join(rootDir, 'content/pages/cgu.md'), 'utf-8')
 
     const mentionsLegalesContent = fs.readFileSync(
       path.join(rootDir, 'content/pages/mentions-legales.md'),
-      'utf-8'
+      'utf-8',
     )
 
     const aproposContent = fs.readFileSync(path.join(rootDir, 'content/pages/apropos.md'), 'utf-8')
@@ -43,7 +43,7 @@ export default class PageSeeder extends BaseSeeder {
         title: 'Accessibilité',
         slug: 'accessibilite',
         content: accessibiliteContent,
-        metaDescription: "Informations sur l'accessibilité de la plateforme Aides Simplifiées",
+        metaDescription: 'Informations sur l\'accessibilité de la plateforme Aides Simplifiées',
       },
       {
         title: 'Politique de confidentialité et données personnelles',
@@ -53,11 +53,11 @@ export default class PageSeeder extends BaseSeeder {
           'Notre politique de confidentialité et le traitement des données personnelles',
       },
       {
-        title: "Conditions Générales d'Utilisation",
+        title: 'Conditions Générales d\'Utilisation',
         slug: 'cgu',
         content: cguContent,
         metaDescription:
-          "Les conditions générales d'utilisation de la plateforme Aides Simplifiées",
+          'Les conditions générales d\'utilisation de la plateforme Aides Simplifiées',
       },
       {
         title: 'Mentions légales',

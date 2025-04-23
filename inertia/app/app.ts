@@ -4,46 +4,41 @@
 import type { DefineComponent } from 'vue'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import VueDsfr from '@gouvminint/vue-dsfr'
+import { addCollection } from '@iconify/vue'
 import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createSSRApp, h } from 'vue'
-
-import DefaultLayout from '~/layouts/default.vue'
-import iframeLayout from '~/layouts/iframe.vue'
-import '../css/app.css'
-// Import DSFR styles and components
-import '@gouvfr/dsfr/dist/dsfr.min.css'
-import '@gouvfr/dsfr/dist/utility/utility.min.css'
-
 import VueMatomo from 'vue-matomo'
+import collections from '~/icon-collections'
+import { getLayout } from './shared'
 
+import '@gouvfr/dsfr/dist/core/core.main.min.css'
+import '@gouvfr/dsfr/dist/component/component.main.min.css'
+import '@gouvfr/dsfr/dist/utility/utility.main.min.css'
+import '@gouvfr/dsfr/dist/scheme/scheme.min.css'
+import '@gouvminint/vue-dsfr/styles'
+import '~/styles/main.scss'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
 createInertiaApp({
   progress: { color: '#5468FF' },
 
-  title: (title) => `${title} - ${appName}`,
+  title: title => `${title} - ${appName}`,
 
   resolve: async (name) => {
-    let layout = DefaultLayout
-
-    if (new URLSearchParams(window.location.search).has('iframe')) {
-      layout = iframeLayout
-    }
-
     const page = await resolvePageComponent(
       `../pages/${name}.vue`,
-      import.meta.glob<DefineComponent>('../pages/**/*.vue')
+      import.meta.glob<DefineComponent>('../pages/**/*.vue'),
     )
-    page.default.layout ??= layout
+    page.default.layout ??= getLayout(`/${name}`)
     return page
   },
 
   setup({ el, App, props, plugin }) {
     const app = createSSRApp({ render: () => h(App, props) })
-    app.config.warnHandler = (msg, vm, trace) => {
+    app.config.warnHandler = (msg, _vm, trace) => {
       if (import.meta.env.MODE === 'development' && msg.match('Hydration')) {
         console.warn(`Intercepted Vue hydration mismatch warning`)
         return
@@ -52,7 +47,6 @@ createInertiaApp({
     }
     const pinia = createPinia()
     pinia.use(piniaPluginPersistedstate)
-
     // Initialize DSFR
     app.use(VueDsfr)
     app.use(pinia)
@@ -60,7 +54,7 @@ createInertiaApp({
 
     // Get config values from the page props
     const matomoHost = props.initialPage.props.matomoUrl
-    const matomoSiteId = parseInt(props.initialPage.props.matomoSiteId || '0', 10)
+    const matomoSiteId = Number.parseInt(props.initialPage.props.matomoSiteId || '0', 10)
 
     // Only initialize Matomo if we have valid config
     if (matomoHost && matomoSiteId) {
@@ -68,6 +62,10 @@ createInertiaApp({
         host: matomoHost,
         siteId: matomoSiteId,
       })
+    }
+
+    for (const collection of collections) {
+      addCollection(collection)
     }
 
     // Replace RouterLink with a custom component that uses Inertia's Link
@@ -84,18 +82,18 @@ createInertiaApp({
         target: String,
         rel: String,
       },
-      setup(props: any, { slots }: any) {
+      setup(routerProps: any, { slots }: any) {
         // Convert 'to' prop to 'href' for Inertia Link
-        const href = typeof props.to === 'string' ? props.to : props.to.path || ''
+        const href = typeof routerProps.to === 'string' ? routerProps.to : routerProps.to.path || ''
         return () =>
           h(
             Link,
             {
               href,
-              replace: props.replace,
+              replace: routerProps.replace,
               // Map other relevant props here
             },
-            slots
+            slots,
           )
       },
     })

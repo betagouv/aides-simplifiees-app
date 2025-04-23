@@ -37,7 +37,8 @@ const stringModel = customRef((track, trigger) => {
       track()
       if (value === undefined || value === '') {
         numberModel.value = undefined
-      } else {
+      }
+      else {
         // Ensure the value is a valid number
         const num = Number(value)
         if (!Number.isNaN(num)) {

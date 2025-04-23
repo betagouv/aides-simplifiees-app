@@ -1,7 +1,7 @@
-import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import Notion from '#models/notion'
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
+import Notion from '#models/notion'
+import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class NotionSeeder extends BaseSeeder {
   async run() {
@@ -18,31 +18,31 @@ export default class NotionSeeder extends BaseSeeder {
     // Lecture des fichiers markdown
     const handicapContent = fs.readFileSync(
       path.join(rootDir, 'content/notions/handicap.md'),
-      'utf-8'
+      'utf-8',
     )
     const montantCaMicroEntrepriseContent = fs.readFileSync(
       path.join(rootDir, 'content/notions/montant-ca-micro-entreprise.md'),
-      'utf-8'
+      'utf-8',
     )
     const montantChomageContent = fs.readFileSync(
       path.join(rootDir, 'content/notions/montant-chomage.md'),
-      'utf-8'
+      'utf-8',
     )
     const montantParentsContent = fs.readFileSync(
       path.join(rootDir, 'content/notions/montant-parents.md'),
-      'utf-8'
+      'utf-8',
     )
     const logementConventionneContent = fs.readFileSync(
       path.join(rootDir, 'content/notions/logement-conventionne.md'),
-      'utf-8'
+      'utf-8',
     )
     const loyerMontantChargesContent = fs.readFileSync(
       path.join(rootDir, 'content/notions/loyer-montant-charges.md'),
-      'utf-8'
+      'utf-8',
     )
     const salaireImposableContent = fs.readFileSync(
       path.join(rootDir, 'content/notions/salaire-imposable.md'),
-      'utf-8'
+      'utf-8',
     )
 
     // Create sample notions
@@ -51,12 +51,12 @@ export default class NotionSeeder extends BaseSeeder {
         title: 'Avez-vous une reconnaissance administrative de votre situation de handicap ?',
         slug: 'handicap',
         description:
-          "Pour bénéficier de certaines aides financières, il est nécessaire de disposer d'une reconnaissance administrative de votre situation de handicap.",
+          'Pour bénéficier de certaines aides financières, il est nécessaire de disposer d\'une reconnaissance administrative de votre situation de handicap.',
         content: handicapContent,
         category: 'definitions',
       },
       {
-        title: "En savoir plus sur le chiffre d'affaires généré via une micro-entreprise",
+        title: 'En savoir plus sur le chiffre d\'affaires généré via une micro-entreprise',
         slug: 'montant-ca-micro-entreprise',
         description: 'Connaître les règles de calcul applicables',
         content: montantCaMicroEntrepriseContent,
@@ -78,7 +78,7 @@ export default class NotionSeeder extends BaseSeeder {
       },
       {
         title:
-          "Comment savoir si mon logement est conventionné pour l'Aide Personnalisée au Logement (APL) ?",
+          'Comment savoir si mon logement est conventionné pour l\'Aide Personnalisée au Logement (APL) ?',
         slug: 'logement-conventionne',
         description: 'Informations sur la convention APL',
         content: logementConventionneContent,
@@ -88,7 +88,7 @@ export default class NotionSeeder extends BaseSeeder {
         title: 'Précisions sur le calcul du montant des charges locatives',
         slug: 'loyer-montant-charges',
         description:
-          "Les charges locatives sont des dépenses liées à l'entretien et au fonctionnement de votre logement.",
+          'Les charges locatives sont des dépenses liées à l\'entretien et au fonctionnement de votre logement.',
         content: loyerMontantChargesContent,
         category: 'logement',
       },

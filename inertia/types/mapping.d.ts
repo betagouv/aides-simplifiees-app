@@ -11,7 +11,7 @@ declare global {
       openfiscaVariableName: string
       period: 'ETERNITY' | 'YEAR' | 'YEAR_ROLLING' | 'MONTH'
     }
-      | {
+    | {
       dispatch: (
         answerKey: string,
         answerValue: boolean,

@@ -3,6 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Aide from '#models/aide'
 import Notion from '#models/notion'
 import Page from '#models/page'
+import Simulateur from '#models/simulateur'
 import { marked } from 'marked'
 
 export default class ContentController {
@@ -11,8 +12,6 @@ export default class ContentController {
     const slug = params.slug
 
     const page = await Page.findBy('slug', slug)
-
-    console.log(page)
 
     if (!page) {
       return response.status(404).send('Page non trouvée')
@@ -41,6 +40,30 @@ export default class ContentController {
     return inertia.render('content/notions/notion', {
       type: 'notion',
       item: notion,
+      html,
+    })
+  }
+
+  public async showSimulateurNotion({ params, inertia, response }: HttpContext) {
+    const simulateurSlug = params.simulateur_slug
+    const notionSlug = params.notion_slug
+    const notion = await Notion.findBy('slug', notionSlug)
+    const simulateur = await Simulateur.findBy('slug', simulateurSlug)
+
+    if (!notion) {
+      return response.status(404).send('Notion non trouvée')
+    }
+
+    if (!simulateur) {
+      return response.status(404).send('Simulateur non trouvé')
+    }
+
+    const html = await marked(notion.content)
+    return inertia.render('content/notions/simulateur-notion', {
+      layout: 'iframe',
+      type: 'notion',
+      item: notion,
+      simulateur,
       html,
     })
   }

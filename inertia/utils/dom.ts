@@ -1,6 +1,6 @@
 // Scroll to element by ID
 export function scrollToAnchor(anchor: string) {
-  if (import.meta.server) {
+  if (typeof document === 'undefined') {
     return
   }
   const element = document.getElementById(anchor)

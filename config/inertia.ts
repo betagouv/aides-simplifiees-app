@@ -1,5 +1,5 @@
-import { defineConfig } from '@adonisjs/inertia'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
+import { defineConfig } from '@adonisjs/inertia'
 
 const inertiaConfig = defineConfig({
   /**
@@ -11,11 +11,11 @@ const inertiaConfig = defineConfig({
    * Data that should be shared with all rendered pages
    */
   sharedData: {
-    auth: (ctx) =>
+    auth: ctx =>
       ctx.inertia.always(() => ({
         user: ctx.auth.user,
       })),
-    flash: (ctx) => ctx.session.flashMessages,
+    flash: ctx => ctx.session.flashMessages,
   },
 
   /**

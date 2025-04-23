@@ -24,4 +24,5 @@ import 'ts-node-maintained/register/esm'
 /**
  * Import ace console entrypoint
  */
+// eslint-disable-next-line antfu/no-top-level-await
 await import('./bin/console.js')

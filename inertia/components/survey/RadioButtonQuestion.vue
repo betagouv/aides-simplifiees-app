@@ -8,7 +8,7 @@ const props = defineProps<{
 const model = defineModel<string | undefined>()
 
 const options = props.question.choices
-  ?.map((choice) => ({
+  ?.map(choice => ({
     label: choice.title,
     value: choice.id,
     svgPath: true as unknown as string, // Trick to render a rich radio button

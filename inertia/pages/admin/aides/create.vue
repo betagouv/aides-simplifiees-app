@@ -12,7 +12,7 @@ const form = useForm({
   type: '',
   usage: '',
   instructeur: '',
-  textesLoi: [] as Array<{ prefix: string; label: string; url: string }>,
+  textesLoi: [] as Array<{ prefix: string, label: string, url: string }>,
 })
 
 const editorTab = ref('editor')

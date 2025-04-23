@@ -1,6 +1,6 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, beforeCreate } from '@adonisjs/lucid/orm'
+import type { DateTime } from 'luxon'
 import crypto from 'node:crypto'
+import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
 
 export default class FormSubmission extends BaseModel {
   @column({ isPrimary: true })
@@ -12,10 +12,10 @@ export default class FormSubmission extends BaseModel {
   @column()
   declare secureHash: string
 
-  @column({ serialize: (value) => value })
+  @column({ serialize: value => value })
   declare answers: object
 
-  @column({ serialize: (value) => value })
+  @column({ serialize: value => value })
   declare results: object
 
   @column.dateTime({ autoCreate: true })

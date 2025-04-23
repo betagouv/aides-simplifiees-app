@@ -35,16 +35,8 @@ import iframeResize from '@iframe-resizer/parent'
   const waitForLoad = currentScript.dataset.waitForLoad !== 'false'
   const containerId = currentScript.dataset.containerId || 'aides-simplifiees-iframe-container'
 
-  // Construire l'URL du simulateur
-  let baseUrl
-  if (currentScript.src.includes('localhost')) {
-    // Environnement de développement
-    baseUrl = 'http://localhost:3000'
-  } else {
-    // Extraire l'origine de l'URL du script
-    const scriptUrl = new URL(currentScript.src)
-    baseUrl = scriptUrl.origin
-  }
+  const scriptUrl = new URL(currentScript.src)
+  const baseUrl = scriptUrl.origin
 
   const src = new URL(`${baseUrl}/simulateurs/${selectedSimulator}`)
 
@@ -73,7 +65,8 @@ import iframeResize from '@iframe-resizer/parent'
   if (container) {
     // Priorité au conteneur dédié s'il existe
     container.appendChild(iframe)
-  } else if (currentScript.parentElement.tagName === 'HEAD') {
+  }
+  else if (currentScript.parentElement.tagName === 'HEAD') {
     // Si le script est dans le HEAD et qu'il n'y a pas de conteneur dédié
     console.warn(`Container with id "${containerId}" not found. Creating fallback container.`)
     const fallbackContainer = document.createElement('div')
@@ -84,7 +77,8 @@ import iframeResize from '@iframe-resizer/parent'
       body.appendChild(fallbackContainer)
       fallbackContainer.appendChild(iframe)
     }
-  } else {
+  }
+  else {
     // Sinon, insérer après le script courant
     console.warn(`Container with id "${containerId}" not found. Inserting iframe after script.`)
     currentScript.insertAdjacentElement('afterend', iframe)

@@ -53,9 +53,11 @@ async function fetchStatistics() {
   try {
     const response = await fetch('/api/statistics')
     statistics.value = await response.json()
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error fetching statistics:', error)
-  } finally {
+  }
+  finally {
     isLoading.value = false
   }
 }

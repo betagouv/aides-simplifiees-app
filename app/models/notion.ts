@@ -1,5 +1,5 @@
 // app/models/notion.ts
-import { DateTime } from 'luxon'
+import type { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export default class Notion extends BaseModel {

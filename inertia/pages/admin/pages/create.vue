@@ -20,8 +20,10 @@ async function updatePreview() {
   try {
     const result = await marked(form.content)
     previewHtml.value = result.toString()
-  } catch (error) {
+  }
+  catch (error) {
     previewHtml.value = 'Erreur lors de la prévisualisation'
+    console.error('Erreur de prévisualisation:', error)
   }
 }
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { VIconProps } from '@gouvminint/vue-dsfr'
-import type { RouteLocationRaw } from 'vue-router'
 import { VIcon } from '@gouvminint/vue-dsfr'
 import { Link } from '@inertiajs/vue3'
 
@@ -8,7 +7,7 @@ const props = withDefaults(
   defineProps<{
     label: string
     iconBefore?: boolean
-    to: RouteLocationRaw
+    to: string
     target?: '_blank' | '_self' | '_parent' | '_top'
     icon: VIconProps
   }>(),
@@ -24,7 +23,7 @@ const hasIcon = props.icon && props.target !== '_blank'
 <template>
   <Link
     class="fr-link"
-    :href="typeof to === 'string' ? to : to.path || ''"
+    :href="to"
     :target="target"
   >
     <VIcon

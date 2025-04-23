@@ -11,10 +11,10 @@ import MultiSelectQuestion from '~/components/survey/MultiSelectQuestion.vue'
 import NumberQuestion from '~/components/survey/NumberQuestion.vue'
 import RadioButtonQuestion from '~/components/survey/RadioButtonQuestion.vue'
 import SurveyNavigation from '~/components/survey/SurveyNavigation.vue'
-import { useIframeDisplay } from '~/composables/useIframeDisplay'
+import { useIframeDisplay } from '~/composables/use_is_iframe'
 import { useSurveysStore } from '~/stores/surveys'
-import { autocompleteConfigs, autocompleteFunctions } from '~/utils/autocompleteFunctions'
-import { isAnswerValid } from '~/utils/form-validation'
+import { autocompleteConfigs, autocompleteFunctions } from '~/utils/autocomplete_functions'
+import { isAnswerValid } from '~/utils/form_validation'
 
 const page = usePage<{
   simulateur: {
@@ -118,7 +118,8 @@ function handlePrevious() {
   const wentToPrev = surveysStore.goToPreviousQuestion(simulateurId.value)
   if (wentToPrev) {
     focusRenderedQuestion()
-  } else {
+  }
+  else {
     surveysStore.setShowWelcomeScreen(simulateurId.value, true)
   }
 }
@@ -211,7 +212,7 @@ function handleComplete() {
         icon-right
         class="fr-mb-2w"
         @click="() => {
-          router.visit(`/simulateurs/${simulateurId}/${currentQuestion?.notion.id}#simulateur-title`)
+          router.visit(`/simulateurs/${simulateurId}/notions/${currentQuestion?.notion.id}#simulateur-title`)
         }"
       />
       <component

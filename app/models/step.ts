@@ -1,8 +1,8 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
-import Simulateur from './simulateur.js'
+import type { DateTime } from 'luxon'
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import Question from './question.js'
+import Simulateur from './simulateur.js'
 
 export default class Step extends BaseModel {
   @column({ isPrimary: true })

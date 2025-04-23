@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDateTime } from './date-time'
+import { formatDateTime } from './date_time'
 
 describe('formatDateTime', () => {
   it('should correctly format a valid date', () => {
@@ -17,13 +17,13 @@ describe('formatDateTime', () => {
   })
 
   it('should return null when given null', () => {
-    // @ts-ignore - Testing null input even though type signature expects Date
+    // @ts-expect-error - Testing null input even though type signature expects Date
     const result = formatDateTime(null)
     expect(result).toBeNull()
   })
 
   it('should return null when given undefined', () => {
-    // @ts-ignore - Testing undefined input even though type signature expects Date
+    // @ts-expect-error - Testing undefined input even though type signature expects Date
     const result = formatDateTime(undefined)
     expect(result).toBeNull()
   })

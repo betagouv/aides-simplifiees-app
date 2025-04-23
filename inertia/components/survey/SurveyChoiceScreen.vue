@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useIframeDisplay } from '~/composables/useIframeDisplay'
+import { useIframeDisplay } from '~/composables/use_is_iframe'
 
 defineProps<{
   progress: number

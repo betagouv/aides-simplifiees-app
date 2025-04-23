@@ -47,6 +47,15 @@ importers:
       '@gouvminint/vue-dsfr':
         specifier: ^8.3.1
         version: 8.3.1(@iconify/vue@4.3.0(vue@3.5.13(typescript@5.7.3)))(vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))
+      '@iconify/vue':
+        specifier: ^4.3.0
+        version: 4.3.0(vue@3.5.13(typescript@5.7.3))
+      '@iframe-resizer/child':
+        specifier: ^5.4.5
+        version: 5.4.5
+      '@iframe-resizer/parent':
+        specifier: ^5.4.5
+        version: 5.4.5
       '@inertiajs/vue3':
         specifier: ^2.0.6
         version: 2.0.8(vue@3.5.13(typescript@5.7.3))
@@ -92,6 +101,9 @@ importers:
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.7.3)
+      vue-matomo:
+        specifier: ^4.2.0
+        version: 4.2.0
     devDependencies:
       '@adonisjs/assembler':
         specifier: ^7.8.2
@@ -105,6 +117,9 @@ importers:
       '@adonisjs/tsconfig':
         specifier: ^1.4.0
         version: 1.4.0
+      '@iconify-json/ri':
+        specifier: ^1.2.5
+        version: 1.2.5
       '@japa/assert':
         specifier: ^4.0.1
         version: 4.0.1(@japa/runner@4.2.0)
@@ -791,6 +806,9 @@ packages:
     resolution: {integrity: sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==}
     engines: {node: '>=18.18'}
 
+  '@iconify-json/ri@1.2.5':
+    resolution: {integrity: sha512-kWGimOXMZrlYusjBKKXYOWcKhbOHusFsmrmRGmjS7rH0BpML5A9/fy8KHZqFOwZfC4M6amObQYbh8BqO5cMC3w==}
+
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
@@ -798,6 +816,15 @@ packages:
     resolution: {integrity: sha512-Xq0h6zMrHBbrW8jXJ9fISi+x8oDQllg5hTDkDuxnWiskJ63rpJu9CvJshj8VniHVTbsxCg9fVoPAaNp3RQI5OQ==}
     peerDependencies:
       vue: '>=3'
+
+  '@iframe-resizer/child@5.4.5':
+    resolution: {integrity: sha512-VgTq7YkfjHgv3Iqr4+Px3dp2NdBVM4AyS3qpaYGL5vThXCEEKDwq4k/XxxcyiyMrUfEOawQqfKLAfEWh3O9cwg==}
+
+  '@iframe-resizer/core@5.4.5':
+    resolution: {integrity: sha512-Z5euppksu94VgJ+kM15eE3H0LDHpYjEq9Hh64HpswL2N3dt9i0ryD4AKAq0AcqJMDAUls4tkRfS9bGd1ZC+t4w==}
+
+  '@iframe-resizer/parent@5.4.5':
+    resolution: {integrity: sha512-pyukh5DJILIylEiEvWTKdsN2bS9z75QAObkAGXxEbeXEwUvSsHC/CR06W3yW9J3WIYgdven6V4GlEVoAfnK/9g==}
 
   '@inertiajs/core@2.0.8':
     resolution: {integrity: sha512-YE+b5FktbSSaWJt4CjCHy7z3t+IV97G/8kD33mkj2Fqqf+Jfsypd/jsOuxrQGSMDpIyAGR6EDoaiuss6+JuIPA==}
@@ -1592,6 +1619,9 @@ packages:
   atomic-sleep@1.0.0:
     resolution: {integrity: sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==}
     engines: {node: '>=8.0.0'}
+
+  auto-console-group@1.2.9:
+    resolution: {integrity: sha512-YGJqZByv1SFIq8viTpKFmI0eNHIoa9hllKP3487VbIN4zjRcsKKoouu2TiQ189oscvwCSKTndfAe6wf6izbSMA==}
 
   axios@1.8.4:
     resolution: {integrity: sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==}
@@ -4191,6 +4221,10 @@ packages:
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
 
+  vue-matomo@4.2.0:
+    resolution: {integrity: sha512-m5hCw7LH3wPDcERaF4sp/ojR9sEx7Rl8TpOyH/4jjQxMF2DuY/q5pO+i9o5Dx+BXLSa9+IQ0qhAbWYRyESQXmA==}
+    engines: {node: '>= 6.0.0', npm: '>= 3.0.0'}
+
   vue-router@4.5.0:
     resolution: {integrity: sha512-HDuk+PuH5monfNuY+ct49mNmkCRK4xJAV9Ts4z9UFc4rzdDnxQLyCMGGc8pKhZhHTVzfanpNwB/lwqevcBwI4w==}
     peerDependencies:
@@ -4916,12 +4950,29 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.2': {}
 
+  '@iconify-json/ri@1.2.5':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify/types@2.0.0': {}
 
   '@iconify/vue@4.3.0(vue@3.5.13(typescript@5.7.3))':
     dependencies:
       '@iconify/types': 2.0.0
       vue: 3.5.13(typescript@5.7.3)
+
+  '@iframe-resizer/child@5.4.5':
+    dependencies:
+      auto-console-group: 1.2.9
+
+  '@iframe-resizer/core@5.4.5':
+    dependencies:
+      auto-console-group: 1.2.9
+
+  '@iframe-resizer/parent@5.4.5':
+    dependencies:
+      '@iframe-resizer/core': 5.4.5
+      auto-console-group: 1.2.9
 
   '@inertiajs/core@2.0.8':
     dependencies:
@@ -5724,6 +5775,8 @@ snapshots:
   atob@2.1.2: {}
 
   atomic-sleep@1.0.0: {}
+
+  auto-console-group@1.2.9: {}
 
   axios@1.8.4:
     dependencies:
@@ -8448,6 +8501,8 @@ snapshots:
       semver: 7.7.1
     transitivePeerDependencies:
       - supports-color
+
+  vue-matomo@4.2.0: {}
 
   vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)):
     dependencies:

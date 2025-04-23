@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { Head } from '@inertiajs/vue3'
-import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
+import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const props = defineProps({
   page: Object,

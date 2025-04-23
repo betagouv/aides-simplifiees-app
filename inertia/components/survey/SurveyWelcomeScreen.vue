@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import DsfrLink from '~/components/DsfrLink.vue'
 import MatomoOptOut from '~/components/MatomoOptOut.vue'
-import { useIframeDisplay } from '~/composables/useIframeDisplay'
+import { useIframeDisplay } from '~/composables/use_is_iframe'
 
 // Heading levels based on iframe context
 const { isIframe } = useIframeDisplay()

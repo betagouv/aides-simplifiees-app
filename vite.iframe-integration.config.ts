@@ -3,26 +3,21 @@ import { dirname, resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
 // Use the package version for the iframe integration script
-const IFRAME_SCRIPT_VERSION = '1.0.0'
+const IFRAME_SCRIPT_VERSION = '1.0.1'
 const dir = dirname(import.meta.url).replace('file://', '')
 
 export default defineConfig({
   build: {
-    lib: {
-      entry: resolve(dir, 'inertia/scripts/iframe-integration.js'),
-      name: 'IframeIntegration',
-      fileName: () => `iframe-integration@${IFRAME_SCRIPT_VERSION}.js`,
-      formats: ['umd'],
-    },
-    outDir: resolve(dir, 'assets'),
-    emptyOutDir: false,
+    copyPublicDir: false,
+    outDir: resolve(dir, 'public/assets'),
     rollupOptions: {
-      external: ['@iframe-resizer/parent'],
+      input: {
+        iframeIntegration: resolve(dir, 'inertia/scripts/iframe-integration.js'),
+      },
       output: {
-        inlineDynamicImports: true,
-        globals: {
-          '@iframe-resizer/parent': 'iFrameResize',
-        },
+        entryFileNames: `iframe-integration@${IFRAME_SCRIPT_VERSION}.js`,
+        chunkFileNames: `iframe-integration@${IFRAME_SCRIPT_VERSION}.js`,
+        assetFileNames: `iframe-integration@${IFRAME_SCRIPT_VERSION}.js`,
       },
     },
     minify: true,

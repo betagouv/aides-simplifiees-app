@@ -62,7 +62,8 @@ async function getInseeNumber(query: string) {
         text: `${postalCode} - ${item.libelle}`,
       }
     })
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Erreur lors de la récupération des suggestions:', error)
     return []
   }

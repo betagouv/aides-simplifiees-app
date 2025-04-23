@@ -22,14 +22,12 @@ defineProps<{
       <DsfrButton
         v-bind="button"
         size="lg"
-        :buttons="buttons"
       />
     </li>
   </ul>
 </template>
 
 <style scoped lang="scss">
-@use '~/css/dsfr-spacings' as dsfr;
 .survey-btns {
   justify-content: flex-end;
   .survey-btn {

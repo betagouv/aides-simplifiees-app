@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { DsfrAlert, DsfrBadge } from '@gouvminint/vue-dsfr'
-import { usePage } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import { computed, onMounted, onUnmounted } from 'vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
 import SurveyChoiceScreen from '~/components/survey/SurveyChoiceScreen.vue'
@@ -80,23 +80,24 @@ function restartForm() {
   scrollToAnchor('simulateur-title')
 }
 
-// Submit the form for processing
-function handleFormComplete() {
-  const simulateurVisibleAnswers = surveysStore.getVisibleAnswers(simulateurId.value)
-  submissionStore.submitForm(simulateurId.value, simulateurVisibleAnswers)
-    .then((success) => {
-      if (success) {
-        setTimeout(() => {
-          /** @todo inertia redirection */
-          // navigateTo(`/simulateurs/${simulateurId.value}/resultats#simulateur-title`)
-        }, 1000)
-      } else {
-        setTimeout(() => {
-          resumeForm()
-        }, 1500)
-      }
-    })
+// Gérer la soumission du formulaire
+function handleFormComplete(): void {
+  const simulateurAnswers = surveysStore.getAnswers(simulateurId.value)
+  submissionStore.submitForm(simulateurId.value, simulateurAnswers).then((success: boolean) => {
+    if (success) {
+      setTimeout(() => {
+        // Inertia router redirection instead of window.location.href
+        const secureHash = submissionStore.getSecureHash(simulateurId.value)
+        router.visit(`/simulateurs/${simulateurId.value}/resultats/${secureHash}#simulateur-title`)
+      }, 1000)
+    } else {
+      setTimeout(() => {
+        resumeForm()
+      }, 1500)
+    }
+  })
 }
+
 onMounted(() => {
   surveysStore.onComplete(simulateurId.value, handleFormComplete)
 })

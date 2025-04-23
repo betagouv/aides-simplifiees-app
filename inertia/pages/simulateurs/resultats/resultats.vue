@@ -96,7 +96,7 @@ const hasTextesDeLoi = computed(
 
 // Track eligibility in Matomo if we have results and aides
 if (hasAides.value && results.value) {
-  useMatomo().trackEligibility(simulateurId.value, results.value.aides?.length || 0)
+  // useMatomo().trackEligibility(simulateurId.value, results.value.aides?.length || 0)
 }
 
 // For ui / ux

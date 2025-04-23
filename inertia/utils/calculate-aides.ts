@@ -1,11 +1,25 @@
 import axios from 'axios'
-
 import {
   famillesVariables,
   foyersFiscauxVariables,
   individusVariables,
   menagesVariables,
 } from '~/utils/aides-mapping-inputs'
+
+import {
+  famillesQuestionsVariables,
+  foyersFiscauxQuestionsVariables,
+  individusQuestionsVariables,
+  menagesQuestionsVariables,
+} from '~/utils/aides-mapping-questions'
+
+import {
+  UndefinedValueError,
+  UnexpectedValueError,
+  UnknownEntityError,
+  UnknownPeriodError,
+  UnknownVariableError,
+} from '~/utils/errors'
 
 function initDates() {
   const today = new Date()
@@ -270,7 +284,9 @@ function addSurveyAnswerToRequest(
       throw new UndefinedValueError(answerKey)
     }
     if (
-      typeof answerValue !== 'boolean' && typeof answerValue !== 'number' && typeof answerValue !== 'string'
+      typeof answerValue !== 'boolean' &&
+      typeof answerValue !== 'number' &&
+      typeof answerValue !== 'string'
     ) {
       throw new UnexpectedValueError(answerKey)
     }
@@ -413,7 +429,10 @@ function addAnswersToRequest(
       }
     } catch (error) {
       if (
-        error instanceof UnknownVariableError || error instanceof UnknownEntityError || error instanceof UnexpectedValueError || error instanceof UndefinedValueError
+        error instanceof UnknownVariableError ||
+        error instanceof UnknownEntityError ||
+        error instanceof UnexpectedValueError ||
+        error instanceof UndefinedValueError
       ) {
         console.warn(
           `Donnée '${answerKey}' non transcrite dans la requête de calcul suite à l'erreur '${error}'.`

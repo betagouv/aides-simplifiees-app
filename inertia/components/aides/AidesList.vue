@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { DsfrCardProps } from '@gouvminint/vue-dsfr'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import AideCard from '~/components/aides/AideCard.vue'
 
 type AidesListProps = {
@@ -25,7 +25,7 @@ const pages = computed<Page[]>(() =>
     label: String(i + 1),
     title: `Page ${i + 1}`,
     href: `#page-${i + 1}`,
-  }))
+  })),
 )
 
 const currentPageAides = computed(() => {
@@ -37,7 +37,11 @@ const currentPageAides = computed(() => {
 
 <template>
   <div class="fr-grid-row fr-grid-row--gutters">
-    <div v-for="aide in currentPageAides" :key="aide.id" class="fr-col-12 fr-col-md-6">
+    <div
+      v-for="aide in currentPageAides"
+      :key="aide.id"
+      class="fr-col-12"
+    >
       <AideCard
         :link="aide.link"
         :titre="aide.titre"
@@ -54,7 +58,13 @@ const currentPageAides = computed(() => {
     </div>
   </div>
 
-  <div v-if="totalPages > 1" class="fr-mt-4w fr-grid-row fr-grid-row--center">
-    <DsfrPagination v-model:current-page="currentPageIndex" :pages="pages" />
+  <div
+    v-if="totalPages > 1"
+    class="fr-mt-4w fr-grid-row fr-grid-row--center"
+  >
+    <DsfrPagination
+      v-model:current-page="currentPageIndex"
+      :pages="pages"
+    />
   </div>
 </template>

@@ -1,9 +1,8 @@
-import { HttpContext } from '@adonisjs/core/http'
-import axios from 'axios'
+import type { HttpContext } from '@adonisjs/core/http'
 import matomoConfig from '#config/matomo'
-import { dd } from '@adonisjs/core/services/dumper'
-import env from '#start/env'
 import FormSubmission from '#models/form_submission'
+import env from '#start/env'
+import axios from 'axios'
 
 // Configuration constants
 const WEEKS_TO_FETCH = 4
@@ -95,7 +94,7 @@ export default class ApiController {
                   return status < 500
                 },
                 timeout: 5000, // Increased timeout to 5 seconds
-              }
+              },
             )
 
             return axiosResponse
@@ -302,7 +301,7 @@ export default class ApiController {
             'Accept': 'application/json',
             'X-Client-ID': 'aides-simplifiees',
           },
-        }
+        },
       )
 
       // Return the result
@@ -320,6 +319,10 @@ export default class ApiController {
 
       // Get OpenFisca API URL from environment
       const openFiscaUrl = env.get('OPENFISCA_URL')
+
+      if (!openFiscaUrl) {
+        return response.status(500).json({ error: 'Missing OpenFisca URL in environment' })
+      }
 
       // Make request to OpenFisca API
       const apiResponse = await axios.post(openFiscaUrl, requestBody, {

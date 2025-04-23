@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import darkThemeSvg from '@gouvfr/dsfr/dist/artwork/pictograms/environment/moon.svg'
 import lightThemeSvg from '@gouvfr/dsfr/dist/artwork/pictograms/environment/sun.svg'
 import systemThemeSvg from '@gouvfr/dsfr/dist/artwork/pictograms/system/system.svg'
+import { DsfrModal, DsfrRadioButtonSet } from '@gouvminint/vue-dsfr'
 import { storeToRefs } from 'pinia'
-import { useSchemeStore } from '../stores/scheme'
+import { ref } from 'vue'
+import { useSchemeStore } from '~/stores/scheme'
 
 // Default values for SSR
 const defaultPreferences = {
@@ -15,12 +16,7 @@ const defaultPreferences = {
 // Only use the store in browser environment
 const isBrowser = typeof window !== 'undefined'
 const schemeStore = isBrowser ? useSchemeStore() : null
-const { preferences, isModalOpen } = isBrowser
-  ? storeToRefs(schemeStore!)
-  : {
-      preferences: ref(defaultPreferences),
-      isModalOpen: ref(false),
-    }
+const { preferences, isModalOpen } = isBrowser ? storeToRefs(schemeStore!) : { preferences: ref(defaultPreferences), isModalOpen: ref(false) }
 
 const options = [
   {

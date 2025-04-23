@@ -1,8 +1,8 @@
 // app/controllers/content_controller.ts
-import { HttpContext } from '@adonisjs/core/http'
-import Page from '#models/page'
-import Notion from '#models/notion'
+import type { HttpContext } from '@adonisjs/core/http'
 import Aide from '#models/aide'
+import Notion from '#models/notion'
+import Page from '#models/page'
 import { marked } from 'marked'
 
 export default class ContentController {

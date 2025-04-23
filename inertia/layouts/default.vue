@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import {
-  DsfrHeader,
   DsfrFooter,
-  DsfrSkipLinks,
-  DsfrNavigation,
+  DsfrHeader,
   DsfrNotice,
-  DsfrFooterLinkList,
+  DsfrSkipLinks,
 } from '@gouvminint/vue-dsfr'
-import { Link, router as inertiaRouter, usePage } from '@inertiajs/vue3'
-import SchemeModal from '../components/SchemeModal.vue'
+import { router as inertiaRouter, Link, usePage } from '@inertiajs/vue3'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useSchemeStore } from '~/stores/scheme'
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import SchemeModal from '~/components/SchemeModal.vue'
 
 // Add auth related prop
 defineProps<{
@@ -36,7 +34,7 @@ const isBrowser = typeof window !== 'undefined'
 const currentPath = ref('/')
 
 // Helper function to create button-style links
-const createButtonLink = (label: string, path: string) => {
+function createButtonLink(label: string, path: string) {
   return {
     label,
     button: true,
@@ -90,7 +88,7 @@ onMounted(() => {
 })
 
 // Function to safely open the scheme modal
-const openSchemeModal = () => {
+function openSchemeModal() {
   if (isBrowser) {
     console.log('Opening scheme modal')
     const store = useSchemeStore()
@@ -99,7 +97,7 @@ const openSchemeModal = () => {
 }
 
 // Function to check if a route is active
-const isActive = (path: string): boolean => {
+function isActive(path: string): boolean {
   // Special case for home page - only active when exactly at root
   if (path === '/') {
     return currentPath.value === '/'
@@ -109,7 +107,7 @@ const isActive = (path: string): boolean => {
 }
 
 // Function to check if a route is exactly active
-const isExactActive = (path: string): boolean => {
+function isExactActive(path: string): boolean {
   return currentPath.value === path
 }
 
@@ -148,11 +146,10 @@ const navItems = [
   },
 ]
 
-const noticeMessage =
-  'Ce site est en cours de développement. Certaines fonctionnalités peuvent ne pas être disponibles ou ne pas fonctionner correctement.'
+const noticeMessage = 'Ce site est en cours de développement. Certaines fonctionnalités peuvent ne pas être disponibles ou ne pas fonctionner correctement.'
 
 // Helper function to handle logout
-const handleLogout = () => {
+function handleLogout() {
   if (isBrowser) {
     inertiaRouter.post(
       '/logout',
@@ -162,7 +159,7 @@ const handleLogout = () => {
           // Forcer le rechargement complet de la page après la déconnexion
           window.location.href = '/'
         },
-      }
+      },
     )
   }
 }
@@ -186,12 +183,12 @@ const quickLinks = computed(() => {
       onClick: handleLogout,
     })
   } else {
-    /*links.push({
+    /* links.push({
       label: 'Connexion',
       icon: { name: 'ri-login-box-line', ssr: true },
       button: true,
       onClick: () => inertiaRouter.visit('/login'),
-    })*/
+    }) */
   }
 
   return links
@@ -201,19 +198,32 @@ const quickLinks = computed(() => {
 <template>
   <DsfrSkipLinks :links="skipLinks" />
   <DsfrHeader
-    :serviceTitle="'aides simplifiées'"
-    :serviceDescription="'La bonne aide, au bon moment, au bon endroit'"
-    :homeTo="'/'"
-    :logoText="['Republique', 'Française']"
-    :quickLinks="quickLinks"
+    service-title="aides simplifiées"
+    service-description="La bonne aide, au bon moment, au bon endroit"
+    home-to="/"
+    :logo-text="['Republique', 'Française']"
+    :quick-links="quickLinks"
   >
     <template #service-title>
-      <Link href="/" class="fr-header__service-title"> aides simplifiées </Link>
+      <Link
+        href="/"
+        class="fr-header__service-title"
+      >
+        aides simplifiées
+      </Link>
     </template>
     <template #mainnav>
-      <nav class="fr-nav" role="navigation" aria-label="Menu principal">
+      <nav
+        class="fr-nav"
+        role="navigation"
+        aria-label="Menu principal"
+      >
         <ul class="fr-nav__list">
-          <li v-for="(item, index) in navItems" :key="index" class="fr-nav__item">
+          <li
+            v-for="(item, index) in navItems"
+            :key="index"
+            class="fr-nav__item"
+          >
             <Link
               v-if="!item.target"
               :href="item.to"
@@ -227,7 +237,13 @@ const quickLinks = computed(() => {
             >
               {{ item.text }}
             </Link>
-            <a v-else :href="item.to" class="fr-nav__link" :target="item.target" rel="noopener">
+            <a
+              v-else
+              :href="item.to"
+              class="fr-nav__link"
+              :target="item.target"
+              rel="noopener"
+            >
               {{ item.text }}
             </a>
           </li>
@@ -235,25 +251,31 @@ const quickLinks = computed(() => {
       </nav>
     </template>
   </DsfrHeader>
-  <DsfrNotice v-if="noticeMessage" :title="noticeMessage" />
-  <main id="content" role="main" tabindex="-1">
+  <DsfrNotice
+    v-if="noticeMessage"
+    :title="noticeMessage"
+  />
+  <main
+    id="content"
+    role="main"
+    tabindex="-1"
+  >
     <slot />
   </main>
 
   <DsfrFooter
     id="footer"
     tabindex="-1"
-    a11yCompliance="non conforme"
-    :descText="'Aides simplifiées : la bonne aide, au bon moment, au bon endroit'"
-    :logoText="['Republique', 'Française']"
-    operatorTo="/"
-    operatorLinkText="Retour à l'accueil"
-    licenceText="Licence ouverte 2.0"
-    licenceName="licence ouverte 2.0"
-    licenceTo="https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
-    :mandatoryLinks="[]"
-    :afterMandatoryLinks="afterMandatoryLinks"
-  >
-  </DsfrFooter>
+    a11y-compliance="non conforme"
+    desc-text="Aides simplifiées : la bonne aide, au bon moment, au bon endroit"
+    :logo-text="['Republique', 'Française']"
+    operator-to="/"
+    operator-link-text="Retour à l'accueil"
+    licence-text="Licence ouverte 2.0"
+    licence-name="licence ouverte 2.0"
+    licence-to="https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
+    :mandatory-links="[]"
+    :after-mandatory-links="afterMandatoryLinks"
+  />
   <SchemeModal />
 </template>

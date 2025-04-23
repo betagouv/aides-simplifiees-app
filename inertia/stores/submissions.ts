@@ -1,11 +1,11 @@
+import { router } from '@inertiajs/vue3'
+import axios from 'axios'
 import { defineStore } from 'pinia'
-import { onMounted, reactive, ref, watchEffect } from 'vue'
+import { ref } from 'vue'
 import { useMatomo } from '~/composables/useMatomo'
 import { useSurveyDebugStore } from '~/stores/survey-debug'
 import { extractAidesResults } from '~/utils/beautify-results'
 import { buildRequest, fetchOpenFiscaFranceCalculation } from '~/utils/calculate-aides'
-import axios from 'axios'
-import { router } from '@inertiajs/vue3'
 
 export const useSubmissionStore = defineStore(
   'submissions',
@@ -35,7 +35,7 @@ export const useSubmissionStore = defineStore(
 
     const setSubmissionStatus = (
       simulateurId: string,
-      status: 'idle' | 'pending' | 'success' | 'error'
+      status: 'idle' | 'pending' | 'success' | 'error',
     ) => {
       submissionStatus.value[simulateurId] = status
     }
@@ -64,14 +64,13 @@ export const useSubmissionStore = defineStore(
       try {
         setSubmissionStatus(simulateurId, 'pending')
         const request: OpenFiscaCalculationRequest = buildRequest(answers, questionsToApi)
-        const openfiscaResponse: OpenFiscaCalculationResponse =
-          await fetchOpenFiscaFranceCalculation(request)
+        const openfiscaResponse: OpenFiscaCalculationResponse =          await fetchOpenFiscaFranceCalculation(request)
 
         debug.log('[Submission Store] openfiscaResponse', openfiscaResponse)
 
         const aidesResults: SimulationResultsAides = extractAidesResults(
           openfiscaResponse,
-          questionsToApi
+          questionsToApi,
         )
 
         if (aidesResults) {
@@ -97,7 +96,7 @@ export const useSubmissionStore = defineStore(
                   'Content-Type': 'application/json',
                   'X-Requested-With': 'XMLHttpRequest',
                 },
-              }
+              },
             )
 
             if (storeResponse.data.success) {
@@ -152,5 +151,5 @@ export const useSubmissionStore = defineStore(
     persist: {
       pick: ['results', 'secureHashes'],
     },
-  }
+  },
 )

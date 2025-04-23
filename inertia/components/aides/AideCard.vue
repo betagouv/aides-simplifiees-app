@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import type { DsfrCardProps } from '@gouvminint/vue-dsfr'
-import TypeAideTag from '~/components/aides/TypeAideTag.vue'
+import { DsfrCard } from '@gouvminint/vue-dsfr'
 import AideMontant from '~/components/aides/AideMontant.vue'
+import TypeAideTag from '~/components/aides/TypeAideTag.vue'
 
 type AideCardProps = {
   link: string
@@ -34,13 +35,25 @@ const periode = props.titre?.match('APL') ? '/mois' : undefined
       <div class="brand-aide-card__details">
         <div class="brand-aide-card__details-left">
           <ul class="fr-tags-group">
-            <TypeAideTag :size="size" :type="typeAide" />
+            <TypeAideTag
+              :size="size"
+              :type="typeAide"
+            />
           </ul>
         </div>
-        <div v-if="montant" class="brand-aide-card__details-right">
+        <div
+          v-if="montant"
+          class="brand-aide-card__details-right"
+        >
           <span class="fr-mr-3v">jusqu'à</span>
-          <AideMontant :montant="montant" :size="size" />
-          <p v-if="periode" class="brand-montant-periode fr-mb-n1v fr-text--bold fr-text--alt">
+          <AideMontant
+            :montant="montant"
+            :size="size"
+          />
+          <p
+            v-if="periode"
+            class="brand-montant-periode fr-mb-n1v fr-text--bold fr-text--alt"
+          >
             {{ periode }}
           </p>
         </div>
@@ -57,7 +70,11 @@ const periode = props.titre?.match('APL') ? '/mois' : undefined
 }
 
 :deep(.fr-card__detail svg) {
-  margin-right: 0.5rem;
+  margin-right: .5rem;
+}
+
+.brand-montant-periode {
+  display: inline-block;
 }
 
 .brand-montant-periode {

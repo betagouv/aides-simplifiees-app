@@ -24,9 +24,9 @@ try {
 
   // Extract question IDs from steps
   if (jsonData.steps && Array.isArray(jsonData.steps)) {
-    jsonData.steps.forEach((step) => {
+    jsonData.steps.forEach(step => {
       if (step.questions && Array.isArray(step.questions)) {
-        step.questions.forEach((question) => {
+        step.questions.forEach(question => {
           if (question.id) {
             questionIds.push(question.id)
           }

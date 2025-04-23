@@ -1,47 +1,57 @@
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { usePage } from '@inertiajs/vue3'
-import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-import { useMatomo } from '~/composables/useMatomo'
-import UserSimulationLayout from '../../../layouts/user-simulation.vue'
-import SectionSeparator from '../../../components/layout/SectionSeparator.vue'
-import { DsfrSegmentedSet } from '@gouvminint/vue-dsfr'
+import { DsfrAccordion, DsfrAccordionsGroup, DsfrBadge, DsfrButton, DsfrSegmentedSet, VIcon } from '@gouvminint/vue-dsfr'
+import { Head, usePage } from '@inertiajs/vue3'
+import { computed, ref } from 'vue'
 import AideMontantCard from '~/components/aides/AideMontantCard.vue'
 import AidesList from '~/components/aides/AidesList.vue'
 import DsfrLink from '~/components/DsfrLink.vue'
+import SectionSeparator from '~/components/layout/SectionSeparator.vue'
+import { useMatomo } from '~/composables/useMatomo'
+import UserSimulationLayout from '~/layouts/user-simulation.vue'
+import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-const page = usePage()
+const page = usePage<{
+  props: {
+    simulateur: {
+      title: string
+      slug: string
+    }
+    formSubmission: {
+      results: {
+        aides?: any[]
+        aidesNonEligibles?: any[]
+        echeances?: any[]
+        montants?: any[]
+        textesLoi?: any[]
+        createAt?: string
+      }
+      createdAt: string
+    }
+    secureHash: string | null
+  }
+}>()
 
-//Get props
+// Get props
 const simulateur = computed(() => page.props.simulateur)
 const formSubmission = computed(() => page.props.formSubmission)
-const aidesBySlug = computed(() => page.props.aidesBySlug)
 const secureHash = computed(() => page.props.secureHash)
 
-//Computed from props
+// Computed from props
 const simulateurTitle = computed(() => simulateur.value?.title || simulateur.value?.slug)
 const simulateurId = computed(() => simulateur.value.slug)
 const results = computed(() => formSubmission.value?.results || null)
 
-onMounted(() => {
-  const { setBreadcrumbs } = useBreadcrumbStore()
+const { setBreadcrumbs } = useBreadcrumbStore()
 
-  setBreadcrumbs([
-    { text: 'Accueil', to: '/' },
-    { text: 'Simulateurs', to: '/simulateurs' },
-    { text: simulateurTitle.value, to: `/simulateurs/${simulateurId.value}#simulateur-title` },
-    {
-      text: 'Résultats',
-      to: `/simulateurs/${simulateurId.value}/resultats${secureHash.value ? `/${secureHash.value}` : ''}#simulateur-title`,
-    },
-  ])
-
-  // Track eligibility in Matomo if we have results and aides
-  if (hasAides.value && results.value) {
-    useMatomo().trackEligibility(simulateurId.value, results.value.aides?.length || 0)
-  }
-})
+setBreadcrumbs([
+  { text: 'Accueil', to: '/' },
+  { text: 'Simulateurs', to: '/simulateurs' },
+  { text: simulateurTitle.value, to: `/simulateurs/${simulateurId.value}#simulateur-title` },
+  {
+    text: 'Résultats',
+    to: `/simulateurs/${simulateurId.value}/resultats${secureHash.value ? `/${secureHash.value}` : ''}#simulateur-title`,
+  },
+])
 
 const showMethodology = ref(false)
 // Computed from results (ie. formSubmission.results)
@@ -51,7 +61,8 @@ const simulationDateTime = computed(() => {
   }
 
   // Otherwise format it from submission createdAt
-  if (!formSubmission.value?.createdAt) return null
+  if (!formSubmission.value?.createdAt)
+    return null
 
   const createdAt = new Date(formSubmission.value.createdAt)
 
@@ -67,23 +78,28 @@ const simulationDateTime = computed(() => {
   return { date, time }
 })
 const hasAides = computed(
-  () => Array.isArray(results.value?.aides) && results.value.aides.length > 0
+  () => Array.isArray(results.value?.aides) && results.value.aides.length > 0,
 )
 const hasEcheances = computed(
-  () => Array.isArray(results.value?.echeances) && results.value.echeances.length > 0
+  () => Array.isArray(results.value?.echeances) && results.value.echeances.length > 0,
 )
 const hasMontants = computed(
-  () => Array.isArray(results.value?.montants) && results.value.montants.length > 0
+  () => Array.isArray(results.value?.montants) && results.value.montants.length > 0,
 )
 const hasAidesNonEligibles = computed(
   () =>
-    Array.isArray(results.value?.aidesNonEligibles) && results.value.aidesNonEligibles.length > 0
+    Array.isArray(results.value?.aidesNonEligibles) && results.value.aidesNonEligibles.length > 0,
 )
 const hasTextesDeLoi = computed(
-  () => Array.isArray(results.value?.textesLoi) && results.value.textesLoi.length > 0
+  () => Array.isArray(results.value?.textesLoi) && results.value.textesLoi.length > 0,
 )
 
-//For ui / ux
+// Track eligibility in Matomo if we have results and aides
+if (hasAides.value && results.value) {
+  useMatomo().trackEligibility(simulateurId.value, results.value.aides?.length || 0)
+}
+
+// For ui / ux
 const segmentedSetOptions = computed(() => {
   const options = []
   if (hasMontants.value) {
@@ -116,7 +132,12 @@ const activeAccordion = ref()
       <header class="results__header">
         <div>
           <hgroup>
-            <h2 v-if="simulateurTitle" class="results__title">Résultats de votre simulation</h2>
+            <h2
+              v-if="simulateurTitle"
+              class="results__title"
+            >
+              Résultats de votre simulation
+            </h2>
             <p
               v-if="simulationDateTime?.date && simulationDateTime?.time"
               class="results__datetime fr-mt-n2w"
@@ -139,7 +160,11 @@ const activeAccordion = ref()
       </header>
 
       <template v-if="formSubmission">
-        <SectionSeparator v-if="hasAides" fluid class="fr-mt-6w" />
+        <SectionSeparator
+          v-if="hasAides"
+          fluid
+          class="fr-mt-6w"
+        />
         <div class="results__content fr-mt-4w">
           <template v-if="hasAides">
             <div class="results__content-resume">
@@ -181,7 +206,10 @@ const activeAccordion = ref()
                 <!-- todo -->
               </div>
             </div>
-            <SectionSeparator fluid class="fr-mt-8w" />
+            <SectionSeparator
+              fluid
+              class="fr-mt-8w"
+            />
             <div class="results__liste-aides fr-mt-8w">
               <h3>2. Les aides que nous avons identifiées</h3>
               <p>
@@ -190,22 +218,36 @@ const activeAccordion = ref()
                 constituent pas un engagement officiel de la part des organismes mentionnés.
               </p>
 
-              <AidesList v-if="results?.aides" :aides="results.aides" />
+              <AidesList
+                v-if="results?.aides"
+                :aides="results.aides"
+              />
             </div>
             <template v-if="hasAidesNonEligibles || hasTextesDeLoi || showMethodology">
-              <SectionSeparator fluid class="fr-mt-8w" />
+              <SectionSeparator
+                fluid
+                class="fr-mt-8w"
+              />
               <div class="results__liste-annexes fr-mt-8w">
                 <h3>3. Pour aller plus loin</h3>
                 <div class="fr-card">
                   <div class="fr-card__body">
                     <div class="fr-card__content">
                       <DsfrAccordionsGroup v-model="activeAccordion">
-                        <DsfrAccordion v-if="showMethodology" id="methodologie">
+                        <DsfrAccordion
+                          v-if="showMethodology"
+                          id="methodologie"
+                        >
                           <template #title>
-                            <VIcon name="ri:question-line" ssr />
+                            <VIcon
+                              name="ri:question-line"
+                              ssr
+                            />
                             <span class="fr-ml-1w"> Comment avons nous estimé ces aides ? </span>
                           </template>
-                          <template #default> Contenu à venir </template>
+                          <template #default>
+                            Contenu à venir
+                          </template>
                         </DsfrAccordion>
                         <DsfrAccordion
                           v-if="hasAidesNonEligibles"
@@ -213,7 +255,10 @@ const activeAccordion = ref()
                           title=""
                         >
                           <template #title>
-                            <VIcon name="ri:chat-delete-line" ssr />
+                            <VIcon
+                              name="ri:chat-delete-line"
+                              ssr
+                            />
                             <span class="fr-ml-1w">
                               Les aides auxquelles vous n'avez pas été estimé·e éligible
                             </span>
@@ -231,7 +276,10 @@ const activeAccordion = ref()
                           title="Textes de référence"
                         >
                           <template #title>
-                            <VIcon name="ri:scales-3-line" ssr />
+                            <VIcon
+                              name="ri:scales-3-line"
+                              ssr
+                            />
                             <span class="fr-ml-1w"> Textes de référence </span>
                           </template>
                           <template #default>
@@ -271,15 +319,22 @@ const activeAccordion = ref()
                 erreur de notre part. Notre service est en construction, n'hésitez pas à consulter
                 le détail des aides suivantes pour vérifier :
               </p>
-              <DsfrAccordion v-if="hasAidesNonEligibles" id="aides-non-eligibles" title="">
+              <DsfrAccordion
+                v-if="hasAidesNonEligibles"
+                id="aides-non-eligibles"
+                title=""
+              >
                 <template #title>
-                  <VIcon name="ri:chat-delete-line" ssr />
+                  <VIcon
+                    name="ri:chat-delete-line"
+                    ssr
+                  />
                   <span class="fr-ml-1w">
                     Les aides auxquelles vous n'avez pas été estimé·e éligible
                   </span>
                 </template>
                 <template #default>
-                  <AidesList v-if="results?.aidesNonEligibles" :aides="results.aidesNonEligibles" />
+                  <AidesList :aides="results.aidesNonEligibles" />
                 </template>
               </DsfrAccordion>
             </div>
@@ -293,7 +348,10 @@ const activeAccordion = ref()
           <p>
             Vous devez d'abord terminer une simulation avant de pouvoir consulter vos résultats.
           </p>
-          <DsfrButton :to="`/simulateurs/${simulateurId}`" label="Commencer une simulation" />
+          <DsfrButton
+            :to="`/simulateurs/${simulateurId}`"
+            label="Commencer une simulation"
+          />
         </div>
       </template>
     </article>

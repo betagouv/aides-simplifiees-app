@@ -1,13 +1,8 @@
 import { HttpContext } from '@adonisjs/core/http'
-import Simulateur from '#models/simulateur'
-import Step from '#models/step'
-import Question from '#models/question'
-import Choice from '#models/choice'
-import SimulateurService from '#services/simulateur_service'
-import { dd } from '@adonisjs/core/services/dumper'
-import FormSubmission from '#models/form_submission'
-import { transformSimulationResults } from '../../inertia/utils/transform-simulation-results.js'
 import Aide from '#models/aide'
+import FormSubmission from '#models/form_submission'
+import Simulateur from '#models/simulateur'
+import SimulateurService from '#services/simulateur_service'
 
 export default class SimulateurController {
   private simulateurService = new SimulateurService()

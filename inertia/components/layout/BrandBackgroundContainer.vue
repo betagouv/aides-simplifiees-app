@@ -1,46 +1,34 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
 import { useElementSize } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-import { useSchemeStore } from '../../stores/scheme'
+import { computed, ref } from 'vue'
+import { useSchemeStore } from '~/stores/scheme'
 import BrandBackgroundTexture from './BrandBackgroundTexture.vue'
 
-const props = withDefaults(
-  defineProps<{
-    contrast?: boolean
-    subtle?: boolean
-    textured?: boolean
-    blue?: boolean
-  }>(),
-  {
-    contrast: false,
-    subtle: false,
-    textured: false,
-    blue: false,
-  }
-)
+const props = withDefaults(defineProps<{
+  contrast?: boolean
+  subtle?: boolean
+  textured?: boolean
+  blue?: boolean
+}>(), {
+  contrast: false,
+  subtle: false,
+  textured: false,
+  blue: false,
+})
 
-// Default values for SSR
-const defaultPreferences = {
-  theme: 'light',
-  scheme: 'light',
-}
-
-// Only use the store in browser environment
-const isBrowser = typeof window !== 'undefined'
-const schemeStore = isBrowser ? useSchemeStore() : null
-const { preferences } = isBrowser
-  ? storeToRefs(schemeStore!)
-  : { preferences: ref(defaultPreferences) }
-
+const schemeStore = useSchemeStore()
+const { preferences } = storeToRefs(schemeStore)
 const mixBlendMode = computed(() => {
-  return preferences.value.theme === 'dark' || props.contrast ? 'lighten' : 'darken'
+  return (preferences.value.theme === 'dark' || props.contrast) ? 'lighten' : 'darken'
 })
 
 const opacity = props.subtle ? 0.2 : 0.8
 
 const backgroundColorClass = computed(() => {
-  if (props.contrast && preferences.value.theme === 'light') {
+  if (
+    props.contrast && preferences.value.theme === 'light'
+  ) {
     return 'fr-background-action-high--blue-france'
   } else if (props.blue) {
     return 'fr-background-alt--blue-france'
@@ -49,11 +37,16 @@ const backgroundColorClass = computed(() => {
 })
 
 const bgContainer = ref(null)
-const { height: containerHeight } = isBrowser ? useElementSize(bgContainer) : { height: ref(0) }
+const { height: containerHeight } = useElementSize(bgContainer)
 </script>
 
 <template>
-  <div class="container-with-bg" :class="[backgroundColorClass]">
+  <div
+    class="container-with-bg"
+    :class="[
+      backgroundColorClass,
+    ]"
+  >
     <div
       v-if="textured"
       ref="bgContainer"

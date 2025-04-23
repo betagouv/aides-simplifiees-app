@@ -1,7 +1,7 @@
 {
   "name": "as",
   "type": "module",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

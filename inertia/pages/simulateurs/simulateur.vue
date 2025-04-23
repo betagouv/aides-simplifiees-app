@@ -3,7 +3,6 @@ import { Head } from '@inertiajs/vue3'
 import { onMounted } from 'vue'
 import Survey from '~/components/survey/Survey.vue'
 import { useIframeDisplay } from '~/composables/useIframeDisplay'
-import UserSimulationLayout from '~/layouts/user-simulation.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 // Récupérer les données du simulateur depuis les props
@@ -50,7 +49,5 @@ onMounted(() => {
         || `En quelques clics sur le simulateur '${simulateur.title}', découvrez si vous pouvez bénéficier d'aides financières.`
     "
   />
-  <UserSimulationLayout>
-    <Survey :simulateur-id="simulateur.slug" />
-  </UserSimulationLayout>
+  <Survey :simulateur-id="simulateur.slug" />
 </template>

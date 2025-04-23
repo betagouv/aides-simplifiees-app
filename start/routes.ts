@@ -55,7 +55,10 @@ router
     router.get('/simulateurs/:slug/resultats/:hash', [SimulateurController, 'resultats'])
     router.get('/simulateurs/:simulateur_slug/notions/:notion_slug', [ContentController, 'showSimulateurNotion'])
   })
-  .middleware([middleware.preserveDebugParam()])
+  .middleware([
+    middleware.preserveDebugParam(),
+    middleware.preserveIframeParam(),
+  ])
 
 // Routes d'administration protégées
 router

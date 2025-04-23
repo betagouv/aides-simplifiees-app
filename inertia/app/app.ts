@@ -8,10 +8,8 @@ import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createSSRApp, h } from 'vue'
+import { getLayout } from './shared'
 
-import DefaultLayout from '~/layouts/default.vue'
-import iframeLayout from '~/layouts/iframe.vue'
-import { getParam } from '~/utils/url'
 import '../css/app.css'
 // Import DSFR styles and components
 import '@gouvfr/dsfr/dist/dsfr.min.css'
@@ -28,18 +26,11 @@ createInertiaApp({
   title: (title) => `${title} - ${appName}`,
 
   resolve: async (name) => {
-    let layout = DefaultLayout
-
-    // Check if the URL contains the 'iframe' query parameter
-    if (getParam(window.location.href, 'iframe') === 'true') {
-      layout = iframeLayout
-    }
-
     const page = await resolvePageComponent(
       `../pages/${name}.vue`,
       import.meta.glob<DefineComponent>('../pages/**/*.vue')
     )
-    page.default.layout ??= layout
+    page.default.layout ??= getLayout(`/${name}`)
     return page
   },
 

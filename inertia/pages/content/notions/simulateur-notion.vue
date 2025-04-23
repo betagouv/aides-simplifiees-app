@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { Head } from '@inertiajs/vue3'
 import DsfrLink from '~/components/DsfrLink.vue'
-import UserSimulationLayout from '~/layouts/user-simulation.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 // Define props based on ContentController.showNotion
@@ -39,24 +38,22 @@ setBreadcrumbs([
       || `Découvrez toutes les informations sur la ${type} '${item.title}' pour vous accompagner dans vos démarches.`
     "
   />
-  <UserSimulationLayout>
-    <article v-if="simulateur && item">
-      <header class="fr-mb-6w">
-        <h1>
-          {{ item.title }}
-        </h1>
-        <DsfrLink
-          icon-before
-          label="Revenir à ma simulation"
-          :to="`/simulateurs/${simulateur.slug}#simulateur-title`"
-          :icon="{ name: 'ri:arrow-left-line', ssr: true }"
-        />
-      </header>
-      <div class="fr-card fr-p-3w">
-        <div v-html="html" />
-      </div>
-    </article>
-  </UserSimulationLayout>
+  <article v-if="simulateur && item">
+    <header class="fr-mb-6w">
+      <h1>
+        {{ item.title }}
+      </h1>
+      <DsfrLink
+        icon-before
+        label="Revenir à ma simulation"
+        :to="`/simulateurs/${simulateur.slug}#simulateur-title`"
+        :icon="{ name: 'ri:arrow-left-line', ssr: true }"
+      />
+    </header>
+    <div class="fr-card fr-p-3w">
+      <div v-html="html" />
+    </div>
+  </article>
 </template>
 
 <style scoped lang="scss">

@@ -3,7 +3,6 @@ import { DsfrAccordion, DsfrAccordionsGroup, DsfrBadge, DsfrButton } from '@gouv
 import { router, usePage } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
 import DsfrLink from '~/components/DsfrLink.vue'
-import UserSimulationLayout from '~/layouts/user-simulation.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import { useSurveysStore } from '~/stores/surveys'
 
@@ -45,73 +44,71 @@ const activeAccordion = ref<number>(activeQuestionGroupIndex.value)
 </script>
 
 <template>
-  <UserSimulationLayout>
-    <div v-if="simulateur">
-      <hgroup class="fr-mb-4w">
-        <h2>Récapitulatif des informations que vous avez renseignées</h2>
-        <DsfrLink
-          class="results__backlink"
-          icon-before
-          label="Revenir à la question en cours"
-          :to="`/simulateurs/${simulateurId}#simulateur-title`"
-          :icon="{ name: 'ri:arrow-left-line', ssr: true }"
-        />
-      </hgroup>
-      <div class="fr-card fr-p-3w">
-        <DsfrAccordionsGroup v-model="activeAccordion">
-          <template
-            v-for="(group, i) in groupedQuestions"
-            :key="group.title"
+  <div v-if="simulateur">
+    <hgroup class="fr-mb-4w">
+      <h2>Récapitulatif des informations que vous avez renseignées</h2>
+      <DsfrLink
+        class="results__backlink"
+        icon-before
+        label="Revenir à la question en cours"
+        :to="`/simulateurs/${simulateurId}#simulateur-title`"
+        :icon="{ name: 'ri:arrow-left-line', ssr: true }"
+      />
+    </hgroup>
+    <div class="fr-card fr-p-3w">
+      <DsfrAccordionsGroup v-model="activeAccordion">
+        <template
+          v-for="(group, i) in groupedQuestions"
+          :key="group.title"
+        >
+          <DsfrAccordion
+            v-if="group.questions.length"
+            :title="`${i + 1}. ${group.title}`"
           >
-            <DsfrAccordion
-              v-if="group.questions.length"
-              :title="`${i + 1}. ${group.title}`"
+            <div
+              v-for="question in group.questions"
+              :key="question.id"
+              class="question-row fr-mb-2w"
             >
-              <div
-                v-for="question in group.questions"
-                :key="question.id"
-                class="question-row fr-mb-2w"
-              >
-                <div>
-                  <p class="fr-text--bold">
-                    {{ question.title }}
-                  </p>
-                  <DsfrBadge
-                    v-if="question.id === currentQuestionId"
-                    class="fr-mt-1w"
-                    type="info"
-                    small
-                    label="Question en cours"
-                  />
-                  <p
-                    v-if="surveysStore.hasAnswer(simulateurId, question.id)"
-                    class="fr-hint-text fr-text--sm"
-                  >
-                    "{{ surveysStore.formatAnswer(simulateurId, question.id, question.answer) }}"
-                  </p>
-                </div>
-                <DsfrButton
-                  tertiary
-                  size="sm"
-                  no-outline
-                  :icon="{ name: 'ri:edit-line', ssr: true }"
-                  icon-right
-                  :label="surveysStore.hasAnswer(simulateurId, question.id) ? 'Modifier' : 'Répondre'"
-                  @click.prevent="
-                    () => {
-                      surveysStore.setCurrentQuestionId(simulateurId, question.id)
-                      router.visit(`/simulateurs/${simulateurId}#simulateur-title`)
-                    // navigateTo(`/simulateurs/${simulateurId}#simulateur-title`)
-                    }
-                  "
+              <div>
+                <p class="fr-text--bold">
+                  {{ question.title }}
+                </p>
+                <DsfrBadge
+                  v-if="question.id === currentQuestionId"
+                  class="fr-mt-1w"
+                  type="info"
+                  small
+                  label="Question en cours"
                 />
+                <p
+                  v-if="surveysStore.hasAnswer(simulateurId, question.id)"
+                  class="fr-hint-text fr-text--sm"
+                >
+                  "{{ surveysStore.formatAnswer(simulateurId, question.id, question.answer) }}"
+                </p>
               </div>
-            </DsfrAccordion>
-          </template>
-        </DsfrAccordionsGroup>
-      </div>
+              <DsfrButton
+                tertiary
+                size="sm"
+                no-outline
+                :icon="{ name: 'ri:edit-line', ssr: true }"
+                icon-right
+                :label="surveysStore.hasAnswer(simulateurId, question.id) ? 'Modifier' : 'Répondre'"
+                @click.prevent="
+                  () => {
+                    surveysStore.setCurrentQuestionId(simulateurId, question.id)
+                    router.visit(`/simulateurs/${simulateurId}#simulateur-title`)
+                    // navigateTo(`/simulateurs/${simulateurId}#simulateur-title`)
+                  }
+                "
+              />
+            </div>
+          </DsfrAccordion>
+        </template>
+      </DsfrAccordionsGroup>
     </div>
-  </UserSimulationLayout>
+  </div>
 </template>
 
 <style lang="css" scoped>

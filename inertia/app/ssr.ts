@@ -4,9 +4,7 @@ import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { renderToString } from '@vue/server-renderer'
 import { createPinia } from 'pinia'
 import { createSSRApp, h } from 'vue'
-import DefaultLayout from '~/layouts/default.vue'
-import iframeLayout from '~/layouts/iframe.vue'
-import { getParam } from '~/utils/url'
+import { getLayout } from './shared'
 
 export default function render(page: any) {
   return createInertiaApp({
@@ -14,26 +12,19 @@ export default function render(page: any) {
     render: renderToString,
 
     resolve: async (name) => {
-      let layout = DefaultLayout
-
-      // Check if the URL contains the 'iframe' query parameter
-      if (getParam(page.url, 'iframe') === 'true') {
-        layout = iframeLayout
-      }
-
       const ssrPage = await resolvePageComponent(
         `../pages/${name}.vue`,
         import.meta.glob<DefineComponent>('../pages/**/*.vue'),
       )
-      ssrPage.default.layout ??= layout
+      ssrPage.default.layout ??= getLayout(`/${name}`)
       return ssrPage
     },
 
     setup({ App, props, plugin }) {
-      const pinia = createPinia()
       const ssrApp = createSSRApp({ render: () => h(App, props) })
-        .use(pinia)
-        .use(plugin)
+      ssrApp.use(plugin)
+      const pinia = createPinia()
+      ssrApp.use(pinia)
       ssrApp.component('RouterLink', {
         props: {
           to: {

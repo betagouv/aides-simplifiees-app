@@ -11,6 +11,7 @@ import { createSSRApp, h } from 'vue'
 
 import DefaultLayout from '~/layouts/default.vue'
 import iframeLayout from '~/layouts/iframe.vue'
+import { getParam } from '~/utils/url'
 import '../css/app.css'
 // Import DSFR styles and components
 import '@gouvfr/dsfr/dist/dsfr.min.css'
@@ -29,7 +30,8 @@ createInertiaApp({
   resolve: async (name) => {
     let layout = DefaultLayout
 
-    if (new URLSearchParams(window.location.search).has('iframe')) {
+    // Check if the URL contains the 'iframe' query parameter
+    if (getParam(window.location.href, 'iframe') === 'true') {
       layout = iframeLayout
     }
 

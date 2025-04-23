@@ -41,14 +41,21 @@ router.get('/aides/:slug', [ContentController, 'showAide'])
 
 // Simulateurs
 router.get('/simulateurs', [SimulateurController, 'index'])
+
+// Simulateur:slug
 router
-  .get('/simulateurs/:slug', [SimulateurController, 'showSimulateur'])
-  .middleware([
-    middleware.resumeQuery(),
-  ])
-router.get('/simulateurs/:slug/resultats/:hash', [SimulateurController, 'resultats'])
-// Recapitulatif
-router.get('/simulateurs/:slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
+  .group(() => {
+    router
+      .get('/simulateurs/:slug', [SimulateurController, 'showSimulateur'])
+      .middleware([
+        middleware.resumeQuery(),
+      ])
+      // Recapitulatif
+    router.get('/simulateurs/:slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
+    router.get('/simulateurs/:slug/resultats/:hash', [SimulateurController, 'resultats'])
+    router.get('/simulateurs/:slug/details', [SimulateurController, 'showDetails'])
+  })
+  .middleware([middleware.preserveDebugParam()])
 
 // Routes d'administration protégées
 router

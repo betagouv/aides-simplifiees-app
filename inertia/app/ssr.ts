@@ -7,6 +7,7 @@ import { createPinia } from 'pinia'
 import { createSSRApp, h } from 'vue'
 import DefaultLayout from '~/layouts/default.vue'
 import iframeLayout from '~/layouts/iframe.vue'
+import { getParam } from '~/utils/url'
 
 export default function render(page: any) {
   return createInertiaApp({
@@ -17,8 +18,7 @@ export default function render(page: any) {
       let layout = DefaultLayout
 
       // Check if the URL contains the 'iframe' query parameter
-      const urlParams = new URLSearchParams(page.url.split('?')[1])
-      if (urlParams.has('iframe')) {
+      if (getParam(page.url, 'iframe') === 'true') {
         layout = iframeLayout
       }
 
@@ -30,7 +30,7 @@ export default function render(page: any) {
       return ssrPage
     },
 
-    setup({ el, App, props, plugin }) {
+    setup({ App, props, plugin }) {
       const pinia = createPinia()
       // pinia.use(piniaPluginPersistedstate)
       const ssrApp = createSSRApp({ render: () => h(App, props) })

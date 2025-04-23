@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { customRef } from 'vue'
-import RadioButtonQuestion from './RadioButtonQuestion.vue'
+import RadioButtonQuestion from '~/components/survey/RadioButtonQuestion.vue'
 
 const props = defineProps<{
   question: SurveyQuestion
@@ -25,11 +25,7 @@ const booleanModel = defineModel<boolean | undefined>()
 const stringModel = customRef((track, trigger) => {
   return {
     get() {
-      return booleanModel.value === true
-        ? 'true'
-        : booleanModel.value === false
-          ? 'false'
-          : undefined
+      return booleanModel.value === true ? 'true' : booleanModel.value === false ? 'false' : undefined
     },
     set(value: string | undefined) {
       track()
@@ -47,5 +43,8 @@ const stringModel = customRef((track, trigger) => {
 </script>
 
 <template>
-  <RadioButtonQuestion v-model="stringModel" :question="question" />
+  <RadioButtonQuestion
+    v-model="stringModel"
+    :question="question"
+  />
 </template>

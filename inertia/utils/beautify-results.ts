@@ -37,34 +37,30 @@ function addDeducedResults(results: SimulationResultsAides) {
 
 export function extractAidesResults(
   apiResponse: OpenFiscaCalculationResponse,
-  resultsToExtract: string[]
+  resultsToExtract: string[],
 ): SimulationResultsAides {
   let results: SimulationResultsAides = {}
   let questionMapping: OpenFiscaMapping
   let period: string
 
-  resultsToExtract.forEach((questionKey) => {
+  resultsToExtract.forEach(questionKey => {
     try {
       if (questionKey in individusQuestionsVariables) {
         questionMapping = individusQuestionsVariables[questionKey]
         period = getPeriod(questionMapping.period)
-        results[questionKey] =
-          apiResponse[Entites.Individus][INDIVIDU_ID][questionMapping.openfiscaVariableName][period]
+        results[questionKey] =          apiResponse[Entites.Individus][INDIVIDU_ID][questionMapping.openfiscaVariableName][period]
       } else if (questionKey in menagesQuestionsVariables) {
         questionMapping = menagesQuestionsVariables[questionKey]
         period = getPeriod(questionMapping.period)
-        results[questionKey] =
-          apiResponse[Entites.Menages][MENAGE_ID][questionMapping.openfiscaVariableName][period]
+        results[questionKey] =          apiResponse[Entites.Menages][MENAGE_ID][questionMapping.openfiscaVariableName][period]
       } else if (questionKey in famillesQuestionsVariables) {
         questionMapping = famillesQuestionsVariables[questionKey]
         period = getPeriod(questionMapping.period)
-        results[questionKey] =
-          apiResponse[Entites.Familles][FAMILLE_ID][questionMapping.openfiscaVariableName][period]
+        results[questionKey] =          apiResponse[Entites.Familles][FAMILLE_ID][questionMapping.openfiscaVariableName][period]
       } else if (questionKey in foyersFiscauxQuestionsVariables) {
         questionMapping = foyersFiscauxQuestionsVariables[questionKey]
         period = getPeriod(questionMapping.period)
-        results[questionKey] =
-          apiResponse[Entites.FoyerFiscaux][FOYER_FISCAL_ID][questionMapping.openfiscaVariableName][
+        results[questionKey] =          apiResponse[Entites.FoyerFiscaux][FOYER_FISCAL_ID][questionMapping.openfiscaVariableName][
             period
           ]
       } else {
@@ -73,14 +69,14 @@ export function extractAidesResults(
       }
     } catch (anyError) {
       console.error(
-        `Réponse à question '${questionKey}' non transcrite dans les résultats de simulation suite à l'erreur '${anyError}'.`
+        `Réponse à question '${questionKey}' non transcrite dans les résultats de simulation suite à l'erreur '${anyError}'.`,
       )
     }
   })
 
   results = addDeducedResults(results)
   console.warn(
-    `Les questions suivantes étaient attendues mais n'ont pas été extraites de la réponse d'API : ${resultsToExtract.filter((key) => !results.hasOwnProperty(key))}`
+    `Les questions suivantes étaient attendues mais n'ont pas été extraites de la réponse d'API : ${resultsToExtract.filter(key => !results.hasOwnProperty(key))}`,
   )
 
   return results

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 
 withDefaults(
   defineProps<{
@@ -8,13 +8,18 @@ withDefaults(
   }>(),
   {
     size: 'md',
-  }
+  },
 )
 </script>
 
 <template>
-  <div class="brand-montant fr-text--alt" :class="[`brand-montant--${size}`]">
-    <p class="brand-montant__label fr-m-0">{{ montant.toFixed(0) }}€</p>
+  <div
+    class="brand-montant fr-text--alt"
+    :class="[`brand-montant--${size}`]"
+  >
+    <p class="brand-montant__label fr-m-0">
+      {{ montant.toFixed(0) }}€
+    </p>
   </div>
 </template>
 

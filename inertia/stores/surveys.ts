@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia'
-import { useMatomo } from '~/composables/useMatomo'
-import { useSurveyDebugStore } from '~/stores/survey-debug'
-import { ref, watch } from 'vue'
-import { useAutoCompleteHistoryStore } from '~/stores/autocomplete-history'
 import { useFetch } from '@vueuse/core'
+import { defineStore } from 'pinia'
+import { ref, watch } from 'vue'
+import { useMatomo } from '~/composables/useMatomo'
+import { useAutoCompleteHistoryStore } from '~/stores/autocomplete-history'
+import { useSurveyDebugStore } from '~/stores/survey-debug'
 import { compareVersions } from '~/utils/compare-versions'
 import { evaluateCondition } from '~/utils/evaluate-conditions'
 
@@ -14,7 +14,7 @@ export const useSurveysStore = defineStore(
      * State
      */
     const answers = ref<{ [simulateurId: string]: SurveyAnswers }>({})
-    const currentQuestionId = ref<{ [simulateurId: string]: string | null }>({})
+    const currentQuestionIds = ref<{ [simulateurId: string]: string | null }>({})
     const surveySchemas = ref<{ [simulateurId: string]: SurveySchema | null }>({})
     const schemaStatus = ref<{ [simulateurId: string]: 'idle' | 'pending' | 'error' | 'success' }>(
       {}
@@ -108,36 +108,31 @@ export const useSurveysStore = defineStore(
 
     async function loadSurveySchema(simulateurId: string) {
       debug.log(`[Surveys store][${simulateurId}] Loading survey schema...`)
-
-      updateSchemaStatus(simulateurId, 'pending')
-
-      try {
-        const { data: schemaData } = useFetch<string>(`/forms/${simulateurId}.json`)
-
-        watch(
-          schemaData,
-          (data) => {
-            if (data) {
-              try {
-                // Parse the JSON string to get the schema object
-                const parsedSchema = JSON.parse(data) as SurveySchema
-                setSchema(simulateurId, parsedSchema)
-                updateSchemaStatus(simulateurId, 'success')
-              } catch (parseError) {
-                console.error(
-                  `[Surveys store][${simulateurId}] Error parsing schema JSON:`,
-                  parseError
-                )
-                updateSchemaStatus(simulateurId, 'error')
-              }
-            }
-          },
-          { immediate: true }
-        )
-      } catch (fetchError) {
-        console.error(`[Surveys store][${simulateurId}] Error fetching schema:`, fetchError)
-        updateSchemaStatus(simulateurId, 'error')
-      }
+      const {
+        data: schema,
+        isFetching,
+        isFinished,
+        error,
+      } = useFetch<SurveySchema>(`/forms/${simulateurId}.json`).get().json()
+      watch(
+        [isFinished, isFetching, error],
+        () => {
+          if (error.value) {
+            updateSchemaStatus(simulateurId, 'error')
+          } else if (isFinished.value) {
+            updateSchemaStatus(simulateurId, 'success')
+          } else if (isFetching.value) {
+            updateSchemaStatus(simulateurId, 'pending')
+            console.error(error.value)
+          }
+        },
+        { immediate: true }
+      )
+      watch(schema, () => {
+        if (schema.value) {
+          updateSchema(simulateurId, schema.value)
+        }
+      })
     }
 
     /**
@@ -145,6 +140,24 @@ export const useSurveysStore = defineStore(
      */
     const getAnswers = (simulateurId: string): SurveyAnswers => {
       return answers.value[simulateurId] || {}
+    }
+
+    const getVisibleAnswers = (simulateurId: string): SurveyAnswers => {
+      const currentAnswers = getAnswers(simulateurId)
+      return Object.entries(currentAnswers)
+        .filter(([questionId, answer]) => {
+          const question = findQuestionById(simulateurId, questionId)
+          if (!question) {
+            return false
+          }
+          // Check if the question is visible
+          const isVisible = isQuestionVisible(simulateurId, questionId)
+          return isVisible && answer !== undefined
+        })
+        .reduce((acc, [questionId, answer]) => {
+          acc[questionId] = answer
+          return acc
+        }, {} as SurveyAnswers)
     }
 
     const hasAnswers = (simulateurId: string): boolean => {
@@ -234,11 +247,11 @@ export const useSurveysStore = defineStore(
      * Question related methods
      */
     function getCurrentQuestionId(simulateurId: string): string | null {
-      return currentQuestionId.value[simulateurId] || null
+      return currentQuestionIds.value[simulateurId] || null
     }
 
     const setCurrentQuestionId = (simulateurId: string, questionId: string) => {
-      currentQuestionId.value[simulateurId] = questionId
+      currentQuestionIds.value[simulateurId] = questionId
       debug.log(`[Surveys store][${simulateurId}] Current question ID set to:`, questionId)
     }
 
@@ -294,7 +307,7 @@ export const useSurveysStore = defineStore(
               // Check if the question is answered or is the current question
               return (
                 hasAnswer(simulateurId, question.id) ||
-                currentQuestionId.value[simulateurId] === question.id
+                currentQuestionIds.value[simulateurId] === question.id
               )
             })
             .map((question) => {
@@ -564,8 +577,8 @@ export const useSurveysStore = defineStore(
       // Count all visible questions
       let visibleQuestionsCount =
         questions.filter((question) => {
-          return isQuestionVisible(simulateurId, question.id)
-        }).length ?? 0
+        return isQuestionVisible(simulateurId, question.id)
+      }).length ?? 0
 
       // If there are no visible questions (unlikely but possible), use total questions count
       if (visibleQuestionsCount === 0) {
@@ -590,6 +603,7 @@ export const useSurveysStore = defineStore(
     function resetSurvey(simulateurId: string) {
       debug.log(`[Surveys store][${simulateurId}] Resetting survey...`)
       answers.value[simulateurId] = {}
+
       // Reset to first category/question
       setFirstQuestion(simulateurId)
     }
@@ -649,7 +663,7 @@ export const useSurveysStore = defineStore(
 
     return {
       answers,
-      currentQuestionId,
+      currentQuestionIds,
       versions,
       areAllRequiredQuestionsAnswered,
       isSomeRequiredQuestionsAnswered,
@@ -658,6 +672,7 @@ export const useSurveysStore = defineStore(
       loadSurveySchema,
       hasAnswers,
       getAnswers,
+      getVisibleAnswers,
       getAnswer,
       hasAnswer,
       setAnswer,
@@ -692,5 +707,5 @@ export const useSurveysStore = defineStore(
     persist: {
       pick: ['answers', 'versions', 'currentQuestionId'],
     },
-  }
+  },
 )

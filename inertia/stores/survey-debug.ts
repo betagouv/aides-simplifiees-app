@@ -1,9 +1,15 @@
+import { usePage } from '@inertiajs/vue3'
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
-import { usePage } from '@inertiajs/vue3'
 
 export const useSurveyDebugStore = defineStore('survey-debug', () => {
-  const page = usePage()
+  const page = usePage<{
+    route?: {
+      query?: {
+        debug?: string
+      }
+    }
+  }>()
 
   const debugMode = computed(() => {
     return page.props.route?.query?.debug === 'true'

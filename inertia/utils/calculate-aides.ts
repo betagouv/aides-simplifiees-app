@@ -1,3 +1,11 @@
+import axios from 'axios'
+import {
+  famillesVariables,
+  foyersFiscauxVariables,
+  individusVariables,
+  menagesVariables,
+} from '~/utils/aides-mapping-inputs'
+
 import {
   famillesQuestionsVariables,
   foyersFiscauxQuestionsVariables,
@@ -6,13 +14,12 @@ import {
 } from '~/utils/aides-mapping-questions'
 
 import {
-  famillesVariables,
-  foyersFiscauxVariables,
-  individusVariables,
-  menagesVariables,
-} from '~/utils/aides-mapping-inputs'
-
-import axios from 'axios'
+  UndefinedValueError,
+  UnexpectedValueError,
+  UnknownEntityError,
+  UnknownPeriodError,
+  UnknownVariableError,
+} from '~/utils/errors'
 
 function initDates() {
   const today = new Date()

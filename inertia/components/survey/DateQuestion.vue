@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { DsfrInputGroup } from '@gouvminint/vue-dsfr'
+
 defineProps<{
   question: SurveyQuestion
 }>()

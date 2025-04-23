@@ -1,13 +1,8 @@
-import { HttpContext } from '@adonisjs/core/http'
-import Simulateur from '#models/simulateur'
-import Step from '#models/step'
-import Question from '#models/question'
-import Choice from '#models/choice'
-import SimulateurService from '#services/simulateur_service'
-import { dd } from '@adonisjs/core/services/dumper'
-import FormSubmission from '#models/form_submission'
-import { transformSimulationResults } from '../../inertia/utils/transform-simulation-results.js'
+import type { HttpContext } from '@adonisjs/core/http'
 import Aide from '#models/aide'
+import FormSubmission from '#models/form_submission'
+import Simulateur from '#models/simulateur'
+import SimulateurService from '#services/simulateur_service'
 
 export default class SimulateurController {
   private simulateurService = new SimulateurService()
@@ -39,6 +34,17 @@ export default class SimulateurController {
     return inertia.render('simulateurs/show', {
       simulateur,
       simulateurJson: JSON.parse(simulateur.builtJson || '{}'),
+    })
+  }
+
+  public async showRecapitulatif({ params, inertia, response }: HttpContext) {
+    const slug = params.slug
+    const simulateur = await Simulateur.findBy('slug', slug)
+    if (!simulateur) {
+      return response.status(404).send('Simulateur non trouvé')
+    }
+    return inertia.render('simulateurs/recapitulatif', {
+      simulateur,
     })
   }
 
@@ -176,7 +182,8 @@ export default class SimulateurController {
       const montantsByUsage = new Map()
 
       for (const aide of eligibleAides) {
-        if (!aide.usage) continue
+        if (!aide.usage)
+continue
 
         const currentTotal = montantsByUsage.get(aide.usage) || 0
         montantsByUsage.set(aide.usage, currentTotal + aide.montant)

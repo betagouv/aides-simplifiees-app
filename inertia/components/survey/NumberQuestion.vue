@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { DsfrInputGroup } from '@gouvminint/vue-dsfr'
 import { customRef } from 'vue'
 
 const props = defineProps<{
@@ -58,6 +59,7 @@ const stringModel = customRef((track, trigger) => {
     :max="question.max"
     :step="question.step"
     :name="question.id"
+    :placeholder="question.placeholder"
     :label="question.title"
     :label-visible="false"
     @keypress="onKeypress"

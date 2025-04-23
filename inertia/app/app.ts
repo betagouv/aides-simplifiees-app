@@ -1,18 +1,20 @@
 /// <reference path="../../adonisrc.ts" />
 /// <reference path="../../config/inertia.ts" />
 
-import '../css/app.css'
-import { createSSRApp, h } from 'vue'
 import type { DefineComponent } from 'vue'
-import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import VueDsfr from '@gouvminint/vue-dsfr'
+import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import { createSSRApp, h } from 'vue'
 
+import DefaultLayout from '~/layouts/default.vue'
+import iframeLayout from '~/layouts/iframe.vue'
+import '../css/app.css'
 // Import DSFR styles and components
 import '@gouvfr/dsfr/dist/dsfr.min.css'
 import '@gouvfr/dsfr/dist/utility/utility.min.css'
-import VueDsfr from '@gouvminint/vue-dsfr'
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
@@ -21,15 +23,30 @@ createInertiaApp({
 
   title: (title) => `${title} - ${appName}`,
 
-  resolve: (name) => {
-    return resolvePageComponent(
+  resolve: async (name) => {
+    let layout = DefaultLayout
+
+    if (new URLSearchParams(window.location.search).has('iframe')) {
+      layout = iframeLayout
+    }
+
+    const page = await resolvePageComponent(
       `../pages/${name}.vue`,
       import.meta.glob<DefineComponent>('../pages/**/*.vue')
     )
+    page.default.layout ??= layout
+    return page
   },
 
   setup({ el, App, props, plugin }) {
     const app = createSSRApp({ render: () => h(App, props) })
+    app.config.warnHandler = (msg, vm, trace) => {
+      if (import.meta.env.MODE === 'development' && msg.match('Hydration')) {
+        console.warn(`Intercepted Vue hydration mismatch warning`)
+        return
+      }
+      console.warn(`[Vue warn]: ${msg}${trace}`)
+    }
     const pinia = createPinia()
     pinia.use(piniaPluginPersistedstate)
 
@@ -59,7 +76,7 @@ createInertiaApp({
           h(
             Link,
             {
-              href: href,
+              href,
               replace: props.replace,
               // Map other relevant props here
             },

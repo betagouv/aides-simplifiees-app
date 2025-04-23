@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3'
-import { ref } from 'vue'
-import DefaultLayout from '../../../layouts/default.vue'
-import BrandBackgroundContainer from '../../../components/layout/BrandBackgroundContainer.vue'
-import SectionContainer from '../../../components/layout/SectionContainer.vue'
 import { marked } from 'marked'
+import { ref } from 'vue'
+import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
+import SectionContainer from '~/components/layout/SectionContainer.vue'
 
 const form = useForm({
   title: '',
@@ -20,28 +19,28 @@ const editorTab = ref('editor')
 const previewHtml = ref('')
 
 // Gérer les textes de loi (tableau d'objets)
-const addTexteLoi = () => {
+function addTexteLoi() {
   form.textesLoi.push({ prefix: '', label: '', url: '' })
 }
 
-const removeTexteLoi = (index: number) => {
+function removeTexteLoi(index: number) {
   form.textesLoi.splice(index, 1)
 }
 
 // Mettre à jour la prévisualisation
-const updatePreview = async () => {
+async function updatePreview() {
   previewHtml.value = await marked.parse(form.content)
 }
 
 // Mettre à jour la prévisualisation quand on change d'onglet
-const switchTab = (tab: string) => {
+function switchTab(tab: string) {
   editorTab.value = tab
   if (tab === 'preview') {
     updatePreview()
   }
 }
 
-const handleSubmit = () => {
+function handleSubmit() {
   form.post('/admin/aides')
 }
 </script>
@@ -49,177 +48,211 @@ const handleSubmit = () => {
 <template>
   <Head title="Nouvelle aide | Admin" />
 
-  <DefaultLayout>
-    <BrandBackgroundContainer textured contrast>
-      <SectionContainer type="page-header">
-        <h1 class="brand-contrast-text"><br />Créer une aide</h1>
-      </SectionContainer>
-    </BrandBackgroundContainer>
+  <BrandBackgroundContainer
+    textured
+    contrast
+  >
+    <SectionContainer type="page-header">
+      <h1 class="brand-contrast-text">
+        <br>Créer une aide
+      </h1>
+    </SectionContainer>
+  </BrandBackgroundContainer>
 
-    <BrandBackgroundContainer textured subtle>
-      <SectionContainer type="page-block">
-        <div class="fr-container fr-container--fluid">
-          <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12">
-              <DsfrBreadcrumb
-                :links="[
-                  { text: 'Administration', to: '/admin' },
-                  { text: 'Aides', to: '/admin/aides' },
-                  { text: 'Nouvelle aide', to: '/admin/aides/create' },
-                ]"
-              />
-            </div>
+  <BrandBackgroundContainer
+    textured
+    subtle
+  >
+    <SectionContainer type="page-block">
+      <div class="fr-container fr-container--fluid">
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12">
+            <DsfrBreadcrumb
+              :links="[
+                { text: 'Administration', to: '/admin' },
+                { text: 'Aides', to: '/admin/aides' },
+                { text: 'Nouvelle aide', to: '/admin/aides/create' },
+              ]"
+            />
           </div>
+        </div>
 
-          <div>
-            <form @submit.prevent="handleSubmit">
-              <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-12">
-                  <DsfrInput v-model="form.title" label="Titre" required />
+        <div>
+          <form @submit.prevent="handleSubmit">
+            <div class="fr-grid-row fr-grid-row--gutters">
+              <div class="fr-col-12">
+                <DsfrInput
+                  v-model="form.title"
+                  label="Titre"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+              <div class="fr-col-12">
+                <DsfrInput
+                  v-model="form.description"
+                  label="Description"
+                  hint="Description courte de l'aide"
+                />
+              </div>
+            </div>
+
+            <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+              <div class="fr-col-12 fr-col-md-4">
+                <DsfrInput
+                  v-model="form.type"
+                  label="Type"
+                  hint="Type d'aide (ex: subvention, crédit d'impôt)"
+                />
+              </div>
+              <div class="fr-col-12 fr-col-md-4">
+                <DsfrInput
+                  v-model="form.usage"
+                  label="Usage"
+                  hint="Usage de l'aide (ex: rénovation, création d'entreprise)"
+                />
+              </div>
+              <div class="fr-col-12 fr-col-md-4">
+                <DsfrInput
+                  v-model="form.instructeur"
+                  label="Instructeur"
+                  hint="Organisme instructeur (ex: Région, Département)"
+                />
+              </div>
+            </div>
+
+            <div class="fr-mt-4w">
+              <h3>Textes de loi associés</h3>
+              <div
+                v-if="form.textesLoi.length === 0"
+                class="fr-alert fr-alert--info fr-mb-2w"
+              >
+                <p>Aucun texte de loi associé</p>
+              </div>
+
+              <div
+                v-for="(texteLoi, index) in form.textesLoi"
+                v-else
+                :key="index"
+                class="fr-grid-row fr-grid-row--gutters fr-mb-2w texte-loi-item"
+              >
+                <div class="fr-col-12 fr-col-md-2">
+                  <DsfrInput
+                    v-model="texteLoi.prefix"
+                    label="Préfixe"
+                    placeholder="Art."
+                  />
+                </div>
+                <div class="fr-col-12 fr-col-md-4">
+                  <DsfrInput
+                    v-model="texteLoi.label"
+                    label="Référence"
+                    placeholder="L. 123-45 du code..."
+                  />
+                </div>
+                <div class="fr-col-12 fr-col-md-5">
+                  <DsfrInput
+                    v-model="texteLoi.url"
+                    label="URL"
+                    placeholder="https://www.legifrance.gouv.fr/..."
+                  />
+                </div>
+                <div
+                  class="fr-col-12 fr-col-md-1 fr-flex fr-flex--center fr-flex--middle remove-button-container"
+                >
+                  <button
+                    type="button"
+                    class="fr-btn fr-btn--secondary fr-btn--sm remove-button"
+                    @click="removeTexteLoi(index)"
+                  >
+                    <span
+                      class="fr-icon-delete-line"
+                      aria-hidden="true"
+                    />
+                  </button>
                 </div>
               </div>
 
-              <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-                <div class="fr-col-12">
-                  <DsfrInput
-                    v-model="form.description"
-                    label="Description"
-                    hint="Description courte de l'aide"
+              <div class="fr-mt-2w">
+                <DsfrButton
+                  type="button"
+                  label="Ajouter un texte de loi"
+                  secondary
+                  icon="fr-icon-add-line"
+                  @click="addTexteLoi"
+                />
+              </div>
+            </div>
+
+            <div class="fr-mt-4w editor-container">
+              <div class="editor-tabs">
+                <button
+                  type="button"
+                  class="tab-button"
+                  :class="{ active: editorTab === 'editor' }"
+                  @click="switchTab('editor')"
+                >
+                  <span
+                    class="fr-icon-edit-line"
+                    aria-hidden="true"
                   />
-                </div>
+                  Éditeur
+                </button>
+                <button
+                  type="button"
+                  class="tab-button"
+                  :class="{ active: editorTab === 'preview' }"
+                  @click="switchTab('preview')"
+                >
+                  <span
+                    class="fr-icon-eye-line"
+                    aria-hidden="true"
+                  />
+                  Prévisualisation
+                </button>
               </div>
 
-              <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-                <div class="fr-col-12 fr-col-md-4">
-                  <DsfrInput
-                    v-model="form.type"
-                    label="Type"
-                    hint="Type d'aide (ex: subvention, crédit d'impôt)"
-                  />
-                </div>
-                <div class="fr-col-12 fr-col-md-4">
-                  <DsfrInput
-                    v-model="form.usage"
-                    label="Usage"
-                    hint="Usage de l'aide (ex: rénovation, création d'entreprise)"
-                  />
-                </div>
-                <div class="fr-col-12 fr-col-md-4">
-                  <DsfrInput
-                    v-model="form.instructeur"
-                    label="Instructeur"
-                    hint="Organisme instructeur (ex: Région, Département)"
-                  />
-                </div>
-              </div>
-
-              <div class="fr-mt-4w">
-                <h3>Textes de loi associés</h3>
-                <div v-if="form.textesLoi.length === 0" class="fr-alert fr-alert--info fr-mb-2w">
-                  <p>Aucun texte de loi associé</p>
-                </div>
+              <div class="editor-content">
+                <textarea
+                  v-if="editorTab === 'editor'"
+                  v-model="form.content"
+                  class="markdown-textarea"
+                  placeholder="Contenu détaillé de l'aide en Markdown..."
+                  required
+                />
 
                 <div
                   v-else
-                  v-for="(texteLoi, index) in form.textesLoi"
-                  :key="index"
-                  class="fr-grid-row fr-grid-row--gutters fr-mb-2w texte-loi-item"
-                >
-                  <div class="fr-col-12 fr-col-md-2">
-                    <DsfrInput v-model="texteLoi.prefix" label="Préfixe" placeholder="Art." />
-                  </div>
-                  <div class="fr-col-12 fr-col-md-4">
-                    <DsfrInput
-                      v-model="texteLoi.label"
-                      label="Référence"
-                      placeholder="L. 123-45 du code..."
-                    />
-                  </div>
-                  <div class="fr-col-12 fr-col-md-5">
-                    <DsfrInput
-                      v-model="texteLoi.url"
-                      label="URL"
-                      placeholder="https://www.legifrance.gouv.fr/..."
-                    />
-                  </div>
-                  <div
-                    class="fr-col-12 fr-col-md-1 fr-flex fr-flex--center fr-flex--middle remove-button-container"
-                  >
-                    <button
-                      type="button"
-                      class="fr-btn fr-btn--secondary fr-btn--sm remove-button"
-                      @click="removeTexteLoi(index)"
-                    >
-                      <span class="fr-icon-delete-line" aria-hidden="true"></span>
-                    </button>
-                  </div>
-                </div>
-
-                <div class="fr-mt-2w">
-                  <DsfrButton
-                    type="button"
-                    label="Ajouter un texte de loi"
-                    secondary
-                    icon="fr-icon-add-line"
-                    @click="addTexteLoi"
-                  />
-                </div>
+                  class="markdown-preview fr-p-3w"
+                  v-html="previewHtml"
+                />
               </div>
+            </div>
 
-              <div class="fr-mt-4w editor-container">
-                <div class="editor-tabs">
-                  <button
-                    type="button"
-                    class="tab-button"
-                    :class="{ active: editorTab === 'editor' }"
-                    @click="switchTab('editor')"
-                  >
-                    <span class="fr-icon-edit-line" aria-hidden="true"></span>
-                    Éditeur
-                  </button>
-                  <button
-                    type="button"
-                    class="tab-button"
-                    :class="{ active: editorTab === 'preview' }"
-                    @click="switchTab('preview')"
-                  >
-                    <span class="fr-icon-eye-line" aria-hidden="true"></span>
-                    Prévisualisation
-                  </button>
-                </div>
+            <div class="fr-mt-4w fr-grid-row">
+              <div class="fr-col-12 fr-col-md-6 fr-col-offset-md-6 fr-flex fr-flex--right">
+                <DsfrButton
+                  type="button"
+                  label="Annuler"
+                  secondary
+                  href="/admin/aides"
+                  class="fr-mr-2w"
+                />
 
-                <div class="editor-content">
-                  <textarea
-                    v-if="editorTab === 'editor'"
-                    v-model="form.content"
-                    class="markdown-textarea"
-                    placeholder="Contenu détaillé de l'aide en Markdown..."
-                    required
-                  ></textarea>
-
-                  <div v-else class="markdown-preview fr-p-3w" v-html="previewHtml"></div>
-                </div>
+                <DsfrButton
+                  type="submit"
+                  label="Enregistrer"
+                  :disabled="form.processing"
+                />
               </div>
-
-              <div class="fr-mt-4w fr-grid-row">
-                <div class="fr-col-12 fr-col-md-6 fr-col-offset-md-6 fr-flex fr-flex--right">
-                  <DsfrButton
-                    type="button"
-                    label="Annuler"
-                    secondary
-                    :href="'/admin/aides'"
-                    class="fr-mr-2w"
-                  />
-
-                  <DsfrButton type="submit" label="Enregistrer" :disabled="form.processing" />
-                </div>
-              </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
-      </SectionContainer>
-    </BrandBackgroundContainer>
-  </DefaultLayout>
+      </div>
+    </SectionContainer>
+  </BrandBackgroundContainer>
 </template>
 
 <style scoped>

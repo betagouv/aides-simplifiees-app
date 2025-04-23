@@ -7,8 +7,8 @@
 |
 */
 
-import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
+import router from '@adonisjs/core/services/router'
 
 const HomeController = () => import('#controllers/home_controller')
 const ApiController = () => import('#controllers/api_controller')
@@ -39,10 +39,12 @@ router.get('/notions/:slug', [ContentController, 'showNotion'])
 router.get('/aides', [ContentController, 'listAides'])
 router.get('/aides/:slug', [ContentController, 'showAide'])
 
-//Simulateurs
+// Simulateurs
 router.get('/simulateurs', [SimulateurController, 'index'])
 router.get('/simulateurs/:slug', [SimulateurController, 'showSimulateur'])
 router.get('/simulateurs/:slug/resultats/:hash', [SimulateurController, 'resultats'])
+// Recapitulatif
+router.get('/simulateurs/:slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
 
 // Routes d'administration protégées
 router

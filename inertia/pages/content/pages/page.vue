@@ -1,24 +1,21 @@
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue'
+import { Head } from '@inertiajs/vue3'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-import DefaultLayout from '../../../layouts/default.vue'
-import BrandBackgroundContainer from '../../../components/layout/BrandBackgroundContainer.vue'
-import SectionContainer from '../../../components/layout/SectionContainer.vue'
-import BreadcrumbSectionContainer from '../../../components/layout/BreadcrumbSectionContainer.vue'
+import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
+import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
+import SectionContainer from '~/components/layout/SectionContainer.vue'
 
 const props = defineProps({
   page: Object,
   content: String,
 })
 
-onMounted(() => {
-  // Set breadcrumbs
-  const { setBreadcrumbs } = useBreadcrumbStore()
-  setBreadcrumbs([
-    { text: 'Accueil', to: '/' },
-    { text: props.page?.title || props.page?.slug, to: `/content/${props.page?.slug}` },
-  ])
-})
+// Set breadcrumbs
+const { setBreadcrumbs } = useBreadcrumbStore()
+setBreadcrumbs([
+  { text: 'Accueil', to: '/' },
+  { text: props.page?.title || props.page?.slug, to: `/content/${props.page?.slug}` },
+])
 </script>
 
 <template>
@@ -30,24 +27,25 @@ onMounted(() => {
         : `Informations sur ${page?.title || page?.slug}`
     "
   />
-  <DefaultLayout>
-    <template v-if="!page">
-      <div>Contenu introuvable</div>
-    </template>
-    <template v-else>
-      <BrandBackgroundContainer textured subtle>
-        <BreadcrumbSectionContainer />
-        <SectionContainer type="page-header">
-          <article>
-            <header class="fr-mb-4w">
-              <h1>{{ page.title }}</h1>
-            </header>
-            <div v-html="content" />
-          </article>
-        </SectionContainer>
-      </BrandBackgroundContainer>
-    </template>
-  </DefaultLayout>
+  <template v-if="!page">
+    <div>Contenu introuvable</div>
+  </template>
+  <template v-else>
+    <BrandBackgroundContainer
+      textured
+      subtle
+    >
+      <BreadcrumbSectionContainer />
+      <SectionContainer type="page-header">
+        <article>
+          <header class="fr-mb-4w">
+            <h1>{{ page.title }}</h1>
+          </header>
+          <div v-html="content" />
+        </article>
+      </SectionContainer>
+    </BrandBackgroundContainer>
+  </template>
 </template>
 
 <style scoped lang="scss">

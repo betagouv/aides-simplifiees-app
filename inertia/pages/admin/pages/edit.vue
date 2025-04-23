@@ -1,11 +1,10 @@
 <!-- inertia/pages/admin/pages/edit.vue -->
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
-import DefaultLayout from '../../../layouts/default.vue'
-import BrandBackgroundContainer from '../../../components/layout/BrandBackgroundContainer.vue'
-import SectionContainer from '../../../components/layout/SectionContainer.vue'
 import { marked } from 'marked'
+import { ref } from 'vue'
+import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
+import SectionContainer from '~/components/layout/SectionContainer.vue'
 
 const props = defineProps<{
   page: {
@@ -27,19 +26,19 @@ const editorTab = ref('editor')
 const previewHtml = ref('')
 
 // Mettre à jour la prévisualisation
-const updatePreview = async () => {
+async function updatePreview() {
   previewHtml.value = await marked(form.content)
 }
 
 // Mettre à jour la prévisualisation quand on change d'onglet
-const switchTab = (tab: string) => {
+function switchTab(tab: string) {
   editorTab.value = tab
   if (tab === 'preview') {
     updatePreview()
   }
 }
 
-const handleSubmit = () => {
+function handleSubmit() {
   form.post(`/admin/pages/${props.page.id}`)
 }
 </script>
@@ -47,110 +46,136 @@ const handleSubmit = () => {
 <template>
   <Head :title="`Modifier - ${page.title} | Admin`" />
 
-  <DefaultLayout>
-    <BrandBackgroundContainer textured contrast>
-      <SectionContainer type="page-header">
-        <h1 class="brand-contrast-text"><br />Modifier la page</h1>
-      </SectionContainer>
-    </BrandBackgroundContainer>
+  <BrandBackgroundContainer
+    textured
+    contrast
+  >
+    <SectionContainer type="page-header">
+      <h1 class="brand-contrast-text">
+        <br>Modifier la page
+      </h1>
+    </SectionContainer>
+  </BrandBackgroundContainer>
 
-    <BrandBackgroundContainer textured subtle>
-      <SectionContainer type="page-block">
-        <div class="fr-container fr-container--fluid">
-          <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12">
-              <DsfrBreadcrumb
-                :links="[
-                  { text: 'Administration', to: '/admin' },
-                  { text: 'Pages', to: '/admin/pages' },
-                  { text: `Modifier - ${page.title}`, to: `/admin/pages/${page.id}/edit` },
-                ]"
-              />
-            </div>
-          </div>
-
-          <div class="">
-            <form @submit.prevent="handleSubmit">
-              <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-12 fr-col-md-8">
-                  <DsfrInput v-model="form.title" label="Titre" required />
-                </div>
-
-                <div class="fr-col-12 fr-col-md-4">
-                  <div class="fr-input-group">
-                    <label class="fr-label">Slug</label>
-                    <div class="fr-input">{{ page.slug }}</div>
-                    <p class="fr-hint-text">
-                      Le slug est généré automatiquement à partir du titre initial
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-                <div class="fr-col-12">
-                  <DsfrInput
-                    v-model="form.metaDescription"
-                    label="Description (meta)"
-                    hint="Description courte pour les moteurs de recherche"
-                  />
-                </div>
-              </div>
-
-              <div class="fr-mt-4w editor-container">
-                <div class="editor-tabs">
-                  <button
-                    type="button"
-                    class="tab-button"
-                    :class="{ active: editorTab === 'editor' }"
-                    @click="switchTab('editor')"
-                  >
-                    <span class="fr-icon-edit-line" aria-hidden="true"></span>
-                    Éditeur
-                  </button>
-                  <button
-                    type="button"
-                    class="tab-button"
-                    :class="{ active: editorTab === 'preview' }"
-                    @click="switchTab('preview')"
-                  >
-                    <span class="fr-icon-eye-line" aria-hidden="true"></span>
-                    Prévisualisation
-                  </button>
-                </div>
-
-                <div class="editor-content">
-                  <textarea
-                    v-if="editorTab === 'editor'"
-                    v-model="form.content"
-                    class="markdown-textarea"
-                    placeholder="Contenu Markdown..."
-                    required
-                  ></textarea>
-
-                  <div v-else class="markdown-preview fr-p-3w" v-html="previewHtml"></div>
-                </div>
-              </div>
-
-              <div class="fr-mt-4w fr-grid-row">
-                <div class="fr-col-12 fr-col-md-6 fr-col-offset-md-6 fr-flex fr-flex--right">
-                  <DsfrButton
-                    type="button"
-                    label="Annuler"
-                    secondary
-                    :href="'/admin/pages'"
-                    class="fr-mr-2w"
-                  />
-
-                  <DsfrButton type="submit" label="Enregistrer" :disabled="form.processing" />
-                </div>
-              </div>
-            </form>
+  <BrandBackgroundContainer
+    textured
+    subtle
+  >
+    <SectionContainer type="page-block">
+      <div class="fr-container fr-container--fluid">
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12">
+            <DsfrBreadcrumb
+              :links="[
+                { text: 'Administration', to: '/admin' },
+                { text: 'Pages', to: '/admin/pages' },
+                { text: `Modifier - ${page.title}`, to: `/admin/pages/${page.id}/edit` },
+              ]"
+            />
           </div>
         </div>
-      </SectionContainer>
-    </BrandBackgroundContainer>
-  </DefaultLayout>
+
+        <div class="">
+          <form @submit.prevent="handleSubmit">
+            <div class="fr-grid-row fr-grid-row--gutters">
+              <div class="fr-col-12 fr-col-md-8">
+                <DsfrInput
+                  v-model="form.title"
+                  label="Titre"
+                  required
+                />
+              </div>
+
+              <div class="fr-col-12 fr-col-md-4">
+                <div class="fr-input-group">
+                  <label class="fr-label">Slug</label>
+                  <div class="fr-input">
+                    {{ page.slug }}
+                  </div>
+                  <p class="fr-hint-text">
+                    Le slug est généré automatiquement à partir du titre initial
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+              <div class="fr-col-12">
+                <DsfrInput
+                  v-model="form.metaDescription"
+                  label="Description (meta)"
+                  hint="Description courte pour les moteurs de recherche"
+                />
+              </div>
+            </div>
+
+            <div class="fr-mt-4w editor-container">
+              <div class="editor-tabs">
+                <button
+                  type="button"
+                  class="tab-button"
+                  :class="{ active: editorTab === 'editor' }"
+                  @click="switchTab('editor')"
+                >
+                  <span
+                    class="fr-icon-edit-line"
+                    aria-hidden="true"
+                  />
+                  Éditeur
+                </button>
+                <button
+                  type="button"
+                  class="tab-button"
+                  :class="{ active: editorTab === 'preview' }"
+                  @click="switchTab('preview')"
+                >
+                  <span
+                    class="fr-icon-eye-line"
+                    aria-hidden="true"
+                  />
+                  Prévisualisation
+                </button>
+              </div>
+
+              <div class="editor-content">
+                <textarea
+                  v-if="editorTab === 'editor'"
+                  v-model="form.content"
+                  class="markdown-textarea"
+                  placeholder="Contenu Markdown..."
+                  required
+                />
+
+                <div
+                  v-else
+                  class="markdown-preview fr-p-3w"
+                  v-html="previewHtml"
+                />
+              </div>
+            </div>
+
+            <div class="fr-mt-4w fr-grid-row">
+              <div class="fr-col-12 fr-col-md-6 fr-col-offset-md-6 fr-flex fr-flex--right">
+                <DsfrButton
+                  type="button"
+                  label="Annuler"
+                  secondary
+                  href="/admin/pages"
+                  class="fr-mr-2w"
+                />
+
+                <DsfrButton
+                  type="submit"
+                  label="Enregistrer"
+                  :disabled="form.processing"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </SectionContainer>
+  </BrandBackgroundContainer>
 </template>
 
 <style scoped>

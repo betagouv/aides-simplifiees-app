@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toRefs, computed } from 'vue'
+import { computed, toRefs } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -11,7 +11,7 @@ const props = withDefaults(
     containerHeight: null,
     contrast: false,
     theme: 'light',
-  }
+  },
 )
 const { containerHeight, contrast, theme } = toRefs(props)
 
@@ -180,7 +180,11 @@ const wave = computed<WaveDefinition | null>(() => {
         :viewBox="`0 0 ${wave.width} ${wave.height}`"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path class="brand-wave-top" :d="wave.waves.top" :fill="styleVariant['brand-wave-top']" />
+        <path
+          class="brand-wave-top"
+          :d="wave.waves.top"
+          :fill="styleVariant['brand-wave-top']"
+        />
         <path
           class="brand-wave-middle"
           :d="wave.waves.middle"

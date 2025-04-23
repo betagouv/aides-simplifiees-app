@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { DsfrCheckboxSetProps } from '@gouvminint/vue-dsfr'
+import { DsfrCheckboxSet } from '@gouvminint/vue-dsfr'
 import { ref, watch } from 'vue'
 
 const props = defineProps<{
@@ -16,8 +17,8 @@ watch(_model, (newValue) => {
 })
 
 // Convert question choices to DsfrCheckboxSet options format
-const options: DsfrCheckboxSetProps['options'] =
-  props.question.choices?.map((choice) => ({
+const options: DsfrCheckboxSetProps['options'] = props.question.choices
+  ?.map((choice) => ({
     name: `${props.question.id}-${choice.id}`,
     value: choice.id,
     label: choice.title,
@@ -43,28 +44,12 @@ const options: DsfrCheckboxSetProps['options'] =
     --active: var(--background-default-grey-active);
 
     margin-left: 0;
-    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    padding: .75rem 1rem .75rem 2.75rem;
     background-color: var(--background-default-grey);
-    background-image:
-      linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey)),
-      linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey)),
-      linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey)),
-      linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey));
-    background-position:
-      0 0,
-      100% 0,
-      0 100%,
-      0 0,
-      1rem 50%,
-      1rem 50%;
+    background-image: linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey));
+    background-position: 0 0, 100% 0, 0 100%, 0 0, 1rem 50%, 1rem 50%;
     background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
-    background-size:
-      100% 1px,
-      1px 100%,
-      100% 1px,
-      1px 100%,
-      1rem 1rem,
-      1rem 1rem;
+    background-size: 100% 1px, 1px 100%, 100% 1px, 1px 100%, 1rem 1rem, 1rem 1rem;
 
     &:hover {
       background-color: var(--hover);
@@ -80,12 +65,8 @@ const options: DsfrCheckboxSetProps['options'] =
     }
   }
 
-  & input:checked + label {
-    background-image:
-      linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)),
-      linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)),
-      linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)),
-      linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
+  & input:checked+label {
+    background-image: linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)), linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)), linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france)), linear-gradient(0deg, var(--border-active-blue-france), var(--border-active-blue-france));
   }
 }
 </style>

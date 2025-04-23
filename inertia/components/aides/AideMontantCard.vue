@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import TypeAideTag from '~/components/aides/TypeAideTag.vue'
+import { VIcon } from '@gouvminint/vue-dsfr'
 import AideMontant from '~/components/aides/AideMontant.vue'
 
 const props = defineProps<{
@@ -23,7 +22,7 @@ function formatUsageAide(usageAide: UsageAide): RichUSageAide {
     },
     'frais-installation-logement': {
       icon: 'ri:truck-line',
-      description: "Pour couvrir les dépenses liées à <b>l'installation dans votre logement</b>",
+      description: 'Pour couvrir les dépenses liées à <b>l\'installation dans votre logement</b>',
     },
     'caution-logement': {
       icon: 'ri:chat-check-line',
@@ -44,14 +43,29 @@ const richUsageAide = formatUsageAide(props.usageAide)
   <div class="brand-rich-aide-montant">
     <div class="brand-rich-aide-montant__description">
       <p class="fr-m-0 fr-text--lg brand-rich-aide-montant__description-text">
-        <VIcon :name="richUsageAide.icon" ssr :style="{ width: '1.5rem', height: '1.5rem' }" />
-        <span class="fr-m-0" v-html="richUsageAide.description" />
+        <VIcon
+          :name="richUsageAide.icon"
+          ssr
+          :style="{ width: '1.5rem', height: '1.5rem' }"
+        />
+        <span
+          class="fr-m-0"
+          v-html="richUsageAide.description"
+        />
       </p>
     </div>
     <div class="brand-rich-aide-montant__montant">
-      <p class="brand-rich-aide-montant__prefix fr-mb-n1v fr-mr-3v">jusqu'à</p>
-      <AideMontant size="lg" :montant="montant" />
-      <p v-if="richUsageAide.periode" class="brand-montant-periode fr-mb-n1v fr-text--alt">
+      <p class="brand-rich-aide-montant__prefix fr-mb-n1v fr-mr-3v">
+        jusqu'à
+      </p>
+      <AideMontant
+        size="lg"
+        :montant="montant"
+      />
+      <p
+        v-if="richUsageAide.periode"
+        class="brand-montant-periode fr-mb-n1v fr-text--alt"
+      >
         {{ richUsageAide.periode }}
       </p>
     </div>

@@ -1,10 +1,9 @@
 <script setup lang="ts">
+import { DsfrAlert, DsfrButton, DsfrInput } from '@gouvminint/vue-dsfr'
 import { Head, useForm, usePage } from '@inertiajs/vue3'
-import { DsfrInput, DsfrButton, DsfrAlert } from '@gouvminint/vue-dsfr'
-import DefaultLayout from '../../layouts/default.vue'
-import BrandBackgroundContainer from '../../components/layout/BrandBackgroundContainer.vue'
-import SectionContainer from '../../components/layout/SectionContainer.vue'
-import { ref, computed, onMounted } from 'vue'
+import { computed } from 'vue'
+import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
+import SectionContainer from '~/components/layout/SectionContainer.vue'
 
 // Récupération des props et des données partagées
 const props = defineProps<{
@@ -40,7 +39,7 @@ const form = useForm({
   password: '',
 })
 
-const submitForm = () => {
+function submitForm() {
   form.post('/login', {
     preserveScroll: true,
   })
@@ -52,66 +51,80 @@ const submitForm = () => {
     title="Connexion | Aides simplifiées"
     description="Connectez-vous à votre compte Aides simplifiées pour accéder à votre espace administrateur."
   />
-  <DefaultLayout>
-    <BrandBackgroundContainer textured blue>
-      <SectionContainer>
-        <div class="fr-grid-row fr-grid-row--center">
-          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-            <div class="fr-card fr-p-4w">
-              <div class="fr-card__body">
-                <div class="fr-card__content">
-                  <h2 class="">Connexion</h2>
+  <BrandBackgroundContainer
+    textured
+    blue
+  >
+    <SectionContainer>
+      <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-card fr-p-4w">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h2 class="">
+                  Connexion
+                </h2>
 
-                  <!-- Alerte pour l'erreur générale de formulaire -->
-                  <DsfrAlert
-                    v-if="allErrors.form"
-                    type="error"
-                    title="Erreur de connexion"
-                    :description="allErrors.form"
-                    class="fr-mb-3w"
-                  />
+                <!-- Alerte pour l'erreur générale de formulaire -->
+                <DsfrAlert
+                  v-if="allErrors.form"
+                  type="error"
+                  title="Erreur de connexion"
+                  :description="allErrors.form"
+                  class="fr-mb-3w"
+                />
 
-                  <form @submit.prevent="submitForm">
-                    <div class="fr-fieldset" id="login-form">
-                      <div class="fr-fieldset__element fr-mb-3w">
-                        <DsfrInput
-                          v-model="form.email"
-                          label="Adresse e-mail"
-                          type="email"
-                          required
-                        />
-                        <p v-if="allErrors.email" class="fr-error-text">{{ allErrors.email }}</p>
-                      </div>
-
-                      <div class="fr-fieldset__element fr-mb-3w">
-                        <DsfrInput
-                          v-model="form.password"
-                          label="Mot de passe"
-                          type="password"
-                          required
-                        />
-                        <p v-if="allErrors.password" class="fr-error-text">
-                          {{ allErrors.password }}
-                        </p>
-                      </div>
-
-                      <div class="fr-fieldset__element fr-mt-5w">
-                        <DsfrButton
-                          label="Se connecter"
-                          type="submit"
-                          :disabled="form.processing"
-                        />
-                      </div>
+                <form @submit.prevent="submitForm">
+                  <div
+                    id="login-form"
+                    class="fr-fieldset"
+                  >
+                    <div class="fr-fieldset__element fr-mb-3w">
+                      <DsfrInput
+                        v-model="form.email"
+                        label="Adresse e-mail"
+                        type="email"
+                        required
+                      />
+                      <p
+                        v-if="allErrors.email"
+                        class="fr-error-text"
+                      >
+                        {{ allErrors.email }}
+                      </p>
                     </div>
-                  </form>
-                </div>
+
+                    <div class="fr-fieldset__element fr-mb-3w">
+                      <DsfrInput
+                        v-model="form.password"
+                        label="Mot de passe"
+                        type="password"
+                        required
+                      />
+                      <p
+                        v-if="allErrors.password"
+                        class="fr-error-text"
+                      >
+                        {{ allErrors.password }}
+                      </p>
+                    </div>
+
+                    <div class="fr-fieldset__element fr-mt-5w">
+                      <DsfrButton
+                        label="Se connecter"
+                        type="submit"
+                        :disabled="form.processing"
+                      />
+                    </div>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
         </div>
-      </SectionContainer>
-    </BrandBackgroundContainer>
-  </DefaultLayout>
+      </div>
+    </SectionContainer>
+  </BrandBackgroundContainer>
 </template>
 
 <style scoped lang="scss">

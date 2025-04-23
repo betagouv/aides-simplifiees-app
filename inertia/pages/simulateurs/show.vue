@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue'
-import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-import { usePage, useForm } from '@inertiajs/vue3'
+import { Head } from '@inertiajs/vue3'
+import { computed, onMounted, ref } from 'vue'
+import Survey from '~/components/survey/Survey.vue'
 import { useIframeDisplay } from '~/composables/useIframeDisplay'
-import UserSimulationLayout from '../../layouts/user-simulation.vue'
-import Survey from '../../components/form/Survey.vue'
+import UserSimulationLayout from '~/layouts/user-simulation.vue'
+import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 // Récupérer les données du simulateur depuis les props
 const props = defineProps<{
@@ -25,9 +25,15 @@ const props = defineProps<{
 const shouldResume = ref(false)
 
 // Récupérer la route courante
-const page = usePage()
-const route = computed(() => page.props.route)
 const currentParams = computed(() => new URLSearchParams(window.location.search))
+
+// Définir les breadcrumbs
+const { setBreadcrumbs } = useBreadcrumbStore()
+setBreadcrumbs([
+  { text: 'Accueil', to: '/' },
+  { text: 'Simulateurs', to: '/simulateurs' },
+  { text: props.simulateur.title, to: `/simulateurs/${props.simulateur.slug}#simulateur-title` },
+])
 
 // Vérification si on vient d'une page qui justifie une reprise automatique
 onMounted(() => {
@@ -35,7 +41,7 @@ onMounted(() => {
   const fromPathname = document.referrer
 
   const shouldForceResume = ['/recapitulatif', '/notion', '/resultats'].some((path) =>
-    fromPathname.includes(path)
+    fromPathname.includes(path),
   )
 
   if (shouldForceResume && !currentParams.value.has('resume')) {
@@ -54,14 +60,6 @@ onMounted(() => {
     shouldResume.value = true
   }
 
-  // Définir les breadcrumbs
-  const { setBreadcrumbs } = useBreadcrumbStore()
-  setBreadcrumbs([
-    { text: 'Accueil', to: '/' },
-    { text: 'Simulateurs', to: '/simulateurs' },
-    { text: props.simulateur.title, to: `/simulateurs/${props.simulateur.slug}#simulateur-title` },
-  ])
-
   // Script iframe-resizer pour mode iframe
   const { isIframe } = useIframeDisplay()
   if (isIframe.value) {
@@ -77,8 +75,8 @@ onMounted(() => {
   <Head
     :title="`Simulateur '${simulateur.title}' | Aides simplifiées`"
     :description="
-      simulateur.description ||
-      `En quelques clics sur le simulateur '${simulateur.title}', découvrez si vous pouvez bénéficier d'aides financières.`
+      simulateur.description
+        || `En quelques clics sur le simulateur '${simulateur.title}', découvrez si vous pouvez bénéficier d'aides financières.`
     "
   />
   <UserSimulationLayout>

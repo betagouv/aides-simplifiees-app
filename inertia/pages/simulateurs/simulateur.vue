@@ -29,14 +29,15 @@ setBreadcrumbs([
   { text: props.simulateur.title, to: `/simulateurs/${props.simulateur.slug}#simulateur-title` },
 ])
 
+// Load iframe-resizer package when in iframe mode
+const { isIframe } = useIframeDisplay()
 onMounted(() => {
-  // Script iframe-resizer pour mode iframe
-  const { isIframe } = useIframeDisplay()
   if (isIframe.value) {
-    const script = document.createElement('script')
-    script.src = '/scripts/iframeResizer.contentWindow.min.js'
-    script.async = true
-    document.head.appendChild(script)
+    // Import the @iframe-resizer/child package dynamically only when needed
+    import('@iframe-resizer/child')
+      .catch((error) => {
+        console.error('Failed to load iframe-resizer child package:', error)
+      })
   }
 })
 </script>

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.7.0
+* Debug et intégration de la liste des simulateurs
+* Détail :
+  * Debug de la page d'affichage des aides
+  * Création de la page de liste des simulateurs
+
 ## 0.6.0
 * Intégration du flux de résultats
 * Détail :

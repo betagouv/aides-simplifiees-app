@@ -40,6 +40,7 @@ router.get('/aides', [ContentController, 'listAides'])
 router.get('/aides/:slug', [ContentController, 'showAide'])
 
 //Simulateurs
+router.get('/simulateurs', [SimulateurController, 'index'])
 router.get('/simulateurs/:slug', [SimulateurController, 'showSimulateur'])
 router.get('/simulateurs/:slug/resultats/:hash', [SimulateurController, 'resultats'])
 

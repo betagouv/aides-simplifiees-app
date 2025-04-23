@@ -9,6 +9,7 @@ import SectionSeparator from '../../../components/layout/SectionSeparator.vue'
 import { DsfrSegmentedSet } from '@gouvminint/vue-dsfr'
 import AideMontantCard from '~/components/aides/AideMontantCard.vue'
 import AidesList from '~/components/aides/AidesList.vue'
+import DsfrLink from '~/components/DsfrLink.vue'
 
 const page = usePage()
 
@@ -244,7 +245,7 @@ const activeAccordion = ref()
                                   {{ texteItem }}
                                 </template>
                                 <template v-else-if="texteItem && texteItem.url && texteItem.label">
-                                  <span v-if="texteItem.prefixe"> {{ texteItem.prefixe }} : </span>
+                                  <span v-if="texteItem.prefix"> {{ texteItem.prefix }} : </span>
                                   <DsfrLink
                                     :to="texteItem.url"
                                     :icon="{ name: 'ri:external-link-line', ssr: true }"

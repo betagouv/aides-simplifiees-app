@@ -1,0 +1,18 @@
+import env from '#start/env'
+import type { HttpContext } from '@adonisjs/core/http'
+import type { NextFn } from '@adonisjs/core/types/http'
+
+/**
+ * Middleware to share environment variables with the Inertia client
+ */
+export default class ShareEnvMiddleware {
+  async handle(ctx: HttpContext, next: NextFn) {
+    // Only share specific environment variables that are needed on the client
+    ctx.inertia.share({
+      matomoUrl: env.get('MATOMO_URL'),
+      matomoSiteId: env.get('MATOMO_SITE_ID'),
+    })
+
+    await next()
+  }
+}

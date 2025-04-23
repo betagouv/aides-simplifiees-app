@@ -16,7 +16,11 @@ import '../css/app.css'
 import '@gouvfr/dsfr/dist/dsfr.min.css'
 import '@gouvfr/dsfr/dist/utility/utility.min.css'
 
+import VueMatomo from 'vue-matomo'
+
+
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
+console.log(import.meta.env)
 
 createInertiaApp({
   progress: { color: '#5468FF' },
@@ -55,6 +59,18 @@ createInertiaApp({
     app.use(pinia)
     app.use(plugin)
 
+    // Get config values from the page props
+    const matomoHost = props.initialPage.props.matomoUrl
+    const matomoSiteId = parseInt(props.initialPage.props.matomoSiteId || '0', 10)
+
+    // Only initialize Matomo if we have valid config
+    if (matomoHost && matomoSiteId) {
+      app.use(VueMatomo, {
+        host: matomoHost,
+        siteId: matomoSiteId,
+      })
+    }
+
     // Replace RouterLink with a custom component that uses Inertia's Link
     app.component('RouterLink', {
       props: {
@@ -69,7 +85,7 @@ createInertiaApp({
         target: String,
         rel: String,
       },
-      setup(props, { slots }) {
+      setup(props: any, { slots }: any) {
         // Convert 'to' prop to 'href' for Inertia Link
         const href = typeof props.to === 'string' ? props.to : props.to.path || ''
         return () =>

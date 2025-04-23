@@ -3,7 +3,6 @@ import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { renderToString } from '@vue/server-renderer'
 import { createPinia } from 'pinia'
-// import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createSSRApp, h } from 'vue'
 import DefaultLayout from '~/layouts/default.vue'
 import iframeLayout from '~/layouts/iframe.vue'
@@ -32,38 +31,37 @@ export default function render(page: any) {
 
     setup({ App, props, plugin }) {
       const pinia = createPinia()
-      // pinia.use(piniaPluginPersistedstate)
       const ssrApp = createSSRApp({ render: () => h(App, props) })
         .use(pinia)
         .use(plugin)
-        ssrApp.component('RouterLink', {
-          props: {
-            to: {
-              type: [String, Object],
-              required: true,
-            },
-            // Add other props that RouterLink might have
-            replace: Boolean,
-            append: Boolean,
-            download: [Boolean, String],
-            target: String,
-            rel: String,
+      ssrApp.component('RouterLink', {
+        props: {
+          to: {
+            type: [String, Object],
+            required: true,
           },
-          setup(props, { slots }) {
-            // Convert 'to' prop to 'href' for Inertia Link
-            const href = typeof props.to === 'string' ? props.to : props.to.path || ''
-            return () =>
-              h(
-                Link,
-                {
-                  href,
-                  replace: props.replace,
-                  // Map other relevant props here
-                },
-                slots
-              )
-          },
-        })
+          // Add other props that RouterLink might have
+          replace: Boolean,
+          append: Boolean,
+          download: [Boolean, String],
+          target: String,
+          rel: String,
+        },
+        setup(componentProps: any, { slots }: any) {
+          // Convert 'to' prop to 'href' for Inertia Link
+          const href = typeof componentProps.to === 'string' ? componentProps.to : componentProps.to.path || ''
+          return () =>
+            h(
+              Link,
+              {
+                href,
+                replace: componentProps.replace,
+                // Map other relevant props here
+              },
+              slots,
+            )
+        },
+      })
       return ssrApp
     },
   })

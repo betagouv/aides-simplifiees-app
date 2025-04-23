@@ -22,7 +22,6 @@ defineProps<{
       <DsfrButton
         v-bind="button"
         size="lg"
-        :buttons="buttons"
       />
     </li>
   </ul>

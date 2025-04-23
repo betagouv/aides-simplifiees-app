@@ -6,14 +6,12 @@ export default class ResumeQueryMiddleware {
     const { request, response } = ctx
     const resume = request.qs().resume
     const referer = request.header('referer')
-
     // If there's no referer, continue with the request
     if (!referer) {
       return next()
     }
 
     const refererUrl = new URL(referer)
-    const currentPathname = request.url()
 
     // Check if coming from pages where we should force resume
     const shouldForceResume = [
@@ -27,11 +25,13 @@ export default class ResumeQueryMiddleware {
      * we want to force resume by redirecting with resume=true
      */
     if (!resume && shouldForceResume) {
-      const query = { ...request.qs(), resume: 'true' }
-      const queryString = new URLSearchParams(query).toString()
-      const redirectUrl = `${currentPathname}${queryString ? `?${queryString}` : ''}`
-
-      return response.redirect(redirectUrl)
+      return response
+        .redirect()
+        .withQs() // Preserve existing query string
+        .withQs({
+          resume: 'true',
+        })
+        .toPath(request.url())
     }
 
     /**
@@ -39,12 +39,13 @@ export default class ResumeQueryMiddleware {
      * we remove the resume param
      */
     if (resume && !shouldForceResume) {
-      const query = { ...request.qs() }
-      delete query.resume
-      const queryString = new URLSearchParams(query).toString()
-      const redirectUrl = `${currentPathname}${queryString ? `?${queryString}` : ''}`
-
-      return response.redirect(redirectUrl)
+      response
+        .redirect()
+        .withQs() // Preserve existing query string
+        .withQs({
+          resume: undefined, // Remove resume param
+        })
+        .toPath(request.url())
     }
 
     await next()

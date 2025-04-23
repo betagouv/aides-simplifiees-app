@@ -38,7 +38,7 @@ createInertiaApp({
 
   setup({ el, App, props, plugin }) {
     const app = createSSRApp({ render: () => h(App, props) })
-    app.config.warnHandler = (msg, vm, trace) => {
+    app.config.warnHandler = (msg, _vm, trace) => {
       if (import.meta.env.MODE === 'development' && msg.match('Hydration')) {
         console.warn(`Intercepted Vue hydration mismatch warning`)
         return
@@ -82,15 +82,15 @@ createInertiaApp({
         target: String,
         rel: String,
       },
-      setup(props: any, { slots }: any) {
+      setup(routerProps: any, { slots }: any) {
         // Convert 'to' prop to 'href' for Inertia Link
-        const href = typeof props.to === 'string' ? props.to : props.to.path || ''
+        const href = typeof routerProps.to === 'string' ? routerProps.to : routerProps.to.path || ''
         return () =>
           h(
             Link,
             {
               href,
-              replace: props.replace,
+              replace: routerProps.replace,
               // Map other relevant props here
             },
             slots,

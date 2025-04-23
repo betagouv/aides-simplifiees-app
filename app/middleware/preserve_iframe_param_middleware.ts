@@ -9,7 +9,6 @@ export default class PreserveIframeParamMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     const { request, response } = ctx
     const referer = request.header('referer')
-
     // Continue if there's no referer
     if (!referer) {
       return next()

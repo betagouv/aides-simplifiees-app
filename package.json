@@ -11,7 +11,7 @@
     "dev": "node ace serve --hmr",
     "test": "node ace test",
     "lint": "eslint .",
-    "format": "prettier --write .",
+    "format": "eslint --fix .",
     "typecheck": "tsc --noEmit"
   },
   "imports": {
@@ -91,6 +91,5 @@
       "./app/controllers/**/*.ts",
       "./app/middleware/*.ts"
     ]
-  },
-  "prettier": "@adonisjs/prettier-config"
+  }
 }

@@ -11,14 +11,15 @@ const _model = ref<string[]>(model.value && model.value.length > 0 ? model.value
 watch(_model, (newValue) => {
   if (newValue.length === 0) {
     model.value = undefined
-  } else {
+  }
+  else {
     model.value = newValue
   }
 })
 
 // Convert question choices to DsfrCheckboxSet options format
 const options: DsfrCheckboxSetProps['options'] = props.question.choices
-  ?.map((choice) => ({
+  ?.map(choice => ({
     name: `${props.question.id}-${choice.id}`,
     value: choice.id,
     label: choice.title,

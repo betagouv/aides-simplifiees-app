@@ -6,7 +6,6 @@ import AideMontantCard from '~/components/aides/AideMontantCard.vue'
 import AidesList from '~/components/aides/AidesList.vue'
 import DsfrLink from '~/components/DsfrLink.vue'
 import SectionSeparator from '~/components/layout/SectionSeparator.vue'
-import { useMatomo } from '~/composables/useMatomo'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const page = usePage<{

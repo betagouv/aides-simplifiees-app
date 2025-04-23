@@ -25,7 +25,8 @@
     script.onload = function () {
       if (window.iFrameResize) {
         callback(window.iFrameResize)
-      } else {
+      }
+      else {
         console.error('Échec du chargement de iframeResizer')
       }
     }
@@ -38,7 +39,7 @@
   // Récupérer le script courant
   const currentScript = document.currentScript
   if (!currentScript) {
-    console.error("Impossible de trouver l'élément de script courant")
+    console.error('Impossible de trouver l\'élément de script courant')
     return
   }
 
@@ -51,7 +52,8 @@
   if (currentScript.src.includes('localhost')) {
     // Environnement de développement
     baseUrl = 'http://localhost:3333'
-  } else {
+  }
+  else {
     // Extraire l'origine de l'URL du script
     const scriptUrl = new URL(currentScript.src)
     baseUrl = scriptUrl.origin
@@ -70,7 +72,7 @@
   const iframeAttributes = {
     id: 'simulateur-aides',
     src: src.toString(),
-    title: "Simulateur d'aides simplifiées",
+    title: 'Simulateur d\'aides simplifiées',
     style: 'border: none; width: 100%; display: block; height: 500px',
     allow: 'clipboard-write',
     allowfullscreen: true,
@@ -88,13 +90,15 @@
   if (container) {
     // Priorité au conteneur dédié s'il existe
     container.appendChild(iframe)
-  } else if (currentScript.parentElement.tagName === 'HEAD') {
+  }
+  else if (currentScript.parentElement.tagName === 'HEAD') {
     // Si le script est dans le HEAD et qu'il n'y a pas de conteneur dédié
     const body = document.body || document.querySelector('body')
     if (body) {
       body.appendChild(iframe)
     }
-  } else {
+  }
+  else {
     // Sinon, insérer après le script courant
     currentScript.insertAdjacentElement('afterend', iframe)
   }
@@ -105,7 +109,7 @@
       {
         license: 'GPLv3',
       },
-      iframe
+      iframe,
     )
   })
 })()

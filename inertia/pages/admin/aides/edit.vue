@@ -16,7 +16,7 @@ const props = defineProps<{
     usage: string | null
     instructeur: string | null
     montant: number | null
-    textesLoi: Array<{ prefix: string; label: string; url: string }> | null
+    textesLoi: Array<{ prefix: string, label: string, url: string }> | null
   }
 }>()
 

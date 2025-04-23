@@ -1,6 +1,6 @@
-import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import Simulateur from '#models/simulateur'
 import SimulateurService from '#services/simulateur_service'
+import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class SimulateurSeeder extends BaseSeeder {
   async run() {
@@ -36,7 +36,7 @@ export default class SimulateurSeeder extends BaseSeeder {
     await statutQuestion.related('choices').createMany([
       { slug: 'etudiant', title: 'En études ou en alternance' },
       { slug: 'actif', title: 'Salarié(e) ou Indépendant(e)' },
-      { slug: 'chomeur', title: "Inscrit(e) comme demandeur d'emploi" },
+      { slug: 'chomeur', title: 'Inscrit(e) comme demandeur d\'emploi' },
       { slug: 'retraite', title: 'Retraité(e)' },
       { slug: 'inactif', title: 'Autre' },
     ])
@@ -46,14 +46,14 @@ export default class SimulateurSeeder extends BaseSeeder {
       slug: 'date-naissance',
       title: 'Quelle est votre date de naissance ?',
       description:
-        "Renseignez le jour, le mois et l'année sous le format jj/mm/aaaa (exemple : 15/08/1995)",
+        'Renseignez le jour, le mois et l\'année sous le format jj/mm/aaaa (exemple : 15/08/1995)',
       type: 'date',
     })
 
     // Ajouter la question handicap
     const handicapQuestion = await profilStep.related('questions').create({
       slug: 'handicap',
-      title: "Avez-vous une reconnaissance administrative d'une situation de handicap ?",
+      title: 'Avez-vous une reconnaissance administrative d\'une situation de handicap ?',
       type: 'boolean',
     })
 
@@ -115,7 +115,7 @@ export default class SimulateurSeeder extends BaseSeeder {
     const typeRevenusQuestion = await revenusStep.related('questions').create({
       slug: 'type-revenus',
       title:
-        "Quels sont les types de revenus qui s'appliquent à votre situation ? (plusieurs choix possibles)",
+        'Quels sont les types de revenus qui s\'appliquent à votre situation ? (plusieurs choix possibles)',
       description:
         'Sélectionnez tous les types de revenus que vous avez perçus dans les 12 derniers mois. Vous pourrez ensuite saisir les montants.',
       type: 'checkbox',
@@ -123,7 +123,7 @@ export default class SimulateurSeeder extends BaseSeeder {
 
     // Choix pour la question "type-revenus"
     await typeRevenusQuestion.related('choices').createMany([
-      { slug: 'revenus-activite', title: "Revenus d'activité (salaires, primes)" },
+      { slug: 'revenus-activite', title: 'Revenus d\'activité (salaires, primes)' },
       { slug: 'revenus-chomage', title: 'Chômage' },
       { slug: 'revenus-bourses', title: 'Bourses' },
       { slug: 'revenus-entreprise', title: 'Revenus professionnels non salariés' },
@@ -136,7 +136,7 @@ export default class SimulateurSeeder extends BaseSeeder {
       slug: 'confirmation-end',
       title: 'Voulez-vous confirmer ces informations ?',
       description:
-        "En poursuivant, vous affirmez être conscients que les informations d'eligibilité sont données à titre indicatif et ne sont pas contractuelles.",
+        'En poursuivant, vous affirmez être conscients que les informations d\'eligibilité sont données à titre indicatif et ne sont pas contractuelles.',
       type: 'checkbox',
     })
 
@@ -149,7 +149,7 @@ export default class SimulateurSeeder extends BaseSeeder {
     await simulateurService.generateBuiltJson(simulateur.id)
 
     console.log(
-      `Simulateur "${simulateur.title}" créé avec succès (id: ${simulateur.id}, slug: ${simulateur.slug})`
+      `Simulateur "${simulateur.title}" créé avec succès (id: ${simulateur.id}, slug: ${simulateur.slug})`,
     )
   }
 }

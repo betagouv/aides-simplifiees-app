@@ -29,11 +29,6 @@ const allErrors = computed(() => {
   return { ...(props.errors || {}), ...flashErrors.value }
 })
 
-// Pour vérifier s'il y a des erreurs spécifiques aux champs
-const hasFieldErrors = computed(() => {
-  return allErrors.value && (allErrors.value.email || allErrors.value.password)
-})
-
 const form = useForm({
   email: oldValues.value.email || '',
   password: '',

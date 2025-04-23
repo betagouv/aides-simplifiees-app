@@ -1,4 +1,4 @@
-import { formatDateTime } from './date-time.js'
+import { formatDateTime } from './date_time.js'
 
 /**
  * Transforms raw aides data from OpenFisca into rich content for UI display
@@ -7,7 +7,7 @@ export async function transformSimulationResults(
   calculationResponse: SimulationResultsAides,
   createdAt: Date,
   simulateurId: string,
-  aidesBySlug: unknown
+  aidesBySlug: unknown,
 ): Promise<RichSimulationResults> {
   const simulationDateTime = formatDateTime(createdAt)
   const rawAides: RawAide[] = Object.entries(calculationResponse).reduce((acc, [key, value]) => {
@@ -24,7 +24,8 @@ export async function transformSimulationResults(
             montant,
           })
         }
-      } else {
+      }
+      else {
         acc.push({
           id: aideId,
           eligibilite: false,
@@ -80,7 +81,8 @@ export async function transformSimulationResults(
   richAides.forEach((richAide) => {
     if (richAide.eligibilite) {
       eligibleAides.push(richAide)
-    } else {
+    }
+    else {
       nonEligibleAides.push(richAide)
     }
   })
@@ -99,7 +101,7 @@ export async function transformSimulationResults(
         usageAide,
         montant,
       }
-    }
+    },
   )
 
   // Mock echeances - in real implementation, this would be derived from data

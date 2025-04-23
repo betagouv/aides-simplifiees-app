@@ -86,7 +86,7 @@ export default class ApiController {
                 transformRequest: [
                   (data) => {
                     return Object.keys(data)
-                      .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
+                      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
                       .join('&')
                   },
                 ],
@@ -98,12 +98,13 @@ export default class ApiController {
             )
 
             return axiosResponse
-          } catch (error: any) {
+          }
+          catch (error: any) {
             if (attempt === maxRetries) {
               throw error
             }
             console.warn(`Attempt ${attempt} failed, retrying...`, error.message)
-            await new Promise((resolve) => setTimeout(resolve, 1000 * attempt))
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
           }
         }
         throw new Error('All retry attempts failed')
@@ -113,7 +114,7 @@ export default class ApiController {
       for (let i = 0; i < WEEKS_TO_FETCH; i++) {
         // Add delay between requests (except for the first one)
         if (i > 0) {
-          await new Promise((resolve) => setTimeout(resolve, 2000))
+          await new Promise(resolve => setTimeout(resolve, 2000))
         }
 
         // Calculate week dates (Monday to Sunday)
@@ -181,7 +182,8 @@ export default class ApiController {
               const matches = eventName.match(/\[(.*?)\]\[(.*?)\]/)
               if (matches) {
                 ;[, simulatorId, source] = matches
-              } else {
+              }
+              else {
                 simulatorId = eventName
                 source = 'website'
               }
@@ -213,14 +215,16 @@ export default class ApiController {
             console.warn(action)
             if (isStart) {
               statistics[simulatorId].starts += action.nb_events || 1
-            } else if (isSubmit) {
+            }
+            else if (isSubmit) {
               statistics[simulatorId].completions += action.nb_events || 1
-            } else if (isEligibility) {
+            }
+            else if (isEligibility) {
               statistics[simulatorId].eligibilities += action.nb_visits || 1
             }
 
             // Update weekly stats
-            let weekStat = statistics[simulatorId].weeklyStats.find((w) => w.week === weekKey)
+            let weekStat = statistics[simulatorId].weeklyStats.find(w => w.week === weekKey)
             if (!weekStat) {
               weekStat = { week: weekKey, completions: 0, eligibilities: 0, starts: 0 }
               statistics[simulatorId].weeklyStats.push(weekStat)
@@ -228,13 +232,16 @@ export default class ApiController {
 
             if (isStart) {
               weekStat.starts = (weekStat.starts || 0) + (action.nb_events || 1)
-            } else if (isSubmit) {
+            }
+            else if (isSubmit) {
               weekStat.completions += action.nb_events || 1
-            } else if (isEligibility) {
+            }
+            else if (isEligibility) {
               weekStat.eligibilities += action.nb_visits || 1
             }
           }
-        } catch (error: any) {
+        }
+        catch (error: any) {
           console.error(`Error fetching data for week ${i + 1}:`, error)
         }
       }
@@ -244,7 +251,7 @@ export default class ApiController {
         statistics[simulatorId].weeklyStats.sort((a, b) => a.week.localeCompare(b.week))
 
         // Fill in any missing weeks with zero data
-        const existingWeeks = new Set(statistics[simulatorId].weeklyStats.map((w) => w.week))
+        const existingWeeks = new Set(statistics[simulatorId].weeklyStats.map(w => w.week))
 
         // Add any missing weeks with zero values
         for (const weekEnd of allWeekEnds) {
@@ -272,7 +279,8 @@ export default class ApiController {
           no: 13,
         },
       }
-    } catch (error: any) {
+    }
+    catch (error: any) {
       console.error('Error in statistics endpoint:', error)
       return response.status(500).json({
         error: 'Failed to fetch statistics',
@@ -306,7 +314,8 @@ export default class ApiController {
 
       // Return the result
       return response.status(200).json(apiResponse.data)
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error fetching communes:', error)
       return response.status(200).json({ suggestions: [] })
     }
@@ -335,7 +344,8 @@ export default class ApiController {
       // Return the result
 
       return response.status(200).json(apiResponse.data)
-    } catch (error: any) {
+    }
+    catch (error: any) {
       console.error('Error in OpenFisca calculation API:', error)
 
       // Check if it's an API error with a response
@@ -387,7 +397,8 @@ export default class ApiController {
         secureHash: submission.secureHash,
         resultsUrl,
       })
-    } catch (error: any) {
+    }
+    catch (error: any) {
       console.error('Error storing form data:', error)
 
       return response.status(500).json({

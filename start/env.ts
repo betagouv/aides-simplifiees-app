@@ -11,6 +11,7 @@
 
 import { Env } from '@adonisjs/core/env'
 
+// eslint-disable-next-line antfu/no-top-level-await
 export default await Env.create(new URL('../', import.meta.url), {
   NODE_ENV: Env.schema.enum(['development', 'production', 'test'] as const),
   PORT: Env.schema.number(),

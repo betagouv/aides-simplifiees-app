@@ -2,10 +2,10 @@ import { router } from '@inertiajs/vue3'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useMatomo } from '~/composables/useMatomo'
-import { useSurveyDebugStore } from '~/stores/survey-debug'
-import { extractAidesResults } from '~/utils/beautify-results'
-import { buildRequest, fetchOpenFiscaFranceCalculation } from '~/utils/calculate-aides'
+import { useMatomo } from '~/composables/use_matomo'
+import { useSurveyDebugStore } from '~/stores/survey_debug'
+import { extractAidesResults } from '~/utils/beautify_results'
+import { buildRequest, fetchOpenFiscaFranceCalculation } from '~/utils/calculate_aides'
 
 export const useSubmissionStore = defineStore(
   'submissions',
@@ -64,7 +64,7 @@ export const useSubmissionStore = defineStore(
       try {
         setSubmissionStatus(simulateurId, 'pending')
         const request: OpenFiscaCalculationRequest = buildRequest(answers, questionsToApi)
-        const openfiscaResponse: OpenFiscaCalculationResponse =          await fetchOpenFiscaFranceCalculation(request)
+        const openfiscaResponse: OpenFiscaCalculationResponse = await fetchOpenFiscaFranceCalculation(request)
 
         debug.log('[Submission Store] openfiscaResponse', openfiscaResponse)
 
@@ -110,14 +110,17 @@ export const useSubmissionStore = defineStore(
               // If we have a results URL, navigate to it
               if (storeResponse.data.resultsUrl) {
                 router.visit(storeResponse.data.resultsUrl)
-              } else {
+              }
+              else {
                 // Fallback to the standard results page
                 router.visit(`/simulateurs/${simulateurId}/resultats`)
               }
-            } else {
+            }
+            else {
               console.error('[Submission Store] Failed to store form data:', storeResponse.data)
             }
-          } catch (storageError) {
+          }
+          catch (storageError) {
             console.error('[Submission Store] Error storing form data:', storageError)
           }
 
@@ -127,7 +130,8 @@ export const useSubmissionStore = defineStore(
         setSubmissionStatus(simulateurId, 'error')
         console.error('[Submission Store] No results found in OpenFisca response')
         return false
-      } catch (error) {
+      }
+      catch (error) {
         setSubmissionStatus(simulateurId, 'error')
         console.error('[Submission Store] Error during form submission:', error)
         return false

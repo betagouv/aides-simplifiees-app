@@ -1,6 +1,6 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { DateTime } from 'luxon'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import Question from './question.js'
 
 export default class Choice extends BaseModel {

@@ -1,11 +1,11 @@
 import { useFetch } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import { useMatomo } from '~/composables/useMatomo'
-import { useAutoCompleteHistoryStore } from '~/stores/autocomplete-history'
-import { useSurveyDebugStore } from '~/stores/survey-debug'
-import { compareVersions } from '~/utils/compare-versions'
-import { evaluateCondition } from '~/utils/evaluate-conditions'
+import { useMatomo } from '~/composables/use_matomo'
+import { useAutoCompleteHistoryStore } from '~/stores/autocomplete_history'
+import { useSurveyDebugStore } from '~/stores/survey_debug'
+import { compareVersions } from '~/utils/compare_versions'
+import { evaluateCondition } from '~/utils/evaluate_conditions'
 
 export const useSurveysStore = defineStore(
   'surveys',
@@ -239,8 +239,8 @@ export const useSurveysStore = defineStore(
             break
           }
         }
-        const choice = question.choices?.find((choice) => {
-          return choice.id === value
+        const choice = question.choices?.find((c) => {
+          return c.id === value
         })
         if (choice?.title) {
           return choice.title
@@ -482,8 +482,8 @@ export const useSurveysStore = defineStore(
       const questions = getQuestions(simulateurId)
 
       // Find the question in the ordered list
-      const question = questions.find((question) => {
-        return question.id === questionId
+      const question = questions.find((q) => {
+        return q.id === questionId
       })
       return question ?? null
     }
@@ -537,8 +537,8 @@ export const useSurveysStore = defineStore(
       const currentSchema = getSchema(simulateurId)
       const currentQuestionId = getCurrentQuestionId(simulateurId)
 
-      const step = currentSchema?.steps.find((step) => {
-        return step.questions.some((question) => {
+      const step = currentSchema?.steps.find((s) => {
+        return s.questions.some((question) => {
           return question.id === currentQuestionId
         })
       })
@@ -714,7 +714,7 @@ export const useSurveysStore = defineStore(
       pick: [
         'answers',
         'versions',
-        'currentQuestionIds'
+        'currentQuestionIds',
       ],
     },
   },

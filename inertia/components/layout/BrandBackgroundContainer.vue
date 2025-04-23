@@ -30,7 +30,8 @@ const backgroundColorClass = computed(() => {
     props.contrast && preferences.value.theme === 'light'
   ) {
     return 'fr-background-action-high--blue-france'
-  } else if (props.blue) {
+  }
+  else if (props.blue) {
     return 'fr-background-alt--blue-france'
   }
   return `fr-background-default--grey`

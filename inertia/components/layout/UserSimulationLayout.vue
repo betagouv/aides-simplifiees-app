@@ -7,7 +7,7 @@ import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContain
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import FormDebugPanel from '~/components/survey/FormDebugPanel.vue'
-import { useSurveyDebugStore } from '~/stores/survey-debug'
+import { useSurveyDebugStore } from '~/stores/survey_debug'
 
 const page = usePage<{
   simulateur: {

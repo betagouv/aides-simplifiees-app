@@ -24,9 +24,9 @@ try {
 
   // Extract question IDs from steps
   if (jsonData.steps && Array.isArray(jsonData.steps)) {
-    jsonData.steps.forEach(step => {
+    jsonData.steps.forEach((step) => {
       if (step.questions && Array.isArray(step.questions)) {
-        step.questions.forEach(question => {
+        step.questions.forEach((question) => {
           if (question.id) {
             questionIds.push(question.id)
           }
@@ -43,7 +43,8 @@ try {
   // Save to a file if an output path is provided
   fs.writeFileSync(outputPath, JSON.stringify(questionIds, null, 2))
   console.warn(`Results saved to ${outputPath}`)
-} catch (error) {
+}
+catch (error) {
   console.error('Error reading or parsing the JSON file:', error)
   process.exit(1)
 }

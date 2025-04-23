@@ -1,5 +1,5 @@
 // app/models/aide.ts
-import { DateTime } from 'luxon'
+import type { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export default class Aide extends BaseModel {
@@ -26,10 +26,10 @@ export default class Aide extends BaseModel {
 
   @column({
     columnName: 'textes_loi',
-    prepare: (value) => (typeof value === 'string' ? value : JSON.stringify(value)),
-    consume: (value) => (typeof value === 'string' ? JSON.parse(value) : value),
+    prepare: value => (typeof value === 'string' ? value : JSON.stringify(value)),
+    consume: value => (typeof value === 'string' ? JSON.parse(value) : value),
   })
-  declare textesLoi: Array<{ prefix: string; label: string; url: string }>
+  declare textesLoi: Array<{ prefix: string, label: string, url: string }>
 
   @column({ columnName: 'content' })
   declare content: string

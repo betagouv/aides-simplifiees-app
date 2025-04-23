@@ -7,7 +7,7 @@ import {
   dispatchSituationLogement,
   dispatchSituationProfessionnelle,
   dispatchTypeLogement,
-} from './calculate-aides'
+} from './calculate_aides'
 
 export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifieesMapping } = {
   'date-naissance': {

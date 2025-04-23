@@ -8,27 +8,26 @@ import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createSSRApp, h } from 'vue'
-import { getLayout } from './shared'
+import VueMatomo from 'vue-matomo'
 
+import { getLayout } from './shared'
 import '../css/app.css'
 // Import DSFR styles and components
 import '@gouvfr/dsfr/dist/dsfr.min.css'
+
 import '@gouvfr/dsfr/dist/utility/utility.min.css'
-
-import VueMatomo from 'vue-matomo'
-
 
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
 createInertiaApp({
   progress: { color: '#5468FF' },
 
-  title: (title) => `${title} - ${appName}`,
+  title: title => `${title} - ${appName}`,
 
   resolve: async (name) => {
     const page = await resolvePageComponent(
       `../pages/${name}.vue`,
-      import.meta.glob<DefineComponent>('../pages/**/*.vue')
+      import.meta.glob<DefineComponent>('../pages/**/*.vue'),
     )
     page.default.layout ??= getLayout(`/${name}`)
     return page
@@ -45,7 +44,6 @@ createInertiaApp({
     }
     const pinia = createPinia()
     pinia.use(piniaPluginPersistedstate)
-
     // Initialize DSFR
     app.use(VueDsfr)
     app.use(pinia)
@@ -53,7 +51,7 @@ createInertiaApp({
 
     // Get config values from the page props
     const matomoHost = props.initialPage.props.matomoUrl
-    const matomoSiteId = parseInt(props.initialPage.props.matomoSiteId || '0', 10)
+    const matomoSiteId = Number.parseInt(props.initialPage.props.matomoSiteId || '0', 10)
 
     // Only initialize Matomo if we have valid config
     if (matomoHost && matomoSiteId) {
@@ -88,7 +86,7 @@ createInertiaApp({
               replace: props.replace,
               // Map other relevant props here
             },
-            slots
+            slots,
           )
       },
     })

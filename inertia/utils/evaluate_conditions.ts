@@ -12,14 +12,14 @@ export function evaluateCondition(conditionStr: string, answers: Record<string, 
   try {
     // Handle logical OR conditions by splitting and evaluating each part
     if (conditionStr.includes('||')) {
-      const orConditions = conditionStr.split('||').map((c) => c.trim())
-      return orConditions.some((condition) => evaluateCondition(condition, answers))
+      const orConditions = conditionStr.split('||').map(c => c.trim())
+      return orConditions.some(condition => evaluateCondition(condition, answers))
     }
 
     // Handle logical AND conditions
     if (conditionStr.includes('&&')) {
-      const andConditions = conditionStr.split('&&').map((c) => c.trim())
-      return andConditions.every((condition) => evaluateCondition(condition, answers))
+      const andConditions = conditionStr.split('&&').map(c => c.trim())
+      return andConditions.every(condition => evaluateCondition(condition, answers))
     }
 
     // Handle includes syntax for checkboxes
@@ -31,7 +31,7 @@ export function evaluateCondition(conditionStr: string, answers: Record<string, 
         // Parse the comma-separated values inside the parentheses
         const valuesToCheck = matches[2]
           .split(',')
-          .map((v) => v.trim().replace(/^["'](.+)["']$/, '$1')) // Remove quotes
+          .map(v => v.trim().replace(/^["'](.+)["']$/, '$1')) // Remove quotes
 
         const selectedValues = getAnswerValue(questionId)
 
@@ -47,7 +47,7 @@ export function evaluateCondition(conditionStr: string, answers: Record<string, 
 
         // For multiple values (checkboxes), check if at least one value is in the selected values
         if (Array.isArray(selectedValues)) {
-          return valuesToCheck.some((v) => selectedValues.includes(v))
+          return valuesToCheck.some(v => selectedValues.includes(v))
         }
 
         return false
@@ -58,7 +58,7 @@ export function evaluateCondition(conditionStr: string, answers: Record<string, 
     const comparisonOperators = ['>=', '<=', '>', '<', '=', '!=']
     for (const operator of comparisonOperators) {
       if (conditionStr.includes(operator)) {
-        const [leftSide, rightSide] = conditionStr.split(operator).map((s) => s.trim())
+        const [leftSide, rightSide] = conditionStr.split(operator).map(s => s.trim())
         const leftValue = getAnswerValue(leftSide)
 
         // If the question hasn't been answered yet, return false
@@ -124,7 +124,8 @@ export function evaluateCondition(conditionStr: string, answers: Record<string, 
     // If no operators matched, check if the condition is a single value
     // This handles cases like checking if a checkbox is checked
     return !!getAnswerValue(conditionStr)
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error evaluating condition:', conditionStr, error)
     return false
   }

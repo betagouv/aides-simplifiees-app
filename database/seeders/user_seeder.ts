@@ -1,11 +1,11 @@
-import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import User from '#models/user'
 import env from '#start/env'
+import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class UserSeeder extends BaseSeeder {
   async run() {
     // Récupération du mot de passe admin depuis l'env
-    //Configure in .env
+    // Configure in .env
     const adminPassword = env.get('ADMIN_PASSWORD')
     const adminLogin = env.get('ADMIN_LOGIN')
     // Vérification si l'admin existe déjà
@@ -21,13 +21,15 @@ export default class UserSeeder extends BaseSeeder {
       })
 
       console.log('✓ Admin user created')
-    } else {
+    }
+    else {
       // Mise à jour de l'utilisateur existant si nécessaire
       if (!existingAdmin.isAdmin) {
         existingAdmin.isAdmin = true
         await existingAdmin.save()
         console.log('✓ Admin user updated with isAdmin')
-      } else {
+      }
+      else {
         console.log('✓ Admin user already exists')
       }
     }

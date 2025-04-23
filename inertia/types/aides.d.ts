@@ -17,7 +17,7 @@ declare global {
     montant?: number
   }
 
-  type TexteLoi = string | { prefixe: string; label: string; url: string } | null
+  type TexteLoi = string | { prefixe: string, label: string, url: string } | null
 
   interface AideDetails {
     title: string

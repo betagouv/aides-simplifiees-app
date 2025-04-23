@@ -1,5 +1,4 @@
 import DefaultLayout from '~/layouts/default.vue'
-import iframeLayout from '~/layouts/iframe.vue'
 import UserSimulationLayoutfrom from '~/layouts/user-simulation.vue'
 // import { getParam } from '~/utils/url'
 

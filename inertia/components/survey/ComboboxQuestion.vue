@@ -1,11 +1,11 @@
 <script lang="ts" setup generic="T, U">
 import type { ComponentPublicInstance } from 'vue'
-import type { AutocompleteFn } from '~/utils/autocompleteFunctions'
+import type { AutocompleteFn } from '~/utils/autocomplete_functions'
 import { DsfrAlert, DsfrInput, DsfrSearchBar, DsfrSelect } from '@gouvminint/vue-dsfr'
 import { useAsyncState } from '@vueuse/core'
 import { computed, nextTick, ref, watch } from 'vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
-import { useAutoCompleteHistoryStore } from '~/stores/autocomplete-history'
+import { useAutoCompleteHistoryStore } from '~/stores/autocomplete_history'
 
 const props = withDefaults(defineProps<{
   question: SurveyQuestion
@@ -60,10 +60,12 @@ const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 watch([isLoading, isReady, error], () => {
   if (isLoading.value) {
     status.value = 'pending'
-  } else if (isReady.value) {
+  }
+  else if (isReady.value) {
     if (error.value) {
       status.value = 'error'
-    } else {
+    }
+    else {
       status.value = 'success'
     }
   }
@@ -84,14 +86,17 @@ watch(status, (newStatus) => {
             selectElement.value.focus()
           }
         })
-      } else {
+      }
+      else {
         statusMessage.value = config.noResultsText
       }
     }, 400)
-  } else if (newStatus === 'error') {
+  }
+  else if (newStatus === 'error') {
     debounceStatus.value = newStatus
     statusMessage.value = `${config.errorTitle}. ${config.errorDescription}`
-  } else {
+  }
+  else {
     debounceStatus.value = newStatus
     if (newStatus === 'pending') {
       statusMessage.value = config.loadingText
@@ -126,8 +131,8 @@ const { getHistory, addHistory } = useAutoCompleteHistoryStore()
 // Track when options are selected
 function handleOptionSelect(value: string | number) {
   const option = selectOptions.value.find((opt) => {
-    return (opt as { value: string; text: string }).value === value
-  }) as { value: string; text: string }
+    return (opt as { value: string, text: string }).value === value
+  }) as { value: string, text: string }
   addHistory(props.question.id, value, option.text)
   statusMessage.value = `Option "${value}" sélectionnée`
 }

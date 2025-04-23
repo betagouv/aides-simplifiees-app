@@ -1,6 +1,6 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
+import type { DateTime } from 'luxon'
+import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 import Step from './step.js'
 
 export default class Simulateur extends BaseModel {

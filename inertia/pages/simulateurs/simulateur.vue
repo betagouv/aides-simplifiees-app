@@ -2,7 +2,7 @@
 import { Head } from '@inertiajs/vue3'
 import { onMounted } from 'vue'
 import Survey from '~/components/survey/Survey.vue'
-import { useIframeDisplay } from '~/composables/useIframeDisplay'
+import { useIframeDisplay } from '~/composables/use_is_iframe'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 // Récupérer les données du simulateur depuis les props

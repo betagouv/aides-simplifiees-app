@@ -31,9 +31,11 @@ const stringModel = customRef((track, trigger) => {
       track()
       if (value === 'true') {
         booleanModel.value = true
-      } else if (value === 'false') {
+      }
+      else if (value === 'false') {
         booleanModel.value = false
-      } else {
+      }
+      else {
         booleanModel.value = undefined
       }
       trigger()

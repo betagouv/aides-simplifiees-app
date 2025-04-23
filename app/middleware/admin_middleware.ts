@@ -1,7 +1,6 @@
 // app/middleware/admin_middleware.ts
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
-import env from '#start/env'
 
 /**
  * Middleware pour protéger les routes d'administration

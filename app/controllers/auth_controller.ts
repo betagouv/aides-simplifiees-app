@@ -1,6 +1,6 @@
-import { HttpContext } from '@adonisjs/core/http'
-import vine from '@vinejs/vine'
+import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
+import vine from '@vinejs/vine'
 
 export default class AuthController {
   public async showLogin({ inertia }: HttpContext) {
@@ -29,12 +29,14 @@ export default class AuthController {
 
         // Redirect to admin dashboard
         return response.redirect().toRoute('admin.index')
-      } catch (authError) {
+      }
+      catch (authError) {
         // Erreur d'authentification (utilisateur non trouvé ou mot de passe incorrect)
         session.flash('errors', { form: 'Identifiants invalides' })
         return response.redirect().back()
       }
-    } catch (validationError: any) {
+    }
+    catch (validationError: any) {
       // Erreur de validation (email ou mot de passe ne répondant pas aux critères)
       if (validationError.code === 'E_VALIDATION_ERROR') {
         // Transformer les erreurs de validation en format simplifié pour le frontend
@@ -49,7 +51,8 @@ export default class AuthController {
 
         // Conserver l'email pour le remplir automatiquement
         session.flash('old', { email: request.input('email') })
-      } else {
+      }
+      else {
         // En cas d'autre erreur, envoyer un message générique
         session.flash('errors', { form: 'Une erreur est survenue lors de la connexion' })
       }

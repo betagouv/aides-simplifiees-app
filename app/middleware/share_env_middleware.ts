@@ -9,9 +9,10 @@ export default class ShareEnvMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     // Only share specific environment variables that are needed on the client
     ctx.inertia.share(filterObject({
+      appName: env.get('APP_NAME'),
+      publicAppUrl: env.get('PUBLIC_APP_URL'),
       matomoUrl: env.get('MATOMO_URL'),
       matomoSiteId: env.get('MATOMO_SITE_ID'),
-      appName: env.get('APP_NAME'),
     }))
 
     await next()

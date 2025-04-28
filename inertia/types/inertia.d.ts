@@ -1,6 +1,7 @@
 import type { Page, PageProps } from '@inertiajs/core'
 
 interface SharedProps extends PageProps {
+  publicAppUrl?: string
   appName?: string
   matomoUrl?: string
   matomoSiteId?: string

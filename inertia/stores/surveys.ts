@@ -2,7 +2,6 @@ import { useFetch } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { useMatomo } from '~/composables/use_matomo'
-import { useAutoCompleteHistoryStore } from '~/stores/autocomplete_history'
 import { useSurveyDebugStore } from '~/stores/survey_debug'
 import { compareVersions } from '~/utils/compare_versions'
 import { evaluateCondition } from '~/utils/evaluate_conditions'
@@ -148,7 +147,7 @@ export const useSurveysStore = defineStore(
       return answers.value[simulateurId] || {}
     }
 
-    const getVisibleAnswers = (simulateurId: string): SurveyAnswers => {
+    const getAnswersForCalculation = (simulateurId: string): SurveyAnswers => {
       const currentAnswers = getAnswers(simulateurId)
       return Object.entries(currentAnswers)
         .filter(([questionId, answer]) => {
@@ -161,7 +160,23 @@ export const useSurveysStore = defineStore(
           return isVisible && answer !== undefined
         })
         .reduce((acc, [questionId, answer]) => {
-          acc[questionId] = answer
+          const question = findQuestionById(simulateurId, questionId)
+          if (question?.type === 'combobox') {
+            // If the question is a combobox, parse the answer
+            try {
+              const parsedAnswer = JSON.parse(answer as string)
+              acc[questionId] = parsedAnswer.value
+            }
+            catch (error) {
+              debug.warn(
+                `[Surveys store][${simulateurId}] Error parsing combobox answer for ${questionId}:`,
+                error,
+              )
+            }
+          }
+          else {
+            acc[questionId] = answer
+          }
           return acc
         }, {} as SurveyAnswers)
     }
@@ -209,7 +224,6 @@ export const useSurveysStore = defineStore(
       }
     }
 
-    const { getHistory } = useAutoCompleteHistoryStore()
     const formatAnswer = (simulateurId: string, questionId: string, value: any): string => {
       // get choice title
       const question = findQuestionById(simulateurId, questionId)
@@ -232,11 +246,7 @@ export const useSurveysStore = defineStore(
             return choices?.join(', ') ?? ''
           }
           case 'combobox': {
-            const history = getHistory(questionId, value)
-            if (history) {
-              return history as string
-            }
-            break
+            return JSON.parse(value)?.text
           }
         }
         const choice = question.choices?.find((c) => {
@@ -688,7 +698,7 @@ export const useSurveysStore = defineStore(
       loadSurveySchema,
       hasAnswers,
       getAnswers,
-      getVisibleAnswers,
+      getAnswersForCalculation,
       getAnswer,
       hasAnswer,
       setAnswer,

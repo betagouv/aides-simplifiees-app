@@ -3,7 +3,7 @@ import {
   foyersFiscauxQuestionsVariables,
   individusQuestionsVariables,
   menagesQuestionsVariables,
-} from './aides_mapping_questions'
+} from '~/utils/aides_mapping_questions'
 import {
   Entites,
   FAMILLE_ID,
@@ -11,8 +11,8 @@ import {
   getPeriod,
   INDIVIDU_ID,
   MENAGE_ID,
-} from './calculate_aides'
-import { UnknownVariableError } from './errors'
+} from '~/utils/calculate_aides'
+import { UnknownVariableError } from '~/utils/errors'
 
 function addDeducedResults(results: SimulationResultsAides) {
   // for now, we will not have a specific calculation of 'aide-personnalisee-logement-eligibilite' from the web API

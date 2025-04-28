@@ -3,7 +3,7 @@ import { useElementSize } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import { useSchemeStore } from '~/stores/scheme'
-import BrandBackgroundTexture from './BrandBackgroundTexture.vue'
+import BrandBackgroundTexture from '~/components/layout/BrandBackgroundTexture.vue'
 
 const props = withDefaults(defineProps<{
   contrast?: boolean

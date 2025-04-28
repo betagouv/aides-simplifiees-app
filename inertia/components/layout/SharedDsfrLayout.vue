@@ -3,7 +3,6 @@ import type { DsfrHeaderMenuLinkProps } from '@gouvminint/vue-dsfr'
 import {
   DsfrFooter,
   DsfrHeader,
-
   DsfrNavigation,
   DsfrNotice,
   DsfrSkipLinks,
@@ -13,7 +12,6 @@ import { computed } from 'vue'
 import SchemeModal from '~/components/SchemeModal.vue'
 import { useSchemeStore } from '~/stores/scheme'
 
-// Get the page props to access auth user
 const page = usePage()
 const isAuthenticated = computed(() => {
   return Boolean(page.props.auth?.user)
@@ -58,12 +56,8 @@ const navItems = [
   },
 ]
 
-// Helper function to handle logout
 function handleLogout() {
-  router.post(
-    '/logout',
-    {},
-    {
+  router.post( '/logout', {}, {
       onSuccess: () => {
         // Forcer le rechargement complet de la page après la déconnexion
         window.location.href = '/'
@@ -85,7 +79,7 @@ const quickLinks = computed(() => {
   if (isAuthenticated.value) {
     links.push({
       label: 'Déconnexion',
-      icon: { name: 'ri-logout-box-line', ssr: true },
+      icon: { name: 'ri:logout-box-line', ssr: true },
       button: true,
       onClick: () => handleLogout(),
     })

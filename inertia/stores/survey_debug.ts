@@ -13,7 +13,6 @@ export const useSurveyDebugStore = defineStore('survey-debug', () => {
   const debug = {
     log: (...messages: any[]) => {
       if (debugMode.value) {
-        // eslint-disable-next-line no-console
         console.log(...messages)
       }
     },

@@ -6,7 +6,7 @@ import { renderToString } from '@vue/server-renderer'
 import { createPinia } from 'pinia'
 import { createSSRApp, h } from 'vue'
 import RouterLink from '~/components/RouterLink.vue'
-import collections from '~/icon-collections'
+import collections from '~/icon_collections'
 import { getLayout } from './shared'
 
 export default function render(page: any) {

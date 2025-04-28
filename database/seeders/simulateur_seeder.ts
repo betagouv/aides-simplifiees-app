@@ -42,7 +42,7 @@ export default class SimulateurSeeder extends BaseSeeder {
     ])
 
     // Ajouter la question âge
-    const ageQuestion = await profilStep.related('questions').create({
+    await profilStep.related('questions').create({
       slug: 'date-naissance',
       title: 'Quelle est votre date de naissance ?',
       description:
@@ -51,7 +51,7 @@ export default class SimulateurSeeder extends BaseSeeder {
     })
 
     // Ajouter la question handicap
-    const handicapQuestion = await profilStep.related('questions').create({
+    await profilStep.related('questions').create({
       slug: 'handicap',
       title: 'Avez-vous une reconnaissance administrative d\'une situation de handicap ?',
       type: 'boolean',
@@ -64,7 +64,7 @@ export default class SimulateurSeeder extends BaseSeeder {
     })
 
     // Questions de l'étape Logement
-    const codePostalQuestion = await logementStep.related('questions').create({
+    await logementStep.related('questions').create({
       slug: 'code-postal-nouvelle-ville',
       title: 'Dans quelle ville allez-vous résider ?',
       description:

@@ -1,115 +1,25 @@
 <script setup lang="ts">
+import type { DsfrHeaderMenuLinkProps } from '@gouvminint/vue-dsfr'
 import {
   DsfrFooter,
   DsfrHeader,
+  DsfrNavigation,
   DsfrNotice,
   DsfrSkipLinks,
 } from '@gouvminint/vue-dsfr'
-import { router as inertiaRouter, Link, usePage } from '@inertiajs/vue3'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { router, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
 import SchemeModal from '~/components/SchemeModal.vue'
 import { useSchemeStore } from '~/stores/scheme'
 
-// Add auth related prop
-defineProps<{
-  auth?: {
-    user: {
-      id: number
-      email: string
-      fullName?: string
-    } | null
-  }
-}>()
-
-// Get the page props to access auth user
 const page = usePage()
 const isAuthenticated = computed(() => {
-  return !!page.props.auth && !!(page.props.auth as any).user
+  return Boolean(page.props.auth?.user)
 })
 
-// Browser detection for SSR
-const isBrowser = typeof window !== 'undefined'
+const schemeStore = useSchemeStore()
 
-// Keep track of the current path
-const currentPath = ref('/')
-
-// Helper function to create button-style links
-function createButtonLink(label: string, path: string) {
-  return {
-    label,
-    button: true,
-    class: '',
-    onclick: () => {
-      if (isBrowser) {
-        inertiaRouter.visit(path)
-      }
-    },
-  }
-}
-
-// Initialize with an empty array but with the correct type
-const afterMandatoryLinks = ref<
-  Array<{
-    label: string
-    button?: boolean
-    class?: string
-    onclick?: () => void
-    to?: string
-  }>
->([])
-
-// Update the current path when mounted and listen for changes
-onMounted(() => {
-  // Initialize with the current path
-  currentPath.value = window.location.pathname
-
-  // Set the footer button in a browser context
-  afterMandatoryLinks.value = [
-    // All links as buttons with Inertia navigation
-    createButtonLink('Accessibilité : non conforme', '/content/accessibilite'),
-    createButtonLink('Mentions légales', '/content/mentions-legales'),
-    createButtonLink('Données personnelles', '/content/donnees-personnelles'),
-    createButtonLink('Gestion des cookies', '/content/cookies'),
-    createButtonLink('CGU', '/content/cgu'),
-    createButtonLink('Statistiques', '/statistiques'),
-  ]
-
-  // Listen for Inertia navigation events
-  const updatePath = () => {
-    currentPath.value = window.location.pathname
-  }
-
-  document.addEventListener('inertia:navigate', updatePath)
-
-  // Clean up the event listener when component unmounts
-  onUnmounted(() => {
-    document.removeEventListener('inertia:navigate', updatePath)
-  })
-})
-
-// Function to safely open the scheme modal
-function openSchemeModal() {
-  if (isBrowser) {
-    console.log('Opening scheme modal')
-    const store = useSchemeStore()
-    store.openModal()
-  }
-}
-
-// Function to check if a route is active
-function isActive(path: string): boolean {
-  // Special case for home page - only active when exactly at root
-  if (path === '/') {
-    return currentPath.value === '/'
-  }
-
-  return currentPath.value.startsWith(path)
-}
-
-// Function to check if a route is exactly active
-function isExactActive(path: string): boolean {
-  return currentPath.value === path
-}
+const noticeMessage = 'Ce site est en cours de développement. Certaines fonctionnalités peuvent ne pas être disponibles ou ne pas fonctionner correctement.'
 
 const skipLinks = [
   {
@@ -146,41 +56,31 @@ const navItems = [
   },
 ]
 
-const noticeMessage = 'Ce site est en cours de développement. Certaines fonctionnalités peuvent ne pas être disponibles ou ne pas fonctionner correctement.'
-
-// Helper function to handle logout
 function handleLogout() {
-  if (isBrowser) {
-    inertiaRouter.post(
-      '/logout',
-      {},
-      {
-        onSuccess: () => {
-          // Forcer le rechargement complet de la page après la déconnexion
-          window.location.href = '/'
-        },
-      },
-    )
-  }
+  router.post('/logout', {}, {
+    onSuccess: () => {
+      // Forcer le rechargement complet de la page après la déconnexion
+      window.location.href = '/'
+    },
+  })
 }
 
-// Use computed for quickLinks to ensure the handler is always fresh
 const quickLinks = computed(() => {
-  const links = [
+  const links: DsfrHeaderMenuLinkProps[] = [
     {
       label: 'Affichage',
       icon: { name: 'ri-sun-line', ssr: true },
       button: true,
-      onClick: openSchemeModal,
+      onClick: schemeStore.openModal,
     },
   ]
 
   if (isAuthenticated.value) {
     links.push({
       label: 'Déconnexion',
-      icon: { name: 'ri-logout-box-line', ssr: true },
+      icon: { name: 'ri:logout-box-line', ssr: true },
       button: true,
-      onClick: handleLogout,
+      onClick: () => handleLogout(),
     })
   }
   else {
@@ -188,7 +88,7 @@ const quickLinks = computed(() => {
       label: 'Connexion',
       icon: { name: 'ri-login-box-line', ssr: true },
       button: true,
-      onClick: () => inertiaRouter.visit('/login'),
+      onClick: () => router.visit('/login'),
     }) */
   }
 
@@ -205,54 +105,11 @@ const quickLinks = computed(() => {
     :logo-text="['Republique', 'Française']"
     :quick-links="quickLinks"
   >
-    <template #service-title>
-      <Link
-        href="/"
-        class="fr-header__service-title"
-      >
-        aides simplifiées
-      </Link>
-    </template>
-    <template
-      #mainnav="{ hidemodal }"
-    >
-      <nav
-        class="fr-nav"
-        role="navigation"
-        aria-label="Menu principal"
-      >
-        <ul class="fr-nav__list">
-          <li
-            v-for="(item, index) in navItems"
-            :key="index"
-            class="fr-nav__item"
-            @click="hidemodal"
-          >
-            <Link
-              v-if="!item.target"
-              :href="item.to"
-              class="fr-nav__link"
-              :class="{
-                'router-link-active': isActive(item.to),
-                'router-link-exact-active': isExactActive(item.to),
-              }"
-              :aria-current="isActive(item.to) ? 'page' : undefined"
-              data-testid="nav-inertia-link"
-            >
-              {{ item.text }}
-            </Link>
-            <a
-              v-else
-              :href="item.to"
-              class="fr-nav__link"
-              :target="item.target"
-              rel="noopener"
-            >
-              {{ item.text }}
-            </a>
-          </li>
-        </ul>
-      </nav>
+    <template #mainnav>
+      <DsfrNavigation
+        v-if="navItems?.length > 0"
+        :nav-items="navItems"
+      />
     </template>
   </DsfrHeader>
   <DsfrNotice
@@ -278,8 +135,21 @@ const quickLinks = computed(() => {
     licence-text="Licence ouverte 2.0"
     licence-name="licence ouverte 2.0"
     licence-to="https://www.etalab.gouv.fr/licence-ouverte-open-licence/"
-    :mandatory-links="[]"
-    :after-mandatory-links="afterMandatoryLinks"
+    home-link="/"
+    legal-link="/content/mentions-legales"
+    personal-data-link="/content/donnees-personnelles"
+    cookies-link="/cookies"
+    a11y-compliance-link="/content/accessibilite"
+    :after-mandatory-links="[
+      {
+        label: 'CGU',
+        to: '/content/cgu',
+      },
+      {
+        label: 'Statistiques',
+        to: '/statistiques',
+      },
+    ]"
   />
   <SchemeModal />
 </template>

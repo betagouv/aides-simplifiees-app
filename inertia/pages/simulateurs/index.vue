@@ -22,7 +22,7 @@ setBreadcrumbs([
 
 <template>
   <Head
-    title="Liste des simulateurs | Aides simplifiées"
+    title="Liste des simulateurs"
     description="Découvrez les simulateurs vous permettant de découvrir si vous pouvez bénéficier d'aides."
   />
   <BrandBackgroundContainer>

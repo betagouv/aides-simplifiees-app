@@ -6,7 +6,7 @@ export function useMatomo() {
    * Track an event in Matomo
    */
   function trackEvent(category: string, action: string, name?: string, value?: number) {
-    if (import.meta.server) {
+    if (import.meta.env.SSR) {
       return
     }
     if (typeof window === 'undefined' || !(window as any)._paq) {

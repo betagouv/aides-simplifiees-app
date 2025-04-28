@@ -5,7 +5,7 @@ import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContain
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-// Define props based on what's passed from ContentController.listNotions
+
 defineProps<{
   notions: Array<{
     id: string
@@ -24,7 +24,7 @@ setBreadcrumbs([
 
 <template>
   <Head
-    title="Toutes les informations sur les notions | Aides simplifiées"
+    title="Toutes les informations sur les notions"
     description="Découvrez toutes les informations sur les notions pour vous accompagner dans vos démarches."
   />
   <BrandBackgroundContainer>

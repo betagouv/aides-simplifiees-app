@@ -5,7 +5,6 @@ import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionCon
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-// Define props based on what's passed from ContentController.showAide
 const props = defineProps<{
   aide: {
     id: number
@@ -31,7 +30,7 @@ setBreadcrumbs([
 
 <template>
   <Head
-    :title="`Aide '${aide.title}' | Aides simplifiées`"
+    :title="`Aide '${aide.title}'`"
     :description="
       aide.description
         || `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`

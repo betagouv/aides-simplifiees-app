@@ -82,5 +82,3 @@ const paddingsClasses = paddingsClassesVariants[props.type].join(' ')
     </div>
   </component>
 </template>
-
-<style lang="scss"></style>

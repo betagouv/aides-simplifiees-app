@@ -3,9 +3,8 @@ import type { ComponentPublicInstance } from 'vue'
 import type { AutocompleteFn } from '~/utils/autocomplete_functions'
 import { DsfrAlert, DsfrInput, DsfrSearchBar, DsfrSelect } from '@gouvminint/vue-dsfr'
 import { useAsyncState } from '@vueuse/core'
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, customRef, nextTick, ref, watch } from 'vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
-import { useAutoCompleteHistoryStore } from '~/stores/autocomplete_history'
 
 const props = withDefaults(defineProps<{
   question: SurveyQuestion
@@ -127,20 +126,37 @@ function handleOptionFocus(optionId: string) {
   activeDescendant.value = optionId
 }
 
-const { getHistory, addHistory } = useAutoCompleteHistoryStore()
-// Track when options are selected
-function handleOptionSelect(value: string | number) {
-  const option = selectOptions.value.find((opt) => {
-    return (opt as { value: string, text: string }).value === value
-  }) as { value: string, text: string }
-  addHistory(props.question.id, value, option.text)
-  statusMessage.value = `Option "${value}" sélectionnée`
-}
-const selectedValue = computed(() => {
-  if (model.value) {
-    return getHistory(props.question.id, model.value)
+/**
+ * We pass a value only model down to the select component
+ */
+const valueModel = customRef((track, trigger) => {
+  return {
+    get() {
+      return model.value ? JSON.parse(model.value)?.value : undefined
+    },
+    set(value: string | undefined) {
+      track()
+      const option = selectOptions.value.find((opt) => {
+        return (opt as { value: string, text: string }).value === value
+        }) as { value: string, text: string }
+        if (option) {
+        statusMessage.value = `Option "${value}" sélectionnée`
+        model.value = JSON.stringify(option)
+      }
+      else {
+        statusMessage.value = 'Aucune option sélectionnée'
+        model.value = undefined
+      }
+      trigger()
+    },
   }
-  return null
+})
+
+/**
+ * We pass a text only model down to the input component
+ */
+const textModel = computed(() => {
+  return model.value ? JSON.parse(model.value)?.text : undefined
 })
 </script>
 
@@ -213,13 +229,12 @@ const selectedValue = computed(() => {
       >
         <DsfrSelect
           :id="selectId"
-          v-model="model"
+          v-model="valueModel"
           :options="selectOptions"
           :label="config.selectLabel"
           :hint="typeof config.selectHint === 'function' ? config.selectHint(lastSentQuery) : config.selectHint"
           :default-unselected-text="config.defaultUnselectedText"
           aria-required="false"
-          @update:model-value="handleOptionSelect"
           @focus-option="handleOptionFocus"
         />
       </div>
@@ -247,12 +262,9 @@ const selectedValue = computed(() => {
             type="text"
             label="Sélection actuelle"
             label-visible
-            :model-value="selectedValue"
+            :model-value="textModel"
             disabled
           />
-          <p class="fr-sr-only">
-            Votre sélection actuelle est : {{ selectedValue }}
-          </p>
         </div>
       </template>
       <div

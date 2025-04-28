@@ -26,7 +26,7 @@ const simulationTiles: DsfrTileProps[] = [
 
 <template>
   <Head
-    title="La bonne aide, au bon moment, au bon endroit : page d\'accueil | Aides simplifiées"
+    title="La bonne aide, au bon moment, au bon endroit : page d'accueil"
     description="Découvrez les aides adaptées à votre situation personnelle. Simulateurs pour le logement, le déménagement et plus encore. Un service public simple et rapide pour connaître vos droits."
   />
   <BrandBackgroundContainer
@@ -45,7 +45,7 @@ const simulationTiles: DsfrTileProps[] = [
           </p>
         </div>
         <div
-          class="brand-home-banner__column fr-col-12 fr-col-lg-6"
+          class="brand-home-banner__column fr-col-12 fr-col-lg-6 fr-col-offset-xl-1 fr-col-xl-5"
         >
           <DsfrTiles
             :tiles="simulationTiles"

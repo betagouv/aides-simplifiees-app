@@ -13,7 +13,8 @@ export default antfu(
     ]),
     {
       rules: {
-        'prettier/prettier': 'off'
+        'prettier/prettier': 'off',
+        'no-console': 'off',
       }
     },
     {

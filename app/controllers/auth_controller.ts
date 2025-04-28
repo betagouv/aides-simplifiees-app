@@ -33,6 +33,7 @@ export default class AuthController {
       catch (authError) {
         // Erreur d'authentification (utilisateur non trouvé ou mot de passe incorrect)
         session.flash('errors', { form: 'Identifiants invalides' })
+        console.error('Erreur d\'authentification :', authError)
         return response.redirect().back()
       }
     }

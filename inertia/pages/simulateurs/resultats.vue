@@ -122,7 +122,7 @@ const activeAccordion = ref()
 
 <template>
   <Head
-    :title="`Résultats de votre simulation '${simulateurTitle}' | Aides simplifiées`"
+    :title="`Résultats de votre simulation '${simulateurTitle}'`"
     :description="`Découvrez les aides auxquelles vous êtes eligibles avec les résultats de votre simulation '${simulateurTitle}'.`"
   />
   <article class="results">
@@ -141,9 +141,6 @@ const activeAccordion = ref()
             :style="{ color: 'var(--text-mention-grey)' }"
           >
             Simulation terminée le {{ simulationDateTime.date }} à {{ simulationDateTime.time }}
-            <span v-if="hasAides && results?.aides">
-              ({{ results.aides.length }} aide(s) éligible(s))
-            </span>
           </p>
         </hgroup>
         <DsfrLink
@@ -151,6 +148,8 @@ const activeAccordion = ref()
           icon-before
           label="Reprendre ma simulation"
           :to="`/simulateurs/${simulateurId}/recapitulatif/#simulateur-title`"
+          preserve-scroll
+          preserve-state
           :icon="{ name: 'ri:arrow-left-line', ssr: true }"
         />
       </div>

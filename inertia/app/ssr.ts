@@ -1,11 +1,12 @@
 import type { DefineComponent } from 'vue'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import { addCollection } from '@iconify/vue'
-import { createInertiaApp, Link } from '@inertiajs/vue3'
+import { createInertiaApp } from '@inertiajs/vue3'
 import { renderToString } from '@vue/server-renderer'
 import { createPinia } from 'pinia'
 import { createSSRApp, h } from 'vue'
-import collections from '~/icon-collections'
+import RouterLink from '~/components/RouterLink.vue'
+import collections from '~/icon_collections'
 import { getLayout } from './shared'
 
 export default function render(page: any) {
@@ -28,38 +29,13 @@ export default function render(page: any) {
       const pinia = createPinia()
       ssrApp.use(pinia)
 
+      // Register icon collections
       for (const collection of collections) {
         addCollection(collection)
       }
 
-      ssrApp.component('RouterLink', {
-        props: {
-          to: {
-            type: [String, Object],
-            required: true,
-          },
-          // Add other props that RouterLink might have
-          replace: Boolean,
-          append: Boolean,
-          download: [Boolean, String],
-          target: String,
-          rel: String,
-        },
-        setup(componentProps: any, { slots }: any) {
-          // Convert 'to' prop to 'href' for Inertia Link
-          const href = typeof componentProps.to === 'string' ? componentProps.to : componentProps.to.path || ''
-          return () =>
-            h(
-              Link,
-              {
-                href,
-                replace: componentProps.replace,
-                // Map other relevant props here
-              },
-              slots,
-            )
-        },
-      })
+      // Replace RouterLink with a custom component that uses Inertia's Link
+      ssrApp.component('RouterLink', RouterLink)
       return ssrApp
     },
   })

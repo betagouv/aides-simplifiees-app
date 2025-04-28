@@ -41,7 +41,7 @@ export default class AdminController {
     // Générer un slug à partir du titre
     const slug = string.slug(data.title)
 
-    const page = await Page.create({
+    await Page.create({
       ...data,
       slug,
     })
@@ -91,7 +91,7 @@ export default class AdminController {
     // Générer un slug à partir du titre
     const slug = string.slug(data.title)
 
-    const notion = await Notion.create({
+    await Notion.create({
       ...data,
       slug,
     })
@@ -166,7 +166,7 @@ export default class AdminController {
       data.textesLoi = JSON.stringify(data.textesLoi)
     }
 
-    const aide = await Aide.create({
+    await Aide.create({
       ...data,
       slug,
     })

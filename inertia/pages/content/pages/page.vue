@@ -20,7 +20,7 @@ setBreadcrumbs([
 
 <template>
   <Head
-    :title="`${page?.title} | Aides simplifiées`"
+    :title="`${page?.title}`"
     :description="
       page?.meta_description
         ? `${page.meta_description.slice(0, 155)}...`

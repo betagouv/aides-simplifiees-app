@@ -16,9 +16,7 @@ export default class SimulateurController {
 
   // Show a simulateur
   public async showSimulateur({ params, inertia, response }: HttpContext) {
-    const slug = params.slug
-
-    const simulateur = await Simulateur.findBy('slug', slug)
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')
@@ -38,8 +36,7 @@ export default class SimulateurController {
   }
 
   public async showRecapitulatif({ params, inertia, response }: HttpContext) {
-    const slug = params.slug
-    const simulateur = await Simulateur.findBy('slug', slug)
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')
     }
@@ -87,12 +84,11 @@ export default class SimulateurController {
     }
   }
 
-  public async resultats({ params, inertia, response }: HttpContext) {
-    const simulateurId = params.slug
+  public async showResultats({ params, inertia, response }: HttpContext) {
     const secureHash = params.hash // This will be undefined if not present in the URL
 
     // Fetch the simulateur by ID or slug
-    const simulateur = await Simulateur.findBy('slug', simulateurId)
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')
@@ -104,7 +100,7 @@ export default class SimulateurController {
     if (secureHash) {
       formSubmission = await FormSubmission.query()
         .where('secure_hash', secureHash)
-        .where('simulator_id', simulateurId)
+        .where('simulator_id', params.simulateur_slug)
         .first()
 
       if (!formSubmission) {
@@ -158,7 +154,7 @@ export default class SimulateurController {
             // Data from calculation response
             id: rawAide.id,
             montant: rawAide.montant,
-            link: `/aides/${rawAide.id}?hash=${secureHash}`,
+            link: `/simulateurs/${params.simulateur_slug}/resultats/${params.hash}/aides/${rawAide.id}#simulateur-title`,
             eligibilite: rawAide.eligibilite,
             // Data from aidesBySlug
             titre: aideDetails.titre || `Aide ${rawAide.id}`,
@@ -233,7 +229,7 @@ export default class SimulateurController {
     }
 
     // Render the results page with the form submission data if available
-    return inertia.render('simulateurs/resultats/resultats', {
+    return inertia.render('simulateurs/resultats', {
       simulateur,
       formSubmission,
       // Only include the hash in props if we have a submission

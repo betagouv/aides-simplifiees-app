@@ -5,10 +5,8 @@ import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionCon
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-// Define props based on ContentController.showNotion
 const props = defineProps<{
-  type: string
-  item: {
+  notion: {
     id: string
     slug: string
     title: string
@@ -23,28 +21,28 @@ const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Notions', to: '/notions' },
-  { text: props.item.title, to: `/notions/${props.item.slug}` },
+  { text: props.notion.title, to: `/notions/${props.notion.slug}` },
 ])
 </script>
 
 <template>
   <Head
-    :title="`Informations sur la ${type} '${item.title}' | Aides simplifiées`"
+    :title="`Informations sur la notion '${notion.title}'`"
     :description="
-      item.description
-        || `Découvrez toutes les informations sur la ${type} '${item.title}' pour vous accompagner dans vos démarches.`
+      notion.description
+        || `Découvrez toutes les informations sur la notion '${notion.title}' pour vous accompagner dans vos démarches.`
     "
   />
   <BrandBackgroundContainer>
     <BreadcrumbSectionContainer />
     <SectionContainer
-      v-if="item"
+      v-if="notion"
       type="page-header"
     >
       <article>
         <header class="fr-mb-4w">
           <h1>
-            {{ item.title }}
+            {{ notion.title }}
           </h1>
         </header>
         <div v-html="html" />

@@ -3,55 +3,78 @@ import { Head } from '@inertiajs/vue3'
 import DsfrLink from '~/components/DsfrLink.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-// Define props based on ContentController.showNotion
 const props = defineProps<{
+  hash: string
   simulateur: {
     id: string
     slug: string
     title: string
   }
-  notion: {
-    id: string
-    slug: string
+  aide: {
+    id: number
     title: string
+    slug: string
+    type: string
+    usage: string
+    instructeur: string
     description: string
     content: string
+    textesLoi?: Array<{ prefix: string, label: string, url: string }>
   }
   html: string
 }>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
-
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
-  { text: 'Notions', to: '/notions' },
-  { text: props.simulateur.title, to: `/simulateurs/${props.simulateur.slug}#simulateur-title` },
-  { text: props.notion.title, to: `/simulateurs/${props.simulateur.slug}/${props.notion.slug}#simulateur-title` },
+  { text: 'Aides', to: '/aides' },
+  { text: props.aide.title, to: `/aides/${props.aide.slug}` },
 ])
 </script>
 
 <template>
   <Head
-    :title="`Informations sur la notion '${notion.title}'`"
-    :description="notion.description
-      || `Découvrez toutes les informations sur la notion '${notion.title}' pour vous accompagner dans vos démarches.`
+    :title="`Aide '${aide.title}'`"
+    :description="
+      aide.description
+        || `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`
     "
   />
-  <article v-if="simulateur && notion">
+  <article>
     <header class="fr-mb-6w">
       <h1>
-        {{ notion.title }}
+        {{ aide.title }}
       </h1>
       <DsfrLink
         icon-before
-        preserve-scroll
-        label="Revenir à ma simulation"
-        :to="`/simulateurs/${simulateur.slug}`"
+        label="Revenir à mes résultats"
+        :to="`/simulateurs/${simulateur.slug}/resultats/${hash}#simulateur-title`"
         :icon="{ name: 'ri:arrow-left-line', ssr: true }"
       />
     </header>
     <div class="fr-card fr-p-3w">
       <div v-html="html" />
+    </div>
+    <!-- Display textes de loi if available -->
+    <div
+      v-if="aide.textesLoi && aide.textesLoi.length > 0"
+      class="fr-mt-4w"
+    >
+      <h2>Textes de loi associés</h2>
+      <ul>
+        <li
+          v-for="(texte, index) in aide.textesLoi"
+          :key="index"
+        >
+          <a
+            :href="texte.url"
+            target="_blank"
+            rel="noopener"
+          >
+            {{ texte.prefix }} {{ texte.label }}
+          </a>
+        </li>
+      </ul>
     </div>
   </article>
 </template>
@@ -83,13 +106,5 @@ setBreadcrumbs([
 :deep(td) {
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-default-grey);
-}
-
-/* Adjustments for dark mode, if your app supports it */
-.dark-mode :deep(thead),
-.dark-mode :deep(th),
-.dark-mode :deep(td),
-.dark-mode :deep(tbody tr) {
-  border-color: var(--border-default-grey-dark, #666);
 }
 </style>

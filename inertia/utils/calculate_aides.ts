@@ -132,7 +132,6 @@ export function dispatchSituationProfessionnelle(
     return formatSurveyAnswerToRequest(openfiscaVariableName, period, 'chomeur')
   }
   else {
-    // eslint-disable-next-line no-console
     console.debug(`Valeur inattendue ${answerKey}: ${answerValue}`)
     throw new UnexpectedValueError(answerKey)
   }
@@ -155,12 +154,11 @@ export function dispatchSituationLogement(
   if (answerValue === 'locataire') {
     // TypesStatutOccupationLogement: 'locataire_foyer', 'locataire_hlm', 'locataire_meuble', 'locataire_vide'
     // exemple d'input 'type-logement': "logement-foyer"
-    // eslint-disable-next-line no-console
+
     console.debug(
       `Transcription simplifiee de '${answerKey}': '${answerValue}' en '${openfiscaVariableName}': 'locataire_vide'.`,
     )
 
-    // eslint-disable-next-line no-console
     console.debug(`Transcription pouvant être mise à jour en cas de valeur 'type-logement'`)
     return formatSurveyAnswerToRequest(openfiscaVariableName, period, 'locataire_vide')
   }
@@ -175,7 +173,6 @@ export function dispatchSituationLogement(
     return formatSurveyAnswerToRequest(openfiscaVariableName, period, 'sans_domicile')
   }
   else {
-    // eslint-disable-next-line no-console
     console.debug(`Valeur inattendue ${answerKey}: ${answerValue}`)
     throw new UnexpectedValueError(answerKey)
   }
@@ -203,7 +200,6 @@ export function dispatchTypeLogement(
     return formatSurveyAnswerToRequest(openfiscaVariableName, period, 'locataire_foyer')
   }
   else {
-    // eslint-disable-next-line no-console
     console.debug(`Valeur inattendue ${answerKey}: ${answerValue}`)
     throw new UnexpectedValueError(answerKey)
   }
@@ -232,14 +228,12 @@ export function dispatchEtudiantMobilite(
     return formatSurveyAnswerToRequest('sortie_region_academique', period, false)
   }
   else {
-    // eslint-disable-next-line no-console
     console.debug(`Valeur inattendue ${answerKey}: ${answerValue}`)
     throw new UnexpectedValueError(answerKey)
   }
 }
 
 function initRequest(): OpenFiscaCalculationRequest {
-  // eslint-disable-next-line no-console
   console.debug('initRequest...')
   const request: OpenFiscaCalculationRequest = {
     individus: {
@@ -289,7 +283,7 @@ function formatSurveyAnswerToRequest(
  * one step of the openfisca web API request building:
  * for a survey answer found in the mapping, add the answer data to the given request
  * unless it's a survey answer that should not be sent to the calculation (excluded answers)
- * @thorows UnknownEntityError if the given entity is not referenced for the current simulation
+ * @throws UnknownEntityError if the given entity is not referenced for the current simulation
  * @throws UndefinedValueError if some issue occured on the survey input
  * @throws UnexpectedValueError if a mapping is defined on an unexpected form input type
  */
@@ -615,11 +609,10 @@ export function buildRequest(
   answers: SurveyAnswers,
   questions: string[],
 ): OpenFiscaCalculationRequest {
-  // eslint-disable-next-line no-console
   console.debug('buildRequest...')
   let request: OpenFiscaCalculationRequest = initRequest()
   // sets: request[some entity][the entity id]
-  // eslint-disable-next-line no-console
+
   console.debug(request)
 
   request = addAnswersToRequest(request, answers) // user answers
@@ -635,9 +628,8 @@ export async function fetchOpenFiscaFranceCalculation(
   // Standardiser la date de naissance pour optimiser le cache
   standardizeBirthDateForCache(request)
 
-  // eslint-disable-next-line no-console
   console.debug('Requête à transmettre au serveur :')
-  // eslint-disable-next-line no-console
+
   console.debug(request)
 
   try {

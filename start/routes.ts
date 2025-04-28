@@ -10,62 +10,82 @@
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
-const HomeController = () => import('#controllers/home_controller')
+/**
+ * Import Controllers
+ */
 const ApiController = () => import('#controllers/api_controller')
 const AdminController = () => import('#controllers/admin_controller')
-const ContentController = () => import('#controllers/content_controller')
 const AuthController = () => import('#controllers/auth_controller')
+const DynamicContentController = () => import('#controllers/dynamic_content_controller')
 const SimulateurController = () => import('#controllers/simulateur_controller')
-// Auth routes
+const StaticPagesController = () => import('#controllers/static_pages_controller')
+
+/**
+ * Authentification routes
+ */
 router.get('/login', [AuthController, 'showLogin'])
 router.post('/login', [AuthController, 'login'])
 router.post('/logout', [AuthController, 'logout'])
 
-router.get('/', [HomeController, 'home'])
-router.get('/partenaires', [HomeController, 'partenaires'])
-router.get('/integrer-nos-simulateurs', [HomeController, 'integrerNosSimulateurs'])
-router.get('/contact', [HomeController, 'contact'])
-router.get('/statistiques', [HomeController, 'statistiques'])
+/**
+ * Static Pages
+ */
+router.get('/', [StaticPagesController, 'home'])
+router.get('/partenaires', [StaticPagesController, 'partenaires'])
+router.get('/integrer-nos-simulateurs', [StaticPagesController, 'integrerNosSimulateurs'])
+router.get('/contact', [StaticPagesController, 'contact'])
+router.get('/statistiques', [StaticPagesController, 'statistiques'])
 
+/**
+ * API Routes
+ */
 router.get('/api/statistics', [ApiController, 'statistics'])
 router.get('/api/autocomplete/communes', [ApiController, 'autocompleteCommunes'])
 router.post('/api/calculate', [ApiController, 'openFiscaCalculate'])
 router.post('/api/store-form-data', [ApiController, 'storeFormData'])
 
+/**
+ * Assets
+ */
 const IFRAME_SCRIPT_VERSION = '1.0.1'
 router.get('/iframe-integration.js', ({ response }) => {
   response.redirect(`/assets/iframe-integration@${IFRAME_SCRIPT_VERSION}.js`)
 })
 
-// Routes publiques
-router.get('/content/:slug', [ContentController, 'showPage'])
-router.get('/notions', [ContentController, 'listNotions'])
-router.get('/notions/:slug', [ContentController, 'showNotion'])
-router.get('/aides', [ContentController, 'listAides'])
-router.get('/aides/:slug', [ContentController, 'showAide'])
+/**
+ * Dynamic Content
+ */
+router.get('/content/:page_slug', [DynamicContentController, 'showPage'])
+router.get('/notions', [DynamicContentController, 'listNotions'])
+router.get('/notions/:notion_slug', [DynamicContentController, 'showNotion'])
+router.get('/aides', [DynamicContentController, 'listAides'])
+router.get('/aides/:aide_slug', [DynamicContentController, 'showAide'])
 
-// Simulateurs
+/**
+ * Simulateurs
+ */
 router.get('/simulateurs', [SimulateurController, 'index'])
-
-// Simulateur:slug
+// Specific simulateur routes
 router
   .group(() => {
     router
-      .get('/simulateurs/:slug', [SimulateurController, 'showSimulateur'])
+      .get('/simulateurs/:simulateur_slug', [SimulateurController, 'showSimulateur'])
       .middleware([
         middleware.resumeQuery(),
       ])
-      // Recapitulatif
-    router.get('/simulateurs/:slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
-    router.get('/simulateurs/:slug/resultats/:hash', [SimulateurController, 'resultats'])
-    router.get('/simulateurs/:simulateur_slug/notions/:notion_slug', [ContentController, 'showSimulateurNotion'])
+    router.get('/simulateurs/:simulateur_slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
+    router.get('/simulateurs/:simulateur_slug/resultats/:hash', [SimulateurController, 'showResultats'])
+    router.get('/simulateurs/:simulateur_slug/resultats/:hash/aides/:aide_slug', [DynamicContentController, 'showResultatsAide'])
+    router.get('/simulateurs/:simulateur_slug/notions/:notion_slug', [DynamicContentController, 'showSimulateurNotion'])
   })
   .middleware([
     middleware.preserveDebugParam(),
     middleware.preserveIframeParam(),
   ])
 
-// Routes d'administration protégées
+/**
+ * Admin Routes
+ */
 router
   .group(() => {
     // Dashboard

@@ -11,6 +11,7 @@
 |
 */
 
+import process from 'node:process'
 import { Ignitor, prettyPrintError } from '@adonisjs/core'
 import 'reflect-metadata'
 

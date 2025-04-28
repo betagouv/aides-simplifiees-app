@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { DsfrAccordion, DsfrAccordionsGroup, DsfrCallout, DsfrSelect, DsfrTable } from '@gouvminint/vue-dsfr'
-import { Head } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
 import { computed, onMounted, ref, watch } from 'vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
@@ -19,13 +19,12 @@ const simulateurs = ref([
 ])
 const selectedSimulateur = ref('demenagement-logement')
 
+const page = usePage()
+const origin = page.props.publicAppUrl
+
 // Inclusion du script
 const scriptPath = `/iframe-integration.js`
 const fullScript = computed(() => {
-  if (import.meta.env.SSR) {
-    return ''
-  }
-  const origin = window.location.origin
   let script = `<script src="${origin}${scriptPath}"`
 
   script += ` data-simulateur="${selectedSimulateur.value}"`
@@ -42,7 +41,6 @@ function setIframeContainer(): void {
   }
   // Nettoyer le conteneur
   iframeContainer.value.innerHTML = ''
-  const origin = window.location.origin
   // Créer et ajouter le script d'intégration
   const script = document.createElement('script')
   script.src = `${origin}${scriptPath}`
@@ -72,7 +70,7 @@ window.addEventListener('aides-simplifiees-message', function(event) {
 
 <template>
   <Head
-    title="Intégrer nos simulateurs d\'aides sur votre plateforme | Aides simplifiées"
+    title="Intégrer nos simulateurs d\'aides sur votre plateforme"
     description="Offrez à vos usagers un accès simple aux aides pertinentes en intégrant nos simulateurs via API ou iFrame. Solution clé en main, rapide à mettre en place."
   />
   <BrandBackgroundContainer

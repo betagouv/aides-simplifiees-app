@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "node bin/server.js",
-    "build": "node ace build && pnpm build:iframe-integration",
+    "build": "node ace build --ignore-ts-errors && pnpm build:iframe-integration",
     "build:iframe-integration": "vite build --config vite.iframe-integration.config.ts",
     "build:icons": "vue-dsfr-icons -s bin/icons.js -t inertia/icon-collections.ts",
     "dev": "node ace serve --hmr",

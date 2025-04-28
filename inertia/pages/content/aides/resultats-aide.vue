@@ -52,8 +52,9 @@ setBreadcrumbs([
         :icon="{ name: 'ri:arrow-left-line', ssr: true }"
       />
     </header>
-    <div v-html="html" />
-
+    <div class="fr-card fr-p-3w">
+      <div v-html="html" />
+    </div>
     <!-- Display textes de loi if available -->
     <div
       v-if="aide.textesLoi && aide.textesLoi.length > 0"

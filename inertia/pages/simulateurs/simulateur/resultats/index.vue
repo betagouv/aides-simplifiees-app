@@ -20,7 +20,7 @@ setBreadcrumbs([
 ])
 
 useSeoMeta({
-  title: `Résultats de votre simulation "${simulateurTitle}" | Aides simplifiées`,
+  title: `Résultats de votre simulation "${simulateurTitle}"`,
   description: `Découvrez les aides auxquelles vous êtes eligibles avec les résultats de votre simulation "${simulateurTitle}".`,
 })
 

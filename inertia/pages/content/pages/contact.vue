@@ -14,7 +14,7 @@ setBreadcrumbs([
 
 <template>
   <Head
-    title="Nous contacter pour toute question sur vos droits | Aides simplifiées"
+    title="Nous contacter pour toute question sur vos droits"
     description="Besoin d\'aide pour utiliser nos simulateurs ou comprendre vos résultats ? Notre équipe est à votre disposition pour vous accompagner dans vos démarches."
   />
   <BrandBackgroundContainer

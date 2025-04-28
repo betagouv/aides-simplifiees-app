@@ -125,7 +125,7 @@ onMounted(() => {
 
 <template>
   <Head
-    title="Statistiques des simulateurs | Aides simplifiées"
+    title="Statistiques des simulateurs"
     description="Consultez les statistiques d'utilisation des simulateurs d'aides"
   />
   <BrandBackgroundContainer

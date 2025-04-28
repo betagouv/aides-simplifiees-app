@@ -28,7 +28,7 @@ setBreadcrumbs([
 
 <template>
   <Head
-    title="Toutes les aides disponibles | Aides simplifiées"
+    title="Toutes les aides disponibles"
     description="Découvrez toutes les aides disponibles pour vous accompagner dans vos démarches."
   />
   <BrandBackgroundContainer>

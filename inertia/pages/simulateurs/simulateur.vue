@@ -43,7 +43,7 @@ onMounted(() => {
 
 <template>
   <Head
-    :title="`Simulateur '${simulateur.title}' | Aides simplifiées`"
+    :title="`Simulateur '${simulateur.title}'`"
     :description="
       simulateur.description
         || `En quelques clics sur le simulateur '${simulateur.title}', découvrez si vous pouvez bénéficier d'aides financières.`

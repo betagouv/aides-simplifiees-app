@@ -1,6 +1,7 @@
-import type { Page, PageProps } from "@inertiajs/core";
+import type { Page, PageProps } from '@inertiajs/core'
 
 interface SharedProps extends PageProps {
+  appName?: string
   matomoUrl?: string
   matomoSiteId?: string
   auth?: {
@@ -12,8 +13,8 @@ interface SharedProps extends PageProps {
   }
 }
 
-export default SharedProps;
+export default SharedProps
 
-declare module "@inertiajs/vue3" {
-  export function usePage(): Page<SharedProps>;
+declare module '@inertiajs/vue3' {
+  export function usePage(): Page<SharedProps>
 }

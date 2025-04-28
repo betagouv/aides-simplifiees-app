@@ -8,13 +8,25 @@ import env from '#start/env'
 export default class ShareEnvMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     // Only share specific environment variables that are needed on the client
-    const matomoUrl = env.get('MATOMO_URL')
-    const matomoSiteId = env.get('MATOMO_SITE_ID')
-    ctx.inertia.share({
-      ... matomoUrl ? { matomoUrl } : {},
-      ... matomoSiteId ? { matomoSiteId } : {},
-    })
+    ctx.inertia.share(filterObject({
+      matomoUrl: env.get('MATOMO_URL'),
+      matomoSiteId: env.get('MATOMO_SITE_ID'),
+      appName: env.get('APP_NAME'),
+    }))
 
     await next()
   }
+}
+
+/**
+ * Filters out undefined and null values from an object
+ */
+function filterObject<T extends Record<string, any>>(obj: T): Partial<T> {
+  const filtered: Partial<T> = {}
+  for (const key in obj) {
+    if (obj[key] !== undefined && obj[key] !== null) {
+      filtered[key] = obj[key]
+    }
+  }
+  return filtered
 }

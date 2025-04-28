@@ -13,7 +13,7 @@ defineProps<{
 </script>
 
 <template>
-  <Head title="Administration | Aides simplifiées" />
+  <Head title="Administration" />
 
   <BrandBackgroundContainer
     textured

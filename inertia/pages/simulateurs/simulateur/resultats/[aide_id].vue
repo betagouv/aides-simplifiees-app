@@ -25,7 +25,7 @@ setBreadcrumbs([
 ])
 
 useSeoMeta({
-  title: `Aide "${aideTitle}" | Aides simplifiées`,
+  title: `Aide "${aideTitle}"`,
   description:
     aide.description
     || `Découvrez toutes les informations sur l'aide "${aideTitle}" pour vous accompagner dans vos démarches.`,

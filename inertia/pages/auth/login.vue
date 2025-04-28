@@ -43,7 +43,7 @@ function submitForm() {
 
 <template>
   <Head
-    title="Connexion | Aides simplifiées"
+    title="Connexion"
     description="Connectez-vous à votre compte Aides simplifiées pour accéder à votre espace administrateur."
   />
   <BrandBackgroundContainer

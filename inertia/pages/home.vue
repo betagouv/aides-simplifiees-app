@@ -26,7 +26,7 @@ const simulationTiles: DsfrTileProps[] = [
 
 <template>
   <Head
-    title="La bonne aide, au bon moment, au bon endroit : page d\'accueil | Aides simplifiées"
+    title="La bonne aide, au bon moment, au bon endroit : page d'accueil"
     description="Découvrez les aides adaptées à votre situation personnelle. Simulateurs pour le logement, le déménagement et plus encore. Un service public simple et rapide pour connaître vos droits."
   />
   <BrandBackgroundContainer

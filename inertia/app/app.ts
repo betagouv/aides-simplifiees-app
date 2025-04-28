@@ -6,7 +6,7 @@ import type SharedProps from '~/types/inertia'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import VueDsfr from '@gouvminint/vue-dsfr'
 import { addCollection } from '@iconify/vue'
-import { createInertiaApp } from '@inertiajs/vue3'
+import { createInertiaApp, usePage } from '@inertiajs/vue3'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createSSRApp, h } from 'vue'
@@ -21,12 +21,15 @@ import '@gouvfr/dsfr/dist/scheme/scheme.min.css'
 import '@gouvminint/vue-dsfr/styles'
 import '~/styles/main.scss'
 
-const appName = import.meta.env.APP_NAME
-
 createInertiaApp({
   progress: { color: '#5468FF' },
 
-  title: title => [title, appName].filter(Boolean).join(' | '),
+  title: (title) => {
+    const appName = usePage().props.appName
+    return [title, appName]
+      .filter(Boolean)
+      .join(' | ')
+  },
 
   resolve: async (name) => {
     const page = await resolvePageComponent(

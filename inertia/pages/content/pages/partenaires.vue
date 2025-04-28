@@ -14,7 +14,7 @@ setBreadcrumbs([
 
 <template>
   <Head
-    title="Devenir partenaire | Aides simplifiées"
+    title="Devenir partenaire"
     description="Facilitez l'accès aux aides sur votre territoire. Optimisez le parcours usager du simulateur au dépôt de dossier et améliorez l'efficacité de vos dispositifs d'aide."
   />
   <BrandBackgroundContainer

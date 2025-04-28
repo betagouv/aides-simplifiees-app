@@ -30,7 +30,7 @@ setBreadcrumbs([
 
 <template>
   <Head
-    :title="`Aide '${aide.title}' | Aides simplifiées`"
+    :title="`Aide '${aide.title}'`"
     :description="
       aide.description
         || `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`

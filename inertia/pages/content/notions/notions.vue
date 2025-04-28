@@ -24,7 +24,7 @@ setBreadcrumbs([
 
 <template>
   <Head
-    title="Toutes les informations sur les notions | Aides simplifiées"
+    title="Toutes les informations sur les notions"
     description="Découvrez toutes les informations sur les notions pour vous accompagner dans vos démarches."
   />
   <BrandBackgroundContainer>

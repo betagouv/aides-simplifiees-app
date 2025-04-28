@@ -72,7 +72,7 @@ window.addEventListener('aides-simplifiees-message', function(event) {
 
 <template>
   <Head
-    title="Intégrer nos simulateurs d\'aides sur votre plateforme | Aides simplifiées"
+    title="Intégrer nos simulateurs d\'aides sur votre plateforme"
     description="Offrez à vos usagers un accès simple aux aides pertinentes en intégrant nos simulateurs via API ou iFrame. Solution clé en main, rapide à mettre en place."
   />
   <BrandBackgroundContainer

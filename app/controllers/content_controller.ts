@@ -80,7 +80,7 @@ export default class ContentController {
 
     const html = await marked(aide.content)
 
-    return inertia.render('aides/aide', {
+    return inertia.render('content/aides/aide', {
       aide,
       html,
     })
@@ -97,6 +97,6 @@ export default class ContentController {
   public async listAides({ inertia }: HttpContext) {
     const aides = await Aide.all()
 
-    return inertia.render('aides/aides', { aides })
+    return inertia.render('content/aides/aides', { aides })
   }
 }

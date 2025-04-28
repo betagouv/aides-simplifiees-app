@@ -13,21 +13,10 @@ import { computed } from 'vue'
 import SchemeModal from '~/components/SchemeModal.vue'
 import { useSchemeStore } from '~/stores/scheme'
 
-// Add auth related prop
-defineProps<{
-  auth?: {
-    user: {
-      id: number
-      email: string
-      fullName?: string
-    } | null
-  }
-}>()
-
 // Get the page props to access auth user
 const page = usePage()
 const isAuthenticated = computed(() => {
-  return !!page.props.auth && Boolean(page.props.auth.user)
+  return Boolean(page.props.auth?.user)
 })
 
 const schemeStore = useSchemeStore()

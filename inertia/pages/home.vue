@@ -45,7 +45,7 @@ const simulationTiles: DsfrTileProps[] = [
           </p>
         </div>
         <div
-          class="brand-home-banner__column fr-col-12 fr-col-lg-6"
+          class="brand-home-banner__column fr-col-12 fr-col-lg-6 fr-col-offset-xl-1 fr-col-xl-5"
         >
           <DsfrTiles
             :tiles="simulationTiles"

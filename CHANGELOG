@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.7.2
+* Script de build pour le resizer de l'iframe
+* Détail :
+  * Intégration d'un script de build pour le resizer de l'iframe dans `public/iframe-integration.js`
+
 ## 0.7.1
 * Debug de Matomo
 * Détail :

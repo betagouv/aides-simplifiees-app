@@ -56,6 +56,9 @@ importers:
       '@inertiajs/vue3':
         specifier: ^2.0.6
         version: 2.0.8(vue@3.5.13(typescript@5.7.3))
+      '@swc/core-linux-x64-gnu':
+        specifier: ^1.11.22
+        version: 1.11.22
       '@vinejs/vine':
         specifier: ^3.0.0
         version: 3.0.1
@@ -1197,6 +1200,12 @@ packages:
 
   '@swc/core-linux-x64-gnu@1.10.16':
     resolution: {integrity: sha512-n2rV0XwkjoHn4MDJmpYp5RBrnyi94/6GsJVpbn6f+/eqSrZn3mh3dT7pdZc9zCN1Qp9eDHo+uI6e/wgvbL22uA==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@swc/core-linux-x64-gnu@1.11.22':
+    resolution: {integrity: sha512-htmAVL+U01gk9GyziVUP0UWYaUQBgrsiP7Ytf6uDffrySyn/FclUS3MDPocNydqYsOpj3OpNKPxkaHK+F+X5fg==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
@@ -5453,6 +5462,8 @@ snapshots:
 
   '@swc/core-linux-x64-gnu@1.10.16':
     optional: true
+
+  '@swc/core-linux-x64-gnu@1.11.22': {}
 
   '@swc/core-linux-x64-musl@1.10.16':
     optional: true

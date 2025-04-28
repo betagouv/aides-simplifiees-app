@@ -50,6 +50,7 @@
     "@iframe-resizer/child": "^5.4.5",
     "@iframe-resizer/parent": "^5.4.5",
     "@inertiajs/vue3": "^2.0.6",
+    "@swc/core-linux-x64-gnu": "^1.11.22",
     "@vinejs/vine": "^3.0.0",
     "@vue/server-renderer": "^3.5.13",
     "@vueuse/core": "^13.1.0",

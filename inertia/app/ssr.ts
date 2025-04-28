@@ -29,10 +29,12 @@ export default function render(page: any) {
       const pinia = createPinia()
       ssrApp.use(pinia)
 
+      // Register icon collections
       for (const collection of collections) {
         addCollection(collection)
       }
 
+      // Replace RouterLink with a custom component that uses Inertia's Link
       ssrApp.component('RouterLink', RouterLink)
       return ssrApp
     },

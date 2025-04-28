@@ -51,6 +51,7 @@ createInertiaApp({
     }
     const pinia = createPinia()
     pinia.use(piniaPluginPersistedstate)
+
     // Initialize DSFR
     app.use(VueDsfr)
     app.use(pinia)
@@ -71,6 +72,7 @@ createInertiaApp({
       })
     }
 
+    // Register icon collections
     for (const collection of collections) {
       addCollection(collection)
     }

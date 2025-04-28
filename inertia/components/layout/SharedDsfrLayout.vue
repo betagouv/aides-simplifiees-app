@@ -57,13 +57,12 @@ const navItems = [
 ]
 
 function handleLogout() {
-  router.post( '/logout', {}, {
-      onSuccess: () => {
-        // Forcer le rechargement complet de la page après la déconnexion
-        window.location.href = '/'
-      },
+  router.post('/logout', {}, {
+    onSuccess: () => {
+      // Forcer le rechargement complet de la page après la déconnexion
+      window.location.href = '/'
     },
-  )
+  })
 }
 
 const quickLinks = computed(() => {

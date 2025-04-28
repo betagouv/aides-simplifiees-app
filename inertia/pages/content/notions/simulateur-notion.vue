@@ -5,13 +5,12 @@ import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 // Define props based on ContentController.showNotion
 const props = defineProps<{
-  type: string
   simulateur: {
     id: string
     slug: string
     title: string
   }
-  item: {
+  notion: {
     id: string
     slug: string
     title: string
@@ -27,21 +26,21 @@ setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Notions', to: '/notions' },
   { text: props.simulateur.title, to: `/simulateurs/${props.simulateur.slug}#simulateur-title` },
-  { text: props.item.title, to: `/simulateurs/${props.simulateur.slug}/${props.item.slug}#simulateur-title` },
+  { text: props.notion.title, to: `/simulateurs/${props.simulateur.slug}/${props.notion.slug}#simulateur-title` },
 ])
 </script>
 
 <template>
   <Head
-    :title="`Informations sur la ${type} '${item.title}'`"
-    :description="item.description
-      || `Découvrez toutes les informations sur la ${type} '${item.title}' pour vous accompagner dans vos démarches.`
+    :title="`Informations sur la notion '${notion.title}'`"
+    :description="notion.description
+      || `Découvrez toutes les informations sur la notion '${notion.title}' pour vous accompagner dans vos démarches.`
     "
   />
-  <article v-if="simulateur && item">
+  <article v-if="simulateur && notion">
     <header class="fr-mb-6w">
       <h1>
-        {{ item.title }}
+        {{ notion.title }}
       </h1>
       <DsfrLink
         icon-before

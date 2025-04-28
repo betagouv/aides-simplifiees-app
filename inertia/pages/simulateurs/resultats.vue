@@ -141,9 +141,6 @@ const activeAccordion = ref()
             :style="{ color: 'var(--text-mention-grey)' }"
           >
             Simulation terminée le {{ simulationDateTime.date }} à {{ simulationDateTime.time }}
-            <span v-if="hasAides && results?.aides">
-              ({{ results.aides.length }} aide(s) éligible(s))
-            </span>
           </p>
         </hgroup>
         <DsfrLink

@@ -34,8 +34,7 @@ export default class DynamicContentController {
     const html = await marked(notion.content)
 
     return inertia.render('content/notions/notion', {
-      type: 'notion',
-      item: notion,
+      notion,
       html,
     })
   }
@@ -55,9 +54,7 @@ export default class DynamicContentController {
 
     const html = await marked(notion.content)
     return inertia.render('content/notions/simulateur-notion', {
-      layout: 'iframe',
-      type: 'notion',
-      item: notion,
+      notion,
       simulateur,
       html,
     })
@@ -81,8 +78,8 @@ export default class DynamicContentController {
 
   // Affichage d'une aide contextualisée à un résultat de simulation
   public async showResultatsAide({ params, inertia, response }: HttpContext) {
-    const aide = await Aide.findBy('slug', params.aide_slug)
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
+    const aide = await Aide.findBy('slug', params.aide_slug)
 
     if (!aide) {
       return response.status(404).send('Aide non trouvée')
@@ -93,10 +90,9 @@ export default class DynamicContentController {
     }
 
     const html = await marked(aide.content)
-    return inertia.render('content/aides/simulateur-aide', {
-      layout: 'iframe',
-      type: 'aide',
-      item: aide,
+    return inertia.render('content/aides/resultats-aide', {
+      hash: params.hash,
+      aide,
       simulateur,
       html,
     })

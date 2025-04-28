@@ -84,7 +84,7 @@ export default class SimulateurController {
     }
   }
 
-  public async resultats({ params, inertia, response }: HttpContext) {
+  public async showResultats({ params, inertia, response }: HttpContext) {
     const secureHash = params.hash // This will be undefined if not present in the URL
 
     // Fetch the simulateur by ID or slug
@@ -100,7 +100,7 @@ export default class SimulateurController {
     if (secureHash) {
       formSubmission = await FormSubmission.query()
         .where('secure_hash', secureHash)
-        .where('simulator_id', simulateurId)
+        .where('simulator_id', params.simulateur_slug)
         .first()
 
       if (!formSubmission) {
@@ -154,7 +154,7 @@ export default class SimulateurController {
             // Data from calculation response
             id: rawAide.id,
             montant: rawAide.montant,
-            link: `/aides/${rawAide.id}?hash=${secureHash}`,
+            link: `/simulateurs/${params.simulateur_slug}/resultats/${params.hash}/aides/${rawAide.id}#simulateur-title`,
             eligibilite: rawAide.eligibilite,
             // Data from aidesBySlug
             titre: aideDetails.titre || `Aide ${rawAide.id}`,
@@ -229,7 +229,7 @@ export default class SimulateurController {
     }
 
     // Render the results page with the form submission data if available
-    return inertia.render('simulateurs/resultats/resultats', {
+    return inertia.render('simulateurs/resultats', {
       simulateur,
       formSubmission,
       // Only include the hash in props if we have a submission

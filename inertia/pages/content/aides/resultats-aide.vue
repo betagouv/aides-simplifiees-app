@@ -1,11 +1,15 @@
 <script lang="ts" setup>
 import { Head } from '@inertiajs/vue3'
-import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
-import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
-import SectionContainer from '~/components/layout/SectionContainer.vue'
+import DsfrLink from '~/components/DsfrLink.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const props = defineProps<{
+  hash: string
+  simulateur: {
+    id: string
+    slug: string
+    title: string
+  }
   aide: {
     id: number
     title: string
@@ -36,44 +40,42 @@ setBreadcrumbs([
         || `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`
     "
   />
-  <BrandBackgroundContainer>
-    <BreadcrumbSectionContainer />
-    <SectionContainer
-      v-if="aide"
-      type="page-header"
-    >
-      <article>
-        <header class="fr-mb-4w">
-          <h1>
-            {{ aide.title }}
-          </h1>
-        </header>
-        <div v-html="html" />
+  <article>
+    <header class="fr-mb-6w">
+      <h1>
+        {{ aide.title }}
+      </h1>
+      <DsfrLink
+        icon-before
+        label="Revenir à mes résultats"
+        :to="`/simulateurs/${simulateur.slug}/resultats/${hash}#simulateur-title`"
+        :icon="{ name: 'ri:arrow-left-line', ssr: true }"
+      />
+    </header>
+    <div v-html="html" />
 
-        <!-- Display textes de loi if available -->
-        <div
-          v-if="aide.textesLoi && aide.textesLoi.length > 0"
-          class="fr-mt-4w"
+    <!-- Display textes de loi if available -->
+    <div
+      v-if="aide.textesLoi && aide.textesLoi.length > 0"
+      class="fr-mt-4w"
+    >
+      <h2>Textes de loi associés</h2>
+      <ul>
+        <li
+          v-for="(texte, index) in aide.textesLoi"
+          :key="index"
         >
-          <h2>Textes de loi associés</h2>
-          <ul>
-            <li
-              v-for="(texte, index) in aide.textesLoi"
-              :key="index"
-            >
-              <a
-                :href="texte.url"
-                target="_blank"
-                rel="noopener"
-              >
-                {{ texte.prefix }} {{ texte.label }}
-              </a>
-            </li>
-          </ul>
-        </div>
-      </article>
-    </SectionContainer>
-  </BrandBackgroundContainer>
+          <a
+            :href="texte.url"
+            target="_blank"
+            rel="noopener"
+          >
+            {{ texte.prefix }} {{ texte.label }}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </article>
 </template>
 
 <style scoped lang="scss">

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { DsfrCardProps } from '@gouvminint/vue-dsfr'
+import { DsfrPagination } from '@gouvminint/vue-dsfr'
 import { computed, ref } from 'vue'
 import AideCard from '~/components/aides/AideCard.vue'
 

@@ -1,6 +1,8 @@
 import type { Page, PageProps } from "@inertiajs/core";
 
 interface SharedProps extends PageProps {
+  matomoUrl?: string
+  matomoSiteId?: string
   auth?: {
     user: {
       id: number

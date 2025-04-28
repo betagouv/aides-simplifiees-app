@@ -19,7 +19,7 @@ import '@gouvfr/dsfr/dist/utility/utility.main.min.css'
 import '@gouvfr/dsfr/dist/scheme/scheme.min.css'
 import '@gouvminint/vue-dsfr/styles'
 import '~/styles/main.scss'
-
+import SharedProps from '~/types/inertia'
 const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
 
 createInertiaApp({
@@ -53,11 +53,14 @@ createInertiaApp({
     app.use(plugin)
 
     // Get config values from the page props
-    const matomoHost = props.initialPage.props.matomoUrl
-    const matomoSiteId = Number.parseInt(props.initialPage.props.matomoSiteId || '0', 10)
+    const initialPageProps = props.initialPage.props as SharedProps
+    const matomoHost = initialPageProps.matomoUrl ?? null
+    const matomoSiteId = initialPageProps.matomoSiteId
+      ? Number.parseInt(initialPageProps.matomoSiteId, 10)
+      : null
 
     // Only initialize Matomo if we have valid config
-    if (matomoHost && matomoSiteId) {
+    if (matomoHost !== null && matomoSiteId !== null) {
       app.use(VueMatomo, {
         host: matomoHost,
         siteId: matomoSiteId,

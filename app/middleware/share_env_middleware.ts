@@ -8,9 +8,11 @@ import env from '#start/env'
 export default class ShareEnvMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     // Only share specific environment variables that are needed on the client
+    const matomoUrl = env.get('MATOMO_URL')
+    const matomoSiteId = env.get('MATOMO_SITE_ID')
     ctx.inertia.share({
-      matomoUrl: env.get('MATOMO_URL'),
-      matomoSiteId: env.get('MATOMO_SITE_ID'),
+      ... matomoUrl ? { matomoUrl } : {},
+      ... matomoSiteId ? { matomoSiteId } : {},
     })
 
     await next()

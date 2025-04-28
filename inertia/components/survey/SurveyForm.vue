@@ -212,7 +212,7 @@ function handleComplete() {
         icon-right
         class="fr-mb-2w"
         @click="() => {
-          router.visit(`/simulateurs/${simulateurId}/notions/${currentQuestion?.notion.id}#simulateur-title`)
+          router.visit(`/simulateurs/${simulateurId}/notions/${currentQuestion?.notion.id}`, { preserveState: true, preserveScroll: true })
         }"
       />
       <component
@@ -231,7 +231,7 @@ function handleComplete() {
           secondary: true,
           icon: { name: 'ri:menu-line', ssr: true },
           onClick: () => {
-            router.visit(`/simulateurs/${simulateurId}/recapitulatif#simulateur-title`)
+            router.visit(`/simulateurs/${simulateurId}/recapitulatif#simulateur-title`, { preserveState: true, preserveScroll: true })
           },
         },
         {

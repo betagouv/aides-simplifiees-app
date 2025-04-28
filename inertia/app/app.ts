@@ -5,14 +5,14 @@ import type { DefineComponent } from 'vue'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import VueDsfr from '@gouvminint/vue-dsfr'
 import { addCollection } from '@iconify/vue'
-import { createInertiaApp, Link } from '@inertiajs/vue3'
+import { createInertiaApp } from '@inertiajs/vue3'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createSSRApp, h } from 'vue'
 import VueMatomo from 'vue-matomo'
+import RouterLink from '~/components/RouterLink.vue'
 import collections from '~/icon-collections'
 import { getLayout } from './shared'
-
 import '@gouvfr/dsfr/dist/core/core.main.min.css'
 import '@gouvfr/dsfr/dist/component/component.main.min.css'
 import '@gouvfr/dsfr/dist/utility/utility.main.min.css'
@@ -69,34 +69,7 @@ createInertiaApp({
     }
 
     // Replace RouterLink with a custom component that uses Inertia's Link
-    app.component('RouterLink', {
-      props: {
-        to: {
-          type: [String, Object],
-          required: true,
-        },
-        // Add other props that RouterLink might have
-        replace: Boolean,
-        append: Boolean,
-        download: [Boolean, String],
-        target: String,
-        rel: String,
-      },
-      setup(routerProps: any, { slots }: any) {
-        // Convert 'to' prop to 'href' for Inertia Link
-        const href = typeof routerProps.to === 'string' ? routerProps.to : routerProps.to.path || ''
-        return () =>
-          h(
-            Link,
-            {
-              href,
-              replace: routerProps.replace,
-              // Map other relevant props here
-            },
-            slots,
-          )
-      },
-    })
+    app.component('RouterLink', RouterLink)
     app.mount(el)
   },
 })

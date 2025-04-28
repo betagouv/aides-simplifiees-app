@@ -52,6 +52,8 @@ const activeAccordion = ref<number>(activeQuestionGroupIndex.value)
         icon-before
         label="Revenir à la question en cours"
         :to="`/simulateurs/${simulateurId}#simulateur-title`"
+        preserve-scroll
+        preserve-state
         :icon="{ name: 'ri:arrow-left-line', ssr: true }"
       />
     </hgroup>

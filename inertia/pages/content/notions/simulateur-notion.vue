@@ -45,8 +45,9 @@ setBreadcrumbs([
       </h1>
       <DsfrLink
         icon-before
+        preserve-scroll
         label="Revenir à ma simulation"
-        :to="`/simulateurs/${simulateur.slug}#simulateur-title`"
+        :to="`/simulateurs/${simulateur.slug}`"
         :icon="{ name: 'ri:arrow-left-line', ssr: true }"
       />
     </header>

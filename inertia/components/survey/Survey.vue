@@ -91,7 +91,10 @@ function handleFormComplete(): void {
       setTimeout(() => {
         // Inertia router redirection instead of window.location.href
         const secureHash = submissionStore.getSecureHash(simulateurId.value)
-        router.visit(`/simulateurs/${simulateurId.value}/resultats/${secureHash}#simulateur-title`)
+        router.visit(`/simulateurs/${simulateurId.value}/resultats/${secureHash}#simulateur-title`, {
+          preserveState: true,
+          preserveScroll: true,
+        })
       }, 1000)
     }
     else {

@@ -151,6 +151,8 @@ const activeAccordion = ref()
           icon-before
           label="Reprendre ma simulation"
           :to="`/simulateurs/${simulateurId}/recapitulatif/#simulateur-title`"
+          preserve-scroll
+          preserve-state
           :icon="{ name: 'ri:arrow-left-line', ssr: true }"
         />
       </div>

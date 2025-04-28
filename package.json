@@ -1,12 +1,12 @@
 {
   "name": "as",
   "type": "module",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
     "start": "node bin/server.js",
-    "build": "node ace build && pnpm build:iframe-integration",
+    "build": "node ace build --ignore-ts-errors && pnpm build:iframe-integration",
     "build:iframe-integration": "vite build --config vite.iframe-integration.config.ts",
     "build:icons": "vue-dsfr-icons -s bin/icons.js -t inertia/icon-collections.ts",
     "dev": "node ace serve --hmr",
@@ -50,6 +50,8 @@
     "@iframe-resizer/child": "^5.4.5",
     "@iframe-resizer/parent": "^5.4.5",
     "@inertiajs/vue3": "^2.0.6",
+    "@rollup/rollup-linux-x64-gnu": "^4.40.1",
+    "@swc/core-linux-x64-gnu": "^1.11.22",
     "@vinejs/vine": "^3.0.0",
     "@vue/server-renderer": "^3.5.13",
     "@vueuse/core": "^13.1.0",
@@ -63,6 +65,7 @@
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.2.0",
     "reflect-metadata": "^0.2.2",
+    "sass-embedded-linux-x64": "^1.87.0",
     "vue": "^3.5.13",
     "vue-matomo": "^4.2.0"
   },

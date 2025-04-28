@@ -56,6 +56,12 @@ importers:
       '@inertiajs/vue3':
         specifier: ^2.0.6
         version: 2.0.8(vue@3.5.13(typescript@5.7.3))
+      '@rollup/rollup-linux-x64-gnu':
+        specifier: ^4.40.1
+        version: 4.40.1
+      '@swc/core-linux-x64-gnu':
+        specifier: ^1.11.22
+        version: 1.11.22
       '@vinejs/vine':
         specifier: ^3.0.0
         version: 3.0.1
@@ -95,6 +101,9 @@ importers:
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
+      sass-embedded-linux-x64:
+        specifier: ^1.87.0
+        version: 1.87.0
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.7.3)
@@ -1100,6 +1109,10 @@ packages:
     cpu: [x64]
     os: [linux]
 
+  '@rollup/rollup-linux-x64-gnu@4.40.1':
+    resolution: {integrity: sha512-XiK5z70PEFEFqcNj3/zRSz/qX4bp4QIraTy9QjwJAb/Z8GM7kVUsD0Uk8maIPeTyPCP03ChdI+VVmJriKYbRHQ==}
+    os: [linux]
+
   '@rollup/rollup-linux-x64-musl@4.40.0':
     resolution: {integrity: sha512-HZvjpiUmSNx5zFgwtQAV1GaGazT2RWvqeDi0hV+AtC8unqqDSsaFjPxfsO6qPtKRRg25SisACWnJ37Yio8ttaw==}
     cpu: [x64]
@@ -1199,6 +1212,11 @@ packages:
     resolution: {integrity: sha512-n2rV0XwkjoHn4MDJmpYp5RBrnyi94/6GsJVpbn6f+/eqSrZn3mh3dT7pdZc9zCN1Qp9eDHo+uI6e/wgvbL22uA==}
     engines: {node: '>=10'}
     cpu: [x64]
+    os: [linux]
+
+  '@swc/core-linux-x64-gnu@1.11.22':
+    resolution: {integrity: sha512-htmAVL+U01gk9GyziVUP0UWYaUQBgrsiP7Ytf6uDffrySyn/FclUS3MDPocNydqYsOpj3OpNKPxkaHK+F+X5fg==}
+    engines: {node: '>=10'}
     os: [linux]
 
   '@swc/core-linux-x64-musl@1.10.16':
@@ -3805,6 +3823,12 @@ packages:
     cpu: [x64]
     os: [linux]
 
+  sass-embedded-linux-x64@1.87.0:
+    resolution: {integrity: sha512-+UfjakOcHHKTnEqB3EZ+KqzezQOe1emvy4Rs+eQhLyfekpYuNze/qlRvYxfKTmrtvDiUrIto8MXsyZfMLzkuMA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [linux]
+
   sass-embedded-win32-arm64@1.86.3:
     resolution: {integrity: sha512-4ghuAzjX4q8Nksm0aifRz8hgXMMxS0SuymrFfkfJlrSx68pIgvAge6AOw0edoZoe0Tf5ZbsWUWamhkNyNxkTvw==}
     engines: {node: '>=14.0.0'}
@@ -5379,6 +5403,8 @@ snapshots:
   '@rollup/rollup-linux-x64-gnu@4.40.0':
     optional: true
 
+  '@rollup/rollup-linux-x64-gnu@4.40.1': {}
+
   '@rollup/rollup-linux-x64-musl@4.40.0':
     optional: true
 
@@ -5453,6 +5479,8 @@ snapshots:
 
   '@swc/core-linux-x64-gnu@1.10.16':
     optional: true
+
+  '@swc/core-linux-x64-gnu@1.11.22': {}
 
   '@swc/core-linux-x64-musl@1.10.16':
     optional: true
@@ -8180,6 +8208,8 @@ snapshots:
 
   sass-embedded-linux-x64@1.86.3:
     optional: true
+
+  sass-embedded-linux-x64@1.87.0: {}
 
   sass-embedded-win32-arm64@1.86.3:
     optional: true

@@ -6,12 +6,10 @@ import Page from '#models/page'
 import Simulateur from '#models/simulateur'
 import { marked } from 'marked'
 
-export default class ContentController {
+export default class DynamicContentController {
   // Affichage d'une page
   public async showPage({ params, inertia, response }: HttpContext) {
-    const slug = params.slug
-
-    const page = await Page.findBy('slug', slug)
+    const page = await Page.findBy('slug', params.page_slug)
 
     if (!page) {
       return response.status(404).send('Page non trouvée')
@@ -27,9 +25,7 @@ export default class ContentController {
 
   // Affichage d'une notion
   public async showNotion({ params, inertia, response }: HttpContext) {
-    const slug = params.slug
-
-    const notion = await Notion.findBy('slug', slug)
+    const notion = await Notion.findBy('slug', params.notion_slug)
 
     if (!notion) {
       return response.status(404).send('Notion non trouvée')
@@ -44,11 +40,10 @@ export default class ContentController {
     })
   }
 
+  // Affichage d'une notion contextualisée à un simulateur
   public async showSimulateurNotion({ params, inertia, response }: HttpContext) {
-    const simulateurSlug = params.simulateur_slug
-    const notionSlug = params.notion_slug
-    const notion = await Notion.findBy('slug', notionSlug)
-    const simulateur = await Simulateur.findBy('slug', simulateurSlug)
+    const notion = await Notion.findBy('slug', params.notion_slug)
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
     if (!notion) {
       return response.status(404).send('Notion non trouvée')
@@ -70,9 +65,7 @@ export default class ContentController {
 
   // Affichage d'une aide
   public async showAide({ params, inertia, response }: HttpContext) {
-    const slug = params.slug
-
-    const aide = await Aide.findBy('slug', slug)
+    const aide = await Aide.findBy('slug', params.aide_slug)
 
     if (!aide) {
       return response.status(404).send('Aide non trouvée')
@@ -82,6 +75,29 @@ export default class ContentController {
 
     return inertia.render('content/aides/aide', {
       aide,
+      html,
+    })
+  }
+
+  // Affichage d'une aide contextualisée à un résultat de simulation
+  public async showResultatsAide({ params, inertia, response }: HttpContext) {
+    const aide = await Aide.findBy('slug', params.aide_slug)
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
+
+    if (!aide) {
+      return response.status(404).send('Aide non trouvée')
+    }
+
+    if (!simulateur) {
+      return response.status(404).send('Simulateur non trouvé')
+    }
+
+    const html = await marked(aide.content)
+    return inertia.render('content/aides/simulateur-aide', {
+      layout: 'iframe',
+      type: 'aide',
+      item: aide,
+      simulateur,
       html,
     })
   }

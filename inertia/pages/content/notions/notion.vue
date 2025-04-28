@@ -5,7 +5,6 @@ import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionCon
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-// Define props based on ContentController.showNotion
 const props = defineProps<{
   type: string
   item: {

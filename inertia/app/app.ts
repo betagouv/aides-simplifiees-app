@@ -2,6 +2,7 @@
 /// <reference path="../../config/inertia.ts" />
 
 import type { DefineComponent } from 'vue'
+import type SharedProps from '~/types/inertia'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import VueDsfr from '@gouvminint/vue-dsfr'
 import { addCollection } from '@iconify/vue'
@@ -19,13 +20,13 @@ import '@gouvfr/dsfr/dist/utility/utility.main.min.css'
 import '@gouvfr/dsfr/dist/scheme/scheme.min.css'
 import '@gouvminint/vue-dsfr/styles'
 import '~/styles/main.scss'
-import SharedProps from '~/types/inertia'
-const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
+
+const appName = import.meta.env.APP_NAME
 
 createInertiaApp({
   progress: { color: '#5468FF' },
 
-  title: title => `${title} - ${appName}`,
+  title: title => [title, appName].filter(Boolean).join(' | '),
 
   resolve: async (name) => {
     const page = await resolvePageComponent(

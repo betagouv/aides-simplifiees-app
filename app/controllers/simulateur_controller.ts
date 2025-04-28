@@ -16,9 +16,7 @@ export default class SimulateurController {
 
   // Show a simulateur
   public async showSimulateur({ params, inertia, response }: HttpContext) {
-    const slug = params.slug
-
-    const simulateur = await Simulateur.findBy('slug', slug)
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')
@@ -38,8 +36,7 @@ export default class SimulateurController {
   }
 
   public async showRecapitulatif({ params, inertia, response }: HttpContext) {
-    const slug = params.slug
-    const simulateur = await Simulateur.findBy('slug', slug)
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')
     }
@@ -88,11 +85,10 @@ export default class SimulateurController {
   }
 
   public async resultats({ params, inertia, response }: HttpContext) {
-    const simulateurId = params.slug
     const secureHash = params.hash // This will be undefined if not present in the URL
 
     // Fetch the simulateur by ID or slug
-    const simulateur = await Simulateur.findBy('slug', simulateurId)
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')

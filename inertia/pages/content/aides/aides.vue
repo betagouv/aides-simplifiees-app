@@ -6,9 +6,8 @@ import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionCon
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-// Define props based on what's passed from ContentController.listAides
 defineProps<{
-  aides: Array<{
+  aides: {
     id: number
     title: string
     slug: string
@@ -17,7 +16,7 @@ defineProps<{
     instructeur: string
     description: string
     content: string
-  }>
+  }[]
 }>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()

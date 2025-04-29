@@ -9,7 +9,7 @@ export default antfu(
       typescript: true,
     },
     globalIgnores([
-      '**/iframe-integration@**.js',
+      '/public/assets/**',
     ]),
     {
       rules: {

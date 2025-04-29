@@ -121,9 +121,9 @@ export default class ApiController {
         // Set to start of day (00:00:00)
         weekStart.setHours(0, 0, 0, 0)
 
-        console.warn('-------------');
-        console.warn(weekStart, weekEnd);
-        console.warn('-------------');
+        console.warn('-------------')
+        console.warn(weekStart, weekEnd)
+        console.warn('-------------')
 
         const weekParams = {
           module: 'API',
@@ -155,7 +155,6 @@ export default class ApiController {
 
           // Process each action in the week
           for (const action of actionsData) {
-
             // First check if it's a standard format event
             let isSubmit = false
             let isStart = false
@@ -172,9 +171,9 @@ export default class ApiController {
               continue
             }
 
-            console.warn('-------ACTION DATA------');
-            console.warn(action);
-            console.warn('-------------');
+            console.warn('-------ACTION DATA------')
+            console.warn(action)
+            console.warn('-------------')
 
             // For legacy formats, extract simulator ID and source from label
             let simulatorId: string | null = null
@@ -245,18 +244,15 @@ export default class ApiController {
               weekStat.eligibilities += action.nb_visits || 1
             }
 
-
-            console.warn('-----WEEK STAT--------');
-            console.warn(weekStat);
-            console.warn('-------------');
+            console.warn('-----WEEK STAT--------')
+            console.warn(weekStat)
+            console.warn('-------------')
           }
         }
         catch (error: any) {
           console.error(`Error fetching data for week ${i + 1}:`, error)
         }
       }
-
-
 
       // Sort weekly stats by date
       for (const simulatorId in statistics) {

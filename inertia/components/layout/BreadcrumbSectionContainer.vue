@@ -2,8 +2,8 @@
 import { DsfrBreadcrumb } from '@gouvminint/vue-dsfr'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
+import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const props = withDefaults(defineProps<{
   contrast?: boolean

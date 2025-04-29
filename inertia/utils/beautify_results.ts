@@ -81,7 +81,7 @@ export function extractAidesResults(
 
   results = addDeducedResults(results)
   console.warn(
-    `Les questions suivantes étaient attendues mais n'ont pas été extraites de la réponse d'API : ${resultsToExtract.filter(key => !results.hasOwnProperty(key))}`,
+    `Les questions suivantes étaient attendues mais n'ont pas été extraites de la réponse d'API : ${resultsToExtract.filter(key => !Object.prototype.hasOwnProperty.call(results, key))}`,
   )
 
   return results

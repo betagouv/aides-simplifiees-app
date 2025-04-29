@@ -5,7 +5,7 @@ import env from '#start/env'
 import axios from 'axios'
 
 // Configuration constants
-const WEEKS_TO_FETCH = 1
+const WEEKS_TO_FETCH = 4
 
 // Get simulator titles from the config
 const SIMULATOR_TITLES = matomoConfig.simulatorTitles as Record<string, string>

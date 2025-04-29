@@ -85,20 +85,9 @@ export function useMatomo() {
     if (import.meta.server) {
       return
     }
-    let source = 'website'
-    const currentUrl = window.location?.href ? new URL(window.location.href) : null
-    const utmSource = currentUrl?.searchParams.get('utm_source')
-    if (utmSource) {
-      source = utmSource.replace('iframe@', '')
-    }
-    const category = `[${simulateurId}][${source}]Survey`
-    ;(window as any)._paq.push([
-      'trackEvent',
-      category,
-      'Eligibility',
-      `[${simulateurId}][${source}]`,
-      aidesLength,
-    ])
+    const category = getMatomoCategory(simulateurId)
+    const name = `[${simulateurId}][${category.split(']')[1].slice(1)}]`
+    trackEvent(category, 'Eligibility', name, aidesLength)
   }
 
   return {

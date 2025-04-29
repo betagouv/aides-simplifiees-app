@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { SharedProps } from '@adonisjs/inertia/types'
 import { DsfrAccordion, DsfrAccordionsGroup, DsfrCallout, DsfrSelect, DsfrTable } from '@gouvminint/vue-dsfr'
 import { Head, usePage } from '@inertiajs/vue3'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -19,7 +20,7 @@ const simulateurs = ref([
 ])
 const selectedSimulateur = ref('demenagement-logement')
 
-const page = usePage()
+const page = usePage<SharedProps>()
 const origin = page.props.publicAppUrl
 
 // Inclusion du script

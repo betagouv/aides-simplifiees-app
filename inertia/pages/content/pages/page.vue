@@ -1,30 +1,33 @@
 <script lang="ts" setup>
-import { Head } from '@inertiajs/vue3'
+import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-const props = defineProps({
-  page: Object,
-  content: String,
-})
+const {
+  props: {
+    page,
+    html,
+  }
+} = usePage<InferPageProps<DynamicContentController, 'showPage'>>()
 
-// Set breadcrumbs
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
-  { text: props.page?.title || props.page?.slug, to: `/content/${props.page?.slug}` },
+  { text: page.title || page.slug, to: `/content/${page.slug}` },
 ])
 </script>
 
 <template>
   <Head
-    :title="`${page?.title}`"
+    :title="`${page.title}`"
     :description="
-      page?.meta_description
-        ? `${page.meta_description.slice(0, 155)}...`
-        : `Informations sur ${page?.title || page?.slug}`
+      page.metaDescription
+        ? `${page.metaDescription.slice(0, 155)}...`
+        : `Informations sur ${page.title || page.slug}`
     "
   />
   <template v-if="!page">
@@ -41,7 +44,7 @@ setBreadcrumbs([
           <header class="fr-mb-4w">
             <h1>{{ page.title }}</h1>
           </header>
-          <div v-html="content" />
+          <div v-html="html" />
         </article>
       </SectionContainer>
     </BrandBackgroundContainer>

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type SimulateurController from '#controllers/simulateur_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
 import type { DsfrButtonProps } from '@gouvminint/vue-dsfr'
 import { DsfrButton, DsfrStepper } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
@@ -16,29 +18,26 @@ import { useSurveysStore } from '~/stores/surveys'
 import { autocompleteConfigs, autocompleteFunctions } from '~/utils/autocomplete_functions'
 import { isAnswerValid } from '~/utils/form_validation'
 
-const page = usePage<{
-  simulateur: {
-    pictogramPath: string
-    title: string
-    slug: string
-  }
-}>()
-const simulateurId = computed(() => page.props.simulateur.slug)
+const {
+  props: {
+    simulateur,
+  },
+} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
 
 const surveysStore = useSurveysStore()
 
 // Get simulateur-specific state
-const currentQuestion = computed(() => surveysStore.getCurrentQuestion(simulateurId.value))
-const surveySchema = computed(() => surveysStore.getSchema(simulateurId.value))
-const isLastQuestion = computed(() => surveysStore.isLastQuestion(simulateurId.value))
-const areAllRequiredQuestionsAnswered = computed(() => surveysStore.areAllRequiredQuestionsAnswered(simulateurId.value))
-const currentStepIndex = computed(() => surveysStore.getCurrentStepIndex(simulateurId.value))
+const currentQuestion = computed(() => surveysStore.getCurrentQuestion(simulateur.slug))
+const surveySchema = computed(() => surveysStore.getSchema(simulateur.slug))
+const isLastQuestion = computed(() => surveysStore.isLastQuestion(simulateur.slug))
+const areAllRequiredQuestionsAnswered = computed(() => surveysStore.areAllRequiredQuestionsAnswered(simulateur.slug))
+const currentStepIndex = computed(() => surveysStore.getCurrentStepIndex(simulateur.slug))
 // Check if the current question has been answered
 const hasValidAnswer = computed(() => {
   if (!currentQuestion.value) {
     return false
   }
-  return isAnswerValid(currentQuestion.value, surveysStore.getAnswer(simulateurId.value, currentQuestion.value.id))
+  return isAnswerValid(currentQuestion.value, surveysStore.getAnswer(simulateur.slug, currentQuestion.value.id))
 })
 
 const stepTitles = computed(() => {
@@ -103,11 +102,20 @@ onKeyDown('Enter', (event: KeyboardEvent) => {
       handleNext()
     }
   }
+  else if (isLastQuestion.value && areAllRequiredQuestionsAnswered.value) {
+    // Only trigger if the source is not a button or textarea or [type="search"] input or select
+    if (
+      !(event.target instanceof HTMLButtonElement) && !(event.target instanceof HTMLTextAreaElement) && !(event.target instanceof HTMLInputElement && event.target.type === 'search') && !(event.target instanceof HTMLSelectElement)
+    ) {
+      event.preventDefault()
+      handleComplete()
+    }
+  }
 }, { target: questionContainer })
 
 // Navigate to next question or submit form
 function handleNext() {
-  const wentToNext = surveysStore.goToNextQuestion(simulateurId.value)
+  const wentToNext = surveysStore.goToNextQuestion(simulateur.slug)
   if (wentToNext) {
     focusRenderedQuestion()
   }
@@ -115,12 +123,12 @@ function handleNext() {
 
 // Navigate to previous question
 function handlePrevious() {
-  const wentToPrev = surveysStore.goToPreviousQuestion(simulateurId.value)
+  const wentToPrev = surveysStore.goToPreviousQuestion(simulateur.slug)
   if (wentToPrev) {
     focusRenderedQuestion()
   }
   else {
-    surveysStore.setShowWelcomeScreen(simulateurId.value, true)
+    surveysStore.setShowWelcomeScreen(simulateur.slug, true)
   }
 }
 
@@ -131,13 +139,13 @@ const questionModel = customRef((track, trigger) => {
       if (!currentQuestion.value) {
         return undefined
       }
-      return surveysStore.getAnswer(simulateurId.value, currentQuestion.value?.id)
+      return surveysStore.getAnswer(simulateur.slug, currentQuestion.value?.id)
     },
     set(value) {
       if (!currentQuestion.value) {
         return
       }
-      surveysStore.setAnswer(simulateurId.value, currentQuestion.value?.id, value)
+      surveysStore.setAnswer(simulateur.slug, currentQuestion.value?.id, value)
       trigger()
     },
   }
@@ -158,7 +166,7 @@ const questionComponent = computed(() => {
 })
 
 function handleComplete() {
-  surveysStore.tryComplete(simulateurId.value)
+  surveysStore.tryComplete(simulateur.slug)
 }
 </script>
 
@@ -212,7 +220,7 @@ function handleComplete() {
         icon-right
         class="fr-mb-2w"
         @click="() => {
-          router.visit(`/simulateurs/${simulateurId}/notions/${currentQuestion?.notion.id}`, { preserveState: true, preserveScroll: true })
+          router.visit(`/simulateurs/${simulateur.slug}/notions/${currentQuestion?.notion.id}`, { preserveState: true, preserveScroll: true })
         }"
       />
       <component
@@ -231,7 +239,7 @@ function handleComplete() {
           secondary: true,
           icon: { name: 'ri:menu-line', ssr: true },
           onClick: () => {
-            router.visit(`/simulateurs/${simulateurId}/recapitulatif#simulateur-title`, { preserveState: true, preserveScroll: true })
+            router.visit(`/simulateurs/${simulateur.slug}/recapitulatif#simulateur-title`, { preserveState: true, preserveScroll: true })
           },
         },
         {

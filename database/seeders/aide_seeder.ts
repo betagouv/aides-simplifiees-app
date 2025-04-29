@@ -108,7 +108,7 @@ export default class AideSeeder extends BaseSeeder {
       {
         title: 'Avance Loca-Pass',
         slug: 'locapass',
-        type: 'avance',
+        type: 'pret',
         usage: 'pret-garantie-logement',
         instructeur: 'Action logement',
         description: 'Prêt à 0% pour financer votre dépôt de garantie',
@@ -138,7 +138,7 @@ export default class AideSeeder extends BaseSeeder {
         title: 'Aide à la mobilité Parcoursup',
         slug: 'mobilite-parcoursup',
         type: 'aide-financiere',
-        usage: 'frais-deplacement',
+        usage: 'frais-installation-logement',
         instructeur:
           'Ministère chargé de l\'enseignement supérieur, de la recherche et de l\'innovation',
         description:

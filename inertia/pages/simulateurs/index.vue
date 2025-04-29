@@ -1,17 +1,18 @@
 <script lang="ts" setup>
+import type SimulateurController from '#controllers/simulateur_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrCard } from '@gouvminint/vue-dsfr'
-import { Head } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-defineProps<{
-  simulateurs: Array<{
-    slug: string
-    title: string
-  }>
-}>()
+const {
+  props: {
+    simulateurs,
+  },
+} = usePage<InferPageProps<SimulateurController, 'listSimulateurs'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([

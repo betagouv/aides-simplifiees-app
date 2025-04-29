@@ -13,10 +13,10 @@ export default class Aide extends BaseModel {
   declare slug: string
 
   @column()
-  declare type: string
+  declare type: TypeAide
 
   @column()
-  declare usage: string
+  declare usage: UsageAide
 
   @column()
   declare instructeur: string
@@ -29,7 +29,7 @@ export default class Aide extends BaseModel {
     prepare: value => (typeof value === 'string' ? value : JSON.stringify(value)),
     consume: value => (typeof value === 'string' ? JSON.parse(value) : value),
   })
-  declare textesLoi: Array<{ prefix: string, label: string, url: string }>
+  declare textesLoi: TexteLoi[]
 
   @column({ columnName: 'content' })
   declare content: string

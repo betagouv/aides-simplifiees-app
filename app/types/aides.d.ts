@@ -17,7 +17,7 @@ declare global {
     montant?: number
   }
 
-  type TexteLoi = string | { prefixe: string, label: string, url: string } | null
+  type TexteLoi = string | { prefix: string, label: string, url: string } | null
 
   interface AideDetails {
     title: string
@@ -56,13 +56,8 @@ declare global {
   }
 
   interface RichSimulationResults {
-    createAt: {
-      date: string
-      time: string
-    } | null
     aides: RichAide[]
     montants: RichMontant[]
-    echeances: RichEcheance[]
     aidesNonEligibles: RichAide[]
     textesLoi: TexteLoi[]
   }

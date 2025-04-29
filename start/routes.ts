@@ -7,6 +7,7 @@
 |
 */
 
+import { IFRAME_SCRIPT_VERSION } from '#config/iframe_integration'
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
@@ -48,7 +49,6 @@ router.post('/api/store-form-data', [ApiController, 'storeFormData'])
 /**
  * Assets
  */
-const IFRAME_SCRIPT_VERSION = '1.0.1'
 router.get('/iframe-integration.js', ({ response }) => {
   response.redirect(`/assets/iframe-integration@${IFRAME_SCRIPT_VERSION}.js`)
 })
@@ -65,7 +65,7 @@ router.get('/aides/:aide_slug', [DynamicContentController, 'showAide'])
 /**
  * Simulateurs
  */
-router.get('/simulateurs', [SimulateurController, 'index'])
+router.get('/simulateurs', [SimulateurController, 'listSimulateurs'])
 // Specific simulateur routes
 router
   .group(() => {
@@ -75,7 +75,9 @@ router
         middleware.resumeQuery(),
       ])
     router.get('/simulateurs/:simulateur_slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
+    router.get('/simulateurs/:simulateur_slug/resultats', [SimulateurController, 'showResultats'])
     router.get('/simulateurs/:simulateur_slug/resultats/:hash', [SimulateurController, 'showResultats'])
+    router.get('/simulateurs/:simulateur_slug/resultats/mock-hash', [SimulateurController, 'showResultats'])
     router.get('/simulateurs/:simulateur_slug/resultats/:hash/aides/:aide_slug', [DynamicContentController, 'showResultatsAide'])
     router.get('/simulateurs/:simulateur_slug/notions/:notion_slug', [DynamicContentController, 'showSimulateurNotion'])
   })

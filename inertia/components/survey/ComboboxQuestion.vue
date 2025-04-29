@@ -138,8 +138,8 @@ const valueModel = customRef((track, trigger) => {
       track()
       const option = selectOptions.value.find((opt) => {
         return (opt as { value: string, text: string }).value === value
-        }) as { value: string, text: string }
-        if (option) {
+      }) as { value: string, text: string }
+      if (option) {
         statusMessage.value = `Option "${value}" sélectionnée`
         model.value = JSON.stringify(option)
       }

@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import type { DateTime } from 'luxon'
 import Aide from '#models/aide'
 import FormSubmission from '#models/form_submission'
 import Simulateur from '#models/simulateur'
@@ -8,7 +9,7 @@ export default class SimulateurController {
   private simulateurService = new SimulateurService()
 
   // List all simulateurs
-  public async index({ inertia }: HttpContext) {
+  public async listSimulateurs({ inertia }: HttpContext) {
     const simulateurs = await Simulateur.all()
 
     return inertia.render('simulateurs/index', { simulateurs })
@@ -84,9 +85,7 @@ export default class SimulateurController {
     }
   }
 
-  public async showResultats({ params, inertia, response }: HttpContext) {
-    const secureHash = params.hash // This will be undefined if not present in the URL
-
+  public async showResultats({ params, inertia, request, response }: HttpContext) {
     // Fetch the simulateur by ID or slug
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
@@ -94,147 +93,153 @@ export default class SimulateurController {
       return response.status(404).send('Simulateur non trouvé')
     }
 
-    let formSubmission = null
-
-    // If we have a secure hash, try to fetch the corresponding submission
-    if (secureHash) {
-      formSubmission = await FormSubmission.query()
-        .where('secure_hash', secureHash)
-        .where('simulator_id', params.simulateur_slug)
-        .first()
-
-      if (!formSubmission) {
-        return response.status(404).send('Résultats non trouvés')
+    /**
+     * Mock calculation response for testing purposes.
+     */
+    const isMock = request.qs().mock === 'true' || params.hash === 'mock-hash'
+    if (isMock) {
+      const mockCalculationResponse = {
+        'aide-personnalisee-logement': 42.23,
+        'aide-personnalisee-logement-eligibilite': true,
+        'garantie-visale': 1000,
+        'garantie-visale-eligibilite': true,
+        'locapass': 800,
+        'locapass-eligibilite': true,
+        'mobilite-master-1': 1000,
+        'mobilite-master-1-eligibilite': false,
+        'mobilite-parcoursup': 500,
+        'mobilite-parcoursup-eligibilite': true,
       }
+      return inertia.render('simulateurs/resultats', {
+        simulateur,
+        createdAt: new Date(),
+        results: await this.transformSimulationResults(mockCalculationResponse, {
+          simulateur_slug: params.simulateur_slug,
+          hash: 'mock-hash',
+        }),
+        secureHash: 'mock-hash',
+      })
     }
 
-    // Load all aides from Aide Model and convert to an object indexed by slug
-    const aides = await Aide.all()
+    /**
+     * A secure hash is required to fetch the form submission.
+     */
+    if (!params.hash) {
+      return response.redirect(`/simulateurs/${simulateur.slug}`)
+    }
 
-    // Create an object where keys are aide slugs and values are the aide objects
-    const aidesBySlug: Record<string, any> = {}
+    const formSubmission = await FormSubmission.query()
+      .where('secure_hash', params.hash)
+      .where('simulator_id', params.simulateur_slug)
+      .first() as {
+      results: SimulationResultsAides
+      createdAt: DateTime
+    }
 
-    aides.forEach((aide) => {
-      aidesBySlug[aide.slug] = aide
-    })
-
-    // Process the simulation results
-    if (formSubmission && formSubmission.results) {
-      const simulationResults = formSubmission.results
-      const rawAides = []
-
-      // First pass: Extract raw aides from results with eligibility info
-      for (const [key, value] of Object.entries(simulationResults)) {
-        if (key.endsWith('-eligibilite')) {
-          // Extract the base aide slug
-          const aideSlug = key.replace('-eligibilite', '')
-          const eligibilite = value === true
-
-          // Get the amount if available
-          const montant = simulationResults[aideSlug] || 0
-
-          rawAides.push({
-            id: aideSlug,
-            eligibilite,
-            montant: eligibilite ? montant : 0,
-          })
-        }
-      }
-
-      // Second pass: Enrich raw aides with aide details
-      const richAides = []
-      const eligibleAides = []
-      const nonEligibleAides = []
-
-      for (const rawAide of rawAides) {
-        const aideDetails = aidesBySlug[rawAide.id]
-
-        if (aideDetails) {
-          const richAide = {
-            // Data from calculation response
-            id: rawAide.id,
-            montant: rawAide.montant,
-            link: `/simulateurs/${params.simulateur_slug}/resultats/${params.hash}/aides/${rawAide.id}#simulateur-title`,
-            eligibilite: rawAide.eligibilite,
-            // Data from aidesBySlug
-            titre: aideDetails.titre || `Aide ${rawAide.id}`,
-            description: aideDetails.description || 'Description non disponible',
-            textesLoi: aideDetails.textesLoi || [],
-            instructeur: aideDetails.instructeur || 'Instructeur non disponible',
-            type: aideDetails.type || 'aide-financiere',
-            usage: aideDetails.usage || 'frais-installation-logement',
-          }
-
-          richAides.push(richAide)
-
-          // Group by eligibility
-          if (rawAide.eligibilite) {
-            eligibleAides.push(richAide)
-          }
-          else {
-            nonEligibleAides.push(richAide)
-          }
-        }
-      }
-
-      // Calculate montants by usage type
-      const montantsByUsage = new Map()
-
-      for (const aide of eligibleAides) {
-        if (!aide.usage)
-          continue
-
-        const currentTotal = montantsByUsage.get(aide.usage) || 0
-        montantsByUsage.set(aide.usage, currentTotal + aide.montant)
-      }
-
-      // Transform to rich montants
-      const montants = []
-      montantsByUsage.forEach((montant, usageAide) => {
-        montants.push({
-          usageAide,
-          montant,
-        })
-      })
-
-      // Collect textes de loi
-      const textesLoi = []
-      richAides.forEach((aide) => {
-        if (Array.isArray(aide.textesLoi)) {
-          textesLoi.push(...aide.textesLoi)
-        }
-      })
-
-      // Calculate basic echeances (this is a simplified example)
-      const echeances = []
-
-      // Create the formatted date/time
-      const createdAt = new Date(formSubmission.createdAt)
-      const date = createdAt.toLocaleDateString('fr-FR')
-      const time = createdAt.toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-
-      // Set all the calculated data in formSubmission.results
-      formSubmission.results = {
-        ...formSubmission.results,
-        createAt: { date, time },
-        aides: eligibleAides,
-        aidesNonEligibles: nonEligibleAides,
-        montants,
-        echeances,
-        textesLoi,
-      }
+    if (!formSubmission) {
+      return response.status(404).send('Résultats non trouvés')
     }
 
     // Render the results page with the form submission data if available
     return inertia.render('simulateurs/resultats', {
       simulateur,
-      formSubmission,
-      // Only include the hash in props if we have a submission
-      secureHash: formSubmission ? secureHash : null,
-      aidesBySlug,
+      createdAt: formSubmission.createdAt.toJSDate(),
+      results: await this.transformSimulationResults(formSubmission.results, params),
+      secureHash: params.hash as string,
     })
+  }
+
+  /**
+   * Given the raw simulation results, transform them into a more user-friendly displayable format.
+   */
+  private async transformSimulationResults(
+    simulationResults: SimulationResultsAides,
+    params: Record<string, string>,
+  ): Promise<RichSimulationResults> {
+    const rawAides = []
+
+    // First pass: Extract raw aides from results with eligibility info
+    for (const [key, value] of Object.entries(simulationResults)) {
+      if (key.endsWith('-eligibilite')) {
+        // Extract the base aide slug
+        const aideSlug = key.replace('-eligibilite', '')
+        const eligibilite = value === true
+
+        // Get the amount if available
+        const montant = (simulationResults[aideSlug] as number) || 0
+
+        rawAides.push({
+          id: aideSlug,
+          eligibilite,
+          montant: eligibilite ? montant : 0,
+        })
+      }
+    }
+
+    // Load required aides from Aide Model and convert to an object indexed by slug
+    const aides = await Aide.query()
+      .whereIn('slug', rawAides.map(aide => aide.id))
+    const aidesBySlug: Record<string, Aide> = {}
+    aides.forEach((aide) => {
+      aidesBySlug[aide.slug] = aide
+    })
+
+    // Second pass: Enrich raw aides with aide details
+    const allAides: RichAide[] = []
+    const eligibleAides: RichAide[] = []
+    const nonEligibleAides: RichAide[] = []
+    const montants: RichMontant[] = []
+    const textesLoi: TexteLoi[] = []
+
+    for (const rawAide of rawAides) {
+      const aideDetails = aidesBySlug[rawAide.id]
+
+      if (aideDetails) {
+        const richAide: RichAide = {
+          // Data from calculation response
+          id: rawAide.id,
+          montant: rawAide.montant,
+          link: `/simulateurs/${params.simulateur_slug}/resultats/${params.hash}/aides/${rawAide.id}#simulateur-title`,
+          eligibilite: rawAide.eligibilite,
+          // Data from database content source
+          titre: aideDetails.title || `Aide ${rawAide.id}`,
+          description: aideDetails.description || 'Description non disponible',
+          textesLoi: aideDetails.textesLoi || [],
+          instructeur: aideDetails.instructeur || 'Instructeur non disponible',
+          type: aideDetails.type || 'aide-financiere',
+          usage: aideDetails.usage || 'frais-installation-logement',
+        }
+
+        allAides.push(richAide)
+        if (rawAide.eligibilite) {
+          eligibleAides.push(richAide)
+        }
+        else {
+          nonEligibleAides.push(richAide)
+        }
+        if (richAide.usage && richAide.montant > 0) {
+          const existingMontant = montants.find(m => m.usageAide === richAide.usage)
+          if (existingMontant) {
+            existingMontant.montant += richAide.montant
+          }
+          else {
+            montants.push({
+              usageAide: richAide.usage,
+              montant: richAide.montant,
+            })
+          }
+        }
+
+        if (Array.isArray(richAide.textesLoi)) {
+          textesLoi.push(...richAide.textesLoi)
+        }
+      }
+    }
+    return {
+      aides: eligibleAides,
+      aidesNonEligibles: nonEligibleAides,
+      montants,
+      textesLoi,
+    }
   }
 }

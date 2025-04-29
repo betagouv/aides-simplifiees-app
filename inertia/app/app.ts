@@ -1,8 +1,8 @@
 /// <reference path="../../adonisrc.ts" />
 /// <reference path="../../config/inertia.ts" />
 
+import type { SharedProps } from '@adonisjs/inertia/types'
 import type { DefineComponent } from 'vue'
-import type SharedProps from '~/types/inertia'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import VueDsfr from '@gouvminint/vue-dsfr'
 import { addCollection } from '@iconify/vue'
@@ -25,7 +25,7 @@ createInertiaApp({
   progress: { color: '#5468FF' },
 
   title: (title) => {
-    const appName = usePage().props.appName
+    const appName = usePage<SharedProps>().props.appName
     return [title, appName]
       .filter(Boolean)
       .join(' | ')
@@ -58,7 +58,7 @@ createInertiaApp({
     app.use(plugin)
 
     // Get config values from the page props
-    const initialPageProps = props.initialPage.props as SharedProps
+    const initialPageProps = props.initialPage.props as Partial<SharedProps>
     const matomoHost = initialPageProps.matomoUrl ?? null
     const matomoSiteId = initialPageProps.matomoSiteId
       ? Number.parseInt(initialPageProps.matomoSiteId, 10)

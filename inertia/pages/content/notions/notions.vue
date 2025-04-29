@@ -1,19 +1,18 @@
 <script lang="ts" setup>
+import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrCard } from '@gouvminint/vue-dsfr'
-import { Head } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-defineProps<{
-  notions: Array<{
-    id: string
-    slug: string
-    title: string
-    description: string
-  }>
-}>()
+const {
+  props: {
+    notions,
+  },
+} = usePage<InferPageProps<DynamicContentController, 'listNotions'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -41,7 +40,7 @@ setBreadcrumbs([
           <div class="fr-col-4">
             <DsfrCard
               :title="notion.title"
-              :description="notion.description"
+              :description="notion.description || ''"
               :link="`/notions/${notion.slug || notion.id}`"
             />
           </div>

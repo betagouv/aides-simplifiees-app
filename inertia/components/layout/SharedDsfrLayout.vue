@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { SharedProps } from '@adonisjs/inertia/types'
 import type { DsfrHeaderMenuLinkProps } from '@gouvminint/vue-dsfr'
 import {
   DsfrFooter,
@@ -12,7 +13,7 @@ import { computed } from 'vue'
 import SchemeModal from '~/components/SchemeModal.vue'
 import { useSchemeStore } from '~/stores/scheme'
 
-const page = usePage()
+const page = usePage<SharedProps>()
 const isAuthenticated = computed(() => {
   return Boolean(page.props.auth?.user)
 })

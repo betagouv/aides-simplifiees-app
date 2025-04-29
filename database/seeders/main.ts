@@ -3,7 +3,7 @@ import SimulateurSeeder from './simulateur_seeder.js'
 
 export default class MainSeeder extends BaseSeeder {
   async run() {
-    await this.db.transaction(async (trx) => {
+    await this.client.transaction(async (trx: any) => {
       /**
        * Create an instance of simulateur seeder
        */

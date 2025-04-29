@@ -1,7 +1,8 @@
 <script lang="ts" setup>
+import type SimulateurController from '#controllers/simulateur_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
 import { usePage } from '@inertiajs/vue3'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
 import DsfrPictogram from '~/components/DsfrPictogram.vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
@@ -9,16 +10,12 @@ import SectionContainer from '~/components/layout/SectionContainer.vue'
 import FormDebugPanel from '~/components/survey/FormDebugPanel.vue'
 import { useSurveyDebugStore } from '~/stores/survey_debug'
 
-const page = usePage<{
-  simulateur: {
-    pictogramPath: string
-    title: string
-    slug: string
+const {
+  props: {
+    simulateur
   }
-}>()
-const simulateur = computed(() => page.props.simulateur)
+} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
 
-// instantiate debug mode
 const { debugMode } = storeToRefs(useSurveyDebugStore())
 </script>
 
@@ -38,7 +35,6 @@ const { debugMode } = storeToRefs(useSurveyDebugStore())
           class="simulation-title-container fr-col-9 fr-col-sm-10 fr-col-lg-11"
         >
           <h1
-            v-if="simulateur?.title"
             class="fr-h5 fr-m-0"
           >
             {{ simulateur.title }}
@@ -58,10 +54,7 @@ const { debugMode } = storeToRefs(useSurveyDebugStore())
     >
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-md-6">
-          <FormDebugPanel
-            v-if="debugMode"
-            :simulateur-id="simulateur.slug"
-          />
+          <FormDebugPanel v-if="debugMode" />
         </div>
         <div
           :class="[

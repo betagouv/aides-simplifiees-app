@@ -1,30 +1,24 @@
 <script lang="ts" setup>
-import { Head } from '@inertiajs/vue3'
+import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-const props = defineProps<{
-  aide: {
-    id: number
-    title: string
-    slug: string
-    type: string
-    usage: string
-    instructeur: string
-    description: string
-    content: string
-    textesLoi?: Array<{ prefix: string, label: string, url: string }>
-  }
-  html: string
-}>()
+const {
+  props: {
+    aide,
+    html,
+  },
+} = usePage<InferPageProps<DynamicContentController, 'showAide'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Aides', to: '/aides' },
-  { text: props.aide.title, to: `/aides/${props.aide.slug}` },
+  { text: aide.title, to: `/aides/${aide.slug}` },
 ])
 </script>
 
@@ -42,35 +36,13 @@ setBreadcrumbs([
       v-if="aide"
       type="page-header"
     >
-      <article>
+      <article class="brand-html-content">
         <header class="fr-mb-4w">
           <h1>
             {{ aide.title }}
           </h1>
         </header>
         <div v-html="html" />
-
-        <!-- Display textes de loi if available -->
-        <div
-          v-if="aide.textesLoi && aide.textesLoi.length > 0"
-          class="fr-mt-4w"
-        >
-          <h2>Textes de loi associés</h2>
-          <ul>
-            <li
-              v-for="(texte, index) in aide.textesLoi"
-              :key="index"
-            >
-              <a
-                :href="texte.url"
-                target="_blank"
-                rel="noopener"
-              >
-                {{ texte.prefix }} {{ texte.label }}
-              </a>
-            </li>
-          </ul>
-        </div>
       </article>
     </SectionContainer>
   </BrandBackgroundContainer>

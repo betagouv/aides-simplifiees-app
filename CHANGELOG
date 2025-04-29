@@ -1,5 +1,8 @@
 # CHANGELOG
 
+# 0.8.2
+* Ajout de la page Cookies
+
 # 0.8.1
 * Ajout de dépendances ts pour la transpilation sous linux
 

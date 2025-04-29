@@ -1,4 +1,5 @@
 import type { InferSharedProps } from '@adonisjs/inertia/types'
+
 import { defineConfig } from '@adonisjs/inertia'
 
 const inertiaConfig = defineConfig({
@@ -30,5 +31,14 @@ const inertiaConfig = defineConfig({
 export default inertiaConfig
 
 declare module '@adonisjs/inertia/types' {
-  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {}
+  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {
+    [key: string]: any
+    auth?: {
+      user: {
+        id: number
+        email: string
+        fullName?: string
+      } | null
+    }
+  }
 }

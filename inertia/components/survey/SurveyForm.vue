@@ -102,6 +102,15 @@ onKeyDown('Enter', (event: KeyboardEvent) => {
       handleNext()
     }
   }
+  else if (isLastQuestion.value && areAllRequiredQuestionsAnswered.value) {
+    // Only trigger if the source is not a button or textarea or [type="search"] input or select
+    if (
+      !(event.target instanceof HTMLButtonElement) && !(event.target instanceof HTMLTextAreaElement) && !(event.target instanceof HTMLInputElement && event.target.type === 'search') && !(event.target instanceof HTMLSelectElement)
+    ) {
+      event.preventDefault()
+      handleComplete()
+    }
+  }
 }, { target: questionContainer })
 
 // Navigate to next question or submit form

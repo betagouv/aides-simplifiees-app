@@ -108,7 +108,7 @@ export default class AideSeeder extends BaseSeeder {
       {
         title: 'Avance Loca-Pass',
         slug: 'locapass',
-        type: 'avance',
+        type: 'pret',
         usage: 'pret-garantie-logement',
         instructeur: 'Action logement',
         description: 'Prêt à 0% pour financer votre dépôt de garantie',

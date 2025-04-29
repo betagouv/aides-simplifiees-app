@@ -217,16 +217,15 @@ export default class SimulateurController {
         else {
           nonEligibleAides.push(richAide)
         }
-        if (richAide.usage) {
-          const montant = richAide.montant
+        if (richAide.usage && richAide.montant > 0) {
           const existingMontant = montants.find(m => m.usageAide === richAide.usage)
           if (existingMontant) {
-            existingMontant.montant += montant
+            existingMontant.montant += richAide.montant
           }
           else {
             montants.push({
               usageAide: richAide.usage,
-              montant,
+              montant: richAide.montant,
             })
           }
         }

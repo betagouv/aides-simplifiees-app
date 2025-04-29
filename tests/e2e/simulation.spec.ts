@@ -7,10 +7,10 @@ test.group('Subsidy simulator form', () => {
    * Scénario 4.1 : Affichage d'un formulaire de simulation
    */
   test('should display welcome screen and start a new simulation', async ({ expect, visit }) => {
-    const page = await visit(`/simulateurs/${simulateurId}`)
+    const page = await visit(`/simulateurs/${simulateurId}`, { waitUntil: 'networkidle' })
     await page.waitForSelector('#simulateur-title', { state: 'visible' })
     // Check if welcome screen is visible
-    expect(await page.getByText('Un simulateur en construction').isVisible()).toBe(true)
+    expect(await page.getByText('Un simulateur en cours d\'amélioration').isVisible()).toBe(true)
 
     // Click the start button
     await page.getByRole('button', { name: 'Commencer la simulation' }).click()
@@ -153,7 +153,7 @@ test.group('Subsidy simulator form', () => {
     })
 
     // Mock commune autocomplete API
-    await page.route('**/communes/autocomplete**', async (route) => {
+    await page.route('**/api/autocomplete/communes**', async (route) => {
       // Mock response for communes autocomplete
       const mockSuggestions = {
         suggestions: [
@@ -228,11 +228,11 @@ test.group('Subsidy simulator form', () => {
         await searchButton.click()
 
         // Wait for suggestions to appear
-        const listBox = page.locator('[role="listbox"] select').first()
-        await listBox.waitFor({ state: 'visible' })
+        await page.waitForSelector('[role="listbox"]', { state: 'visible' })
+        const listBoxSelect = page.locator('[role="listbox"] select').first()
 
         // Select the first suggestion
-        await listBox.selectOption({ index: 0 })
+        await listBoxSelect.selectOption('12345')
       }
       else if (await page.locator('input[type="text"]').count() > 0) {
         // Regular text field
@@ -258,8 +258,8 @@ test.group('Subsidy simulator form', () => {
     while (!isCompleted && questionCount < maxQuestions) {
       try {
         await answerCurrentQuestion()
-        await page.screenshot({ path: `./tests/e2e/screenshots/question-${questionCount}.png` })
-        await page.waitForTimeout(500)
+        // await page.screenshot({ path: `./tests/e2e/screenshots/question-${questionCount}.png` })
+        // await page.waitForTimeout(500)
         questionCount++
         if (questionCount >= maxQuestions) {
           await page.screenshot({ path: './tests/e2e/screenshots/max-questions-reached.png' })
@@ -277,6 +277,7 @@ test.group('Subsidy simulator form', () => {
         const hasLoaded = await page.getByText('Estimation terminée').isVisible()
         if (isLoading || hasLoaded) {
           // Wait for redirect to results page
+          /** @todo fix this */
           await page.waitForURL(`**/simulateurs/${simulateurId}/resultats**`, { timeout: 10000 })
 
           isCompleted = true
@@ -289,7 +290,7 @@ test.group('Subsidy simulator form', () => {
     }
 
     // take a screenshot of the results page
-    await page.screenshot({ path: './tests/e2e/screenshots/simulation-results.png' })
+    // await page.screenshot({ path: './tests/e2e/screenshots/simulation-results.png' })
 
     // Verify we've been redirected to results page
     await page.waitForURL(`**/simulateurs/${simulateurId}/resultats**`, { timeout: 10000 })

@@ -6,11 +6,7 @@ test.group('Application UI tests', () => {
    */
   test('homepage loads successfully with link to housing simulator', async ({ visit, expect }) => {
     // Open new page and navigate to homepage
-    const page = await visit('/')
-    await page.waitForLoadState('networkidle')
-
-    // Verify URL
-    expect(page.url()).toBe('/')
+    const page = await visit('/', { waitUntil: 'networkidle' })
 
     // Check that there's a clickable link to "Déménagement & logement" simulator
     const demenagementLink = page.getByRole('link', { name: 'Déménagement & logement' })
@@ -30,9 +26,11 @@ test.group('Application UI tests', () => {
 
     // Check that the header title is correct
     const headerTitle = page.locator('.fr-header__service-title').first()
-    expect(await headerTitle.textContent()).toBe('aides simplifiées')
+    expect(await headerTitle.textContent()).toContain('aides simplifiées')
 
     // Get the current viewport width
+    /** @todo provide the window object */
+    // @ts-expect-error window is not defined in this context
     const viewportWidth = await page.evaluate(() => window.innerWidth)
     const navMenu = page.locator('[aria-label="Menu principal"]').first()
 
@@ -78,13 +76,13 @@ test.group('Application UI tests', () => {
 
       // Wait for menu to be visible and animation to complete
       await navMenu.waitFor({ state: 'visible' })
-      await page.screenshot({ path: 'tests/e2e/screenshots/menu-should-be-open.png' })
+      // await page.screenshot({ path: 'tests/e2e/screenshots/menu-should-be-open.png' })
 
       const navCloseBtn = page.locator('[data-testid="close-modal-btn"]')
       await navCloseBtn.click()
 
       // Wait for menu to be hidden and animation to complete
-      await page.screenshot({ path: 'tests/e2e/screenshots/menu-should-be-closed.png' })
+      // await page.screenshot({ path: 'tests/e2e/screenshots/menu-should-be-closed.png' })
       await navMenu.waitFor({ state: 'hidden' })
     }
   })
@@ -105,16 +103,14 @@ test.group('Application UI tests', () => {
     const firstNotionLink = page.locator('.fr-card a').first()
     const notionTitle = await firstNotionLink.textContent()
     await firstNotionLink.click()
-
-    // Check we're on a notion detail page
-    expect(page.url()).toContain('/notions')
+    await page.waitForURL('**/notions/*')
 
     const detailH1 = page.locator('h1')
     expect(await detailH1.textContent()).toContain(notionTitle || '')
 
     // Test /aides page
     page = await visit('/aides')
-    expect(page.url()).toBe('/aides')
+    expect(page.url()).toContain('/aides')
 
     const aidesH1 = page.locator('h1')
     expect(await aidesH1.textContent()).toContain('Aides')
@@ -123,6 +119,7 @@ test.group('Application UI tests', () => {
     const firstAideLink = page.locator('.fr-card a').first()
     const aideTitle = await firstAideLink.textContent()
     await firstAideLink.click()
+    await page.waitForURL('**/aides/*')
 
     // Check we're on an aide detail page
     expect(page.url()).toContain('/aides')

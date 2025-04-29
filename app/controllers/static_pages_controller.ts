@@ -20,4 +20,8 @@ export default class StaticPagesController {
   public async statistiques({ inertia }: HttpContext) {
     return inertia.render('statistiques')
   }
+
+  public async cookies({ inertia }: HttpContext) {
+    return inertia.render('content/pages/cookies')
+  }
 }

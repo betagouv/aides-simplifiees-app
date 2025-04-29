@@ -35,6 +35,7 @@ router.get('/partenaires', [StaticPagesController, 'partenaires'])
 router.get('/integrer-nos-simulateurs', [StaticPagesController, 'integrerNosSimulateurs'])
 router.get('/contact', [StaticPagesController, 'contact'])
 router.get('/statistiques', [StaticPagesController, 'statistiques'])
+router.get('/cookies', [StaticPagesController, 'cookies'])
 
 /**
  * API Routes

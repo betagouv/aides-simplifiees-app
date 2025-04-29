@@ -8,6 +8,7 @@ import AideMontantCard from '~/components/aides/AideMontantCard.vue'
 import AidesList from '~/components/aides/AidesList.vue'
 import DsfrLink from '~/components/DsfrLink.vue'
 import SectionSeparator from '~/components/layout/SectionSeparator.vue'
+import { useMatomo } from '~/composables/use_matomo'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import { formatDateTime } from '~/utils/date_time'
 
@@ -30,7 +31,7 @@ const hasTextesDeLoi = results.textesLoi?.length > 0
 
 // Track eligibility in Matomo if we have results and aides
 if (hasAides && results) {
-  // useMatomo().trackEligibility(simulateur.slug, results.aides?.length || 0)
+  useMatomo().trackEligibility(simulateur.slug, results.aides?.length || 0)
 }
 
 const { setBreadcrumbs } = useBreadcrumbStore()

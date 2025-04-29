@@ -5,7 +5,7 @@ import env from '#start/env'
 import axios from 'axios'
 
 // Configuration constants
-const WEEKS_TO_FETCH = 4
+const WEEKS_TO_FETCH = 1
 
 // Get simulator titles from the config
 const SIMULATOR_TITLES = matomoConfig.simulatorTitles as Record<string, string>
@@ -67,11 +67,6 @@ export default class ApiController {
       async function fetchWithRetry(params: any, maxRetries = 3) {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
           try {
-            console.error(url)
-            console.error('------------------', {
-              ...params,
-              token_auth: MATOMO_TOKEN,
-            })
             const axiosResponse = await axios.post(
               url,
               {
@@ -126,6 +121,10 @@ export default class ApiController {
         // Set to start of day (00:00:00)
         weekStart.setHours(0, 0, 0, 0)
 
+        console.warn('-------------');
+        console.warn(weekStart, weekEnd);
+        console.warn('-------------');
+
         const weekParams = {
           module: 'API',
           method: 'Events.getAction',
@@ -156,6 +155,7 @@ export default class ApiController {
 
           // Process each action in the week
           for (const action of actionsData) {
+
             // First check if it's a standard format event
             let isSubmit = false
             let isStart = false
@@ -172,6 +172,10 @@ export default class ApiController {
               continue
             }
 
+            console.warn('-------ACTION DATA------');
+            console.warn(action);
+            console.warn('-------------');
+
             // For legacy formats, extract simulator ID and source from label
             let simulatorId: string | null = null
             let source: string | null = null
@@ -179,9 +183,11 @@ export default class ApiController {
 
             if (eventName) {
               // Process standard format
-              const matches = eventName.match(/\[(.*?)\]\[(.*?)\]/)
+              const matches = eventName.match(/\[(.*?)\](?:\[(.*?)\]|(.*))/)
               if (matches) {
-                ;[, simulatorId, source] = matches
+                simulatorId = matches[1]
+                // Use the bracketed source if it exists, otherwise use the unbracketed source
+                source = matches[2] || matches[3] || 'website'
               }
               else {
                 simulatorId = eventName
@@ -212,7 +218,6 @@ export default class ApiController {
             }
 
             // Update global stats based on the event type
-            console.warn(action)
             if (isStart) {
               statistics[simulatorId].starts += action.nb_events || 1
             }
@@ -239,12 +244,19 @@ export default class ApiController {
             else if (isEligibility) {
               weekStat.eligibilities += action.nb_visits || 1
             }
+
+
+            console.warn('-----WEEK STAT--------');
+            console.warn(weekStat);
+            console.warn('-------------');
           }
         }
         catch (error: any) {
           console.error(`Error fetching data for week ${i + 1}:`, error)
         }
       }
+
+
 
       // Sort weekly stats by date
       for (const simulatorId in statistics) {

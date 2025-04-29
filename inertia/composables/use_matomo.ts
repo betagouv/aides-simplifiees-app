@@ -62,7 +62,7 @@ export function useMatomo() {
       return
     }
     const category = getMatomoCategory(simulateurId)
-    const name = `[${simulateurId}]${category.split(']')[1].slice(1)}`
+    const name = `[${simulateurId}][${category.split(']')[1].slice(1)}]`
     trackEvent(category, 'Start', name)
   }
 
@@ -74,7 +74,7 @@ export function useMatomo() {
       return
     }
     const category = getMatomoCategory(simulateurId)
-    const name = `[${simulateurId}]${category.split(']')[1].slice(1)}`
+    const name = `[${simulateurId}][${category.split(']')[1].slice(1)}]`
     trackEvent(category, 'Submit', name)
   }
 

@@ -11,12 +11,6 @@ declare global {
     [aidesSimplifieesKey: string]: boolean | number
   }
 
-  interface RawAide {
-    id: string
-    eligibilite: boolean
-    montant?: number
-  }
-
   type TexteLoi = string | { prefix: string, label: string, url: string } | null
 
   interface AideDetails {

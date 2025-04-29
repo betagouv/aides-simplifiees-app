@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type SimulateurController from '#controllers/simulateur_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrAlert, DsfrBadge } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
 import { computed, onBeforeUnmount, onMounted } from 'vue'
@@ -14,36 +16,31 @@ import { useSurveysStore } from '~/stores/surveys'
 import { scrollToAnchor } from '~/utils/dom'
 import { getParam } from '~/utils/url'
 
-const page = usePage<{
-  simulateur: {
-    pictogramPath: string
-    title: string
-    slug: string
-  }
-}>()
-const simulateurId = computed(() => page.props.simulateur.slug)
+const {
+  url,
+  props: {
+    simulateur,
+  },
+} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
 
 // Form schema loading and state management
 const surveysStore = useSurveysStore()
 // Get per-simulateur state
-const schemaStatus = computed(() => surveysStore.getSchemaStatus(simulateurId.value))
-const hasAnswers = computed(() => surveysStore.hasAnswers(simulateurId.value))
-const progress = computed(() => surveysStore.getProgress(simulateurId.value))
-const showWelcomeScreen = computed(() => surveysStore.getShowWelcomeScreen(simulateurId.value))
-const showChoiceScreen = computed(() => surveysStore.getShowChoiceScreen(simulateurId.value))
-
+const schemaStatus = computed(() => surveysStore.getSchemaStatus(simulateur.slug))
+const hasAnswers = computed(() => surveysStore.hasAnswers(simulateur.slug))
+const progress = computed(() => surveysStore.getProgress(simulateur.slug))
+const showWelcomeScreen = computed(() => surveysStore.getShowWelcomeScreen(simulateur.slug))
+const showChoiceScreen = computed(() => surveysStore.getShowChoiceScreen(simulateur.slug))
 // Form submission
 const submissionStore = useSubmissionStore()
-const resultsFetchStatus = computed(() => submissionStore.getSubmissionStatus(simulateurId.value))
+const resultsFetchStatus = computed(() => submissionStore.getSubmissionStatus(simulateur.slug))
 
-const forceResume = computed(() => {
-  return getParam(page.url, 'resume') === 'true'
-})
+const forceResume = getParam(url, 'resume') === 'true'
 
 // Fetch the survey schema
-surveysStore.loadSurveySchema(simulateurId.value)
+surveysStore.loadSurveySchema(simulateur.slug)
 
-if (forceResume.value && hasAnswers.value) {
+if (forceResume && hasAnswers.value) {
   // Resume the form if the query parameter is present
   resumeForm()
 }
@@ -54,46 +51,46 @@ else {
 // Full survey initialization, including Matomo tracking
 function initSurvey() {
   // Track form start in Matomo
-  useMatomo().trackSurveyStart(simulateurId.value)
+  useMatomo().trackSurveyStart(simulateur.slug)
   // Show the choice screen if there are answers
   if (hasAnswers.value) {
-    surveysStore.setShowChoiceScreen(simulateurId.value, true)
-    surveysStore.setShowWelcomeScreen(simulateurId.value, false)
+    surveysStore.setShowChoiceScreen(simulateur.slug, true)
+    surveysStore.setShowWelcomeScreen(simulateur.slug, false)
   }
   else {
     // Show the welcome screen if there are no answers
-    surveysStore.setShowChoiceScreen(simulateurId.value, false)
-    surveysStore.setShowWelcomeScreen(simulateurId.value, true)
+    surveysStore.setShowChoiceScreen(simulateur.slug, false)
+    surveysStore.setShowWelcomeScreen(simulateur.slug, true)
   }
 }
 
 function resumeForm() {
-  submissionStore.setSubmissionStatus(simulateurId.value, 'idle')
-  surveysStore.setShowChoiceScreen(simulateurId.value, false)
-  surveysStore.setShowWelcomeScreen(simulateurId.value, false)
+  submissionStore.setSubmissionStatus(simulateur.slug, 'idle')
+  surveysStore.setShowChoiceScreen(simulateur.slug, false)
+  surveysStore.setShowWelcomeScreen(simulateur.slug, false)
   scrollToAnchor('simulateur-title')
 }
 
 // Restart the form from the beginning
 function restartForm() {
-  submissionStore.setSubmissionStatus(simulateurId.value, 'idle')
-  surveysStore.resetSurvey(simulateurId.value)
-  surveysStore.setShowChoiceScreen(simulateurId.value, false)
-  surveysStore.setShowWelcomeScreen(simulateurId.value, true)
+  submissionStore.setSubmissionStatus(simulateur.slug, 'idle')
+  surveysStore.resetSurvey(simulateur.slug)
+  surveysStore.setShowChoiceScreen(simulateur.slug, false)
+  surveysStore.setShowWelcomeScreen(simulateur.slug, true)
   scrollToAnchor('simulateur-title')
 }
 
 // Gérer la soumission du formulaire
 function handleFormComplete(): void {
-  const simulateurVisibleAnswers = surveysStore.getAnswersForCalculation(simulateurId.value)
+  const simulateurVisibleAnswers = surveysStore.getAnswersForCalculation(simulateur.slug)
   submissionStore
-    .submitForm(simulateurId.value, simulateurVisibleAnswers)
+    .submitForm(simulateur.slug, simulateurVisibleAnswers)
     .then((success: boolean) => {
       if (success) {
         setTimeout(() => {
           // Inertia router redirection instead of window.location.href
-          const secureHash = submissionStore.getSecureHash(simulateurId.value)
-          router.visit(`/simulateurs/${simulateurId.value}/resultats/${secureHash}#simulateur-title`, {
+          const secureHash = submissionStore.getSecureHash(simulateur.slug)
+          router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
             preserveState: true,
             preserveScroll: true,
           })
@@ -108,7 +105,7 @@ function handleFormComplete(): void {
 }
 
 onMounted(() => {
-  surveysStore.onComplete(simulateurId.value, handleFormComplete)
+  surveysStore.onComplete(simulateur.slug, handleFormComplete)
 })
 onBeforeUnmount(() => {
   surveysStore.deleteCompleteListeners()
@@ -120,13 +117,7 @@ const surveyH1 = computed(() => isIframe.value ? 'h1' : 'h2')
 </script>
 
 <template>
-  <div
-    class="survey"
-    :class="{
-      'survey--iframe': isIframe,
-      'survey--no-iframe': !isIframe,
-    }"
-  >
+  <div>
     <component
       :is="surveyH1"
       class="fr-sr-only"
@@ -203,10 +194,7 @@ const surveyH1 = computed(() => isIframe.value ? 'h1' : 'h2')
       </div>
 
       <!-- Survey form -->
-      <SurveyForm
-        v-else
-        :simulateur-id="simulateurId"
-      />
+      <SurveyForm v-else />
     </template>
   </div>
 </template>

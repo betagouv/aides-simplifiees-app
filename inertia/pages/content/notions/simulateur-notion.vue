@@ -1,32 +1,25 @@
 <script lang="ts" setup>
-import { Head } from '@inertiajs/vue3'
+import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { Head, usePage } from '@inertiajs/vue3'
 import DsfrLink from '~/components/DsfrLink.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-// Define props based on ContentController.showNotion
-const props = defineProps<{
-  simulateur: {
-    id: string
-    slug: string
-    title: string
-  }
-  notion: {
-    id: string
-    slug: string
-    title: string
-    description: string
-    content: string
-  }
-  html: string
-}>()
+const {
+  props: {
+    simulateur,
+    notion,
+    html,
+  },
+} = usePage<InferPageProps<DynamicContentController, 'showNotion'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Notions', to: '/notions' },
-  { text: props.simulateur.title, to: `/simulateurs/${props.simulateur.slug}#simulateur-title` },
-  { text: props.notion.title, to: `/simulateurs/${props.simulateur.slug}/${props.notion.slug}#simulateur-title` },
+  { text: simulateur.title, to: `/simulateurs/${simulateur.slug}#simulateur-title` },
+  { text: notion.title, to: `/simulateurs/${simulateur.slug}/${notion.slug}#simulateur-title` },
 ])
 </script>
 

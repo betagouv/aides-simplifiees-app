@@ -15,11 +15,11 @@ export default class DynamicContentController {
       return response.status(404).send('Page non trouvée')
     }
 
-    const content = await marked(page.content)
+    const html = await marked(page.content)
 
     return inertia.render('content/pages/page', {
       page,
-      content,
+      html,
     })
   }
 

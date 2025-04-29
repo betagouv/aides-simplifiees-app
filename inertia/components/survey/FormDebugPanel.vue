@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { computed, toRef } from 'vue'
+import type SimulateurController from '#controllers/simulateur_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { usePage } from '@inertiajs/vue3'
 import { useSurveysStore } from '~/stores/surveys'
 
-const props = defineProps<{
-  simulateurId: string
-}>()
-const simulateurId = toRef(props.simulateurId)
+const {
+  props: {
+    simulateur,
+  },
+} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
 
 const surveysStore = useSurveysStore()
-const groupedQuestions = computed(() => surveysStore.getGroupedQuestions(simulateurId.value))
-const currentQuestionId = computed(() => surveysStore.getCurrentQuestionId(simulateurId.value))
-const currentStepId = computed(() => surveysStore.getCurrentStepId(simulateurId.value))
-const progress = computed(() => surveysStore.getProgress(simulateurId.value))
+const groupedQuestions = surveysStore.getGroupedQuestions(simulateur.slug)
+const currentQuestionId = surveysStore.getCurrentQuestionId(simulateur.slug)
+const currentStepId = surveysStore.getCurrentStepId(simulateur.slug)
+const progress = surveysStore.getProgress(simulateur.slug)
 </script>
 
 <template>
@@ -22,8 +25,8 @@ const progress = computed(() => surveysStore.getProgress(simulateurId.value))
       Inspecteur du formulaire
     </h3>
     <div class="fr-text--sm">
-      <div v-if="simulateurId">
-        <strong>Simulateur:</strong> {{ simulateurId }}
+      <div v-if="simulateur.slug">
+        <strong>Simulateur:</strong> {{ simulateur.slug }}
       </div>
       <div>
         <strong>Étape actuelle :</strong> {{ currentStepId }}
@@ -78,7 +81,7 @@ const progress = computed(() => surveysStore.getProgress(simulateurId.value))
               v-if="question.answer !== null && question.answer !== undefined"
               class="debug-panel__answered fr-icon-success-line fr-icon--sm"
             >
-              "{{ surveysStore.formatAnswer(simulateurId, question.id, question.answer) }}"
+              "{{ surveysStore.formatAnswer(simulateur.slug, question.id, question.answer) }}"
             </span>
           </li>
         </ul>

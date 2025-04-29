@@ -25,7 +25,7 @@ createInertiaApp({
   progress: { color: '#5468FF' },
 
   title: (title) => {
-    const appName = usePage().props.appName
+    const appName = usePage<SharedProps>().props.appName
     return [title, appName]
       .filter(Boolean)
       .join(' | ')

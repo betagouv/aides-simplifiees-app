@@ -9,7 +9,7 @@ export default class SimulateurController {
   private simulateurService = new SimulateurService()
 
   // List all simulateurs
-  public async index({ inertia }: HttpContext) {
+  public async listSimulateurs({ inertia }: HttpContext) {
     const simulateurs = await Simulateur.all()
 
     return inertia.render('simulateurs/index', { simulateurs })

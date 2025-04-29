@@ -1,23 +1,18 @@
 <script lang="ts" setup>
-import { Head } from '@inertiajs/vue3'
+import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { Head, usePage } from '@inertiajs/vue3'
 import AideCard from '~/components/aides/AideCard.vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-defineProps<{
-  aides: {
-    id: number
-    title: string
-    slug: string
-    type: string
-    usage: string
-    instructeur: string
-    description: string
-    content: string
-  }[]
-}>()
+const {
+  props: {
+    aides,
+  },
+} = usePage<InferPageProps<DynamicContentController, 'listAides'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -44,7 +39,7 @@ setBreadcrumbs([
         >
           <div class="fr-col-12 fr-col-sm-6 fr-col-md-4">
             <AideCard
-              :title="aide.title"
+              :titre="aide.title"
               :description="aide.description"
               :link="`/aides/${aide.slug || aide.id}`"
               :instructeur="aide.instructeur"

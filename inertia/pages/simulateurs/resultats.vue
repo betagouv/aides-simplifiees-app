@@ -1,9 +1,9 @@
 <script lang="ts" setup>
+import type SimulateurController from '#controllers/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
-import type SimulateurController from '../../../app/controllers/simulateur_controller'
 import { DsfrAccordion, DsfrAccordionsGroup, DsfrBadge, VIcon } from '@gouvminint/vue-dsfr'
 import { Head, usePage } from '@inertiajs/vue3'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import AideMontantCard from '~/components/aides/AideMontantCard.vue'
 import AidesList from '~/components/aides/AidesList.vue'
 import DsfrLink from '~/components/DsfrLink.vue'
@@ -11,37 +11,36 @@ import SectionSeparator from '~/components/layout/SectionSeparator.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import { formatDateTime } from '~/utils/date_time'
 
-const page = usePage<InferPageProps<SimulateurController, 'showResultats'>>()
-const simulateur = computed(() => page.props.simulateur)
-const secureHash = computed(() => page.props.secureHash)
-const results = computed(() => page.props.results)
-const simulateurTitle = computed(() => simulateur.value?.title || simulateur.value?.slug)
-const simulateurSlug = computed(() => simulateur.value.slug)
+const {
+  props: {
+    simulateur,
+    secureHash,
+    results,
+    createdAt,
+  },
+} = usePage<InferPageProps<SimulateurController, 'showResultats'>>()
 
-const simulationDateTime = computed(() => {
-  if (page.props.createdAt) {
-    return formatDateTime(new Date(page.props.createdAt))
-  }
-  return null
-})
-const hasAides = computed(() => results.value.aides?.length > 0)
-const hasMontants = computed(() => results.value.montants?.length > 0)
-const hasAidesNonEligibles = computed(() => results.value.aidesNonEligibles?.length > 0)
-const hasTextesDeLoi = computed(() => results.value.textesLoi?.length > 0)
+const simulateurTitle = simulateur.title || simulateur.slug
+const simulationDateTime = formatDateTime(new Date(createdAt))
+
+const hasAides = results.aides?.length > 0
+const hasMontants = results.montants?.length > 0
+const hasAidesNonEligibles = results.aidesNonEligibles?.length > 0
+const hasTextesDeLoi = results.textesLoi?.length > 0
 
 // Track eligibility in Matomo if we have results and aides
-if (hasAides.value && results.value) {
-  // useMatomo().trackEligibility(simulateurSlug.value, results.value.aides?.length || 0)
+if (hasAides && results) {
+  // useMatomo().trackEligibility(simulateur.slug, results.aides?.length || 0)
 }
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Simulateurs', to: '/simulateurs' },
-  { text: simulateurTitle.value, to: `/simulateurs/${simulateurSlug.value}#simulateur-title` },
+  { text: simulateurTitle, to: `/simulateurs/${simulateur.slug}#simulateur-title` },
   {
     text: 'Résultats',
-    to: `/simulateurs/${simulateurSlug.value}/resultats${secureHash.value ? `/${secureHash.value}` : ''}#simulateur-title`,
+    to: `/simulateurs/${simulateur.slug}/resultats${secureHash ? `/${secureHash}` : ''}#simulateur-title`,
   },
 ])
 
@@ -76,7 +75,7 @@ const activeAccordion = ref()
           class="results__backlink"
           icon-before
           label="Reprendre ma simulation"
-          :to="`/simulateurs/${simulateurSlug}/recapitulatif/#simulateur-title`"
+          :to="`/simulateurs/${simulateur.slug}/recapitulatif/#simulateur-title`"
           preserve-scroll
           preserve-state
           :icon="{ name: 'ri:arrow-left-line', ssr: true }"
@@ -261,6 +260,7 @@ const activeAccordion = ref()
   display: flex;
   justify-content: flex-end;
 }
+
 .results__montants {
   display: flex;
   gap: 1.5rem;

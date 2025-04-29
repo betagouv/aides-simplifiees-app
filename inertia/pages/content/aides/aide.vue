@@ -1,30 +1,24 @@
 <script lang="ts" setup>
-import { Head } from '@inertiajs/vue3'
+import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-const props = defineProps<{
-  aide: {
-    id: number
-    title: string
-    slug: string
-    type: string
-    usage: string
-    instructeur: string
-    description: string
-    content: string
-    textesLoi?: Array<{ prefix: string, label: string, url: string }>
-  }
-  html: string
-}>()
+const {
+  props: {
+    aide,
+    html,
+  },
+} = usePage<InferPageProps<DynamicContentController, 'showAide'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Aides', to: '/aides' },
-  { text: props.aide.title, to: `/aides/${props.aide.slug}` },
+  { text: aide.title, to: `/aides/${aide.slug}` },
 ])
 </script>
 

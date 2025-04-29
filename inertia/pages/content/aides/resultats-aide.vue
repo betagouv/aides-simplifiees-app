@@ -1,34 +1,24 @@
 <script lang="ts" setup>
-import { Head } from '@inertiajs/vue3'
+import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { Head, usePage } from '@inertiajs/vue3'
 import DsfrLink from '~/components/DsfrLink.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-const props = defineProps<{
-  hash: string
-  simulateur: {
-    id: string
-    slug: string
-    title: string
-  }
-  aide: {
-    id: number
-    title: string
-    slug: string
-    type: string
-    usage: string
-    instructeur: string
-    description: string
-    content: string
-    textesLoi?: Array<{ prefix: string, label: string, url: string }>
-  }
-  html: string
-}>()
+const {
+  props: {
+    aide,
+    simulateur,
+    hash,
+    html,
+  },
+} = usePage<InferPageProps<DynamicContentController, 'showResultatsAide'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Aides', to: '/aides' },
-  { text: props.aide.title, to: `/aides/${props.aide.slug}` },
+  { text: aide.title, to: `/aides/${aide.slug}` },
 ])
 </script>
 

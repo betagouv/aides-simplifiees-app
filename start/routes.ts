@@ -65,7 +65,7 @@ router.get('/aides/:aide_slug', [DynamicContentController, 'showAide'])
 /**
  * Simulateurs
  */
-router.get('/simulateurs', [SimulateurController, 'index'])
+router.get('/simulateurs', [SimulateurController, 'listSimulateurs'])
 // Specific simulateur routes
 router
   .group(() => {

@@ -1,27 +1,25 @@
 <script lang="ts" setup>
-import { Head } from '@inertiajs/vue3'
+import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-const props = defineProps<{
-  notion: {
-    id: string
-    slug: string
-    title: string
-    description: string
-    content: string
-  }
-  html: string
-}>()
+const {
+  props: {
+    notion,
+    html,
+  },
+} = usePage<InferPageProps<DynamicContentController, 'showNotion'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Notions', to: '/notions' },
-  { text: props.notion.title, to: `/notions/${props.notion.slug}` },
+  { text: notion.title, to: `/notions/${notion.slug}` },
 ])
 </script>
 

@@ -42,35 +42,13 @@ setBreadcrumbs([
       v-if="aide"
       type="page-header"
     >
-      <article>
+      <article class="brand-html-content">
         <header class="fr-mb-4w">
           <h1>
             {{ aide.title }}
           </h1>
         </header>
         <div v-html="html" />
-
-        <!-- Display textes de loi if available -->
-        <div
-          v-if="aide.textesLoi && aide.textesLoi.length > 0"
-          class="fr-mt-4w"
-        >
-          <h2>Textes de loi associés</h2>
-          <ul>
-            <li
-              v-for="(texte, index) in aide.textesLoi"
-              :key="index"
-            >
-              <a
-                :href="texte.url"
-                target="_blank"
-                rel="noopener"
-              >
-                {{ texte.prefix }} {{ texte.label }}
-              </a>
-            </li>
-          </ul>
-        </div>
       </article>
     </SectionContainer>
   </BrandBackgroundContainer>

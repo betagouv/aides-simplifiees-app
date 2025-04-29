@@ -138,7 +138,7 @@ export default class AideSeeder extends BaseSeeder {
         title: 'Aide à la mobilité Parcoursup',
         slug: 'mobilite-parcoursup',
         type: 'aide-financiere',
-        usage: 'frais-deplacement',
+        usage: 'frais-installation-logement',
         instructeur:
           'Ministère chargé de l\'enseignement supérieur, de la recherche et de l\'innovation',
         description:

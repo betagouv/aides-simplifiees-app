@@ -39,7 +39,7 @@ setBreadcrumbs([
       v-if="notion"
       type="page-header"
     >
-      <article>
+      <article class="brand-html-content">
         <header class="fr-mb-4w">
           <h1>
             {{ notion.title }}

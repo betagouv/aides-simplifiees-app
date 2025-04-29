@@ -37,7 +37,10 @@ setBreadcrumbs([
       || `Découvrez toutes les informations sur la notion '${notion.title}' pour vous accompagner dans vos démarches.`
     "
   />
-  <article v-if="simulateur && notion">
+  <article
+    v-if="simulateur && notion"
+    class="brand-html-content"
+  >
     <header class="fr-mb-6w">
       <h1>
         {{ notion.title }}

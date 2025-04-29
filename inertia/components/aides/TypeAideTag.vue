@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { DsfrTagProps } from '@gouvminint/vue-dsfr'
+import { DsfrTag } from '@gouvminint/vue-dsfr'
 
 const props = withDefaults(defineProps<
   Omit<DsfrTagProps, 'icon'> & {

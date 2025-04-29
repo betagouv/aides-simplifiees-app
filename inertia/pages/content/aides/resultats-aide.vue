@@ -40,7 +40,7 @@ setBreadcrumbs([
         || `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`
     "
   />
-  <article>
+  <article class="brand-html-content">
     <header class="fr-mb-6w">
       <h1>
         {{ aide.title }}
@@ -54,27 +54,6 @@ setBreadcrumbs([
     </header>
     <div class="fr-card fr-p-3w">
       <div v-html="html" />
-    </div>
-    <!-- Display textes de loi if available -->
-    <div
-      v-if="aide.textesLoi && aide.textesLoi.length > 0"
-      class="fr-mt-4w"
-    >
-      <h2>Textes de loi associés</h2>
-      <ul>
-        <li
-          v-for="(texte, index) in aide.textesLoi"
-          :key="index"
-        >
-          <a
-            :href="texte.url"
-            target="_blank"
-            rel="noopener"
-          >
-            {{ texte.prefix }} {{ texte.label }}
-          </a>
-        </li>
-      </ul>
     </div>
   </article>
 </template>

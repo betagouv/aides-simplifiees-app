@@ -202,7 +202,7 @@ export default class SimulateurController {
           link: `/simulateurs/${params.simulateur_slug}/resultats/${params.hash}/aides/${rawAide.id}#simulateur-title`,
           eligibilite: rawAide.eligibilite,
           // Data from database content source
-          titre: aideDetails.title || `Aide ${rawAide.id}`,
+          title: aideDetails.title || `Aide ${rawAide.id}`,
           description: aideDetails.description || 'Description non disponible',
           textesLoi: aideDetails.textesLoi || [],
           instructeur: aideDetails.instructeur || 'Instructeur non disponible',

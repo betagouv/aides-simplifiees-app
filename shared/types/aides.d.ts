@@ -25,7 +25,7 @@ declare global {
   interface RichAide {
     id: string
     link: string
-    titre: string
+    title: string
     description: string
     eligibilite: boolean
     instructeur: string

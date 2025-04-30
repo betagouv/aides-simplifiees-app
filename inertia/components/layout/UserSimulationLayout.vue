@@ -12,8 +12,8 @@ import { useSurveyDebugStore } from '~/stores/survey_debug'
 
 const {
   props: {
-    simulateur
-  }
+    simulateur,
+  },
 } = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
 
 const { debugMode } = storeToRefs(useSurveyDebugStore())

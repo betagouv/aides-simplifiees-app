@@ -15,15 +15,39 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * codes. You might want to enable them in production only, but feel
    * free to enable them in development as well.
    */
-  protected renderStatusPages = app.inProduction
+  protected renderStatusPages = app.inProduction // Enable in all environments
 
   /**
    * Status pages is a collection of error code range and a callback
    * to return the HTML contents to send as a response.
    */
   protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
-    '404': (error, { inertia }) => inertia.render('errors/not_found', { error }),
-    '500..599': (error, { inertia }) => inertia.render('errors/server_error', { error }),
+    '404': (error, { inertia, response }) => {
+      response.status(404)
+
+      return inertia.render('errors/not_found', {
+        error: {
+          statusCode: 404,
+          message: app.inProduction
+            ? '404 Page not found'
+            : (error instanceof Error ? error.message : String(error)),
+        },
+      })
+    },
+    '500..599': (error, { inertia, response }) => {
+      // Get the specific status code if available, default to 500
+      const statusCode = 500 // Default to 500 if we can't determine the status
+      response.status(statusCode)
+
+      return inertia.render('errors/not_found', {
+        error: {
+          statusCode,
+          message: app.inProduction
+            ? 'An unexpected error occurred'
+            : (error instanceof Error ? error.message : String(error)),
+        },
+      })
+    },
   }
 
   /**

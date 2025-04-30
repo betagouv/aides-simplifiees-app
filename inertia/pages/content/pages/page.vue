@@ -11,7 +11,7 @@ const {
   props: {
     page,
     html,
-  }
+  },
 } = usePage<InferPageProps<DynamicContentController, 'showPage'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()

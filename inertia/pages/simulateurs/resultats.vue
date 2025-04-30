@@ -3,11 +3,7 @@ import type SimulateurController from '#controllers/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrAccordion, DsfrAccordionsGroup, DsfrBadge, VIcon } from '@gouvminint/vue-dsfr'
 import { Head, usePage } from '@inertiajs/vue3'
-<<<<<<< HEAD
 import { ref } from 'vue'
-=======
-import { computed, onMounted, ref } from 'vue'
->>>>>>> 17100aa (refactor(matomo): streamline Matomo tracking logic and enhance eligibility tracking conditions)
 import AideMontantCard from '~/components/aides/AideMontantCard.vue'
 import AidesList from '~/components/aides/AidesList.vue'
 import DsfrLink from '~/components/DsfrLink.vue'
@@ -50,74 +46,6 @@ setBreadcrumbs([
 ])
 
 const showMethodology = ref(false)
-<<<<<<< HEAD
-=======
-// Computed from results (ie. formSubmission.results)
-const simulationDateTime = computed(() => {
-  if (results.value?.createAt) {
-    return results.value.createAt
-  }
-
-  // Otherwise format it from submission createdAt
-  if (!formSubmission.value?.createdAt)
-    return null
-
-  const createdAt = new Date(formSubmission.value.createdAt)
-
-  // Format date: "DD/MM/YYYY"
-  const date = createdAt.toLocaleDateString('fr-FR')
-
-  // Format time: "HH:MM"
-  const time = createdAt.toLocaleTimeString('fr-FR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-
-  return { date, time }
-})
-const hasAides = computed(
-  () => Array.isArray(results.value?.aides) && results.value.aides.length > 0,
-)
-const hasEcheances = computed(
-  () => Array.isArray(results.value?.echeances) && results.value.echeances.length > 0,
-)
-const hasMontants = computed(
-  () => Array.isArray(results.value?.montants) && results.value.montants.length > 0,
-)
-const hasAidesNonEligibles = computed(
-  () =>
-    Array.isArray(results.value?.aidesNonEligibles) && results.value.aidesNonEligibles.length > 0,
-)
-const hasTextesDeLoi = computed(
-  () => Array.isArray(results.value?.textesLoi) && results.value.textesLoi.length > 0,
-)
-const matomo = useMatomo()
-
-if (hasAides.value && results.value && simulateurId.value) {
-    matomo.trackEligibility(simulateurId.value, results.value.aides?.length || 0)
-}
-
-// For ui / ux
-const segmentedSetOptions = computed(() => {
-  const options = []
-  if (hasMontants.value) {
-    options.unshift({
-      label: 'Montants estimés',
-      value: 'montants',
-      icon: 'ri:money-euro-circle-line',
-    })
-  }
-  if (hasEcheances.value) {
-    options.unshift({
-      label: 'Échéances estimées',
-      value: 'echeances',
-      icon: 'ri:calendar-2-line',
-    })
-  }
-  return options
-})
-const visibleTabName = ref('montants')
->>>>>>> 17100aa (refactor(matomo): streamline Matomo tracking logic and enhance eligibility tracking conditions)
 const activeAccordion = ref()
 </script>
 

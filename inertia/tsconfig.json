@@ -9,5 +9,5 @@
       "~/*": ["./*"]
     }
   },
-  "include": ["./**/*.ts", "./**/*.vue", "../shared/**/*.ts", "../shared/**/*.vue"],
+  "include": ["./**/*.ts", "./**/*.vue", "../shared/**/*.ts", "../shared/**/*.vue"]
 }

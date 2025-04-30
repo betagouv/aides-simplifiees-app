@@ -9,8 +9,8 @@ import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const {
   props: {
-    simulateur
-  }
+    simulateur,
+  },
 } = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()

@@ -105,22 +105,17 @@ const getChartAttributes = computed(() => {
   }
 })
 
+onMounted(() => {
+  import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.js') as any
+  import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.css')
+  fetchStatistics()
+})
+
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Statistiques', to: '/statistiques' },
 ])
-
-onMounted(() => {
-  // In a browser environment, dynamically import the chart library
-  if (typeof window !== 'undefined') {
-    // Using dynamic import with type any to avoid TypeScript errors
-    import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.js') as any
-    import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.css')
-  }
-
-  fetchStatistics()
-})
 </script>
 
 <template>

@@ -13,15 +13,6 @@ declare global {
 
   type TexteLoi = string | { prefix: string, label: string, url: string } | null
 
-  interface AideDetails {
-    title: string
-    description: string
-    type: TypeAide
-    instructeur: string
-    description: string
-    textesLoi?: TexteLoi[]
-  }
-
   interface RichAide {
     id: string
     link: string

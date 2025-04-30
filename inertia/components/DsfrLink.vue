@@ -9,7 +9,7 @@ const props = withDefaults(
     iconBefore?: boolean
     to: string
     target?: '_blank' | '_self' | '_parent' | '_top'
-    icon: VIconProps
+    icon?: VIconProps
   }>(),
   {
     target: '_self',

@@ -11,6 +11,8 @@ const riIconNames = [
   'arrow-right-line',
   'refresh-line',
   'menu-line',
+  'eye-line',
+  'eye-off-line',
   'arrow-right-down-line',
   'bank-card-line',
   'chat-check-line',
@@ -31,6 +33,8 @@ const riIconNames = [
   'scales-3-line',
   'shopping-bag-line',
   'sun-line',
+  'login-box-line',
+  'logout-box-line',
 ]
 
 /**

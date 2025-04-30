@@ -1,5 +1,8 @@
 # CHANGELOG
 
+# 0.8.4
+* Debugs divers sur les statistiques
+
 # 0.8.3
 * Debug de la feature de statistiques Matomo pour prendre en compte les formats [simulatorId][source] et [simulatorId]source (erreur legacy)
 

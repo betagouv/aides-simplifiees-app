@@ -1,43 +1,34 @@
 <script setup lang="ts">
-import { DsfrAlert, DsfrButton, DsfrInput } from '@gouvminint/vue-dsfr'
+import type AuthController from '#controllers/auth_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { DsfrAlert, DsfrButton, DsfrButtonGroup, DsfrInputGroup } from '@gouvminint/vue-dsfr'
+// import { DsfrCheckbox } from '@gouvminint/vue-dsfr'
 import { Head, useForm, usePage } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+// import DsfrLink from '~/components/DsfrLink.vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 
-// Récupération des props et des données partagées
-const props = defineProps<{
-  errors?: Record<string, string>
-}>()
+const page = usePage<InferPageProps<AuthController, 'showLogin'>>()
 
 // Accéder aux messages flash depuis les données partagées
-const page = usePage()
-const flash = computed(() => page.props.flash || {})
-const flashErrors = computed(() => {
-  const flashObj = flash.value as any
-  return (flashObj.errors || {}) as Record<string, string>
-})
-
-// Récupérer les anciennes valeurs du formulaire
-const oldValues = computed(() => {
-  const flashObj = flash.value as any
-  return (flashObj.old || {}) as Record<string, string>
-})
-
-// Combiner les erreurs des props et des flash messages
-const allErrors = computed(() => {
-  return { ...(props.errors || {}), ...flashErrors.value }
+const errors = computed(() => {
+  return page.props.flash.errors
 })
 
 const form = useForm({
-  email: oldValues.value.email || '',
-  password: '',
+  email: null,
+  password: null,
 })
 
 function submitForm() {
   form.post('/login', {
     preserveScroll: true,
   })
+}
+const showPassword = ref(false)
+function togglePasswordVisibility() {
+  showPassword.value = !showPassword.value
 }
 </script>
 
@@ -54,67 +45,72 @@ function submitForm() {
       <div class="fr-grid-row fr-grid-row--center">
         <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
           <div class="fr-card fr-p-4w">
-            <div class="fr-card__body">
-              <div class="fr-card__content">
-                <h2 class="">
-                  Connexion
-                </h2>
+            <h2>
+              Connexion
+            </h2>
 
-                <!-- Alerte pour l'erreur générale de formulaire -->
-                <DsfrAlert
-                  v-if="allErrors.form"
-                  type="error"
-                  title="Erreur de connexion"
-                  :description="allErrors.form"
-                  class="fr-mb-3w"
+            <!-- Alerte pour l'erreur générale de formulaire -->
+            <DsfrAlert
+              v-if="errors?.form"
+              type="error"
+              title="Erreur de connexion"
+              :description="errors.form"
+              class="fr-mb-3w"
+            />
+
+            <form @submit.prevent="submitForm">
+              <DsfrInputGroup
+                v-model="form.email"
+                label-visible
+                label="Adresse e-mail"
+                type="email"
+                required
+                :error-message="errors?.email"
+              />
+              <div class="password-field-container">
+                <DsfrInputGroup
+                  v-model="form.password"
+                  label-visible
+                  label="Mot de passe"
+                  :type="showPassword ? 'text' : 'password'"
+                  :error-message="errors?.password"
+                  required
                 />
-
-                <form @submit.prevent="submitForm">
-                  <div
-                    id="login-form"
-                    class="fr-fieldset"
-                  >
-                    <div class="fr-fieldset__element fr-mb-3w">
-                      <DsfrInput
-                        v-model="form.email"
-                        label="Adresse e-mail"
-                        type="email"
-                        required
-                      />
-                      <p
-                        v-if="allErrors.email"
-                        class="fr-error-text"
-                      >
-                        {{ allErrors.email }}
-                      </p>
-                    </div>
-
-                    <div class="fr-fieldset__element fr-mb-3w">
-                      <DsfrInput
-                        v-model="form.password"
-                        label="Mot de passe"
-                        type="password"
-                        required
-                      />
-                      <p
-                        v-if="allErrors.password"
-                        class="fr-error-text"
-                      >
-                        {{ allErrors.password }}
-                      </p>
-                    </div>
-
-                    <div class="fr-fieldset__element fr-mt-5w">
-                      <DsfrButton
-                        label="Se connecter"
-                        type="submit"
-                        :disabled="form.processing"
-                      />
-                    </div>
-                  </div>
-                </form>
+                <DsfrButton
+                  class="password-toggle-button"
+                  :label="showPassword ? 'Masquer' : 'Afficher'"
+                  :icon="{
+                    name: showPassword ? 'ri:eye-off-line' : 'ri:eye-line',
+                    ssr: true,
+                  }"
+                  size="sm"
+                  tertiary
+                  no-outline
+                  type="submit"
+                  :disabled="form.processing"
+                  @click.prevent="togglePasswordVisibility"
+                />
+                <!-- <DsfrLink
+                  to="/password/reset"
+                  label="Mot de passe oublié ?"
+                /> -->
               </div>
-            </div>
+              <!-- <DsfrCheckbox
+                class="fr-mt-2w"
+                name="remember-me"
+                small
+                v-model="form.remember"
+                label="Se souvenir de moi"
+              /> -->
+              <DsfrButtonGroup
+                class="fr-mt-4w"
+                :buttons="[{
+                  label: 'Se connecter',
+                  type: 'submit',
+                  disabled: form.processing,
+                }]"
+              />
+            </form>
           </div>
         </div>
       </div>
@@ -123,15 +119,13 @@ function submitForm() {
 </template>
 
 <style scoped lang="scss">
-.fr-card {
-  background-color: var(--background-default-grey);
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+.password-field-container {
+  position: relative;
 }
 
-.fr-error-text {
-  color: var(--text-default-error);
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+.password-toggle-button {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 </style>

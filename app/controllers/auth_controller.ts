@@ -30,10 +30,10 @@ export default class AuthController {
         // Redirect to admin dashboard
         return response.redirect().toRoute('admin.index')
       }
+      // eslint-disable-next-line unused-imports/no-unused-vars
       catch (authError) {
         // Erreur d'authentification (utilisateur non trouvé ou mot de passe incorrect)
         session.flash('errors', { form: 'Identifiants invalides' })
-        console.error('Erreur d\'authentification :', authError)
         return response.redirect().back()
       }
     }
@@ -49,9 +49,6 @@ export default class AuthController {
 
         // Flash les erreurs de validation
         session.flash('errors', formattedErrors)
-
-        // Conserver l'email pour le remplir automatiquement
-        session.flash('old', { email: request.input('email') })
       }
       else {
         // En cas d'autre erreur, envoyer un message générique

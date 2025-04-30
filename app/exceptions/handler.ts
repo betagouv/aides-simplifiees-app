@@ -15,7 +15,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * codes. You might want to enable them in production only, but feel
    * free to enable them in development as well.
    */
-  protected renderStatusPages = app.inProduction // Enable in all environments
+  protected renderStatusPages = app.inProduction
 
   /**
    * Status pages is a collection of error code range and a callback
@@ -35,8 +35,8 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       })
     },
     '500..599': (error, { inertia, response }) => {
-      // Get the specific status code if available, default to 500
-      const statusCode = 500 // Default to 500 if we can't determine the status
+      // Use 500 status code for all server errors
+      const statusCode = 500
       response.status(statusCode)
 
       return inertia.render('errors/not_found', {

@@ -6,7 +6,7 @@ import TypeAideTag from '~/components/aides/TypeAideTag.vue'
 
 type AideCardProps = {
   link: string
-  titre: string
+  title: string
   description: string
   typeAide: TypeAide
   montant?: number
@@ -15,12 +15,12 @@ type AideCardProps = {
 
 const props = defineProps<AideCardProps>()
 
-const periode = props.titre?.match('APL') ? '/mois' : undefined
+const periode = props.title?.match('APL') ? '/mois' : undefined
 </script>
 
 <template>
   <DsfrCard
-    :title="titre"
+    :title="title"
     :description="description"
     :link="link"
     :detail="instructeur"

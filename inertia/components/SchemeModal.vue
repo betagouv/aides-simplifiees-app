@@ -4,19 +4,10 @@ import lightThemeSvg from '@gouvfr/dsfr/dist/artwork/pictograms/environment/sun.
 import systemThemeSvg from '@gouvfr/dsfr/dist/artwork/pictograms/system/system.svg'
 import { DsfrModal, DsfrRadioButtonSet } from '@gouvminint/vue-dsfr'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
 import { useSchemeStore } from '~/stores/scheme'
 
-// Default values for SSR
-const defaultPreferences = {
-  scheme: 'light',
-  theme: 'light',
-}
-
-// Only use the store in browser environment
-const isBrowser = typeof window !== 'undefined'
-const schemeStore = isBrowser ? useSchemeStore() : null
-const { preferences, isModalOpen } = isBrowser ? storeToRefs(schemeStore!) : { preferences: ref(defaultPreferences), isModalOpen: ref(false) }
+const schemeStore = useSchemeStore()
+const { preferences, isModalOpen } = storeToRefs(schemeStore!)
 
 const options = [
   {
@@ -43,7 +34,7 @@ const options = [
     <DsfrModal
       :opened="isModalOpen"
       title="Changer le thème"
-      @close="() => isBrowser && schemeStore?.closeModal()"
+      @close="() => schemeStore?.closeModal()"
     >
       <DsfrRadioButtonSet
         v-model="preferences.scheme"

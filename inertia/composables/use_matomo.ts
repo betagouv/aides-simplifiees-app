@@ -43,14 +43,11 @@ export function useMatomo() {
    * Track an answer to a survey question
    */
   function trackSurveyAnswer(simulateurId: string, questionId: string, questionTitle: string) {
-    if (import.meta.server) {
+    if (import.meta.env.SSR) {
       return
     }
     const category = getMatomoCategory(simulateurId)
     const name = `[${simulateurId}][${category.split(']')[1].slice(1)}]${questionId}:${questionTitle}`
-    if (import.meta.server) {
-      return
-    }
     trackEvent(category, 'Answer', name)
   }
 
@@ -58,7 +55,7 @@ export function useMatomo() {
    * Track the start of a survey
    */
   function trackSurveyStart(simulateurId: string) {
-    if (import.meta.server) {
+    if (import.meta.env.SSR) {
       return
     }
     const category = getMatomoCategory(simulateurId)
@@ -70,7 +67,7 @@ export function useMatomo() {
    * Track the submission of a survey
    */
   function trackSurveySubmit(simulateurId: string) {
-    if (import.meta.server) {
+    if (import.meta.env.SSR) {
       return
     }
     const category = getMatomoCategory(simulateurId)
@@ -82,7 +79,7 @@ export function useMatomo() {
    * Track Eligibility
    */
   function trackEligibility(simulateurId: string, aidesLength: number) {
-    if (import.meta.server) {
+    if (import.meta.env.SSR) {
       return
     }
     const category = getMatomoCategory(simulateurId)

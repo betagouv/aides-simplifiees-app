@@ -23,7 +23,7 @@ const href = computed(() => {
   return typeof props.to === 'string' ? props.to : props.to.path || ''
 })
 
-const { url } = usePage()
+const page = usePage()
 </script>
 
 <template>
@@ -31,7 +31,7 @@ const { url } = usePage()
     v-bind="{
       ...props,
       href,
-      'aria-current': url === href ? 'page' : undefined,
+      'aria-current': page.url === href ? 'page' : undefined,
     }"
   >
     <slot />

@@ -27,7 +27,8 @@ const shieldConfig = defineConfig({
    * iFrames
    */
   xFrame: {
-    enabled: false,
+    enabled: true,
+    action: 'SAMEORIGIN',
   },
 
   /**

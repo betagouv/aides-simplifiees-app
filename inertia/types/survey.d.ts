@@ -69,6 +69,7 @@ declare global {
     id: string
     title: string
     description: string
+    'intermediary-results-after-step'?: string
     steps: SurveyStep[]
     tests?: SurveyTest[]
   }

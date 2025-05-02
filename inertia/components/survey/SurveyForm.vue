@@ -30,10 +30,11 @@ const surveysStore = useSurveysStore()
 const currentQuestion = computed(() => surveysStore.getCurrentQuestion(simulateur.slug))
 const currentPage = computed(() => surveysStore.getCurrentPage(simulateur.slug))
 const surveySchema = computed(() => surveysStore.getSchema(simulateur.slug))
-const _isLastQuestion = computed(() => surveysStore.isLastQuestion(simulateur.slug))
-const _isLastPage = computed(() => surveysStore.isLastPage(simulateur.slug))
+const isLastQuestion = computed(() => surveysStore.isLastQuestion(simulateur.slug))
+const isLastPage = computed(() => surveysStore.isLastPage(simulateur.slug))
 const areAllRequiredQuestionsAnswered = computed(() => surveysStore.areAllRequiredQuestionsAnswered(simulateur.slug))
 const currentStepIndex = computed(() => surveysStore.getCurrentStepIndex(simulateur.slug))
+
 
 // Determine if we're using the page-based navigation
 const hasPages = computed(() => {
@@ -71,7 +72,7 @@ const areAllQuestionsInPageValid = computed(() => {
 })
 
 // Check if the current question has been answered
-const _hasValidAnswer = computed(() => {
+const hasValidAnswer = computed(() => {
   if (!currentQuestion.value) {
     return false
   }
@@ -144,7 +145,10 @@ onMounted(() => {
 })
 
 onKeyDown('Enter', (event: KeyboardEvent) => {
-  if (areAllQuestionsInPageValid.value && !_isLastPage.value) {
+  let validAnswer = hasPages.value ? areAllQuestionsInPageValid : hasValidAnswer
+  let isLast = hasPages.value ? isLastPage : isLastQuestion
+
+  if (validAnswer.value && !isLast.value) {
     // Only trigger if the source is not a button or textarea or [type="search"] input or select
     if (
       !(event.target instanceof HTMLButtonElement) && !(event.target instanceof HTMLTextAreaElement) && !(event.target instanceof HTMLInputElement && event.target.type === 'search') && !(event.target instanceof HTMLSelectElement)
@@ -153,7 +157,7 @@ onKeyDown('Enter', (event: KeyboardEvent) => {
       handleNext()
     }
   }
-  else if (_isLastPage.value && areAllRequiredQuestionsAnswered.value) {
+  else if (validAnswer.value && isLast.value) {
     // Only trigger if the source is not a button or textarea or [type="search"] input or select
     if (
       !(event.target instanceof HTMLButtonElement) && !(event.target instanceof HTMLTextAreaElement) && !(event.target instanceof HTMLInputElement && event.target.type === 'search') && !(event.target instanceof HTMLSelectElement)
@@ -166,6 +170,32 @@ onKeyDown('Enter', (event: KeyboardEvent) => {
 
 // Navigate to next page
 function handleNext() {
+  // Check if we should show intermediary results
+  const intermediaryResultsAfterStep = surveySchema.value?.['intermediary-results-after-step']
+  const currentStep = surveysStore.getCurrentStep(simulateur.slug)
+    const nextPage = surveysStore.getNextVisiblePage(simulateur.slug)
+  const stepOfNextPage = surveysStore.getStepFromPageId(simulateur.slug, nextPage?.id)
+
+
+  // intermediaryResultsAfterStep is set in the survey schema
+  // I am in the step of intermediaryResultsAfterStep
+  // The next page is in a different step
+  if (intermediaryResultsAfterStep && currentStep?.id === intermediaryResultsAfterStep && stepOfNextPage?.id !== currentStep?.id) {
+    console.log('[SurveyForm] Redirecting to intermediary results page')
+
+    // Navigate to intermediary results page
+
+    surveysStore.goToNextPage(simulateur.slug)
+
+    router.visit(`/simulateurs/${simulateur.slug}/resultats-intermediaire#simulateur-title`, {
+      preserveState: true,
+      preserveScroll: true,
+    })
+
+
+    return
+  }
+
   if (hasPages.value) {
     // Go to the next page
     const wentToNextPage = surveysStore.goToNextPage(simulateur.slug)
@@ -387,14 +417,14 @@ const pageIndicator = computed(() => {
           icon: { name: 'ri:arrow-left-line', ssr: true },
           onClick: handlePrevious,
         },
-        (_isLastPage && false) ? null : {
+        (hasPages ? !isLastPage : !isLastQuestion) ? {
           label: 'Suivant',
           iconRight: true,
           icon: { name: 'ri:arrow-right-line', ssr: true },
-          disabled: !areAllQuestionsInPageValid,
+          disabled: hasPages ? !areAllQuestionsInPageValid : !hasValidAnswer,
           onClick: handleNext,
-        },
-        areAllRequiredQuestionsAnswered && (_isLastPage ? {
+        } : null,
+        areAllRequiredQuestionsAnswered && (isLastPage ? {
           label: 'Terminer',
           iconRight: true,
           icon: { name: 'ri:arrow-right-line', ssr: true },

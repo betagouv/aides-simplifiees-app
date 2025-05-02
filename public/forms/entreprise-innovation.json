@@ -4,6 +4,7 @@
   "id": "entreprise-innovation",
   "title": "Dispositifs d'innovation et de recherche",
   "description": "Répondez à ces questions pour découvrir les dispositifs d'innovation et de recherche auxquels votre entreprise pourrait être éligible (CIR, CII, CICo, JEI, JEU, JEC)",
+  "intermediary-results-after-step": "information-generale",
   "steps": [
     {
       "id": "information-generale",
@@ -182,7 +183,6 @@
               "type": "boolean",
               "visibleWhen": "valorisation-recherche=true"
             },
-
             {
               "id": "capital-detenu",
               "title": "Le capital de votre entreprise est-il détenu au moins à 50 % par l'une des personnes ou entités suivantes ?(indispensable JEI, JEU, JEC)",
@@ -214,6 +214,12 @@
                   "title": "Aucune de ces réponses"
                 }
               ]
+            },
+            {
+              "id": "test-question",
+              "title": "Test question",
+              "description": "Test description",
+              "type": "boolean"
             }
           ]
         }
@@ -225,7 +231,7 @@
       "pages": [
         {
           "id": "chiffre-affaires",
-          "title": "Chiffre d'affaires annuel (en euros)",
+          "title": "Titre administrable",
           "questions": [
             {
               "id": "chiffre-affaires",

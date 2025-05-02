@@ -1,0 +1,1 @@
+{"prix":null,"prix . carottes":{"valeur":"2 €/kg"},"prix . champignons":{"valeur":"5 €/kg"},"prix . avocat":{"valeur":"2 €/avocat"},"dépenses primeur":{"somme":["prix . carottes * 1.5 kg","prix . champignons * 500 g","prix . avocat * 3 avocat"]}}

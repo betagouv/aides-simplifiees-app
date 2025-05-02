@@ -30,7 +30,45 @@ setBreadcrumbs([
 const surveysStore = useSurveysStore()
 surveysStore.loadSurveySchema(simulateur.slug)
 
-const groupedQuestions = computed(() => surveysStore.getGroupedAnsweredQuestions(simulateur.slug))
+const groupedQuestions = computed(() => {
+  const schema = surveysStore.getSchema(simulateur.slug)
+  const currentAnswers = surveysStore.getAnswers(simulateur.slug)
+  const currentQuestionId = surveysStore.getCurrentQuestionId(simulateur.slug)
+
+  if (!schema) return []
+
+  return schema.steps.map((step) => {
+    let questions = []
+
+    // Handle step -> pages -> questions format
+    if (step.pages && step.pages.length > 0) {
+      // Collect questions from all pages in this step
+      questions = step.pages.flatMap(page => page.questions || [])
+    } else {
+      // Legacy format: step -> questions
+      questions = step.questions || []
+    }
+
+    // Filter answered questions or current question
+    const filteredQuestions = questions
+      .filter(question =>
+        surveysStore.hasAnswer(simulateur.slug, question.id) ||
+        currentQuestionId === question.id
+      )
+      .map(question => ({
+        id: question.id,
+        title: question.title,
+        answer: currentAnswers[question.id],
+        visible: surveysStore.isQuestionVisible(simulateur.slug, question.id),
+      }))
+
+    return {
+      title: step.title,
+      questions: filteredQuestions,
+    }
+  })
+})
+
 const currentQuestionId = computed(() => surveysStore.getCurrentQuestionId(simulateur.slug))
 const activeQuestionGroupIndex = computed(() => {
   const questionGroups = groupedQuestions.value

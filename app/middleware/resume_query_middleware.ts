@@ -18,6 +18,7 @@ export default class ResumeQueryMiddleware {
       /\/simulateurs\/[^/]+\/recapitulatif/,
       /\/simulateurs\/[^/]+\/notions\/[^/]+$/,
       /\/simulateurs\/[^/]+\/resultats$/,
+      /\/simulateurs\/[^/]+\/resultats-intermediaire/,
     ].some(pattern => pattern.test(refererUrl.pathname))
 
     /**

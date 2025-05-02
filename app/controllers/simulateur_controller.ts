@@ -36,6 +36,19 @@ export default class SimulateurController {
     })
   }
 
+  // Show intermediate results
+  public async showResultatsIntermediaire({ params, inertia, response }: HttpContext) {
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
+    if (!simulateur) {
+      return response.status(404).send('Simulateur non trouvé')
+    }
+
+    return inertia.render('simulateurs/resultats-intermediaire', {
+      simulateur,
+      // We'll add more data here when we implement the publicodes calculation
+    })
+  }
+
   public async showRecapitulatif({ params, inertia, response }: HttpContext) {
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
     if (!simulateur) {

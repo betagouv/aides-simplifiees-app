@@ -709,6 +709,12 @@ export const useSurveysStore = defineStore(
     /**
      * Step related methods
      */
+    const getStepFromPageId = (simulateurId: string, pageId: string): SurveyStep | null => {
+      const currentSchema = getSchema(simulateurId)
+      return currentSchema?.steps.find((s) => {
+        return s.pages?.some(page => page.id === pageId)
+      }) ?? null
+    }
 
     const getCurrentStep = (simulateurId: string): SurveyStep | null => {
       const currentSchema = getSchema(simulateurId)
@@ -915,6 +921,7 @@ export const useSurveysStore = defineStore(
       getSchema,
       getSchemaStatus,
       loadSurveySchema,
+      getQuestions,
       hasAnswers,
       getAnswers,
       getAnswersForCalculation,
@@ -934,6 +941,7 @@ export const useSurveysStore = defineStore(
       getPreviousVisibleQuestion,
       getNextVisiblePage,
       getPreviousVisiblePage,
+      getStepFromPageId,
       isFirstPage,
       isLastPage,
       getGroupedQuestions,

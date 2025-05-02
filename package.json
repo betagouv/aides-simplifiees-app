@@ -31,7 +31,8 @@
     "#database/*": "./database/*.js",
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
-    "#config/*": "./config/*.js"
+    "#config/*": "./config/*.js",
+    "#publicodes-build/*": "./publicodes-build/*.js"
   },
   "dependencies": {
     "@adonisjs/auth": "^9.3.1",
@@ -63,10 +64,12 @@
     "pg": "^8.14.1",
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.2.0",
+    "publicodes": "^1.8.2",
     "reflect-metadata": "^0.2.2",
     "sass-embedded": "^1.86.2",
     "vue": "^3.5.13",
-    "vue-matomo": "^4.2.0"
+    "vue-matomo": "^4.2.0",
+    "yaml": "^2.7.1"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.40.1",
@@ -85,6 +88,7 @@
     "@japa/expect": "^3.0.3",
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.2.0",
+    "@publicodes/tools": "^1.7.2",
     "@tsconfig/node22": "^22.0.1",
     "@types/crypto-js": "^4.2.2",
     "@types/luxon": "^3.6.0",

@@ -46,7 +46,12 @@ const richUsageAide = formatUsageAide(props.usageAide)
         <VIcon
           :name="richUsageAide.icon"
           ssr
-          :style="{ width: '1.5rem', height: '1.5rem' }"
+          :style="{
+            width: '1.5rem',
+            minWidth: '1.5rem',
+            height: '1.5rem',
+            minHeight: '1.5rem',
+          }"
         />
         <span
           class="fr-m-0"
@@ -76,8 +81,13 @@ const richUsageAide = formatUsageAide(props.usageAide)
 .brand-rich-aide-montant {
   display: flex;
   gap: 3rem;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+
+  @include dsfr.sm {
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+  }
 }
 
 .brand-rich-aide-montant__description-text {
@@ -89,6 +99,7 @@ const richUsageAide = formatUsageAide(props.usageAide)
 .brand-rich-aide-montant__montant {
   display: flex;
   align-items: flex-end;
+  justify-content: flex-end;
 }
 
 .brand-montant-periode {

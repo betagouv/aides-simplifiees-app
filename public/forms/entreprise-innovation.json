@@ -8,194 +8,212 @@
     {
       "id": "information-generale",
       "title": "Informations générales sur l'entreprise",
-      "questions": [
+      "pages": [
         {
           "id": "immatriculation-france",
-          "title": "Votre entreprise est-elle immatriculée en France ?",
-          "description": "(indispensable JEI, JEU, JEC, CIR, CII, CICo)",
-          "type": "boolean"
-        },
-        {
-          "id": "situation",
-          "title": "Situation géographique",
-          "description": "(indispensable pour CII et CIR)",
-          "type": "radio",
-          "visibleWhen": "immatriculation-france=true",
-          "choices": [
+          "title": "Titre administrable de la première page",
+          "questions": [
             {
-              "id": "metropole",
-              "title": "Métropole"
+              "id": "immatriculation-france",
+              "title": "Votre entreprise est-elle immatriculée en France ?",
+              "description": "(indispensable JEI, JEU, JEC, CIR, CII, CICo)",
+              "type": "boolean"
             },
             {
-              "id": "outremer",
-              "title": "Départements d'outre-mer"
-            },
-            {
-              "id": "corse",
-              "title": "Corse"
+              "id": "situation",
+              "title": "Situation géographique",
+              "description": "(indispensable pour CII et CIR)",
+              "type": "radio",
+              "visibleWhen": "immatriculation-france=true",
+              "choices": [
+                {
+                  "id": "metropole",
+                  "title": "Métropole"
+                },
+                {
+                  "id": "outremer",
+                  "title": "Départements d'outre-mer"
+                },
+                {
+                  "id": "corse",
+                  "title": "Corse"
+                }
+              ]
             }
           ]
         },
         {
           "id": "statut-juridique",
           "title": "Statut juridique de l'entreprise",
-          "description": "Sélectionnez le statut juridique",
-          "type": "radio",
-          "visibleWhen": "immatriculation-france=true",
-          "choices": [
+          "questions": [
             {
-              "id": "micro",
-              "title": "Micro-entreprise"
+              "id": "statut-juridique",
+              "title": "Statut juridique de l'entreprise",
+              "description": "Sélectionnez le statut juridique",
+              "type": "radio",
+              "visibleWhen": "immatriculation-france=true",
+              "choices": [
+                {
+                  "id": "micro",
+                  "title": "Micro-entreprise"
+                },
+                {
+                  "id": "sarl-eurl",
+                  "title": "SARL/EURL"
+                },
+                {
+                  "id": "sas-sasu",
+                  "title": "SAS/SASU"
+                },
+                {
+                  "id": "sa",
+                  "title": "SA"
+                },
+                {
+                  "id": "autre",
+                  "title": "Autre"
+                }
+              ]
             },
             {
-              "id": "sarl-eurl",
-              "title": "SARL/EURL"
+              "id": "autre-statut",
+              "title": "Précisez le statut juridique",
+              "type": "text",
+              "visibleWhen": "statut-juridique=autre"
             },
             {
-              "id": "sas-sasu",
-              "title": "SAS/SASU"
+              "id": "nature-activite",
+              "title": "Nature de l'activité de l'entreprise (plusieurs choix possibles)",
+              "description": "Sélectionnez tous les types d'activités exercés par votre entreprise",
+              "type": "checkbox",
+              "visibleWhen": "immatriculation-france=true",
+              "choices": [
+                {
+                  "id": "industrielle",
+                  "title": "Industrielle"
+                },
+                {
+                  "id": "commerciale",
+                  "title": "Commerciale"
+                },
+                {
+                  "id": "agricole",
+                  "title": "Agricole"
+                },
+                {
+                  "id": "artisanale",
+                  "title": "Artisanale"
+                },
+                {
+                  "id": "autre",
+                  "title": "Aucune de ces activités"
+                }
+              ]
             },
             {
-              "id": "sa",
-              "title": "SA"
+              "id": "bic",
+              "title": "Votre entreprise génère-t-elle des bénéfices industriels et commerciaux (BIC) ?",
+              "type": "boolean",
+              "visibleWhen": "nature-activite.includes('artisanale')"
             },
             {
-              "id": "autre",
-              "title": "Autre"
+              "id": "date-creation",
+              "title": "Année de création de l'entreprise",
+              "description": "Indiquez l'année de création",
+              "type": "number",
+              "visibleWhen": "immatriculation-france=true"
             }
           ]
-        },
-        {
-          "id": "autre-statut",
-          "title": "Précisez le statut juridique",
-          "type": "text",
-          "visibleWhen": "statut-juridique=autre"
-        },
-        {
-          "id": "nature-activite",
-          "title": "Nature de l'activité de l'entreprise (plusieurs choix possibles)",
-          "description": "Sélectionnez tous les types d'activités exercés par votre entreprise",
-          "type": "checkbox",
-          "visibleWhen": "immatriculation-france=true",
-          "choices": [
-            {
-              "id": "industrielle",
-              "title": "Industrielle"
-            },
-            {
-              "id": "commerciale",
-              "title": "Commerciale"
-            },
-            {
-              "id": "agricole",
-              "title": "Agricole"
-            },
-            {
-              "id": "artisanale",
-              "title": "Artisanale"
-            },
-            {
-              "id": "autre",
-              "title": "Aucune de ces activités"
-            }
-          ]
-        },
-        {
-          "id": "bic",
-          "title": "Votre entreprise génère-t-elle des bénéfices industriels et commerciaux (BIC) ?",
-          "type": "boolean",
-          "visibleWhen": "nature-activite.includes('artisanale')"
-        },
-        {
-          "id": "date-creation",
-          "title": "Année de création de l'entreprise",
-          "description": "Indiquez l'année de création",
-          "type": "number",
-          "visibleWhen": "immatriculation-france=true"
         }
       ]
     },
     {
       "id": "caracteristiques-entreprise",
       "title": "Caractéristiques de l'entreprise",
-      "questions": [
+      "pages": [
         {
           "id": "activite-nouvelle",
           "title": "Votre entreprise exerce-t-elle une activité nouvelle ?(indispensable JEI, JEU, JEC)",
-          "description": "Une entreprise n'est pas considérée comme nouvelle si elle reprend une activité existante avec des liens évidents avec une autre entreprise, comme la continuité des contrats, des moyens (locaux, personnel, matériel) ou de la clientèle. De même, si une entreprise récemment créée est simplement une extension d'une activité déjà en place sans réelle autonomie, elle ne sera pas reconnue comme nouvelle. Enfin, dans le cas de restructurations (fusion, scission, apport partiel d'actif), si l'activité, les liens ou les ressources sont en partie transférés, l'entreprise ne peut pas non plus être qualifiée de nouvelle.",
-          "type": "boolean",
-          "visibleWhen": "immatriculation-france=true && date-creation >= 2014"
-        },
-        {
-          "id": "dirigeants",
-          "title": "Qui dirige l'entreprise ? (plusieurs choix possibles)",
-          "description": "Choisissez les catégories qui s'appliquent aux dirigeants de l'entreprise",
-          "type": "checkbox",
-          "visibleWhen": "activite-nouvelle=true",
-          "choices": [
+          "questions": [
             {
-              "id": "etudiant",
-              "title": "Étudiant(s)"
+              "id": "activite-nouvelle",
+              "title": "Votre entreprise exerce-t-elle une activité nouvelle ?(indispensable JEI, JEU, JEC)",
+              "description": "Une entreprise n'est pas considérée comme nouvelle si elle reprend une activité existante avec des liens évidents avec une autre entreprise, comme la continuité des contrats, des moyens (locaux, personnel, matériel) ou de la clientèle. De même, si une entreprise récemment créée est simplement une extension d'une activité déjà en place sans réelle autonomie, elle ne sera pas reconnue comme nouvelle. Enfin, dans le cas de restructurations (fusion, scission, apport partiel d'actif), si l'activité, les liens ou les ressources sont en partie transférés, l'entreprise ne peut pas non plus être qualifiée de nouvelle.",
+              "type": "boolean",
+              "visibleWhen": "immatriculation-france=true && date-creation >= 2014"
             },
             {
-              "id": "diplome",
-              "title": "Diplômé(s) depuis moins de 3 ans"
+              "id": "dirigeants",
+              "title": "Qui dirige l'entreprise ? (plusieurs choix possibles)",
+              "description": "Choisissez les catégories qui s'appliquent aux dirigeants de l'entreprise",
+              "type": "checkbox",
+              "visibleWhen": "activite-nouvelle=true",
+              "choices": [
+                {
+                  "id": "etudiant",
+                  "title": "Étudiant(s)"
+                },
+                {
+                  "id": "diplome",
+                  "title": "Diplômé(s) depuis moins de 3 ans"
+                },
+                {
+                  "id": "enseignant",
+                  "title": "Enseignant(s) ou chercheur(s)"
+                },
+                {
+                  "id": "autre",
+                  "title": "Autre(s)"
+                }
+              ]
             },
-            {
-              "id": "enseignant",
-              "title": "Enseignant(s) ou chercheur(s)"
-            },
-            {
-              "id": "autre",
-              "title": "Autre(s)"
-            }
-          ]
-        },
 
-        {
-          "id": "valorisation-recherche",
-          "title": "Votre entreprise valorise-t-elle des travaux de recherche ?",
-          "description":"Votre entreprise a-t-elle pour activité principale la valorisation de travaux de recherches auxquels les dirigeants ou associés ont participé au sein d'un établissement d'enseignement supérieur (au cours de leur scolarité ou dans l'exercice de leurs fonctions) ?",
-          "type": "boolean",
-          "visibleWhen": "activite-nouvelle=true && (dirigeants.includes('etudiant') || dirigeants.includes('diplome') || dirigeants.includes('enseignant'))"
-        },
+            {
+              "id": "valorisation-recherche",
+              "title": "Votre entreprise valorise-t-elle des travaux de recherche ?",
+              "description": "Votre entreprise a-t-elle pour activité principale la valorisation de travaux de recherches auxquels les dirigeants ou associés ont participé au sein d'un établissement d'enseignement supérieur (au cours de leur scolarité ou dans l'exercice de leurs fonctions) ?",
+              "type": "boolean",
+              "visibleWhen": "activite-nouvelle=true && (dirigeants.includes('etudiant') || dirigeants.includes('diplome') || dirigeants.includes('enseignant'))"
+            },
 
-        {
-          "id": "contrat-valorisation",
-          "title": "Un contrat conclu avec cet établissement définit-il les conditions de la valorisation de ces travaux de recherches ?",
-          "type": "boolean",
-          "visibleWhen": "valorisation-recherche=true"
-        },
+            {
+              "id": "contrat-valorisation",
+              "title": "Un contrat conclu avec cet établissement définit-il les conditions de la valorisation de ces travaux de recherches ?",
+              "type": "boolean",
+              "visibleWhen": "valorisation-recherche=true"
+            },
 
-        {
-          "id": "capital-detenu",
-          "title": "Le capital de votre entreprise est-il détenu au moins à 50 % par l'une des personnes ou entités suivantes ?(indispensable JEI, JEU, JEC)",
-          "type": "checkbox",
-          "visibleWhen": "activite-nouvelle=true",
-          "choices": [
             {
-              "id": "personnes-physiques",
-              "title": "Personnes physiques (entrepreneur, particulier, etc.)"
-            },
-            {
-              "id": "autre-jei",
-              "title": "Autre JEI détenue au moins à 50 % par des personnes physiques"
-            },
-            {
-              "id": "association-fondation",
-              "title": "Association ou fondation reconnue d'utilité publique à caractère scientifique"
-            },
-            {
-              "id": "etablissement-public",
-              "title": "Établissement public de recherche ou d'enseignement supérieur ou une de ses filiales"
-            },
-            {
-              "id": "societe-investissement",
-              "title": "Société d'investissement"
-            },
-            {
-              "id": "none",
-              "title": "Aucune de ces réponses"
+              "id": "capital-detenu",
+              "title": "Le capital de votre entreprise est-il détenu au moins à 50 % par l'une des personnes ou entités suivantes ?(indispensable JEI, JEU, JEC)",
+              "type": "checkbox",
+              "visibleWhen": "activite-nouvelle=true",
+              "choices": [
+                {
+                  "id": "personnes-physiques",
+                  "title": "Personnes physiques (entrepreneur, particulier, etc.)"
+                },
+                {
+                  "id": "autre-jei",
+                  "title": "Autre JEI détenue au moins à 50 % par des personnes physiques"
+                },
+                {
+                  "id": "association-fondation",
+                  "title": "Association ou fondation reconnue d'utilité publique à caractère scientifique"
+                },
+                {
+                  "id": "etablissement-public",
+                  "title": "Établissement public de recherche ou d'enseignement supérieur ou une de ses filiales"
+                },
+                {
+                  "id": "societe-investissement",
+                  "title": "Société d'investissement"
+                },
+                {
+                  "id": "none",
+                  "title": "Aucune de ces réponses"
+                }
+              ]
             }
           ]
         }
@@ -204,242 +222,259 @@
     {
       "id": "taille-entreprise",
       "title": "Taille de l'entreprise",
-      "questions": [
+      "pages": [
         {
           "id": "chiffre-affaires",
           "title": "Chiffre d'affaires annuel (en euros)",
-          "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
-          "type": "number",
-          "visibleWhen": "immatriculation-france=true"
-        },
-        {
-          "id": "bilan-total",
-          "title": "Total du bilan annuel (en euros)",
-          "description": "Indiquez le total du bilan annuel",
-          "type": "number",
-          "visibleWhen": "immatriculation-france=true"
-        },
-        {
-          "id": "effectif-total",
-          "title": "Nombre total d'employés",
-          "description": "Indiquez l'effectif total de l'entreprise",
-          "type": "number",
-          "visibleWhen": "immatriculation-france=true"
+          "questions": [
+            {
+              "id": "chiffre-affaires",
+              "title": "Chiffre d'affaires annuel (en euros)",
+              "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
+              "type": "number",
+              "visibleWhen": "immatriculation-france=true"
+            },
+            {
+              "id": "bilan-total",
+              "title": "Total du bilan annuel (en euros)",
+              "description": "Indiquez le total du bilan annuel",
+              "type": "number",
+              "visibleWhen": "immatriculation-france=true"
+            },
+            {
+              "id": "effectif-total",
+              "title": "Nombre total d'employés",
+              "description": "Indiquez l'effectif total de l'entreprise",
+              "type": "number",
+              "visibleWhen": "immatriculation-france=true"
+            }
+          ]
         }
       ]
+
     },
     {
       "id": "fiscalite",
       "title": "Fiscalité",
-      "questions": [
+      "pages": [
         {
           "id": "regime-imposition",
           "title": "Votre entreprise est-elle soumise au régime réel d'imposition ?",
-          "description": "Régime applicable aux entreprises dépassant les seuils du régime de la micro-entreprise (77 700 € pour les BNC et 188 700 € pour les BIC)",
-          "type": "radio",
-          "visibleWhen": "immatriculation-france=true",
-          "choices": [
+          "questions": [
             {
-              "id": "is",
-              "title": "Impôt sur les Sociétés (IS)"
+              "id": "regime-imposition",
+              "title": "Votre entreprise est-elle soumise au régime réel d'imposition ?",
+              "description": "Régime applicable aux entreprises dépassant les seuils du régime de la micro-entreprise (77 700 € pour les BNC et 188 700 € pour les BIC)",
+              "type": "radio",
+              "visibleWhen": "immatriculation-france=true",
+              "choices": [
+                {
+                  "id": "is",
+                  "title": "Impôt sur les Sociétés (IS)"
+                },
+                {
+                  "id": "ir",
+                  "title": "Impôt sur le Revenu (IR)"
+                },
+                {
+                  "id": "non",
+                  "title": "Exonéré d'impôt"
+                }
+              ]
             },
             {
-              "id": "ir",
-              "title": "Impôt sur le Revenu (IR)"
-            },
-            {
-              "id": "non",
-              "title": "Exonéré d'impôt"
-            }
-          ]
-        },
-        {
-          "id": "categorie-exoneration",
-          "title": "Catégorie d'exonération (plusieurs choix possibles)",
-          "description": "Si vous êtes exonéré d'impôt, votre entreprise correspond-elle à l'une des catégories suivantes ?(Indispensable CICo, CII et CIR, si entreprise exonérée d'impôt)",
-          "type": "checkbox",
-          "visibleWhen": "regime-imposition=non",
-          "choices": [
-            {
-              "id": "jei",
-              "title": "Jeune Entreprise Innovante (JEI)"
-            },
-            {
-              "id": "reprise-entreprise-en-difficulte",
-              "title": "Entreprise créée pour reprendre une entreprise en difficulté"
-            },
-            {
-              "id": "zone-specifique",
-              "title": "Zone Franche Urbaine (ZFU)"
-            },
+              "id": "categorie-exoneration",
+              "title": "Catégorie d'exonération (plusieurs choix possibles)",
+              "description": "Si vous êtes exonéré d'impôt, votre entreprise correspond-elle à l'une des catégories suivantes ?(Indispensable CICo, CII et CIR, si entreprise exonérée d'impôt)",
+              "type": "checkbox",
+              "visibleWhen": "regime-imposition=non",
+              "choices": [
+                {
+                  "id": "jei",
+                  "title": "Jeune Entreprise Innovante (JEI)"
+                },
+                {
+                  "id": "reprise-entreprise-en-difficulte",
+                  "title": "Entreprise créée pour reprendre une entreprise en difficulté"
+                },
+                {
+                  "id": "zone-specifique",
+                  "title": "Zone Franche Urbaine (ZFU)"
+                },
 
-            {
-              "id": "none",
-              "title": "Aucune de ces catégories"
-            }
-          ]
-        },
-        {
-          "id": "categorie-exoneration-zone-specifique",
-          "title": "Catégorie d'exonération (plusieurs choix possibles)",
-          "description": "Si vous êtes exonéré d'impôt, votre entreprise correspond-elle à l'une des catégories suivantes ?(Indispensable CICo, CII et CIR, si entreprise exonérée d'impôt)",
-          "type": "checkbox",
-          "visibleWhen": "categorie-exoneration.includes('zone-specifique')",
-          "choices": [
-            {
-              "id": "zfr",
-              "title": "Zone d'aide à finalité régionale (ZFR)"
+                {
+                  "id": "none",
+                  "title": "Aucune de ces catégories"
+                }
+              ]
             },
             {
-              "id": "zfu_te",
-              "title": "Zone franche-urbaine / territoire entrepreneur (ZFU_TE)"
-            },
-            {
-              "id": "ber",
-              "title": "Bassin d'emploi à redynamiser (BER)"
-            },
-            {
-              "id": "zrd",
-              "title": "Zone de restructuration de la défense (ZRD)"
-            },
-            {
-              "id": "zfo",
-              "title": "Zone franche d'activité des départements d'Outre-Mer"
-            },
-            {
-              "id": "zrr",
-              "title": "Zone de Revitalisation Rurale (ZRR)"
-            },
-            {
-              "id": "frr",
-              "title": "Fond de Revitalisation Rurale (FRR)"
-            },
-            {
-              "id": "bud",
-              "title": "Bassin urbainn à dynamiser (BUD)"
-            },
-            {
-              "id": "bud",
-              "title": "Bassin urbainn à dynamiser (BUD)"
-            },
-            {
-              "id": "zdp",
-              "title": "Zone de développement prioritaire"
+              "id": "categorie-exoneration-zone-specifique",
+              "title": "Catégorie d'exonération (plusieurs choix possibles)",
+              "description": "Si vous êtes exonéré d'impôt, votre entreprise correspond-elle à l'une des catégories suivantes ?(Indispensable CICo, CII et CIR, si entreprise exonérée d'impôt)",
+              "type": "checkbox",
+              "visibleWhen": "categorie-exoneration.includes('zone-specifique')",
+              "choices": [
+                {
+                  "id": "zfr",
+                  "title": "Zone d'aide à finalité régionale (ZFR)"
+                },
+                {
+                  "id": "zfu_te",
+                  "title": "Zone franche-urbaine / territoire entrepreneur (ZFU_TE)"
+                },
+                {
+                  "id": "ber",
+                  "title": "Bassin d'emploi à redynamiser (BER)"
+                },
+                {
+                  "id": "zrd",
+                  "title": "Zone de restructuration de la défense (ZRD)"
+                },
+                {
+                  "id": "zfo",
+                  "title": "Zone franche d'activité des départements d'Outre-Mer"
+                },
+                {
+                  "id": "zrr",
+                  "title": "Zone de Revitalisation Rurale (ZRR)"
+                },
+                {
+                  "id": "frr",
+                  "title": "Fond de Revitalisation Rurale (FRR)"
+                },
+                {
+                  "id": "bud",
+                  "title": "Bassin urbainn à dynamiser (BUD)"
+                },
+                {
+                  "id": "bud",
+                  "title": "Bassin urbainn à dynamiser (BUD)"
+                },
+                {
+                  "id": "zdp",
+                  "title": "Zone de développement prioritaire"
+                }
+              ]
             }
           ]
         }
       ]
+
     },
     {
       "id": "activites-recherche",
       "title": "Activités de recherche et développement",
-      "questions": [
+      "pages": [
         {
-          "id": "activites",
-          "title": "Quelles activités votre entreprise mène-t-elle ? (plusieurs choix possibles)",
-          "type": "checkbox",
-          "visibleWhen": "immatriculation-france=true",
-          "choices": [
+          "id": "activites-recherche",
+          "title": "Activités de recherche et développement",
+          "questions": [
             {
-              "id": "rd",
-              "title": "Recherche et Développement (R&D)"
+              "id": "activites",
+              "title": "Quelles activités votre entreprise mène-t-elle ? (plusieurs choix possibles)",
+              "type": "checkbox",
+              "visibleWhen": "immatriculation-france=true",
+              "choices": [
+                {
+                  "id": "rd",
+                  "title": "Recherche et Développement (R&D)"
+                },
+                {
+                  "id": "prototype",
+                  "title": "Conception de prototypes ou d'installations pilotes"
+                },
+                {
+                  "id": "collaboration",
+                  "title": "Collaboration avec des organismes de recherche"
+                },
+                {
+                  "id": "aucune",
+                  "title": "Aucune de ces activités"
+                }
+              ]
             },
             {
-              "id": "prototype",
-              "title": "Conception de prototypes ou d'installations pilotes"
+              "id": "nature-activites",
+              "title": "Nature des activités de R&D (plusieurs choix possibles)",
+              "type": "checkbox",
+              "visibleWhen": "activites.includes('rd')",
+              "choices": [
+                {
+                  "id": "fondamentale",
+                  "title": "Recherche fondamentale"
+                },
+                {
+                  "id": "appliquee",
+                  "title": "Recherche appliquée"
+                },
+                {
+                  "id": "experimentale",
+                  "title": "Développement expérimental"
+                }
+              ]
             },
             {
-              "id": "collaboration",
-              "title": "Collaboration avec des organismes de recherche"
+              "id": "localisation-recherche",
+              "title": "Où sont localisées vos activités de recherche ?",
+              "type": "radio",
+              "visibleWhen": "activites.includes('rd')",
+              "choices": [
+                {
+                  "id": "france",
+                  "title": "En France uniquement"
+                },
+                {
+                  "id": "ue",
+                  "title": "En France et dans l'Union Européenne"
+                },
+                {
+                  "id": "eee",
+                  "title": "Dans l'Espace Économique Européen (hors UE)"
+                },
+                {
+                  "id": "hors-eee",
+                  "title": "Hors Espace Économique Européen"
+                }
+              ]
             },
             {
-              "id": "aucune",
-              "title": "Aucune de ces activités"
-            }
-          ]
-        },
-
-
-
-
-        {
-          "id": "nature-activites",
-          "title": "Nature des activités de R&D (plusieurs choix possibles)",
-          "type": "checkbox",
-          "visibleWhen": "activites.includes('rd')",
-          "choices": [
-            {
-              "id": "fondamentale",
-              "title": "Recherche fondamentale"
+              "id": "convention-fiscale",
+              "title": "Existe-t-il une convention fiscale avec clause d'assistance administrative avec la France ?",
+              "type": "radio",
+              "visibleWhen": "localisation-recherche=eee || localisation-recherche=hors-eee",
+              "choices": [
+                {
+                  "id": "oui",
+                  "title": "Oui"
+                },
+                {
+                  "id": "non",
+                  "title": "Non"
+                }
+              ]
             },
             {
-              "id": "appliquee",
-              "title": "Recherche appliquée"
-            },
-            {
-              "id": "experimentale",
-              "title": "Développement expérimental"
-            }
-          ]
-        },
-        {
-          "id": "localisation-recherche",
-          "title": "Où sont localisées vos activités de recherche ?",
-          "type": "radio",
-          "visibleWhen": "activites.includes('rd')",
-          "choices": [
-            {
-              "id": "france",
-              "title": "En France uniquement"
-            },
-            {
-              "id": "ue",
-              "title": "En France et dans l'Union Européenne"
-            },
-            {
-              "id": "eee",
-              "title": "Dans l'Espace Économique Européen (hors UE)"
-            },
-            {
-              "id": "hors-eee",
-              "title": "Hors Espace Économique Européen"
-            }
-          ]
-        },
-        {
-          "id": "convention-fiscale",
-          "title": "Existe-t-il une convention fiscale avec clause d'assistance administrative avec la France ?",
-          "type": "radio",
-          "visibleWhen": "localisation-recherche=eee || localisation-recherche=hors-eee",
-          "choices": [
-            {
-              "id": "oui",
-              "title": "Oui"
-            },
-            {
-              "id": "non",
-              "title": "Non"
-            }
-          ]
-        },
-        {
-          "id": "projet-collaboratif-respect-criteres",
-          "title": "Le projet collaboratif respecte-t-il les critères d'éligibilité ?",
-          "description": "Collaboration effective avec un organisme de recherche public, financement d'au moins 10% des dépenses, possibilité de publier les résultats",
-          "type": "radio",
-          "visibleWhen": "activites.includes('collaboration')",
-          "choices": [
-            {
-              "id": "oui",
-              "title": "Oui"
-            },
-            {
-              "id": "non",
-              "title": "Non"
+              "id": "projet-collaboratif-respect-criteres",
+              "title": "Le projet collaboratif respecte-t-il les critères d'éligibilité ?",
+              "description": "Collaboration effective avec un organisme de recherche public, financement d'au moins 10% des dépenses, possibilité de publier les résultats",
+              "type": "radio",
+              "visibleWhen": "activites.includes('collaboration')",
+              "choices": [
+                {
+                  "id": "oui",
+                  "title": "Oui"
+                },
+                {
+                  "id": "non",
+                  "title": "Non"
+                }
+              ]
             }
           ]
         }
       ]
+
     }
   ],
   "tests": []

@@ -51,7 +51,8 @@ declare global {
   interface SurveyStep {
     id: string
     title: string
-    questions: SurveyQuestion[]
+    questions?: SurveyQuestion[]
+    pages?: SurveyPage[]
   }
 
   interface SurveyTest {
@@ -81,6 +82,12 @@ declare global {
     meta: {
       createdAt: Date
     }
+  }
+
+  interface SurveyPage {
+    id: string
+    title: string
+    questions: SurveyQuestion[]
   }
 }
 

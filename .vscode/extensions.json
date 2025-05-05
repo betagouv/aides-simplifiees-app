@@ -1,0 +1,21 @@
+{
+  "recommendations": [
+    // Cross-editor config
+    "editorconfig.editorconfig",
+    // Git
+    "mhutchie.git-graph",
+    // Node / npm
+    "christian-kohler.npm-intellisense",
+    // JavaScript
+    "dbaeumer.vscode-eslint",
+    // Vue.js
+    "vue.volar",
+    "stormier.vue-dsfr-snippets",
+    // AdonisJS
+    "jripouteau.adonis-vscode-extension",
+    // Edge template engine
+    "luongnd.edge",
+    // PostgreSQL
+    "cweijan.vscode-postgresql-client2"
+  ]
+}

@@ -95,11 +95,8 @@ export const useSubmissionStore = defineStore(
                   'Content-Type': 'application/json',
                   'X-Requested-With': 'XMLHttpRequest',
                 },
-                withCredentials: true,
               },
             )
-
-            console.log('[Submission Store] storeResponse', storeResponse)
 
             if (storeResponse.data.success) {
               debug.log('[Submission Store] Form data stored successfully:', storeResponse.data)

@@ -70,6 +70,10 @@ createInertiaApp({
         host: matomoHost,
         siteId: matomoSiteId,
       })
+
+      if(import.meta.env.MODE === "production") {
+        ;(window as any)._paq.push(['setCookieSameSite', 'None']);
+      }
     }
 
     // Register icon collections

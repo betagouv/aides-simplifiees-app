@@ -95,6 +95,7 @@ export const useSubmissionStore = defineStore(
                   'Content-Type': 'application/json',
                   'X-Requested-With': 'XMLHttpRequest',
                 },
+                withCredentials: true,
               },
             )
 

@@ -25,8 +25,8 @@ const sessionConfig = defineConfig({
   cookie: {
     path: '/',
     httpOnly: true,
-    secure: app.inProduction,
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
   },
 
   /**

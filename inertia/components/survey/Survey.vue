@@ -16,30 +16,6 @@ import { useSurveysStore } from '~/stores/surveys'
 import { scrollToAnchor } from '~/utils/dom'
 import { getParam } from '~/utils/url'
 
-
-
-//Test publicodes
-import Engine, { formatValue } from 'publicodes';
-import sourceRules from '@publicodes-build/index';
-
-
-onMounted(() => {
-  //Make sure it calculated on the front
-  const engine = new Engine(sourceRules);
-  const dépenses = engine.evaluate('dépenses primeur');
-  console.log(`J'ai dépensé ${formatValue(dépenses)} chez le primeur.`);
-  engine.setSituation({
-      'prix . avocat': '3€/avocat'
-  });
-  const dépenses2 = engine.evaluate('dépenses primeur');
-  console.log(`J'ai dépensé ${formatValue(dépenses2)} chez le primeur.`);
-
-  const depensesParJour = engine.evaluate('dépenses primeur / 7 jours');
-  console.log(`J'ai dépensé ${formatValue(depensesParJour)}.`);
-})
-
-
-
 const {
   url,
   props: {

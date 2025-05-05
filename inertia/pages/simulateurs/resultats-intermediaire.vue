@@ -39,6 +39,35 @@ function continueToNextStep() {
     preserveScroll: true,
   })
 }
+
+
+//Test publicodes
+import Engine, { formatValue } from 'publicodes';
+import sourceRules from '@publicodes-build/index';
+import { onMounted } from 'vue'
+
+
+onMounted(() => {
+  //Make sure it calculated on the front
+  const engine = new Engine(sourceRules);
+
+
+
+  engine.setSituation({
+      'CIR . éligibilité . base': 'oui',
+      'CIR . éligibilité . activités de recherche': 'oui',
+      'CIR . éligibilité . localisation recherche': 'oui',
+  });
+
+
+  const cir = engine.evaluate('CIR');
+
+  console.log(`Le CIR vaut ${formatValue(cir)}`);
+
+})
+
+
+
 </script>
 
 <template>

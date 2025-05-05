@@ -99,6 +99,8 @@ export const useSubmissionStore = defineStore(
               },
             )
 
+            console.log('[Submission Store] storeResponse', storeResponse)
+
             if (storeResponse.data.success) {
               debug.log('[Submission Store] Form data stored successfully:', storeResponse.data)
 

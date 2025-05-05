@@ -638,8 +638,9 @@ export async function fetchOpenFiscaFranceCalculation(
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest', // Indique une requête AJAX
+        'X-Requested-With': 'XMLHttpRequest',
       },
+      withCredentials: false
     })
 
     return response.data

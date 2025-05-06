@@ -10,6 +10,7 @@ import {
 } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import CrispButton from '~/components/CrispButton.vue'
 import SchemeModal from '~/components/SchemeModal.vue'
 import { useSchemeStore } from '~/stores/scheme'
 
@@ -152,5 +153,15 @@ const quickLinks = computed(() => {
       },
     ]"
   />
+  <CrispButton class="crisp-button" />
   <SchemeModal />
 </template>
+
+<style scoped lang="scss">
+.crisp-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+}
+</style>

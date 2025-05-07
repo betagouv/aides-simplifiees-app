@@ -9,14 +9,16 @@ import MultiSelectQuestion from '~/components/survey/MultiSelectQuestion.vue'
 import NumberQuestion from '~/components/survey/NumberQuestion.vue'
 import RadioButtonQuestion from '~/components/survey/RadioButtonQuestion.vue'
 import UnkownQuestionType from '~/components/survey/UnkownQuestionType.vue'
-import { useIframeDisplay } from '~/composables/use_is_iframe'
 import { useSurveysStore } from '~/stores/surveys'
 import { autocompleteConfigs, autocompleteFunctions } from '~/utils/autocomplete_functions'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   question: SurveyQuestion
   simulateurSlug: string
-}>()
+  size?: 'sm' | 'md'
+}>(), {
+  size: 'md',
+})
 
 const surveysStore = useSurveysStore()
 
@@ -27,10 +29,10 @@ const questionModel = customRef((track, trigger) => {
   return {
     get() {
       track()
-      return surveysStore.getAnswer(props.simulateurSlug, props.question.slug)
+      return surveysStore.getAnswer(props.simulateurSlug, props.question.id)
     },
     set(value) {
-      surveysStore.setAnswer(props.simulateurSlug, props.question.slug, value)
+      surveysStore.setAnswer(props.simulateurSlug, props.question.id, value)
       trigger()
     },
   }
@@ -53,7 +55,7 @@ const questionComponent = computed(() => {
 // Get eventual autocomplete function for a text question
 const autocompleteFn = computed(() => {
   if (props.question?.autocompleteFunction) {
-    return autocompleteFunctions[question.autocompleteFunction]
+    return autocompleteFunctions[props.question.autocompleteFunction]
   }
   return undefined
 })
@@ -69,29 +71,34 @@ const autocompleteConfig = computed(() => {
   }
   return undefined
 })
-
-// Heading levels based on iframe context
-const { isIframe } = useIframeDisplay()
-const surveyH2 = computed(() => isIframe.value ? 'h2' : 'h3')
 </script>
 
 <template>
   <div>
     <hgroup
       :id="`question-${question.id}`"
-      class="fr-mb-3w"
+      :class="[{
+        'fr-mb-3w': size === 'md',
+        'fr-mb-1w': size === 'sm',
+      }]"
     >
-      <component
-        :is="surveyH2"
-        class="fr-h5 fr-mb-1w"
+      <h3
+        :class="[{
+          'fr-h5 fr-mb-1w': size === 'md',
+          'fr-text--md fr-mb-1v': size === 'sm',
+        }]"
         :aria-describedby="question?.description ? `question-description-${question.id}` : undefined"
       >
         {{ question.title }}
-      </component>
+      </h3>
       <p
         v-if="question?.description"
         :id="`question-description-${question.id}`"
-        class="fr-hint-text fr-text--sm fr-mb-0"
+        class="fr-hint-text fr-mb-0"
+        :class="[{
+          'fr-text--sm': size === 'md',
+          'fr-text--xs': size === 'sm',
+        }]"
       >
         {{ question.description }}
       </p>

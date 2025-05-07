@@ -38,7 +38,7 @@ const resultsFetchStatus = computed(() => submissionStore.getSubmissionStatus(si
 const forceResume = getParam(url, 'resume') === 'true'
 
 // Fetch the survey schema
-surveysStore.loadSurveySchema(simulateur.slug)
+surveysStore.loadSchema(simulateur.slug)
 
 if (forceResume && hasAnswers.value) {
   // Resume the form if the query parameter is present
@@ -111,19 +111,21 @@ onBeforeUnmount(() => {
   surveysStore.deleteCompleteListeners()
 })
 
-// Heading levels based on iframe context
 const { isIframe } = useIframeDisplay()
-const surveyH1 = computed(() => isIframe.value ? 'h1' : 'h2')
 </script>
 
 <template>
   <div>
-    <component
-      :is="surveyH1"
+    <!--
+    If rendered in an iframe, we need to add an invisible h1 tag to the page for a11y purpose.
+    If not in an iframe, an h1 has already been added earlier in the layout (see UserSimulation.vue)
+    -->
+    <h1
+      v-if="isIframe"
       class="fr-sr-only"
     >
-      Votre simulation
-    </component>
+      Votre simulation « {{ simulateur.title }} »
+    </h1>
 
     <LoadingSpinner v-if="schemaStatus === 'pending'" />
     <DsfrAlert

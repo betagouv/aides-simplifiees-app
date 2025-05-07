@@ -3,7 +3,7 @@ import type SimulateurController from '#controllers/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { usePage } from '@inertiajs/vue3'
 import { useSurveysStore } from '~/stores/surveys'
-
+import { computed } from "vue";
 const {
   props: {
     simulateur,
@@ -11,10 +11,11 @@ const {
 } = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
 
 const surveysStore = useSurveysStore()
-const groupedQuestions = surveysStore.getGroupedQuestions(simulateur.slug)
-const currentQuestionId = surveysStore.getCurrentQuestionId(simulateur.slug)
-const currentStepId = surveysStore.getCurrentStepId(simulateur.slug)
-const progress = surveysStore.getProgress(simulateur.slug)
+
+const groupedQuestions = computed(() => surveysStore.getGroupedQuestions(simulateur.slug))
+const currentStepId = computed(() => surveysStore.getCurrentStepId(simulateur.slug))
+const currentPageId = computed(() => surveysStore.getCurrentPageId(simulateur.slug))
+const progress = computed(() => surveysStore.getProgress(simulateur.slug))
 </script>
 
 <template>
@@ -29,10 +30,10 @@ const progress = surveysStore.getProgress(simulateur.slug)
         <strong>Simulateur:</strong> {{ simulateur.slug }}
       </div>
       <div>
-        <strong>Étape actuelle :</strong> {{ currentStepId }}
+        <strong>Étape courante :</strong> {{ currentStepId }}
       </div>
       <div>
-        <strong>Question courante :</strong> {{ currentQuestionId }}
+        <strong>Page courante :</strong> {{ currentPageId }}
       </div>
       <div>
         <strong>Progression :</strong> {{ progress }}%
@@ -69,7 +70,7 @@ const progress = surveysStore.getProgress(simulateur.slug)
             :key="question.id"
             class="fr-text--sm fr-mb-0 fr-px-1w fr-py-1v"
             :class="{
-              'debug-panel__question--current': question.id === currentQuestionId,
+              'debug-panel__question--current': surveysStore.isQuestionInCurrentPage(simulateur.slug, question.id),
               'debug-panel__question--invisible': !question.visible,
             }"
             :title="question.title"

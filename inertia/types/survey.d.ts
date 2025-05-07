@@ -48,11 +48,23 @@ declare global {
     }[]
   }
 
+  interface SurveyPage {
+    id: string
+    title?: string
+    questions: SurveyQuestion[]
+  }
+
   interface SurveyStep {
     id: string
     title: string
-    questions?: SurveyQuestion[]
-    pages?: SurveyPage[]
+  }
+
+  interface SurveyFlatStep extends SurveyStep {
+    questions: SurveyQuestion[]
+  }
+
+  interface SurveyDeepStep extends SurveyStep {
+    pages: SurveyPage[]
   }
 
   interface SurveyTest {
@@ -64,14 +76,18 @@ declare global {
   }
 
   interface SurveySchema {
-    version: string
-    forceRefresh: boolean
-    id: string
-    title: string
-    description: string
+    'version': string
+    'forceRefresh': boolean
+    'id': string
+    'title': string
+    'description': string
     'intermediary-results-after-step'?: string
-    steps: SurveyStep[]
-    tests?: SurveyTest[]
+    'steps': SurveyStepFlatStep[] | SurveyDeepStep[]
+    'tests'?: SurveyTest[]
+  }
+
+  interface SurveyNormalizedSchema extends SurveySchema {
+    steps: SurveyDeepStep[]
   }
 
   interface SurveyAnswers {
@@ -83,12 +99,6 @@ declare global {
     meta: {
       createdAt: Date
     }
-  }
-
-  interface SurveyPage {
-    id: string
-    title: string
-    questions: SurveyQuestion[]
   }
 }
 

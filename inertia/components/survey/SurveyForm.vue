@@ -7,7 +7,7 @@ import { router, usePage } from '@inertiajs/vue3'
 import { onKeyDown } from '@vueuse/core'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import SurveyNavigation from '~/components/survey/SurveyNavigation.vue'
-import SurveyQuestion from '~/components/survey/SurveyQuestion.vue'
+import SurveyPage from '~/components/survey/SurveyPage.vue'
 import { useSurveysStore } from '~/stores/surveys'
 
 const {
@@ -24,7 +24,6 @@ const surveySchema = computed(() => surveysStore.getSchema(simulateur.slug))
 const isLastPage = computed(() => surveysStore.isLastPage(simulateur.slug))
 const areAllRequiredQuestionsAnswered = computed(() => surveysStore.areAllRequiredQuestionsAnswered(simulateur.slug))
 const currentStepIndex = computed(() => surveysStore.getCurrentStepIndex(simulateur.slug))
-const visibleQuestionsInCurrentPage = computed(() => surveysStore.getVisibleQuestionsInCurrentPage(simulateur.slug))
 const areAllQuestionsInPageValid = computed(() => surveysStore.areAllQuestionsInPageValid(simulateur.slug))
 
 const stepTitles = computed(() => {
@@ -35,25 +34,80 @@ const stepTitles = computed(() => {
     .filter(Boolean) || []
 })
 
-// Focus on the question container after navigation
-const questionContainer = ref<HTMLElement | null>(null)
-const questionChangeAnnouncer = ref<HTMLElement | null>(null)
+const pageContainer = ref<HTMLElement | null>(null)
+const surveyPageChangeAnnouncer = ref<HTMLElement | null>(null)
 
-function focusRenderedQuestion() {
+/**
+ * When the user navigates to a new page, we want to focus on the page container
+ * for tab navigation and announce the new page to screen readers.
+ */
+function focusRenderedSurveyPage() {
   nextTick(() => {
-    if (questionContainer.value) {
-      questionContainer.value.focus()
+    if (pageContainer.value) {
+      // Focus on the page container for tab navigation
+      pageContainer.value.focus()
     }
 
-    // Announce to screen readers that a new page is displayed
-    if (questionChangeAnnouncer.value && currentPage.value) {
-      questionChangeAnnouncer.value.textContent = `Page : ${currentPage.value.title}`
+    if (surveyPageChangeAnnouncer.value && currentPage.value) {
+      // Announce to screen readers that a new page is displayed
+      surveyPageChangeAnnouncer.value.textContent = `Page : ${currentPage.value.title}`
     }
   })
 }
 onMounted(() => {
-  focusRenderedQuestion()
+  focusRenderedSurveyPage()
 })
+
+// Navigate to next page
+function handleNext() {
+  // Check if we should show intermediary results
+  const intermediaryResultsAfterStep = surveySchema.value?.['intermediary-results-after-step']
+  const currentStep = surveysStore.getCurrentStep(simulateur.slug)
+  const nextPage = surveysStore.getNextVisiblePage(simulateur.slug)
+  if (!nextPage) {
+    return
+  }
+  const stepOfNextPage = surveysStore.getStepFromPageId(simulateur.slug, nextPage?.id)
+
+  // intermediaryResultsAfterStep is set in the survey schema
+  // I am in the step of intermediaryResultsAfterStep
+  // The next page is in a different step
+  if (intermediaryResultsAfterStep && currentStep?.id === intermediaryResultsAfterStep && stepOfNextPage?.id !== currentStep?.id) {
+    console.log('[SurveyForm] Redirecting to intermediary results page')
+
+    // Navigate to intermediary results page
+    surveysStore.goToNextPage(simulateur.slug)
+
+    router.visit(`/simulateurs/${simulateur.slug}/resultats-intermediaire#simulateur-title`, {
+      preserveState: true,
+      preserveScroll: true,
+    })
+
+    return
+  }
+
+  // Go to the next page
+  const wentToNextPage = surveysStore.goToNextPage(simulateur.slug)
+  if (wentToNextPage) {
+    focusRenderedSurveyPage()
+  }
+}
+
+// Navigate to previous page
+function handlePrevious() {
+  // Go to the previous page
+  const wentToPrevPage = surveysStore.goToPreviousPage(simulateur.slug)
+  if (wentToPrevPage) {
+    focusRenderedSurveyPage()
+  }
+  else {
+    surveysStore.setShowWelcomeScreen(simulateur.slug, true)
+  }
+}
+
+function handleComplete() {
+  surveysStore.tryComplete(simulateur.slug)
+}
 
 /**
  * When the user presses Enter on a question, we want to navigate to the next page
@@ -84,55 +138,7 @@ onKeyDown('Enter', (event: KeyboardEvent) => {
   else {
     handleComplete()
   }
-}, { target: questionContainer })
-
-// Navigate to next page
-function handleNext() {
-  // Check if we should show intermediary results
-  const intermediaryResultsAfterStep = surveySchema.value?.['intermediary-results-after-step']
-  const currentStep = surveysStore.getCurrentStep(simulateur.slug)
-  const nextPage = surveysStore.getNextVisiblePage(simulateur.slug)
-  const stepOfNextPage = surveysStore.getStepFromPageId(simulateur.slug, nextPage?.id)
-
-  // intermediaryResultsAfterStep is set in the survey schema
-  // I am in the step of intermediaryResultsAfterStep
-  // The next page is in a different step
-  if (intermediaryResultsAfterStep && currentStep?.id === intermediaryResultsAfterStep && stepOfNextPage?.id !== currentStep?.id) {
-    console.log('[SurveyForm] Redirecting to intermediary results page')
-
-    // Navigate to intermediary results page
-    surveysStore.goToNextPage(simulateur.slug)
-
-    router.visit(`/simulateurs/${simulateur.slug}/resultats-intermediaire#simulateur-title`, {
-      preserveState: true,
-      preserveScroll: true,
-    })
-
-    return
-  }
-
-  // Go to the next page
-  const wentToNextPage = surveysStore.goToNextPage(simulateur.slug)
-  if (wentToNextPage) {
-    focusRenderedQuestion()
-  }
-}
-
-// Navigate to previous page
-function handlePrevious() {
-  // Go to the previous page
-  const wentToPrevPage = surveysStore.goToPreviousPage(simulateur.slug)
-  if (wentToPrevPage) {
-    focusRenderedQuestion()
-  }
-  else {
-    surveysStore.setShowWelcomeScreen(simulateur.slug, true)
-  }
-}
-
-function handleComplete() {
-  surveysStore.tryComplete(simulateur.slug)
-}
+}, { target: pageContainer })
 
 const showNextBtn = computed(() => !isLastPage.value)
 const showFinishBtn = computed(() => isLastPage.value && areAllRequiredQuestionsAnswered.value)
@@ -140,49 +146,25 @@ const showFinishBtn = computed(() => isLastPage.value && areAllRequiredQuestions
 
 <template>
   <div>
-    <!-- Live region for announcing question changes to screen readers -->
+    <!-- Live region for announcing survey page changes to screen readers -->
     <div
-      id="question-change-announcer"
-      ref="questionChangeAnnouncer"
+      ref="surveyPageChangeAnnouncer"
       class="fr-sr-only"
       aria-live="polite"
       aria-atomic="true"
     />
 
     <DsfrStepper
-      v-if="currentStepIndex"
+      v-if="Number.isInteger(currentStepIndex)"
       :steps="stepTitles"
-      :current-step="currentStepIndex"
+      :current-step="(currentStepIndex as number) + 1"
     />
     <div
-      v-if="surveySchema && currentPage"
-      ref="questionContainer"
-      data-testid="question-container"
+      ref="pageContainer"
       tabindex="-1"
-      class="fr-card fr-p-4w fr-mb-3w"
     >
-      <!-- Page title -->
-      <h4
-        v-if="currentPage"
-        class="fr-text--lg fr-mb-2w"
-      >
-        {{ currentPage.title }}
-      </h4>
-
-      <!-- Display all visible questions in the page -->
-      <div
-        v-for="question in visibleQuestionsInCurrentPage"
-        :key="question.id"
-        class="fr-mb-4w"
-      >
-        <SurveyQuestion
-          :question="question"
-          :simulateur-slug="simulateur.slug"
-        />
-      </div>
+      <SurveyPage />
     </div>
-
-    <!-- Navigation buttons -->
     <SurveyNavigation
       :buttons="([
         {

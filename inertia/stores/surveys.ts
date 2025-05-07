@@ -1,9 +1,8 @@
-import { useFetch } from '@vueuse/core'
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useMatomo } from '~/composables/use_matomo'
+import { useSurveySchemaManager } from '~/composables/use_survey_schema_manager'
 import { useSurveyDebugStore } from '~/stores/survey_debug'
-import { compareVersions } from '~/utils/compare_versions'
 import { evaluateCondition } from '~/utils/evaluate_conditions'
 import { isAnswerValid } from '~/utils/form_validation'
 
@@ -14,12 +13,7 @@ export const useSurveysStore = defineStore(
      * State
      */
     const answers = ref<{ [simulateurId: string]: SurveyAnswers }>({})
-    const currentQuestionIds = ref<{ [simulateurId: string]: string | null }>({})
-    const surveySchemas = ref<{ [simulateurId: string]: SurveySchema | null }>({})
-    const schemaStatus = ref<{ [simulateurId: string]: 'idle' | 'pending' | 'error' | 'success' }>(
-      {},
-    )
-    const versions = ref<{ [simulateurId: string]: string }>({})
+    const currentPageIds = ref<{ [simulateurId: string]: string | null }>({})
 
     /**
      * Composables
@@ -27,162 +21,25 @@ export const useSurveysStore = defineStore(
     const matomo = useMatomo()
     const { debug } = useSurveyDebugStore()
 
-    /**
-     * Schema related methods
-     */
-    const getSchema = (simulateurId: string): SurveySchema | null => {
-      return surveySchemas.value[simulateurId] || null
-    }
-
-    const setSchema = (simulateurId: string, schema: SurveySchema) => {
-      // Normalize schema before setting it
-      const normalizedSchema = normalizeSchema(schema)
-      surveySchemas.value[simulateurId] = normalizedSchema
-      debug.log(`[Surveys store][${simulateurId}] Schema set:`, normalizedSchema)
-    }
-
-    /**
-     * Normalize schema to use the page-based format
-     * This converts legacy format (steps with direct questions) to the new format (steps with pages)
-     */
-    function normalizeSchema(schema: SurveySchema): SurveySchema {
-      const normalizedSchema = { ...schema }
-
-      // Convert each step to use the page-based format if needed
-      normalizedSchema.steps = schema.steps.map((step) => {
-        // If the step already uses pages, return as is
-        if (step.pages && step.pages.length > 0) {
-          return step
-        }
-
-        // Convert legacy format (direct questions) to page-based format
-        // Create one page per question
-        if (step.questions && step.questions.length > 0) {
-          const normalizedStep = { ...step }
-          normalizedStep.pages = step.questions.map((question, index) => {
-            return {
-              id: `${step.id}_page_${index + 1}`,
-              title: question.title,
-              questions: [question],
-            }
-          })
-
-          return normalizedStep
-        }
-
-        return step
-      })
-
-      return normalizedSchema
-    }
-
-    const getSchemaStatus = (simulateurId: string): 'idle' | 'pending' | 'error' | 'success' => {
-      return schemaStatus.value[simulateurId] || 'idle'
-    }
-
-    function updateSchemaStatus(
-      simulateurId: string,
-      status: 'idle' | 'pending' | 'error' | 'success',
-    ) {
-      if (status === 'error') {
-        console.error(`[Surveys store][${simulateurId}] Error loading survey schema`)
-      }
-      else {
-        debug.log(`[Surveys store][${simulateurId}] Schema status:`, status)
-      }
-      schemaStatus.value[simulateurId] = status
-    }
-
-    const getVersion = (simulateurId: string): string => {
-      const version = versions.value[simulateurId]
-      debug.log(`[Surveys store][${simulateurId}] Version:`, version)
-      return version
-    }
-
-    const setVersion = (simulateurId: string, version: string) => {
-      versions.value[simulateurId] = version
-      debug.log(`[Surveys store][${simulateurId}] Version set to:`, version)
-    }
-
-    function updateSchema(simulateurId: string, schema: SurveySchema) {
-      try {
-        if (schema.forceRefresh) {
-          debug.warn(
-            `[Surveys store][${simulateurId}] Schema forceRefresh is true, resetting survey...`,
-          )
-          setVersion(simulateurId, schema.version)
-          setSchema(simulateurId, schema)
+    const {
+      versions,
+      loadSchema,
+      getSchema,
+      getSchemaStatus,
+    } = useSurveySchemaManager({
+      onNewSchema: (simulateurId) => {
+        if (simulateurId) {
           resetSurvey(simulateurId)
         }
-        else {
-          const storedVersion = getVersion(simulateurId)
-          if (!storedVersion) {
-            debug.log(
-              `[Surveys store][${simulateurId}] No stored version found, assuming first load`,
-            )
-            setVersion(simulateurId, schema.version)
-            setSchema(simulateurId, schema)
-            resetSurvey(simulateurId)
-          }
-          else if (compareVersions(schema.version, storedVersion) > 0) {
-            debug.warn(`[Surveys store][${simulateurId}] Schema version changed !`)
-            setVersion(simulateurId, schema.version)
-            setSchema(simulateurId, schema)
-            resetSurvey(simulateurId)
-          }
-          else {
-            debug.log(
-              `[Surveys store][${simulateurId}] Schema version unchanged, no need to reset survey`,
-            )
-            setSchema(simulateurId, schema)
-          }
-        }
-
-        // Initialize if this is first load
-        if (!getCurrentQuestionId(simulateurId)) {
-          setFirstQuestion(simulateurId)
-        }
-      }
-      catch (error) {
-        console.error(`[Surveys store][${simulateurId}] Error updating schema:`, error)
-      }
-    }
-
-    async function loadSurveySchema(simulateurId: string) {
-      debug.log(`[Surveys store][${simulateurId}] Loading survey schema...`)
-      const {
-        data: schema,
-        isFetching,
-        isFinished,
-        error,
-      } = useFetch<SurveySchema>(`/forms/${simulateurId}.json`).get().json()
-      watch(
-        [isFinished, isFetching, error],
-        () => {
-          if (error.value) {
-            updateSchemaStatus(simulateurId, 'error')
-          }
-          else if (isFinished.value) {
-            updateSchemaStatus(simulateurId, 'success')
-          }
-          else if (isFetching.value) {
-            updateSchemaStatus(simulateurId, 'pending')
-          }
-        },
-        { immediate: true },
-      )
-      watch(schema, () => {
-        if (schema.value) {
-          updateSchema(simulateurId, schema.value)
-        }
-      })
-    }
+      },
+    })
 
     /**
      * Answers related methods
      */
     const getAnswers = (simulateurId: string): SurveyAnswers => {
-      return answers.value[simulateurId] || {}
+      const currentAnswers = answers.value[simulateurId]
+      return currentAnswers ?? {}
     }
 
     const getAnswersForCalculation = (simulateurId: string): SurveyAnswers => {
@@ -220,7 +77,8 @@ export const useSurveysStore = defineStore(
     }
 
     const hasAnswers = (simulateurId: string): boolean => {
-      return Object.keys(getAnswers(simulateurId)).length > 0
+      const currentAnswers = getAnswers(simulateurId)
+      return Object.keys(currentAnswers).length > 0
     }
 
     const getAnswer = (simulateurId: string, questionId: string): any => {
@@ -298,198 +156,57 @@ export const useSurveysStore = defineStore(
     }
 
     /**
-     * Question related methods
-     */
-    function getCurrentQuestionId(simulateurId: string): string | null {
-      return currentQuestionIds.value[simulateurId] || null
-    }
-
-    const setCurrentQuestionId = (simulateurId: string, questionId: string) => {
-      currentQuestionIds.value[simulateurId] = questionId
-      debug.log(`[Surveys store][${simulateurId}] Current question ID set to:`, questionId)
-    }
-
-    const getQuestions = (simulateurId: string): SurveyQuestion[] => {
-      const currentSchema = getSchema(simulateurId)
-      if (!currentSchema) {
-        return []
-      }
-
-      // Handle both formats - legacy format (step -> questions) and new format (step -> pages -> questions)
-      return currentSchema.steps.flatMap((step) => {
-        // If step has pages, get questions from all pages
-        if (step.pages && step.pages.length > 0) {
-          return step.pages.flatMap(page => page.questions || [])
-        }
-        // Otherwise fall back to legacy format
-        return step.questions || []
-      })
-    }
-
-    const getGroupedQuestions = (simulateurId: string): QuestionGroup[] => {
-      const currentSchema = getSchema(simulateurId)
-
-      return (
-        currentSchema?.steps.map((step) => {
-          const questions = (step.questions || []).map((question) => {
-            return {
-              id: question.id,
-              title: question.title,
-              answer: getAnswer(simulateurId, question.id),
-              visible: isQuestionVisible(simulateurId, question.id),
-            }
-          })
-          return {
-            title: step.title,
-            questions,
-          }
-        }) ?? []
-      )
-    }
-
-    const getAnsweredQuestions = (simulateurId: string): SurveyQuestion[] => {
-      const currentSchema = getSchema(simulateurId)
-
-      return (
-        currentSchema?.steps.flatMap((step) => {
-          return (step.questions || []).filter((question) => {
-            return hasAnswer(simulateurId, question.id)
-          })
-        }) ?? []
-      )
-    }
-
-    const getGroupedAnsweredQuestions = (simulateurId: string): QuestionGroup[] => {
-      const currentSchema = getSchema(simulateurId)
-      const currentAnswers = getAnswers(simulateurId)
-      return (
-        currentSchema?.steps.map((step) => {
-          const questions = (step.questions || [])
-            .filter((question) => {
-              // Check if the question is answered or is the current question
-              return (
-                hasAnswer(simulateurId, question.id)
-                || currentQuestionIds.value[simulateurId] === question.id
-              )
-            })
-            .map((question) => {
-              const answer = currentAnswers[question.id]
-              return {
-                id: question.id,
-                title: question.title,
-                answer,
-                visible: isQuestionVisible(simulateurId, question.id),
-              }
-            })
-          return {
-            title: step.title,
-            questions,
-          }
-        }) ?? []
-      )
-    }
-
-    const getVisibleQuestions = (simulateurId: string): SurveyQuestion[] => {
-      const currentSchema = getSchema(simulateurId)
-      if (!currentSchema) {
-        return []
-      }
-      // Get all required questions
-      const requiredQuestions = currentSchema.steps.flatMap((step) => {
-        return (step.questions || []).filter((question) => {
-          return isQuestionVisible(simulateurId, question.id)
-        })
-      })
-
-      return requiredQuestions
-    }
-
-    function areAllRequiredQuestionsAnswered(simulateurId: string): boolean {
-      const currentSchema = getSchema(simulateurId)
-      if (!currentSchema) {
-        return false
-      }
-      // Check if all required questions are answered
-      const allAnswered = getVisibleQuestions(simulateurId).every((question) => {
-        return hasAnswer(simulateurId, question.id)
-      })
-      return allAnswered
-    }
-
-    function isSomeRequiredQuestionsAnswered(simulateurId: string): boolean {
-      const currentSchema = getSchema(simulateurId)
-      if (!currentSchema) {
-        return false
-      }
-      // Check if some required questions are answered
-      const someAnswered = getVisibleQuestions(simulateurId).some((question) => {
-        return hasAnswer(simulateurId, question.id)
-      })
-      return someAnswered
-    }
-
-    const getCurrentQuestion = (simulateurId: string): SurveyQuestion | null => {
-      const currentQuestionId = getCurrentQuestionId(simulateurId)
-      if (!currentQuestionId) {
-        debug.log(`[Surveys Store][${simulateurId}] No current question ID found`)
-        return null
-      }
-
-      // Find the current question in the ordered list
-      const questions = getQuestions(simulateurId)
-      const currentQuestion = questions.find((question) => {
-        return question.id === currentQuestionId
-      })
-
-      if (!currentQuestion) {
-        debug.warn(
-          `[Surveys Store][${simulateurId}] Current question ${currentQuestionId} not found in ordered list`,
-        )
-        return null
-      }
-
-      debug.log(`[Surveys store][${simulateurId}] Current question: ${currentQuestion.id}`)
-
-      return currentQuestion
-    }
-
-    /**
      * Page related methods
      */
+
+    function getCurrentPageId(simulateurId: string): string | null {
+      const id = currentPageIds.value[simulateurId] || null
+      if (id === null) {
+        debug.warn(`[Surveys store][${simulateurId}] No current page ID found, setting to first page`)
+        setFirstPage(simulateurId)
+      }
+      return currentPageIds.value[simulateurId] || null
+    }
+
+    function setCurrentPageId(simulateurId: string, pageId: string) {
+      currentPageIds.value[simulateurId] = pageId
+      debug.log(`[Surveys store][${simulateurId}] Current question ID set to:`, pageId)
+    }
+
     const getCurrentPage = (simulateurId: string): SurveyPage | null => {
       const currentSchema = getSchema(simulateurId)
-      const currentQuestionId = getCurrentQuestionId(simulateurId)
+      const currentPageId = getCurrentPageId(simulateurId)
 
-      if (!currentSchema || !currentQuestionId) {
+      if (!currentSchema || !currentPageId) {
         return null
       }
 
-      // Look through all steps and pages to find which page contains the current question
-      for (const step of currentSchema.steps) {
-        // If step has pages
-        if (step.pages) {
-          for (const page of step.pages) {
-            if (page.questions.some(q => q.id === currentQuestionId)) {
-              return page
-            }
-          }
-        }
-      }
-
-      return null
+      const allPages = getAllPages(simulateurId)
+      const currentPage = allPages
+        ?.find(page => page.id === currentPageId)
+      return currentPage ?? null
     }
 
-    const getCurrentPageId = (simulateurId: string): string | null => {
-      return getCurrentPage(simulateurId)?.id ?? null
-    }
-
-    const getAllPages = (simulateurId: string): SurveyPage[] => {
+    function getAllPages(simulateurId: string): SurveyPage[] {
       const currentSchema = getSchema(simulateurId)
       if (!currentSchema) {
         return []
       }
 
       return currentSchema.steps.flatMap(step => step.pages || [])
+    }
+
+    function setFirstPage(simulateurId: string) {
+      const allPages = getAllPages(simulateurId)
+      const firstPage = allPages.find((page) => {
+        return page.questions.some((question) => {
+          return isQuestionVisible(simulateurId, question.id)
+        })
+      })
+
+      if (firstPage) {
+        setCurrentPageId(simulateurId, firstPage.id)
+      }
     }
 
     const getNextVisiblePage = (simulateurId: string): SurveyPage | null => {
@@ -556,263 +273,208 @@ export const useSurveysStore = defineStore(
       return getNextVisiblePage(simulateurId) === null
     }
 
-    const getNextVisibleQuestion = (simulateurId: string): SurveyQuestion | null => {
-      const currentQuestionId = getCurrentQuestionId(simulateurId)
-      if (!currentQuestionId) {
-        return null
-      }
-
-      const questions = getQuestions(simulateurId)
-      // Find the current question's index in the ordered list
-      const currentIndex = questions.findIndex((question) => {
-        return question.id === currentQuestionId
-      })
-
-      if (currentIndex === -1) {
-        debug.warn(
-          `[Surveys Store][${simulateurId}] Current question ${currentQuestionId} not found in ordered list`,
-        )
-        return null
-      }
-
-      // Check if we have pages
-      const currentPage = getCurrentPage(simulateurId)
-      if (currentPage) {
-        // Find next visible question in the current page
-        const pageQuestions = currentPage.questions
-        const pageQuestionIndex = pageQuestions.findIndex(q => q.id === currentQuestionId)
-
-        for (let i = pageQuestionIndex + 1; i < pageQuestions.length; i++) {
-          const nextQuestion = pageQuestions[i]
-          if (isQuestionVisible(simulateurId, nextQuestion.id)) {
-            debug.log(
-              `[Surveys store][${simulateurId}] Next visible question in page: ${nextQuestion.id}`,
-            )
-            return nextQuestion
-          }
-        }
-
-        // If no next question in current page, we need to go to next page
-        const nextPage = getNextVisiblePage(simulateurId)
-        if (nextPage && nextPage.questions.length > 0) {
-          // Find first visible question in next page
-          for (const question of nextPage.questions) {
-            if (isQuestionVisible(simulateurId, question.id)) {
-              debug.log(
-                `[Surveys store][${simulateurId}] First visible question in next page: ${question.id}`,
-              )
-              return question
-            }
-          }
-        }
-
-        return null
-      }
-
-      // Legacy behavior (no pages)
-      // Look for the next visible question in the ordered list
-      for (let i = currentIndex + 1; i < questions.length; i++) {
-        const nextQuestion = questions[i]
-        if (isQuestionVisible(simulateurId, nextQuestion.id)) {
-          debug.log(
-            `[Surveys store][${simulateurId}] Next visible question in schema order: ${nextQuestion.id}`,
-          )
-
-          return nextQuestion
-        }
-      }
-
-      return null
-    }
-
-    const getPreviousVisibleQuestion = (simulateurId: string): SurveyQuestion | null => {
-      const currentQuestionId = getCurrentQuestionId(simulateurId)
-      if (!currentQuestionId) {
-        return null
-      }
-
-      const questions = getQuestions(simulateurId)
-      // Find the current question's index in the ordered list
-      const currentIndex = questions.findIndex((question) => {
-        return question.id === currentQuestionId
-      })
-
-      if (currentIndex === -1) {
-        debug.warn(
-          `[surveysStore][${simulateurId}] Current question ${currentQuestionId} not found in ordered list`,
-        )
-        return null
-      }
-
-      // Check if we have pages
-      const currentPage = getCurrentPage(simulateurId)
-      if (currentPage) {
-        // Find previous visible question in the current page
-        const pageQuestions = currentPage.questions
-        const pageQuestionIndex = pageQuestions.findIndex(q => q.id === currentQuestionId)
-
-        for (let i = pageQuestionIndex - 1; i >= 0; i--) {
-          const prevQuestion = pageQuestions[i]
-          if (isQuestionVisible(simulateurId, prevQuestion.id)) {
-            debug.log(
-              `[Surveys store][${simulateurId}] Previous visible question in page: ${prevQuestion.id}`,
-            )
-            return prevQuestion
-          }
-        }
-
-        // If no previous question in current page, we need to go to previous page
-        const prevPage = getPreviousVisiblePage(simulateurId)
-        if (prevPage && prevPage.questions.length > 0) {
-          // Find last visible question in previous page
-          for (let i = prevPage.questions.length - 1; i >= 0; i--) {
-            const question = prevPage.questions[i]
-            if (isQuestionVisible(simulateurId, question.id)) {
-              debug.log(
-                `[Surveys store][${simulateurId}] Last visible question in previous page: ${question.id}`,
-              )
-              return question
-            }
-          }
-        }
-
-        return null
-      }
-
-      // Legacy behavior (no pages)
-      // Look for the previous visible question in the ordered list
-      for (let i = currentIndex - 1; i >= 0; i--) {
-        const previousQuestion = questions[i]
-        if (isQuestionVisible(simulateurId, previousQuestion.id)) {
-          debug.log(
-            `[surveysStore][${simulateurId}] Previous visible question in schema order: ${previousQuestion.id}`,
-          )
-
-          return previousQuestion
-        }
-      }
-
-      return null
-    }
-
-    function goToNextQuestion(simulateurId: string) {
-      const nextQuestion = getNextVisibleQuestion(simulateurId)
-      if (nextQuestion) {
-        // Update the current question
-        setCurrentQuestionId(simulateurId, nextQuestion.id)
-        return true
-      }
-      return false
-    }
-
-    function goToPreviousQuestion(simulateurId: string) {
-      const prevQuestion = getPreviousVisibleQuestion(simulateurId)
-      if (prevQuestion) {
-        // Update the current question
-        setCurrentQuestionId(simulateurId, prevQuestion.id)
-        return true
-      }
-      return false
-    }
-
     function goToNextPage(simulateurId: string) {
       const nextPage = getNextVisiblePage(simulateurId)
-      if (nextPage && nextPage.questions.length > 0) {
-        // Find the first visible question in the next page
-        for (const question of nextPage.questions) {
-          if (isQuestionVisible(simulateurId, question.id)) {
-            setCurrentQuestionId(simulateurId, question.id)
-            return true
-          }
-        }
+      if (nextPage) {
+        setCurrentPageId(simulateurId, nextPage.id)
+        return true
       }
       return false
     }
 
     function goToPreviousPage(simulateurId: string) {
       const prevPage = getPreviousVisiblePage(simulateurId)
-      if (prevPage && prevPage.questions.length > 0) {
-        // Find the last visible question in the previous page
-        for (let i = prevPage.questions.length - 1; i >= 0; i--) {
-          const question = prevPage.questions[i]
-          if (isQuestionVisible(simulateurId, question.id)) {
-            setCurrentQuestionId(simulateurId, question.id)
-            return true
-          }
-        }
+      if (prevPage) {
+        setCurrentPageId(simulateurId, prevPage.id)
+        return true
       }
       return false
     }
 
-    function getVisibleQuestionsInCurrentPage(simulateurId: string): SurveyQuestion[] {
-      const currentPage = getCurrentPage(simulateurId)
-      if (!currentPage) {
-        return []
+    function setCurrentPageFromQuestionId(simulateurId: string, questionId: string) {
+      const question = findQuestionById(simulateurId, questionId)
+      if (question) {
+        const page = getAllPages(simulateurId)
+          .find((p) => {
+            return p.questions
+              ?.some((q) => {
+                return q.id === questionId
+              })
+          })
+        if (page) {
+          setCurrentPageId(simulateurId, page.id)
+        }
       }
-      return currentPage.questions.filter(question =>
-        isQuestionVisible(simulateurId, question.id),
-      )
     }
 
-    function areAllQuestionsInPageValid(simulateurId: string): boolean {
+    /**
+     * Question related methods
+     */
+
+    function getQuestions(simulateurId: string): SurveyQuestion[] {
+      const currentSchema = getSchema(simulateurId)
+      const questions = currentSchema
+        ?.steps
+        .flatMap((step) => {
+          return step.pages.flatMap(page => page.questions || [])
+        })
+      return questions ?? []
+    }
+
+    function findQuestionById(simulateurId: string, questionId: string): SurveyQuestion | null {
+      const questions = getQuestions(simulateurId)
+      const question = questions
+        .find((q) => {
+          return q.id === questionId
+        })
+      return question ?? null
+    }
+
+    function isQuestionVisible(simulateurId: string, questionId: string): boolean {
+      const question = findQuestionById(simulateurId, questionId)
+      const currentAnswers = getAnswers(simulateurId)
+
+      if (!question) {
+        return false
+      }
+
+      // If the question has a visibility condition, evaluate it
+      if (question.visibleWhen) {
+        const isVisible = evaluateCondition(question.visibleWhen, currentAnswers)
+        // debug.log(`[surveysStore][${simulateurId}] Visibility check for ${questionId}: ${isVisible} (condition: ${question.visibleWhen})`)
+        return isVisible
+      }
+
+      // By default, a question is visible
+      return true
+    }
+
+    function getGroupedQuestions(simulateurId: string): QuestionGroup[] {
+      const steps = getAllSteps(simulateurId)
+      const groupedQuestions = steps
+        .map((step) => {
+          const questions = step.pages
+            .flatMap((page) => {
+              return page.questions
+                .map((question) => {
+                  return {
+                    id: question.id,
+                    title: question.title,
+                    answer: getAnswer(simulateurId, question.id),
+                    visible: isQuestionVisible(simulateurId, question.id),
+                  }
+                })
+            })
+          return {
+            title: step.title,
+            questions,
+          }
+        })
+      return groupedQuestions
+    }
+
+    function getVisibleQuestions(simulateurId: string): SurveyQuestion[] {
+      const questions = getQuestions(simulateurId)
+      const visibleQuestions = questions
+        .filter((question) => {
+          return isQuestionVisible(simulateurId, question.id)
+        })
+      return visibleQuestions
+    }
+
+    function isQuestionInCurrentPage(simulateurId: string, questionId: string): boolean {
       const currentPage = getCurrentPage(simulateurId)
       if (!currentPage) {
         return false
       }
-      return getVisibleQuestionsInCurrentPage(simulateurId).every(question =>
-        isAnswerValid(question, getAnswer(simulateurId, question.id)),
+      const isInCurrentPage = currentPage.questions
+        .some((q) => {
+          return q.id === questionId
+        }
       )
+      return isInCurrentPage
+    }
+
+    function areAllRequiredQuestionsAnswered(simulateurId: string): boolean {
+      const visibleQuestions = getVisibleQuestions(simulateurId)
+      const areAllAnswered = visibleQuestions
+        .every((question) => {
+          return hasAnswer(simulateurId, question.id)
+        })
+      return areAllAnswered
+    }
+
+    function getVisibleQuestionsInCurrentPage(simulateurId: string): SurveyQuestion[] {
+      const currentPage = getCurrentPage(simulateurId)
+      const questions = currentPage
+        ?.questions
+        .filter((question) => {
+          return isQuestionVisible(simulateurId, question.id)
+        })
+      return questions ?? []
+    }
+
+    function areAllQuestionsInPageValid(simulateurId: string): boolean {
+      const visibleQuestions = getVisibleQuestionsInCurrentPage(simulateurId)
+      const areAllValid = visibleQuestions
+        .every((question) => {
+          return isAnswerValid(question, getAnswer(simulateurId, question.id))
+        })
+      return areAllValid
     }
 
     /**
      * Step related methods
      */
-    const getStepFromPageId = (simulateurId: string, pageId: string): SurveyStep | null => {
+
+    function getAllSteps(simulateurId: string): SurveyDeepStep[] {
       const currentSchema = getSchema(simulateurId)
-      return currentSchema?.steps.find((s) => {
-        return s.pages?.some(page => page.id === pageId)
-      }) ?? null
+      return currentSchema?.steps ?? []
     }
 
-    const getCurrentStep = (simulateurId: string): SurveyStep | null => {
-      const currentSchema = getSchema(simulateurId)
-      const currentQuestionId = getCurrentQuestionId(simulateurId)
-
-      const step = currentSchema?.steps.find((s) => {
-        // Check if step has pages
-        if (s.pages) {
-          // Check if any page has the current question
-          return s.pages.some(page =>
-            page.questions.some(q => q.id === currentQuestionId),
-          )
-        }
-        // Legacy format
-        return (s.questions || []).some((question) => {
-          return question.id === currentQuestionId
+    const getStepFromPageId = (simulateurId: string, pageId: string): SurveyDeepStep | null => {
+      const steps = getAllSteps(simulateurId)
+      const step = steps
+        .find((s) => {
+          return s.pages
+            ?.some((p) => {
+              return p.id === pageId
+            })
         })
-      })
       return step ?? null
     }
 
+    function getCurrentStep (simulateurId: string): SurveyDeepStep | null {
+      const steps = getAllSteps(simulateurId)
+      const currentPageId = getCurrentPageId(simulateurId)
+      const currentStep = steps
+        .find((step) => {
+          return step.pages
+            ?.some((p) => {
+              return p.id === currentPageId
+            })
+        })
+      return currentStep ?? null
+    }
+
     const getCurrentStepId = (simulateurId: string): string | null => {
-      return getCurrentStep(simulateurId)?.id ?? null
+      const step = getCurrentStep(simulateurId)
+      return step?.id ?? null
     }
 
     const getCurrentStepIndex = (simulateurId: string): number | null => {
-      const currentSchema = getSchema(simulateurId)
-      if (!currentSchema) {
-        return null
-      }
-
-      const stepIndex = currentSchema.steps.findIndex((step) => {
-        return step.id === getCurrentStepId(simulateurId)
-      })
+      const step = getCurrentStep(simulateurId)
+      const steps = getAllSteps(simulateurId)
+      const stepIndex = steps
+        .findIndex((s) => {
+          return s.id === step?.id
+        })
 
       if (stepIndex === -1) {
         return null
       }
 
-      return stepIndex + 1 // +1 to match the number of steps
+      return stepIndex
     }
 
     /**
@@ -860,7 +522,7 @@ export const useSurveysStore = defineStore(
       answers.value[simulateurId] = {}
 
       // Reset to first category/question
-      setFirstQuestion(simulateurId)
+      setFirstPage(simulateurId)
     }
 
     // Welcome screen
@@ -925,62 +587,17 @@ export const useSurveysStore = defineStore(
       }
     }
 
-    const isFirstQuestion = (simulateurId: string): boolean => {
-      return getPreviousVisibleQuestion(simulateurId) === null
-    }
-
-    const isLastQuestion = (simulateurId: string): boolean => {
-      return getNextVisibleQuestion(simulateurId) === null
-    }
-
-    function setFirstQuestion(simulateurId: string) {
-      const questions = getQuestions(simulateurId)
-      setCurrentQuestionId(simulateurId, questions[0]?.id ?? null)
-    }
-
-    function findQuestionById(simulateurId: string, questionId: string): SurveyQuestion | null {
-      const questions = getQuestions(simulateurId)
-
-      // Find the question in the ordered list
-      const question = questions.find((q) => {
-        return q.id === questionId
-      })
-      return question ?? null
-    }
-
-    function isQuestionVisible(simulateurId: string, questionId: string): boolean {
-      const question = findQuestionById(simulateurId, questionId)
-      const currentAnswers = getAnswers(simulateurId)
-
-      if (!question) {
-        return false
-      }
-
-      // If the question has a visibility condition, evaluate it
-      if (question.visibleWhen) {
-        const isVisible = evaluateCondition(question.visibleWhen, currentAnswers)
-
-        // debug.log(`[surveysStore][${simulateurId}] Visibility check for ${questionId}: ${isVisible} (condition: ${question.visibleWhen})`)
-
-        return isVisible
-      }
-
-      // By default, a question is visible
-      return true
-    }
-
     return {
       answers,
-      currentQuestionIds,
+      currentPageIds,
       versions,
       getVisibleQuestionsInCurrentPage,
       areAllQuestionsInPageValid,
       deleteCompleteListeners,
       areAllRequiredQuestionsAnswered,
-      isSomeRequiredQuestionsAnswered,
       getSchema,
       getSchemaStatus,
-      loadSurveySchema,
+      loadSchema,
       getQuestions,
       hasAnswers,
       getAnswers,
@@ -989,29 +606,20 @@ export const useSurveysStore = defineStore(
       hasAnswer,
       setAnswer,
       formatAnswer,
-      getCurrentQuestionId,
-      setCurrentQuestionId,
       getCurrentStep,
       getCurrentStepId,
       getCurrentStepIndex,
-      getCurrentQuestion,
       getCurrentPage,
       getCurrentPageId,
-      getNextVisibleQuestion,
-      getPreviousVisibleQuestion,
       getNextVisiblePage,
       getPreviousVisiblePage,
       getStepFromPageId,
       isFirstPage,
       isLastPage,
       getGroupedQuestions,
-      getAnsweredQuestions,
-      getGroupedAnsweredQuestions,
-      isFirstQuestion,
-      isLastQuestion,
+      isQuestionInCurrentPage,
       resetSurvey,
-      goToNextQuestion,
-      goToPreviousQuestion,
+      setFirstPage,
       goToNextPage,
       goToPreviousPage,
       getProgress,
@@ -1019,6 +627,7 @@ export const useSurveysStore = defineStore(
       getShowChoiceScreen,
       getShowWelcomeScreen,
       setShowWelcomeScreen,
+      setCurrentPageFromQuestionId,
       onComplete,
       offComplete,
       tryComplete,
@@ -1030,7 +639,7 @@ export const useSurveysStore = defineStore(
       pick: [
         'answers',
         'versions',
-        'currentQuestionIds',
+        'currentPageIds',
       ],
     },
   },

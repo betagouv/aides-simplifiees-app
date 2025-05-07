@@ -2,20 +2,13 @@
 import type SimulateurController from '#controllers/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import type { DsfrButtonProps } from '@gouvminint/vue-dsfr'
-import { DsfrButton, DsfrStepper } from '@gouvminint/vue-dsfr'
+import { DsfrStepper } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
 import { onKeyDown } from '@vueuse/core'
 import { computed, customRef, nextTick, onMounted, ref } from 'vue'
-import BooleanQuestion from '~/components/survey/BooleanQuestion.vue'
-import ComboboxQuestion from '~/components/survey/ComboboxQuestion.vue'
-import DateQuestion from '~/components/survey/DateQuestion.vue'
-import MultiSelectQuestion from '~/components/survey/MultiSelectQuestion.vue'
-import NumberQuestion from '~/components/survey/NumberQuestion.vue'
-import RadioButtonQuestion from '~/components/survey/RadioButtonQuestion.vue'
 import SurveyNavigation from '~/components/survey/SurveyNavigation.vue'
-import { useIframeDisplay } from '~/composables/use_is_iframe'
+import SurveyQuestion from '~/components/survey/SurveyQuestion.vue'
 import { useSurveysStore } from '~/stores/surveys'
-import { autocompleteConfigs, autocompleteFunctions } from '~/utils/autocomplete_functions'
 import { isAnswerValid } from '~/utils/form_validation'
 
 const {
@@ -35,7 +28,6 @@ const isLastPage = computed(() => surveysStore.isLastPage(simulateur.slug))
 const areAllRequiredQuestionsAnswered = computed(() => surveysStore.areAllRequiredQuestionsAnswered(simulateur.slug))
 const currentStepIndex = computed(() => surveysStore.getCurrentStepIndex(simulateur.slug))
 
-
 // Determine if we're using the page-based navigation
 const hasPages = computed(() => {
   return surveySchema.value?.steps.some(step => step.pages && step.pages.length > 0) || false
@@ -48,16 +40,6 @@ const visibleQuestionsInCurrentPage = computed(() => {
   }
   return currentPage.value.questions.filter(question =>
     surveysStore.isQuestionVisible(simulateur.slug, question.id),
-  )
-})
-
-// Check if all questions in the current page are answered
-const _areAllQuestionsInPageAnswered = computed(() => {
-  if (!currentPage.value) {
-    return false
-  }
-  return visibleQuestionsInCurrentPage.value.every(question =>
-    surveysStore.hasAnswer(simulateur.slug, question.id),
   )
 })
 
@@ -87,43 +69,6 @@ const stepTitles = computed(() => {
     .filter(Boolean) || []
 })
 
-// Get the question component type based on question type
-function getQuestionComponent(type: string) {
-  return {
-    radio: RadioButtonQuestion,
-    boolean: BooleanQuestion,
-    checkbox: MultiSelectQuestion,
-    number: NumberQuestion,
-    date: DateQuestion,
-    combobox: ComboboxQuestion,
-    text: ComboboxQuestion,
-  }[type] || ComboboxQuestion
-}
-
-// Get autocomplete function for a question
-function getAutocompleteFn(question: SurveyQuestion) {
-  if (question?.autocompleteFunction) {
-    return autocompleteFunctions[question.autocompleteFunction]
-  }
-  return undefined
-}
-
-// Get autocomplete configuration for a question
-function getAutocompleteConfig(question: SurveyQuestion) {
-  if (question?.autocompleteFunction) {
-    // Merge default config with any custom config from question
-    return {
-      ...autocompleteConfigs[question.autocompleteFunction],
-      ...question.autocompleteConfig || {},
-    }
-  }
-  return undefined
-}
-
-// Heading levels based on iframe context
-const { isIframe } = useIframeDisplay()
-const surveyH2 = computed(() => isIframe.value ? 'h2' : 'h3')
-
 // Focus on the question container after navigation
 const questionContainer = ref<HTMLElement | null>(null)
 const questionChangeAnnouncer = ref<HTMLElement | null>(null)
@@ -145,8 +90,8 @@ onMounted(() => {
 })
 
 onKeyDown('Enter', (event: KeyboardEvent) => {
-  let validAnswer = hasPages.value ? areAllQuestionsInPageValid : hasValidAnswer
-  let isLast = hasPages.value ? isLastPage : isLastQuestion
+  const validAnswer = hasPages.value ? areAllQuestionsInPageValid : hasValidAnswer
+  const isLast = hasPages.value ? isLastPage : isLastQuestion
 
   if (validAnswer.value && !isLast.value) {
     // Only trigger if the source is not a button or textarea or [type="search"] input or select
@@ -173,9 +118,8 @@ function handleNext() {
   // Check if we should show intermediary results
   const intermediaryResultsAfterStep = surveySchema.value?.['intermediary-results-after-step']
   const currentStep = surveysStore.getCurrentStep(simulateur.slug)
-    const nextPage = surveysStore.getNextVisiblePage(simulateur.slug)
+  const nextPage = surveysStore.getNextVisiblePage(simulateur.slug)
   const stepOfNextPage = surveysStore.getStepFromPageId(simulateur.slug, nextPage?.id)
-
 
   // intermediaryResultsAfterStep is set in the survey schema
   // I am in the step of intermediaryResultsAfterStep
@@ -191,7 +135,6 @@ function handleNext() {
       preserveState: true,
       preserveScroll: true,
     })
-
 
     return
   }
@@ -256,14 +199,15 @@ function handleComplete() {
   surveysStore.tryComplete(simulateur.slug)
 }
 
-// Add page indicator if using page navigation
-const pageIndicator = computed(() => {
-  if (hasPages.value && currentPage.value) {
-    const currentPageIndex = surveySchema.value?.steps.flatMap(step => step.pages || []).findIndex(page => page.id === currentPage.value?.id) || 0
-    const totalPages = surveySchema.value?.steps.flatMap(step => step.pages || []).length || 0
-    return `Page ${currentPageIndex + 1}/${totalPages}`
-  }
-  return null
+const showNextBtn = computed(() => {
+  return hasPages.value
+    ? !isLastPage.value
+    : !isLastQuestion.value
+})
+const showFinishBtn = computed(() => {
+  return hasPages.value
+    ? isLastPage.value && areAllRequiredQuestionsAnswered.value
+    : isLastQuestion.value && areAllRequiredQuestionsAnswered.value
 })
 </script>
 
@@ -290,14 +234,6 @@ const pageIndicator = computed(() => {
       tabindex="-1"
       class="fr-card fr-p-4w fr-mb-3w"
     >
-      <!-- Page indicator if using page-based navigation -->
-      <div
-        v-if="pageIndicator"
-        class="fr-badge fr-badge--sm fr-badge--info fr-mb-3w"
-      >
-        {{ pageIndicator }}
-      </div>
-
       <!-- Page title if using page-based navigation -->
       <h4
         v-if="hasPages && currentPage"
@@ -313,94 +249,23 @@ const pageIndicator = computed(() => {
           :key="question.id"
           class="fr-mb-4w"
         >
-          <hgroup
-            :id="`question-${question.id}`"
-            class="fr-mb-3w"
-          >
-            <component
-              :is="surveyH2"
-              class="fr-h5 fr-mb-1w"
-              :aria-describedby="question?.description ? `question-description-${question.id}` : undefined"
-            >
-              {{ question.title }}
-            </component>
-            <p
-              v-if="question?.description"
-              :id="`question-description-${question.id}`"
-              class="fr-hint-text fr-text--sm fr-mb-0"
-            >
-              {{ question.description }}
-            </p>
-          </hgroup>
-          <DsfrButton
-            v-if="question?.notion"
-            :label="question.notion.buttonLabel"
-            icon="ri:information-line"
-            secondary
-            icon-right
-            class="fr-mb-2w"
-            @click="() => {
-              router.visit(`/simulateurs/${simulateur.slug}/notions/${question.notion.id}`, { preserveState: true, preserveScroll: true })
-            }"
-          />
-          <component
-            :is="getQuestionComponent(question.type)"
-            :key="question.id"
-            :model-value="surveysStore.getAnswer(simulateur.slug, question.id)"
-            @update:model-value="(val: any) => surveysStore.setAnswer(simulateur.slug, question.id, val)"
+          <SurveyQuestion
             :question="question"
-            :autocomplete-config="getAutocompleteConfig(question)"
-            :autocomplete-fn="getAutocompleteFn(question)"
+            :simulateur-slug="simulateur.slug"
           />
         </div>
       </template>
 
       <!-- For legacy question-by-question navigation -->
       <template v-else-if="currentQuestion">
-        <hgroup
-          :id="`question-${currentQuestion.id}`"
-          class="fr-mb-3w"
-        >
-          <component
-            :is="surveyH2"
-            class="fr-h5 fr-mb-1w"
-            :aria-describedby="currentQuestion?.description ? `question-description-${currentQuestion.id}` : undefined"
-          >
-            {{ currentQuestion?.title || '' }}
-          </component>
-          <p
-            v-if="currentQuestion?.description"
-            :id="`question-description-${currentQuestion.id}`"
-            class="fr-hint-text fr-text--sm fr-mb-0"
-          >
-            {{ currentQuestion?.description }}
-          </p>
-        </hgroup>
-        <DsfrButton
-          v-if="currentQuestion?.notion"
-          :label="currentQuestion.notion?.buttonLabel"
-          icon="ri:information-line"
-          secondary
-          icon-right
-          class="fr-mb-2w"
-          @click="() => {
-            if (currentQuestion?.notion) {
-              router.visit(`/simulateurs/${simulateur.slug}/notions/${currentQuestion.notion.id}`, { preserveState: true, preserveScroll: true })
-            }
-          }"
-        />
-        <component
-          v-if="currentQuestion"
-          :is="getQuestionComponent(currentQuestion.type)"
-          :key="currentQuestion.id"
-          :model-value="surveysStore.getAnswer(simulateur.slug, currentQuestion.id)"
-          @update:model-value="(val: any) => surveysStore.setAnswer(simulateur.slug, currentQuestion.id, val)"
+        <SurveyQuestion
           :question="currentQuestion"
-          :autocomplete-config="getAutocompleteConfig(currentQuestion)"
-          :autocomplete-fn="getAutocompleteFn(currentQuestion)"
+          :simulateur-slug="simulateur.slug"
         />
       </template>
     </div>
+
+    <!-- Navigation buttons remain unchanged -->
     <SurveyNavigation
       :buttons="([
         {
@@ -417,30 +282,20 @@ const pageIndicator = computed(() => {
           icon: { name: 'ri:arrow-left-line', ssr: true },
           onClick: handlePrevious,
         },
-        (hasPages ? !isLastPage : !isLastQuestion) ? {
+        showNextBtn ? {
           label: 'Suivant',
           iconRight: true,
           icon: { name: 'ri:arrow-right-line', ssr: true },
           disabled: hasPages ? !areAllQuestionsInPageValid : !hasValidAnswer,
           onClick: handleNext,
         } : null,
-        areAllRequiredQuestionsAnswered && (isLastPage ? {
+        showFinishBtn ? {
           label: 'Terminer',
           iconRight: true,
           icon: { name: 'ri:arrow-right-line', ssr: true },
           onClick: handleComplete,
-        } : null),
+        } : null,
       ].filter(Boolean) as DsfrButtonProps[])"
     />
   </div>
 </template>
-
-<style scoped lang="scss">
-:deep(.fr-fieldset) {
-  margin-bottom: 0;
-
-  .fr-fieldset__element:last-child {
-    margin-bottom: 0;
-  }
-}
-</style>

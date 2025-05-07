@@ -55,24 +55,34 @@ onMounted(() => {
   focusRenderedQuestion()
 })
 
+/**
+ * When the user presses Enter on a question, we want to navigate to the next page
+ * or finish the survey if we are on the last page.
+ */
 onKeyDown('Enter', (event: KeyboardEvent) => {
-  if (areAllQuestionsInPageValid.value && !isLastPage.value) {
-    // Only trigger if the source is not a button or textarea or [type="search"] input or select
-    if (
-      !(event.target instanceof HTMLButtonElement) && !(event.target instanceof HTMLTextAreaElement) && !(event.target instanceof HTMLInputElement && event.target.type === 'search') && !(event.target instanceof HTMLSelectElement)
-    ) {
-      event.preventDefault()
-      handleNext()
-    }
+  if (!areAllQuestionsInPageValid.value) {
+    return
   }
-  else if (areAllQuestionsInPageValid.value && isLastPage.value) {
-    // Only trigger if the source is not a button or textarea or [type="search"] input or select
-    if (
-      !(event.target instanceof HTMLButtonElement) && !(event.target instanceof HTMLTextAreaElement) && !(event.target instanceof HTMLInputElement && event.target.type === 'search') && !(event.target instanceof HTMLSelectElement)
-    ) {
-      event.preventDefault()
-      handleComplete()
-    }
+
+  /**
+   * Only trigger if the source is not a button, a textarea, an input[type="search"] or a select.
+   */
+  const isDesiredTarget = !(event.target instanceof HTMLButtonElement)
+    && !(event.target instanceof HTMLTextAreaElement)
+    && !(event.target instanceof HTMLInputElement && event.target.type === 'search')
+    && !(event.target instanceof HTMLSelectElement)
+
+  if (!isDesiredTarget) {
+    return
+  }
+
+  event.preventDefault()
+
+  if (!isLastPage.value) {
+    handleNext()
+  }
+  else {
+    handleComplete()
   }
 }, { target: questionContainer })
 

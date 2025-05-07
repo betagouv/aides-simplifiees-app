@@ -75,7 +75,6 @@ router
         middleware.resumeQuery(),
       ])
     router.get('/simulateurs/:simulateur_slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
-    router.get('/simulateurs/:simulateur_slug/resultats-intermediaire', [SimulateurController, 'showResultatsIntermediaire'])
     router.get('/simulateurs/:simulateur_slug/resultats', [SimulateurController, 'showResultats'])
     router.get('/simulateurs/:simulateur_slug/resultats/:hash', [SimulateurController, 'showResultats'])
     router.get('/simulateurs/:simulateur_slug/resultats/mock-hash', [SimulateurController, 'showResultats'])

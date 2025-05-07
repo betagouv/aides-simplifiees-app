@@ -4,7 +4,35 @@
   "id": "entreprise-innovation",
   "title": "Dispositifs d'innovation et de recherche",
   "description": "Répondez à ces questions pour découvrir les dispositifs d'innovation et de recherche auxquels votre entreprise pourrait être éligible (CIR, CII, CICo, JEI, JEU, JEC)",
-  "intermediary-results-after-step": "information-generale",
+  "intermediaryResults": {
+    "dispositifs": [
+      {
+        "id": "CIR",
+        "title": "Crédit d'Impôt Recherche (CIR)",
+        "description": "Le CIR permet de financer vos activités de recherche et développement."
+      },
+      {
+        "id": "CII",
+        "title": "Crédit d'Impôt Innovation (CII)",
+        "description": "Le CII soutient les PME qui mènent des projets d'innovation."
+      },
+      {
+        "id": "JEI",
+        "title": "Jeune Entreprise Innovante (JEI)",
+        "description": "Le statut JEI offre des exonérations fiscales et sociales aux jeunes entreprises innovantes."
+      },
+      {
+        "id": "JEU",
+        "title": "Jeune Entreprise Universitaire (JEU)",
+        "description": "Le statut JEU offre des avantages aux entreprises créées par des étudiants ou chercheurs."
+      },
+      {
+        "id": "JEC",
+        "title": "Jeune Entreprise de Croissance (JEC)",
+        "description": "La JEC offre des avantages fiscaux pour les entreprises en forte croissance."
+      }
+    ]
+  },
   "steps": [
     {
       "id": "information-generale",
@@ -125,6 +153,12 @@
               "visibleWhen": "immatriculation-france=true"
             }
           ]
+        },
+        {
+          "id": "resultats-intermediaires-1",
+          "title": "Évaluation de votre éligibilité",
+          "type": "intermediary-results",
+          "dispositifs": ["CIR", "CII", "JEI", "JEU"]
         }
       ]
     },
@@ -222,6 +256,19 @@
               "type": "boolean"
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "resultats-intermediaires-2",
+      "title": "Résultats mis à jour",
+      "pages": [
+        {
+          "id": "resultats-intermediaires-2",
+          "title": "Mise à jour de votre éligibilité",
+          "type": "intermediary-results",
+          "description": "Voici une évaluation actualisée de votre éligibilité aux dispositifs d'aide.",
+          "dispositifs": ["CIR", "CII", "JEI", "JEU", "JEC"]
         }
       ]
     },

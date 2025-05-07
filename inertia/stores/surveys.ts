@@ -196,13 +196,24 @@ export const useSurveysStore = defineStore(
       return currentSchema.steps.flatMap(step => step.pages || [])
     }
 
-    function setFirstPage(simulateurId: string) {
+    function getAllQuestionsPages(simulateurId: string): SurveyQuestionsPage[] {
       const allPages = getAllPages(simulateurId)
-      const firstPage = allPages.find((page) => {
-        return page.questions.some((question) => {
-          return isQuestionVisible(simulateurId, question.id)
+      const questionsPages = allPages
+        .filter((page) => {
+          return (page as SurveyQuestionsPage).questions !== undefined
         })
-      })
+      return questionsPages as SurveyQuestionsPage[]
+    }
+
+    function setFirstPage(simulateurId: string) {
+      const allPages = getAllQuestionsPages(simulateurId)
+      const firstPage = allPages
+        .find((page) => {
+          return page.questions
+            ?.some((question) => {
+              return isQuestionVisible(simulateurId, question.id)
+            })
+        })
 
       if (firstPage) {
         setCurrentPageId(simulateurId, firstPage.id)
@@ -225,8 +236,16 @@ export const useSurveysStore = defineStore(
       // Look for the next visible page
       for (let i = currentIndex + 1; i < allPages.length; i++) {
         const nextPage = allPages[i]
-        // A page is visible if any of its questions are visible
-        const hasVisibleQuestion = nextPage.questions.some(q => isQuestionVisible(simulateurId, q.id))
+        // A page is visible if any of its questions are visible OR if it is an intermediary results page
+        if ((nextPage as SurveyResultsPage).type === 'intermediary-results') {
+          debug.log(`[Surveys store][${simulateurId}] Next visible page: ${nextPage.id}`)
+          return nextPage
+        }
+        const hasVisibleQuestion = (nextPage as SurveyQuestionsPage)
+          ?.questions
+          .some((q) => {
+            return isQuestionVisible(simulateurId, q.id)
+          }) ?? false
 
         if (hasVisibleQuestion) {
           debug.log(`[Surveys store][${simulateurId}] Next visible page: ${nextPage.id}`)
@@ -253,9 +272,16 @@ export const useSurveysStore = defineStore(
       // Look for the previous visible page
       for (let i = currentIndex - 1; i >= 0; i--) {
         const prevPage = allPages[i]
-        // A page is visible if any of its questions are visible
-        const hasVisibleQuestion = prevPage.questions.some(q => isQuestionVisible(simulateurId, q.id))
-
+        // A page is visible if any of its questions are visible OR if it is an intermediary results page
+        if ((prevPage as SurveyResultsPage).type === 'intermediary-results') {
+          debug.log(`[Surveys store][${simulateurId}] Previous visible page: ${prevPage.id}`)
+          return prevPage
+        }
+        const hasVisibleQuestion = (prevPage as SurveyQuestionsPage)
+          ?.questions
+          .some((q) => {
+            return isQuestionVisible(simulateurId, q.id)
+          }) ?? false
         if (hasVisibleQuestion) {
           debug.log(`[Surveys store][${simulateurId}] Previous visible page: ${prevPage.id}`)
           return prevPage
@@ -294,7 +320,7 @@ export const useSurveysStore = defineStore(
     function setCurrentPageFromQuestionId(simulateurId: string, questionId: string) {
       const question = findQuestionById(simulateurId, questionId)
       if (question) {
-        const page = getAllPages(simulateurId)
+        const page = getAllQuestionsPages(simulateurId)
           .find((p) => {
             return p.questions
               ?.some((q) => {
@@ -316,7 +342,7 @@ export const useSurveysStore = defineStore(
       const questions = currentSchema
         ?.steps
         .flatMap((step) => {
-          return step.pages.flatMap(page => page.questions || [])
+          return step.pages.flatMap(page => ((page as SurveyQuestionsPage).questions ?? []))
         })
       return questions ?? []
     }
@@ -355,15 +381,16 @@ export const useSurveysStore = defineStore(
         .map((step) => {
           const questions = step.pages
             .flatMap((page) => {
-              return page.questions
-                .map((question) => {
+              return (page as SurveyQuestionsPage)
+                .questions
+                ?.map((question) => {
                   return {
                     id: question.id,
                     title: question.title,
                     answer: getAnswer(simulateurId, question.id),
                     visible: isQuestionVisible(simulateurId, question.id),
                   }
-                })
+                }) ?? []
             })
           return {
             title: step.title,
@@ -387,12 +414,12 @@ export const useSurveysStore = defineStore(
       if (!currentPage) {
         return false
       }
-      const isInCurrentPage = currentPage.questions
-        .some((q) => {
+      const isInCurrentPage = (currentPage as SurveyQuestionsPage)
+        .questions
+        ?.some((q) => {
           return q.id === questionId
-        },
-        )
-      return isInCurrentPage
+        })
+      return isInCurrentPage ?? false
     }
 
     function areAllRequiredQuestionsAnswered(simulateurId: string): boolean {
@@ -406,9 +433,12 @@ export const useSurveysStore = defineStore(
 
     function getVisibleQuestionsInCurrentPage(simulateurId: string): SurveyQuestion[] {
       const currentPage = getCurrentPage(simulateurId)
-      const questions = currentPage
+      if (!currentPage) {
+        return []
+      }
+      const questions = (currentPage as SurveyQuestionsPage)
         ?.questions
-        .filter((question) => {
+        ?.filter((question) => {
           return isQuestionVisible(simulateurId, question.id)
         })
       return questions ?? []
@@ -627,6 +657,7 @@ export const useSurveysStore = defineStore(
       getShowChoiceScreen,
       getShowWelcomeScreen,
       setShowWelcomeScreen,
+      setCurrentPageId,
       setCurrentPageFromQuestionId,
       onComplete,
       offComplete,

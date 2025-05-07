@@ -60,33 +60,6 @@ onMounted(() => {
 
 // Navigate to next page
 function handleNext() {
-  // Check if we should show intermediary results
-  const intermediaryResultsAfterStep = surveySchema.value?.['intermediary-results-after-step']
-  const currentStep = surveysStore.getCurrentStep(simulateur.slug)
-  const nextPage = surveysStore.getNextVisiblePage(simulateur.slug)
-  if (!nextPage) {
-    return
-  }
-  const stepOfNextPage = surveysStore.getStepFromPageId(simulateur.slug, nextPage?.id)
-
-  // intermediaryResultsAfterStep is set in the survey schema
-  // I am in the step of intermediaryResultsAfterStep
-  // The next page is in a different step
-  if (intermediaryResultsAfterStep && currentStep?.id === intermediaryResultsAfterStep && stepOfNextPage?.id !== currentStep?.id) {
-    console.log('[SurveyForm] Redirecting to intermediary results page')
-
-    // Navigate to intermediary results page
-    surveysStore.goToNextPage(simulateur.slug)
-
-    router.visit(`/simulateurs/${simulateur.slug}/resultats-intermediaire#simulateur-title`, {
-      preserveState: true,
-      preserveScroll: true,
-    })
-
-    return
-  }
-
-  // Go to the next page
   const wentToNextPage = surveysStore.goToNextPage(simulateur.slug)
   if (wentToNextPage) {
     focusRenderedSurveyPage()

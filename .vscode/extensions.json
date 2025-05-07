@@ -16,6 +16,8 @@
     // Edge template engine
     "luongnd.edge",
     // PostgreSQL
-    "cweijan.vscode-postgresql-client2"
+    "cweijan.vscode-postgresql-client2",
+    // Publicodes
+    "emilerolley.publicodes-language-server"
   ]
 }

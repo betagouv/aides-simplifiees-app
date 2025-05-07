@@ -1,12 +1,16 @@
 <script lang="ts" setup>
 import type SimulateurController from '#controllers/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
+import sourceRules from '#publicodes-build/index'
 import { DsfrButton } from '@gouvminint/vue-dsfr'
 import { Head, router, usePage } from '@inertiajs/vue3'
+// Test publicodes
+import Engine, { formatValue } from 'publicodes'
+import { onMounted } from 'vue'
 import SectionSeparator from '~/components/layout/SectionSeparator.vue'
+
 import { useMatomo } from '~/composables/use_matomo'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-import { useSurveysStore } from '~/stores/surveys'
 
 const {
   props: {
@@ -15,7 +19,6 @@ const {
 } = usePage<InferPageProps<SimulateurController, 'showResultatsIntermediaire'>>()
 
 const simulateurTitle = simulateur.title || simulateur.slug
-const surveysStore = useSurveysStore()
 
 // Track view in Matomo
 useMatomo().trackEvent('Simulateur', 'IntermediaryResults', simulateur.slug)
@@ -40,34 +43,20 @@ function continueToNextStep() {
   })
 }
 
-
-//Test publicodes
-import Engine, { formatValue } from 'publicodes';
-import sourceRules from '@publicodes-build/index';
-import { onMounted } from 'vue'
-
-
 onMounted(() => {
-  //Make sure it calculated on the front
-  const engine = new Engine(sourceRules);
-
-
+  // Make sure it calculated on the front
+  const engine = new Engine(sourceRules)
 
   engine.setSituation({
-      'CIR . éligibilité . base': 'oui',
-      'CIR . éligibilité . activités de recherche': 'oui',
-      'CIR . éligibilité . localisation recherche': 'oui',
-  });
+    'CIR . éligibilité . base': 'oui',
+    'CIR . éligibilité . activités de recherche': 'oui',
+    'CIR . éligibilité . localisation recherche': 'oui',
+  })
 
+  const cir = engine.evaluate('CIR')
 
-  const cir = engine.evaluate('CIR');
-
-  console.log(`Le CIR vaut ${formatValue(cir)}`);
-
+  console.log(`Le CIR vaut ${formatValue(cir)}`)
 })
-
-
-
 </script>
 
 <template>
@@ -92,7 +81,10 @@ onMounted(() => {
         </hgroup>
       </div>
     </header>
-    <SectionSeparator fluid class="fr-mt-6w" />
+    <SectionSeparator
+      fluid
+      class="fr-mt-6w"
+    />
     <div class="results__content fr-mt-4w">
       <div class="fr-card fr-p-3w">
         <h3>Dispositifs potentiellement disponibles</h3>

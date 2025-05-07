@@ -4,36 +4,37 @@ import { globalIgnores } from "eslint/config";
 
 
 export default antfu(
-    {
-      vue: true,
-      typescript: true,
-    },
-    globalIgnores([
-      '/public/assets/**',
-    ]),
-    {
-      rules: {
-        'prettier/prettier': 'off',
-        'no-console': 'off',
-      }
-    },
-    {
-      files: ['**/*.vue'],
-      rules: {
-        'vue/max-attributes-per-line': [
-          'error',
-          {
-            singleline: {
-              max: 1,
-            },
-            multiline: {
-              max: 1,
-            },
+  {
+    vue: true,
+    typescript: true,
+  },
+  globalIgnores([
+    'public/assets/**',
+    'publicodes-build/**',
+  ]),
+  {
+    rules: {
+      'prettier/prettier': 'off',
+      'no-console': 'off',
+    }
+  },
+  {
+    files: ['**/*.vue'],
+    rules: {
+      'vue/max-attributes-per-line': [
+        'error',
+        {
+          singleline: {
+            max: 1,
           },
-        ],
-      },
+          multiline: {
+            max: 1,
+          },
+        },
+      ],
     },
-  )
+  },
+)
   .renamePlugins({
     'style': 'antfu-style',
   })

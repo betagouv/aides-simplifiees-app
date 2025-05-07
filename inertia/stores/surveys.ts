@@ -5,6 +5,7 @@ import { useMatomo } from '~/composables/use_matomo'
 import { useSurveyDebugStore } from '~/stores/survey_debug'
 import { compareVersions } from '~/utils/compare_versions'
 import { evaluateCondition } from '~/utils/evaluate_conditions'
+import { isAnswerValid } from '~/utils/form_validation'
 
 export const useSurveysStore = defineStore(
   'surveys',
@@ -34,8 +35,45 @@ export const useSurveysStore = defineStore(
     }
 
     const setSchema = (simulateurId: string, schema: SurveySchema) => {
-      surveySchemas.value[simulateurId] = schema
-      debug.log(`[Surveys store][${simulateurId}] Schema set:`, schema)
+      // Normalize schema before setting it
+      const normalizedSchema = normalizeSchema(schema)
+      surveySchemas.value[simulateurId] = normalizedSchema
+      debug.log(`[Surveys store][${simulateurId}] Schema set:`, normalizedSchema)
+    }
+
+    /**
+     * Normalize schema to use the page-based format
+     * This converts legacy format (steps with direct questions) to the new format (steps with pages)
+     */
+    function normalizeSchema(schema: SurveySchema): SurveySchema {
+      const normalizedSchema = { ...schema }
+
+      // Convert each step to use the page-based format if needed
+      normalizedSchema.steps = schema.steps.map((step) => {
+        // If the step already uses pages, return as is
+        if (step.pages && step.pages.length > 0) {
+          return step
+        }
+
+        // Convert legacy format (direct questions) to page-based format
+        // Create one page per question
+        if (step.questions && step.questions.length > 0) {
+          const normalizedStep = { ...step }
+          normalizedStep.pages = step.questions.map((question, index) => {
+            return {
+              id: `${step.id}_page_${index + 1}`,
+              title: question.title,
+              questions: [question],
+            }
+          })
+
+          return normalizedStep
+        }
+
+        return step
+      })
+
+      return normalizedSchema
     }
 
     const getSchemaStatus = (simulateurId: string): 'idle' | 'pending' | 'error' | 'success' => {
@@ -706,6 +744,26 @@ export const useSurveysStore = defineStore(
       return false
     }
 
+    function getVisibleQuestionsInCurrentPage(simulateurId: string): SurveyQuestion[] {
+      const currentPage = getCurrentPage(simulateurId)
+      if (!currentPage) {
+        return []
+      }
+      return currentPage.questions.filter(question =>
+        isQuestionVisible(simulateurId, question.id),
+      )
+    }
+
+    function areAllQuestionsInPageValid(simulateurId: string): boolean {
+      const currentPage = getCurrentPage(simulateurId)
+      if (!currentPage) {
+        return false
+      }
+      return getVisibleQuestionsInCurrentPage(simulateurId).every(question =>
+        isAnswerValid(question, getAnswer(simulateurId, question.id)),
+      )
+    }
+
     /**
      * Step related methods
      */
@@ -915,6 +973,8 @@ export const useSurveysStore = defineStore(
       answers,
       currentQuestionIds,
       versions,
+      getVisibleQuestionsInCurrentPage,
+      areAllQuestionsInPageValid,
       deleteCompleteListeners,
       areAllRequiredQuestionsAnswered,
       isSomeRequiredQuestionsAnswered,

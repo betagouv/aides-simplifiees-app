@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { DsfrButton } from '@gouvminint/vue-dsfr'
 import { router } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, customRef } from 'vue'
 import BooleanQuestion from '~/components/survey/BooleanQuestion.vue'
 import ComboboxQuestion from '~/components/survey/ComboboxQuestion.vue'
 import DateQuestion from '~/components/survey/DateQuestion.vue'
@@ -13,15 +13,32 @@ import { useIframeDisplay } from '~/composables/use_is_iframe'
 import { useSurveysStore } from '~/stores/surveys'
 import { autocompleteConfigs, autocompleteFunctions } from '~/utils/autocomplete_functions'
 
-defineProps<{
+const props = defineProps<{
   question: SurveyQuestion
   simulateurSlug: string
 }>()
 
 const surveysStore = useSurveysStore()
 
-// Get the question component type based on question type
-function getQuestionComponent(type: string) {
+/**
+ * Create a reactive model for each question
+ */
+const questionModel = customRef((track, trigger) => {
+  return {
+    get() {
+      track()
+      return surveysStore.getAnswer(props.simulateurSlug, props.question.slug)
+    },
+    set(value) {
+      surveysStore.setAnswer(props.simulateurSlug, props.question.slug, value)
+      trigger()
+    },
+  }
+})
+
+// Get the question component based on question type
+const questionComponent = computed(() => {
+  const type = props.question.type
   return {
     radio: RadioButtonQuestion,
     boolean: BooleanQuestion,
@@ -31,27 +48,27 @@ function getQuestionComponent(type: string) {
     combobox: ComboboxQuestion,
     text: ComboboxQuestion,
   }[type] || UnkownQuestionType
-}
+})
 
-// Get autocomplete function for a question
-function getAutocompleteFn(question: SurveyQuestion) {
-  if (question?.autocompleteFunction) {
+// Get eventual autocomplete function for a text question
+const autocompleteFn = computed(() => {
+  if (props.question?.autocompleteFunction) {
     return autocompleteFunctions[question.autocompleteFunction]
   }
   return undefined
-}
+})
 
-// Get autocomplete configuration for a question
-function getAutocompleteConfig(question: SurveyQuestion) {
-  if (question?.autocompleteFunction) {
+// Get eventual autocomplete configuration for text question
+const autocompleteConfig = computed(() => {
+  if (props.question?.autocompleteFunction) {
     // Merge default config with any custom config from question
     return {
-      ...autocompleteConfigs[question.autocompleteFunction],
-      ...question.autocompleteConfig || {},
+      ...autocompleteConfigs[props.question.autocompleteFunction],
+      ...props.question.autocompleteConfig || {},
     }
   }
   return undefined
-}
+})
 
 // Heading levels based on iframe context
 const { isIframe } = useIframeDisplay()
@@ -91,13 +108,12 @@ const surveyH2 = computed(() => isIframe.value ? 'h2' : 'h3')
       }"
     />
     <component
-      :is="getQuestionComponent(question.type)"
+      :is="questionComponent"
       :key="question.id"
-      :model-value="surveysStore.getAnswer(simulateurSlug, question.id)"
+      v-model="questionModel"
       :question="question"
-      :autocomplete-config="getAutocompleteConfig(question)"
-      :autocomplete-fn="getAutocompleteFn(question)"
-      @update:model-value="(val: any) => surveysStore.setAnswer(simulateurSlug, question.id, val)"
+      :autocomplete-config="autocompleteConfig"
+      :autocomplete-fn="autocompleteFn"
     />
   </div>
 </template>

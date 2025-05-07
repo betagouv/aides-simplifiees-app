@@ -640,7 +640,7 @@ export async function fetchOpenFiscaFranceCalculation(
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
       },
-      withCredentials: false
+      withCredentials: false,
     })
 
     return response.data

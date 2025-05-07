@@ -71,8 +71,8 @@ createInertiaApp({
         siteId: matomoSiteId,
       })
 
-      if(import.meta.env.MODE === "production") {
-        ;(window as any)._paq.push(['setCookieSameSite', 'None']);
+      if (import.meta.env.MODE === 'production') {
+        ;(window as any)._paq.push(['setCookieSameSite', 'None'])
       }
     }
 

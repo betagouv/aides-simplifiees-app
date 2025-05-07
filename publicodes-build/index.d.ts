@@ -27,41 +27,7 @@ export type PString = `'${string}'`
  * "''" and boolean values are 'oui' or 'non').
  */
 export type Situation = Partial<{
-  "prix": PBoolean,
-  "prix . carottes": number,
-  "prix . champignons": number,
-  "prix . avocat": number,
-  "dépenses primeur": number,
-  "CIR": PBoolean,
-  "CIR . éligibilité": PBoolean,
-  "CIR . éligibilité . base": PBoolean,
-  "CIR . éligibilité . activités de recherche": PBoolean,
-  "CIR . éligibilité . localisation recherche": PBoolean,
-  "immatriculationFrance": PBoolean,
-  "natureActivite": PBoolean,
-  "natureActivite . industrielle": PBoolean,
-  "natureActivite . commerciale": PBoolean,
-  "natureActivite . agricole": PBoolean,
-  "natureActivite . artisanale": PBoolean,
-  "natureActivite . artisanale et bic": PBoolean,
-  "bic": PBoolean | null,
-  "regimeImposition": PBoolean,
-  "regimeImposition . is": PBoolean,
-  "regimeImposition . ir": PBoolean,
-  "categorieExoneration": PBoolean,
-  "categorieExoneration . aucune": PBoolean,
-  "categorieExoneration . temporaire": PBoolean,
-  "categorieExoneration . zonage": PBoolean,
-  "categorieExoneration . jeune entreprise innovante": PBoolean,
-  "natureActivites": PBoolean,
-  "natureActivites . fondamentale": PBoolean,
-  "natureActivites . appliquee": PBoolean,
-  "natureActivites . experimentale": PBoolean,
-  "localisationRecherche": PBoolean,
-  "localisationRecherche . ue": PBoolean,
-  "localisationRecherche . eee": PBoolean,
-  "localisationRecherche . hors ue et eee": PBoolean,
-  "conventionFiscale": PBoolean | null
+
 }>
 
 /**
@@ -69,57 +35,7 @@ export type Situation = Partial<{
 * form) that will be returned by the {@link Engine.evaluate} method.
  */
 export type RuleValue = Partial<{
-  "prix": boolean,
-  "prix . carottes": number,
-  "prix . champignons": number,
-  "prix . avocat": number,
-  "dépenses primeur": number,
-  /** Crédit d'Impôt Recherche */
-  "CIR": boolean,
-  /** Éligibilité au Crédit d'Impôt Recherche */
-  "CIR . éligibilité": boolean,
-  /** Conditions de base d'éligibilité */
-  "CIR . éligibilité . base": boolean,
-  /** Nature des activités de recherche éligibles */
-  "CIR . éligibilité . activités de recherche": boolean,
-  /** Localisation géographique des activités de recherche */
-  "CIR . éligibilité . localisation recherche": boolean,
-  "immatriculationFrance": boolean,
-  /** Nature de l'activité de l'entreprise */
-  "natureActivite": boolean,
-  "natureActivite . industrielle": boolean,
-  "natureActivite . commerciale": boolean,
-  "natureActivite . agricole": boolean,
-  "natureActivite . artisanale": boolean,
-  "natureActivite . artisanale et bic": boolean,
-  "bic": boolean | null,
-  "regimeImposition": boolean,
-  /** IS */
-  "regimeImposition . is": boolean,
-  /** IR */
-  "regimeImposition . ir": boolean,
-  "categorieExoneration": boolean,
-  /** Aucune */
-  "categorieExoneration . aucune": boolean,
-  /** Temporaire */
-  "categorieExoneration . temporaire": boolean,
-  /** Zonage */
-  "categorieExoneration . zonage": boolean,
-  /** JEI */
-  "categorieExoneration . jeune entreprise innovante": boolean,
-  /** Nature des activités de recherche */
-  "natureActivites": boolean,
-  "natureActivites . fondamentale": boolean,
-  "natureActivites . appliquee": boolean,
-  "natureActivites . experimentale": boolean,
-  "localisationRecherche": boolean,
-  /** UE */
-  "localisationRecherche . ue": boolean,
-  /** EEE */
-  "localisationRecherche . eee": boolean,
-  /** Hors de tout */
-  "localisationRecherche . hors ue et eee": boolean,
-  "conventionFiscale": boolean | null
+
 }>
 
 /**
@@ -132,20 +48,7 @@ export type RuleValue = Partial<{
  * enclosed in '' and boolean values are 'true' or 'false').
  */
 export type Questions = Partial<{
-  "immatriculationFrance": boolean,
-  "natureActivite . industrielle": boolean,
-  "natureActivite . commerciale": boolean,
-  "natureActivite . agricole": boolean,
-  "natureActivite . artisanale": boolean,
-  "natureActivite . artisanale et bic": boolean,
-  "bic": boolean | null,
-  "regimeImposition": boolean,
-  "categorieExoneration": boolean,
-  "natureActivites . fondamentale": boolean,
-  "natureActivites . appliquee": boolean,
-  "natureActivites . experimentale": boolean,
-  "localisationRecherche": boolean,
-  "conventionFiscale": boolean | null
+
 }>
 
 /**

@@ -33,7 +33,6 @@ setBreadcrumbs([
     to: `/simulateurs/${simulateur.slug}/recapitulatif`,
   },
 ])
-
 </script>
 
 <template>

@@ -390,8 +390,8 @@ export const useSurveysStore = defineStore(
       const isInCurrentPage = currentPage.questions
         .some((q) => {
           return q.id === questionId
-        }
-      )
+        },
+        )
       return isInCurrentPage
     }
 
@@ -444,7 +444,7 @@ export const useSurveysStore = defineStore(
       return step ?? null
     }
 
-    function getCurrentStep (simulateurId: string): SurveyDeepStep | null {
+    function getCurrentStep(simulateurId: string): SurveyDeepStep | null {
       const steps = getAllSteps(simulateurId)
       const currentPageId = getCurrentPageId(simulateurId)
       const currentStep = steps

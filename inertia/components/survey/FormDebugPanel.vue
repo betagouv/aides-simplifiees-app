@@ -2,8 +2,9 @@
 import type SimulateurController from '#controllers/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
 import { useSurveysStore } from '~/stores/surveys'
-import { computed } from "vue";
+
 const {
   props: {
     simulateur,

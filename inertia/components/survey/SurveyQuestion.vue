@@ -2,15 +2,16 @@
 import { DsfrButton } from '@gouvminint/vue-dsfr'
 import { router } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import BooleanQuestion from '~/components/survey/BooleanQuestion.vue'
+import ComboboxQuestion from '~/components/survey/ComboboxQuestion.vue'
+import DateQuestion from '~/components/survey/DateQuestion.vue'
+import MultiSelectQuestion from '~/components/survey/MultiSelectQuestion.vue'
+import NumberQuestion from '~/components/survey/NumberQuestion.vue'
+import RadioButtonQuestion from '~/components/survey/RadioButtonQuestion.vue'
+import UnkownQuestionType from '~/components/survey/UnkownQuestionType.vue'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
 import { useSurveysStore } from '~/stores/surveys'
 import { autocompleteConfigs, autocompleteFunctions } from '~/utils/autocomplete_functions'
-import BooleanQuestion from './BooleanQuestion.vue'
-import ComboboxQuestion from './ComboboxQuestion.vue'
-import DateQuestion from './DateQuestion.vue'
-import MultiSelectQuestion from './MultiSelectQuestion.vue'
-import NumberQuestion from './NumberQuestion.vue'
-import RadioButtonQuestion from './RadioButtonQuestion.vue'
 
 defineProps<{
   question: SurveyQuestion
@@ -29,7 +30,7 @@ function getQuestionComponent(type: string) {
     date: DateQuestion,
     combobox: ComboboxQuestion,
     text: ComboboxQuestion,
-  }[type] || ComboboxQuestion
+  }[type] || UnkownQuestionType
 }
 
 // Get autocomplete function for a question

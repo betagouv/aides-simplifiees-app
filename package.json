@@ -9,7 +9,6 @@
     "build": "node ace build --ignore-ts-errors && pnpm build:iframe-integration",
     "build:iframe-integration": "vite build --config vite.iframe-integration.config.ts",
     "build:icons": "vue-dsfr-icons -s bin/icons.js -t inertia/icon_collections.ts",
-    "build:publicodes": "publicodes compile publicodes-src",
     "dev": "node ace serve --hmr",
     "test": "node ace test",
     "lint": "eslint .",
@@ -32,8 +31,7 @@
     "#database/*": "./database/*.js",
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
-    "#config/*": "./config/*.js",
-    "#publicodes-build/*": "./publicodes-build/*.js"
+    "#config/*": "./config/*.js"
   },
   "dependencies": {
     "@adonisjs/auth": "^9.3.1",
@@ -52,7 +50,6 @@
     "@iframe-resizer/child": "^5.4.5",
     "@iframe-resizer/parent": "^5.4.5",
     "@inertiajs/vue3": "^2.0.6",
-    "@swc/core": "1.10.16",
     "@vinejs/vine": "^3.0.0",
     "@vue/server-renderer": "^3.5.13",
     "@vueuse/core": "^13.1.0",
@@ -65,12 +62,9 @@
     "pg": "^8.14.1",
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.2.0",
-    "publicodes": "^1.8.2",
     "reflect-metadata": "^0.2.2",
-    "sass-embedded": "^1.86.2",
     "vue": "^3.5.13",
-    "vue-matomo": "^4.2.0",
-    "yaml": "^2.7.1"
+    "vue-matomo": "^4.2.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.40.1",
@@ -89,7 +83,7 @@
     "@japa/expect": "^3.0.3",
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.2.0",
-    "@publicodes/tools": "^1.7.2",
+    "@swc/core": "1.10.16",
     "@tsconfig/node22": "^22.0.1",
     "@types/crypto-js": "^4.2.2",
     "@types/luxon": "^3.6.0",
@@ -101,6 +95,7 @@
     "pino-pretty": "^13.0.0",
     "playwright": "^1.52.0",
     "prettier": "^3.5.0",
+    "sass-embedded": "^1.86.2",
     "ts-node-maintained": "^10.9.5",
     "typescript": "~5.7.3",
     "vite": "^6.1.0"

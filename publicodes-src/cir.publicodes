@@ -1,61 +1,680 @@
-CIR:
-  titre: Crédit d'Impôt Recherche
-  description: |
-    Le crédit d'impôt recherche (CIR) est une aide fiscale destinée à encourager les efforts des entreprises en matière de recherche et développement (R&D).
+#TODO : WIP : CIR
+CIR . montant:
+  titre: Montant du Crédit d'Impôt Recherche
+  applicable si: CIR . eligibilite
+  valeur: CIR . totalCredit + CICo . montant
 
-    Cette aide prend la forme d'une réduction d'impôt calculée en fonction des dépenses de R&D engagées par l'entreprise.
+CIR . totalCredit:
+  valeur:
+    somme:
+      - CIR . montantDepensesRD  # barème métropole et barème DOM
+      - CIR . montantDepensesNormalisation  # barème métropole et barème DOM
+      - CIR . montantRemboursementsRD  # barème métropole uniquement
 
-CIR . éligibilité:
-  titre: Éligibilité au Crédit d'Impôt Recherche
-  description: |
-    Pour être éligible au Crédit d'Impôt Recherche (CIR), une entreprise doit remplir plusieurs conditions liées à son statut,
-    son activité et la nature de ses travaux de recherche.
+CIR . montantDepensesRD:
+  variations:
+    - si: localisation . metropole
+      alors: CIR . montantDepensesRDBase
+    - sinon: CIR . montantDepensesRDDOM  # TODO filtrer plus finement pour DOM
+
+CIR . montantRDBase:
+  baremeMetropole:
+    assiette: CIR . assietteRDBase
+    tranches:
+      - taux: 30%
+        plafond: 100000000 €
+      - taux: 5%
+
+CIR . montantRDDOM:
+  baremeMetropole:
+    assiette: CIR . assietteRDBase
+    tranches:
+      - taux: 50%
+        plafond: 100000000 €
+      - taux: 5%
+
+
+CIR . assietteRDBase:
+  soustraction:  # TODO vérifier par rapport à bolt : depenses  * (depenses - deductions / depenses) = depenses * ratio
+    - CIR . totalDepensesRD
+    - CIR . deductionsRD
+
+
+CIR . totalDepensesRD:
+  valeur:
+    somme:
+      - depensesRD . amortissementBiens
+      - depensesRD . indemnisationAssurance
+      - depensesRD . chercheursTechniciens
+      - depensesRD . remunerationInvention
+      - depensesRD . rechercheLiensDependance
+      - depensesRD . rechercheSansLiensDependance
+      - depensesRD . remboursementsSubventions  # vérifier si à lister ici
+
+CIR . deductionsRD:
+  valeur:
+    somme:
+      - depensesRD . subventionsPubliques
+      - depensesRD . depensesConseil
+      - depensesRD . depensesTiersCir
+
+
+CIR . montantDepensesNormalisation:
+  variations:
+    - si: localisation . metropole
+      alors: CIR . montantDepensesNormalisationBase
+    - sinon: CIR . montantDepensesNormalisationDOM  # TODO filtrer plus finement pour DOM
+
+CIR . montantNormalisationBase:
+  baremeMetropole:
+    assiette: CIR . assietteNormalisationBase
+    tranches:
+      - taux: 30%
+        plafond: 100000000 €
+      - taux: 5%
+
+CIR . montantNormalisationDOM:
+  baremeMetropole:
+    assiette: CIR . assietteNormalisationBase
+    tranches:
+      - taux: 50%
+        plafond: 100000000 €
+      - taux: 5%
+
+
+CIR . assietteNormalisationBase:
+  soustraction:  # TODO vérifier par rapport à bolt : depenses  * (depenses - deductions / depenses) = depenses * ratio
+    - CIR . totalDepensesNormalisation
+    - CIR . deductionsNormalisation
+
+
+CIR . totalDepensesNormalisation:
+  valeur:
+    somme:
+      - depensesNormalisation . salairesNormalisation
+      - depensesNormalisation . depensesDirigeantNormalisation
+      - depensesNormalisation . remboursementsSubventionsNormalisation  # vérifier si à lister ici
+
+CIR . deductionsNormalisation:
+  valeur:
+    somme:
+      - depensesNormalisation . subventionsNormalisation
+      - depensesNormalisation . depensesConseilNormalisation
+
+
+CIR . montantRemboursement:
+  somme:
+    - CIR . montantRemboursementRD
+    - CIR . montantRemboursementNormalisation
+
+
+CIR . montantRemboursementRD:
+  bareme:
+    assiette: CIR . totalRemboursementsRD
+    tranches:
+      - taux: 30%
+        plafond: 100000000 €
+      - taux: 5%
+
+
+CIR . totalRemboursementsRD:
+  valeur: depensesRD . remboursementsSubventions
+
+
+CIR . montantRemboursementNormalisation:
+  bareme:
+    assiette: CIR . totalRemboursementsNormalisation
+    tranches:
+      - taux: 30%
+        plafond: 100000000 €
+      - taux: 5%
+
+CIR . totalRemboursementsNormalisation:
+  valeur: depensesNormalisation . remboursementsSubventionsNormalisation
+
+# 1. Calcul des aides
+CII . montant:
+  titre: Montant du Crédit d'Impôt Innovation
+  unité: €
+  applicable si: CII . eligibilite
+  le maximum de:
+      - 0
+      - CII . montantPlafonne
+
+CII . montantPlafonne:
+  unité: €
+  somme:
+    - CII . depensesBase
+    - CII . depensesDOM
+    - CII . depensesCorse
+    - (-1) * CII . deductions
+  plafond: 400000€
+
+CII . depensesBase:
+  valeur:
+    produit:
+      - 20%
+      - somme:
+          - depensesPrototype . amortissementsImmobilisations
+          - depensesPrototype . chercheursTechniciens
+          - depensesPrototype . remunerationInvention
+          - depensesPrototype . amortissementsBrevets
+          - depensesPrototype . fraisDepotDessins
+          - depensesPrototype . depensesSousTraitance
+          - depensesPrototype . remboursementsSubventions
+
+CII . depensesDOM:
+  produit:
+    - 40%
+    - somme:
+        - depensesPrototype . amortissementsImmobilisationsDom
+        - depensesPrototype . amortissementsBrevetsDom
+        - depensesPrototype . fraisDepotDessinsDom
+        - depensesPrototype . depensesSousTraitanceDom
+
+CII . depensesCorse:
+  valeur:
+    produit:
+      - CII . tauxCorse
+      - somme:
+          - depensesPrototype . amortissementsImmobilisationsCorse
+          - depensesPrototype . amortissementsBrevetsCorse
+          - depensesPrototype . fraisDepotDessinsCorse
+          - depensesPrototype . depensesSousTraitanceCorse
+
+CII . tauxCorse:
+  valeur:
+    variations:
+      - si:
+          toutes ces conditions:
+            - effectifTotal_N < 50
+            - une de ces conditions:
+                - chiffreAffaires_N <= 10000000
+                - bilanTotal_N <= 10000000
+        alors: 40%
+      - sinon: 35%
+
+CII . deductions:
+  valeur:
+    somme:
+      - depensesPrototype . subventionsPubliques
+      - depensesPrototype . depensesConseil
+      - depensesPrototype . depensesTiersCii
+
+# Variables pour les dépenses prototype
+depensesPrototype:
+  titre: Dépenses liées à la réalisation de prototypes ou d'installations pilotes de nouveaux produits
+
+depensesPrototype . amortissementsImmobilisations:
+  titre: Dotations aux amortissements des immobilisations créées ou acquises à l'état neuf et affectées directement à la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototype . chercheursTechniciens:
+  titre: Chercheurs et techniciens de recherche qui sont directement et exclusivement affectés aux opérations de recherche et développement
+  par défaut: 0
+
+depensesPrototype . remunerationInvention:
+  titre: Salariés auteurs d'une invention après des opérations de recherche a qui on a versé une rémunération supplémentaire
+  par défaut: 0
+
+depensesPrototype . amortissementsBrevets:
+  titre: Dotations aux amortissements, frais de prise, de maintenance et de défense des brevets et des certificats d'obtention végétale relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototype . fraisDepotDessins:
+  titre: Frais de dépôt et de défense des dessins et modèles relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototype . depensesSousTraitance:
+  titre: Dépenses afférentes aux opérations de conception de prototypes ou installations pilotes de nouveaux produits dont la réalisation est confiée à des entreprises ou des bureaux d'études et d'ingénierie agréés
+  par défaut: 0
+
+depensesPrototype . remboursementsSubventions:
+  titre: Montant des remboursements des subventions publiques à ajouter à l'assiette du crédit d'impôt
+  par défaut: 0
+
+depensesPrototype . amortissementsImmobilisationsDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototype . amortissementsBrevetsDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototype . fraisDepotDessinsDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototype . depensesSousTraitanceDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototype . amortissementsImmobilisationsCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototype . amortissementsBrevetsCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototype . fraisDepotDessinsCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototype . depensesSousTraitanceCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototype . subventionsPubliques:
+  titre: Montant des subventions publiques reçues par l'entreprise en raison des opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototype . depensesConseil:
+  titre: Montant des dépenses exposées auprès de tiers au titre de prestations de conseil pour l'octroi du bénéfice du crédit d'impôt
+  par défaut: 0
+
+depensesPrototype . depensesTiersCii:
+  titre: Montant des dépenses exposées et facturées pour la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits pour le compte de tiers bénéficiaire du CII
+  par défaut: 0
+
+CII:
+  titre: Crédit d'impôt Innovation
+
+CII . eligibilite:
+  titre: Eligibilité au CII
   valeur:
     toutes ces conditions:
-      - éligibilité . base
-      - éligibilité . activités de recherche
-      - éligibilité . localisation recherche
+      - immatriculation = localisation . France
+      - CII . activiteEligible
+      - entrepriseDifficulte = non
+      - CII . depassementConsecutif = non
+      - exoneration = non
 
-CIR . éligibilité . base:
-  titre: Conditions de base d'éligibilité
-  description: |
-    Les conditions fondamentales pour qu'une entreprise puisse bénéficier du CIR concernent son immatriculation,
-    la nature de son activité, son régime d'imposition et son statut fiscal.
+CICo:
+  titre: Crédit d'impôt Collaboratif
+
+
+JEU:
+  titre: Jeune entreprise Universitaire
+
+JEU . eligibilite:
+  titre: Éligibilité au statut JEU
+  toutes ces conditions:
+    - immatriculation = localisation . France
+    - activiteNouvelle
+    - Jeune Entreprise . conditionAge
+    - dirigeantsOuActionnairesUniversitaire != 'aucune'
+    - valorisationRecherche
+    - contratValorisation
+    - estPetiteOuMoyenneEntreprise
+
+
+
+JEC:
+  titre: Jeune Entreprise de Croissance
+
+JEC . eligibilite:
+  titre: Éligibilité au statut JEC
   valeur:
     toutes ces conditions:
-      - immatriculationFrance = 'oui'
+      - immatriculation = localisation . France
+      - activiteNouvelle = oui
+      - JEC . conditionAge
+      - capitalDetenu != 'aucune'
+      - estPetiteOuMoyenneEntreprise
+      - JEC . critereRD
+      - effectifAugmente = oui
+      - depensesStables = oui
+
+JEC . conditionAge:
+  titre: L'entreprise est suffisamment jeune pour bénéficier des avantages du statut JEC
+  valeur: ageEntreprise < 8 an
+
+JEC . critereRD:
+  titre: Pourcentage de dépenses de R&D suffisant mais inférieur au seuil JEI
+  valeur:
+    toutes ces conditions:
+      - pourcentageRD >= 5
+      - pourcentageRD < 20 # Erreur dans Bolt
+
+
+# Attention : erreur dans Bolt
+CICo . eligibilite:
+  titre: Eligibilité au CICo
+  valeur:
+    toutes ces conditions:
+      - immatriculation = localisation . France
+      - ORDC . contrat = oui
+      - une de ces conditions:
+        - regimeReelImposition = "Régime réél normal"
+        - regimeReelImposition = "Régime réél simplifié"
+        - typeBenefice = "BNC"
+        - typeBenefice = "BIC"
       - une de ces conditions:
         - natureActivite . industrielle
         - natureActivite . commerciale
         - natureActivite . agricole
-        - natureActivite . artisanale et bic = 'oui'
       - une de ces conditions:
-        - regimeImposition = 'is'
-        - regimeImposition = 'ir'
-      - categorieExoneration != 'aucune'
+        - exoneration = non
+        - toutes ces conditions:
+            - exoneration = oui
+            - une de ces conditions:
+              - JEI . eligibilite = oui
+              - repriseEntrepriseEnDifficulté = oui
+              - zoneSpecifique = 'ZFR'
+              - zoneSpecifique = 'ZFU_TE'
+              - zoneSpecifique = 'BER'
+              - zoneSpecifique = 'ZRD'
+              - zoneSpecifique = 'ZFA_DOM'
+              - zoneSpecifique = 'ZRR'
+              - zoneSpecifique = 'BUD'
+              - zoneSpecifique = 'ZDP'
 
-CIR . éligibilité . activités de recherche:
-  titre: Nature des activités de recherche éligibles
-  description: |
-    Pour être éligible au CIR, l'entreprise doit mener des activités de recherche fondamentale,
-    de recherche appliquée ou de développement expérimental.
+
+CICo . montant:
+    - produit:
+        - CICo . taux
+        - soustraction: ORDC . depenses - ORDC . subventions
+    - plafond: 6000000 €/an
+
+CICo . taux:
+  variations:
+    - si:
+        une de ces conditions:
+          - typeEntreprise = 'pme'
+          - typeEntreprise = 'micro-entreprise'
+      alors: 50%
+    - sinon: 40%
+
+typeEntreprise:
+    une possibilité parmi:
+      possibilités:
+        - 'pme'
+        - 'micro-entreprise'
+        - 'profession libérale'
+        - 'autre'
+
+JEI:
+  titre: JEI
+
+JEI . eligibilite:
+  titre: eligibilite au statut JEI
+  valeur:
+    toutes ces conditions:
+      - immatriculation = localisation . France
+      - activiteNouvelle
+      - Jeune Entreprise . conditionAge
+      - capitalDetenu != 'aucune'
+      - estPetiteOuMoyenneEntreprise
+      - pourcentageRD >= 15
+
+
+Jeune Entreprise:
+  titre: A définir
+Jeune Entreprise . conditionAge:
+  titre: l'entreprise est elle suffisamment jeune pour bénéficier des avantages du statut JEI
+  valeur:
+    variations:
+      - si: anneeDeCreation >= 2023
+        alors:
+          variations:
+          - si: ageEntreprise >= 8 an
+            alors: non
+          - sinon: oui
+      - sinon:
+          variations:
+          - si: ageEntreprise >= 11 an
+            alors: non
+          - sinon: oui
+
+CIR . eligibilite:
+  titre: Éligibilité au Crédit d'Impôt Recherche
+  valeur:
+    toutes ces conditions:
+      - immatriculation = localisation . France
+      - une de ces conditions:
+        - natureActivite . industrielle
+        - natureActivite . commerciale
+        - natureActivite . agricole
+        - toutes ces conditions:
+            - natureActivite . artisanale
+            - bic
+      - une de ces conditions:
+        - typeImposition = 'is'
+        - typeImposition = 'ir'
+      - exoneration = 'non'
+
+
+
+# 2. Variables intermédiaires calculées pour simplifier les règles
+entrepriseDifficulte:
+  par défaut: non
+exoneration:
+  par défaut: non
+  valeur:
+    toutes ces conditions:
+      - repriseEntrepriseEnDifficulté = non
+      - zoneSpecifique = 'aucune'
+
+ageEntreprise:
+  durée:
+    unité: an
+    depuis: anneeDeCreation
+
+estPetiteOuMoyenneEntreprise:
+  valeur:
+    toutes ces conditions:
+      - bilanTotal_N <= 43000000 €/an
+      - effectifTotal_N < 250 employé
+      - chiffreAffaires_N <= 50000000 €/an
+
+
+CII . depassementEffectifN:
+  valeur: effectifTotal_N >= 250
+
+CII . depassementEffectifN1:
+  valeur: effectifTotal_N1 >= 250
+
+CII . depassementEffectifN2:
+  valeur: effectifTotal_N2 >= 250
+
+CII . depassementFinancierN:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffaires_N > 50000000
+      - bilanTotal_N > 43000000
+
+CII . depassementFinancierN1:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffaires_N1 > 50000000
+      - bilanTotal_N1 > 43000000
+
+CII . depassementFinancierN2:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffaires_N2 > 50000000
+      - bilanTotal_N2 > 43000000
+
+
+CII . activiteEligible:
+  par défaut: non
+  une de ces conditions:
+    - natureActivite . industrielle
+    - natureActivite . commerciale
+    - natureActivite . agricole
+    - typeEntreprise = 'profession libérale'
+
+CII . depassementConsecutif:
   valeur:
     une de ces conditions:
-      - natureActivites . fondamentale
-      - natureActivites . appliquee
-      - natureActivites . experimentale
+      - toutes ces conditions:
+          - CII . depassementEffectifN
+          - CII . depassementEffectifN1
+      - toutes ces conditions:
+          - CII . depassementEffectifN1
+          - CII . depassementEffectifN2
+      - toutes ces conditions:
+          - CII . depassementFinancierN
+          - CII . depassementFinancierN1
+      - toutes ces conditions:
+          - CII . depassementFinancierN1
+          - CII . depassementFinancierN2
 
-CIR . éligibilité . localisation recherche:
-  titre: Localisation géographique des activités de recherche
-  description: |
-    Les travaux de recherche doivent être réalisés au sein de l'Union Européenne (UE) ou dans un État partie à l'accord sur
-    l'Espace Économique Européen (EEE) ayant conclu avec la France une convention fiscale.
-  valeur:
-    une de ces conditions:
-      - localisationRecherche = 'ue'
-      - localisationRecherche = 'eee' et conventionFiscale = 'oui'
+# 3. Définition des variables d'entrée
+dirigeantsOuActionnairesUniversitaire:
+  titre: Votre entreprise est-elle dirigée ou détenue à au moins 10 % par des personnes appartenant à l'une des catégories suivantes ?
+  une possibilité parmi:
+    possibilités:
+      - 'etudiant'
+      - 'diplome master'
+      - 'diplome doctorat'
+      - 'enseignant'
+      - 'aucune'
 
-# Définition des variables d'entrée
+valorisationRecherche:
+  titre: Votre entreprise a-t-elle pour activité principale la valorisation de travaux de recherches auxquels les dirigeants ou associés ont participé au sein d'un établissement d'enseignement supérieur (au cours de leur scolarité ou dans l'exercice de leurs fonctions) ?
+  par défaut: non
+
+contratValorisation:
+  titre: Un contrat conclu avec cet établissement définit-il les conditions de la valorisation de ces travaux de recherches ?
+  par défaut: non
+
+effectifTotal_N:
+  titre: Effectif de l'année N
+  par défaut: 0
+  unité: employé
+
+effectifTotal_N1:
+  titre: Effectif de l'année N-1
+  par défaut: 0
+  unité: employé
+
+effectifTotal_N2:
+  titre: Effectif de l'année N-2
+  par défaut: 0
+  unité: employé
+
+chiffreAffaires_N:
+  titre: Chiffre d'affaires de l'année N
+  par défaut: 0
+  unité: €/an
+
+chiffreAffaires_N1:
+  titre: Chiffre d'affaires de l'année N-1
+  par défaut: 0
+  unité: €/an
+
+chiffreAffaires_N2:
+  titre: Chiffre d'affaires de l'année N-2
+  par défaut: 0
+  unité: €/an
+
+bilanTotal_N:
+  titre: Bilan total de l'année N
+  par défaut: 0
+  unité: €/an
+
+bilanTotal_N1:
+  titre: Bilan total de l'année N-1
+  par défaut: 0
+  unité: €/an
+
+bilanTotal_N2:
+  titre: Bilan total de l'année N-2
+  par défaut: 0
+  unité: €/an
+
+
+
+pourcentageRD:
+  par défaut: 0
+
+
+capitalDetenu:
+  titre:
+  une de ces possibilités:
+    possibilités:
+      - personnes_physiques
+      - autre_jei
+      - association
+      - etablissement
+      - societe
+      - aucune
+
+
+anneeDeCreation:
+  par défaut: 01/1900
+
+activiteNouvelle:
+  par défaut: non
+
+ORDC:
+  titre: Organismes de Recherche et Diffusion des Connaissances
+
+ORDC . contrat:
+  par défaut: non
+
+ORDC . depenses:
+  par défaut: 0
+
+ORDC . subventions:
+  par défaut: 0
+
+repriseEntrepriseEnDifficulté:
+  par défaut: non
+
+zoneSpecifique:
+  une possibilité parmi:
+    possibilités:
+      - 'aucune'
+      - 'ZFR'
+      - 'ZFU_TE'
+      - 'BER'
+      - 'ZRD'
+      - "ZFA_DOM"
+      - 'ZRR'
+      - 'FRR'
+      - 'BUD'
+      - 'ZDP'
+
+bic:
+  question: L'entreprise est-elle soumise au régime des BIC (Bénéfices Industriels et Commerciaux) ?
+  # par défaut: 'oui'
+  # une possibilité :
+   # - 'oui'
+  #- 'non'
+  # applicable si: natureActivite . artisanale
+
+immatriculation:
+  titre : là où est immatriculé l'entreprise
+
+natureActivite:
+  une possibilité:
+    - industrielle
+    - commerciale
+    - agricole
+    - artisanale
+    - autre
+  avec:
+    industrielle:
+    commerciale:
+    agricole:
+    artisanale:
+    liberal:
+    autre:
+
+localisation:
+  une possibilité:
+    - France
+    - UE
+    - EEE
+  avec:
+    France:
+    UE:
+    EEE:
+
+
 immatriculationFrance:
   question: L'entreprise est-elle immatriculée en France ?
   par défaut: 'oui'
@@ -64,132 +683,56 @@ immatriculationFrance:
       - 'oui'
       - 'non'
 
-natureActivite:
-  titre: Nature de l'activité de l'entreprise
-  description: |
-    Sélectionnez les types d'activités exercées par votre entreprise.
 
-natureActivite . industrielle:
-  question: L'entreprise exerce-t-elle une activité industrielle ?
-  par défaut: non
 
-natureActivite . commerciale:
-  question: L'entreprise exerce-t-elle une activité commerciale ?
-  par défaut: non
-
-natureActivite . agricole:
-  question: L'entreprise exerce-t-elle une activité agricole ?
-  par défaut: non
-
-natureActivite . artisanale:
-  question: L'entreprise exerce-t-elle une activité artisanale ?
-  par défaut: non
-
-natureActivite . artisanale et bic:
-  question: L'entreprise exerce-t-elle une activité artisanale et est-elle soumise au régime des BIC (Bénéfices Industriels et Commerciaux) ?
-  par défaut: non
-
-bic:
-  question: L'entreprise est-elle soumise au régime des BIC (Bénéfices Industriels et Commerciaux) ?
-  par défaut: 'oui'
+regimeReelImposition:
   une possibilité parmi:
     possibilités:
-      - 'oui'
-      - 'non'
-  applicable si: natureActivite . artisanale
+      - "Non"
+      - "Régime réél normal"
+      - "Régime réél simplifié"
 
-regimeImposition:
-  question: Quel est le régime d'imposition de l'entreprise ?
+typeBenefice:
+  une possibilité parmi:
+    possibilités:
+      - "BNC"
+      - "BIC"
+
+typeImposition:
+  question: Quel est le type d'imposition de l'entreprise ?
   par défaut: 'is'
   une possibilité parmi:
     possibilités:
       - 'is'
       - 'ir'
-      - 'autre'
+      - 'exonere'
   avec:
     is :
       titre: IS
     ir :
       titre: IR
+    exonere:
+      titre: Exonéré d'impôts
   description: |
     IS : Impôt sur les Sociétés
     IR : Impôt sur le Revenu
+    exonere: Exonéré
 
-categorieExoneration:
-  question: L'entreprise est-elle exonérée d'impôt ?
-  par défaut: 'aucune'
+
+effectifAugmente:
+  titre: L'effectif de l'entreprise est en augmentation
+  question: L'effectif de votre entreprise a-t-il augmenté au cours des exercices précédents ?
+  par défaut: non
   une possibilité parmi:
     possibilités:
-      - 'aucune'
-      - 'temporaire'
-      - 'zonage'
-      - 'jeune entreprise innovante'
-  avec:
-    aucune:
-      titre: Aucune
-    temporaire:
-      titre: Temporaire
-    zonage:
-      titre: Zonage
-    jeune entreprise innovante:
-      titre: JEI
+      - oui
+      - non
 
-
-natureActivites:
-  titre: Nature des activités de recherche
-  description: |
-    Sélectionnez les types d'activités de recherche menées par votre entreprise.
-
-natureActivites . fondamentale:
-  question: L'entreprise mène-t-elle des activités de recherche fondamentale ?
-  description: |
-    La recherche fondamentale consiste en des travaux expérimentaux ou théoriques entrepris principalement
-    en vue d'acquérir de nouvelles connaissances sur les fondements des phénomènes et des faits observables,
-    sans envisager une application ou une utilisation particulière.
+depensesStables:
+  titre: Les dépenses de l'entreprise sont stables
+  question: Les dépenses de votre entreprise sont-elles restées stables au cours des exercices précédents ?
   par défaut: non
-
-natureActivites . appliquee:
-  question: L'entreprise mène-t-elle des activités de recherche appliquée ?
-  description: |
-    La recherche appliquée consiste en des travaux originaux entrepris en vue d'acquérir des connaissances nouvelles.
-    Cependant, elle est surtout dirigée vers un but ou un objectif pratique déterminé.
-  par défaut: non
-
-natureActivites . experimentale:
-  question: L'entreprise mène-t-elle des activités de développement expérimental ?
-  description: |
-    Le développement expérimental consiste en des travaux systématiques fondés sur des connaissances existantes
-    obtenues par la recherche et/ou l'expérience pratique, en vue de lancer la fabrication de nouveaux matériaux,
-    produits ou dispositifs, d'établir de nouveaux procédés, systèmes et services, ou d'améliorer considérablement
-    ceux qui existent déjà.
-  par défaut: non
-
-localisationRecherche:
-  question: Où sont localisés les travaux de recherche ?
-  par défaut: 'ue'
   une possibilité parmi:
     possibilités:
-      - 'ue'
-      - 'eee'
-      - 'hors ue et eee'
-  avec:
-    ue:
-      titre: UE
-    eee:
-      titre: EEE
-    hors ue et eee:
-      titre: Hors de tout
-  description: |
-    UE : Union Européenne
-    EEE : Espace Économique Européen
-    Hors UE et EEE : Pays situés en dehors de l'UE et de l'EEE
-
-conventionFiscale:
-  question: L'État de l'EEE où sont réalisés les travaux a-t-il conclu une convention fiscale avec la France ?
-  par défaut: 'non'
-  une possibilité parmi:
-    possibilités:
-      - 'oui'
-      - 'non'
-  applicable si: localisationRecherche = 'eee'
-
+      - oui
+      - non

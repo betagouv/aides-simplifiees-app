@@ -48,10 +48,33 @@ declare global {
     }[]
   }
 
+  interface SurveyQuestionsPage {
+    id: string
+    title?: string
+    questions: SurveyQuestion[]
+  }
+
+  interface SurveyResultsPage {
+    id: string
+    title?: string
+    type: 'intermediary-results'
+    description: string
+    dispositifs: string[]
+  }
+
+  type SurveyPage = SurveyQuestionsPage | SurveyResultsPage
+
   interface SurveyStep {
     id: string
     title: string
+  }
+
+  interface SurveyFlatStep extends SurveyStep {
     questions: SurveyQuestion[]
+  }
+
+  interface SurveyDeepStep extends SurveyStep {
+    pages: SurveyPage[]
   }
 
   interface SurveyTest {
@@ -68,8 +91,15 @@ declare global {
     id: string
     title: string
     description: string
-    steps: SurveyStep[]
+    intermediaryResults?: {
+      dispositifs: { id: string, title: string, description: string }[]
+    }
+    steps: SurveyStepFlatStep[] | SurveyDeepStep[]
     tests?: SurveyTest[]
+  }
+
+  interface SurveyNormalizedSchema extends SurveySchema {
+    steps: SurveyDeepStep[]
   }
 
   interface SurveyAnswers {

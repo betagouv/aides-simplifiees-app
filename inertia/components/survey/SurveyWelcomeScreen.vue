@@ -1,23 +1,19 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
 import DsfrLink from '~/components/DsfrLink.vue'
 import MatomoOptOut from '~/components/MatomoOptOut.vue'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
 
-// Heading levels based on iframe context
 const { isIframe } = useIframeDisplay()
-const surveyH2 = computed(() => isIframe.value ? 'h2' : 'h3')
 </script>
 
 <template>
   <div>
     <div class="fr-card fr-p-4w">
-      <component
-        :is="surveyH2"
+      <h2
         class="fr-h4"
       >
         Un simulateur en cours d'amélioration
-      </component>
+      </h2>
 
       <!-- Content for both iframe and regular site -->
       <p>

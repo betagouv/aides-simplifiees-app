@@ -16,6 +16,13 @@ const {
 
 const simulateurTitle = simulateur.title || simulateur.slug
 
+const surveysStore = useSurveysStore()
+
+surveysStore.loadSchema(simulateur.slug)
+const groupedQuestions = computed(() => surveysStore.getGroupedQuestions(simulateur.slug))
+const currentStepIndex = computed(() => surveysStore.getCurrentStepIndex(simulateur.slug))
+const activeAccordion = ref<number | undefined>(currentStepIndex.value ?? undefined)
+
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
@@ -26,20 +33,6 @@ setBreadcrumbs([
     to: `/simulateurs/${simulateur.slug}/recapitulatif`,
   },
 ])
-
-const surveysStore = useSurveysStore()
-surveysStore.loadSurveySchema(simulateur.slug)
-
-const groupedQuestions = computed(() => surveysStore.getGroupedAnsweredQuestions(simulateur.slug))
-const currentQuestionId = computed(() => surveysStore.getCurrentQuestionId(simulateur.slug))
-const activeQuestionGroupIndex = computed(() => {
-  const questionGroups = groupedQuestions.value
-  const currentQuestionIdValue = currentQuestionId.value
-  return questionGroups.findIndex(group =>
-    group.questions.some(question => question.id === currentQuestionIdValue),
-  )
-})
-const activeAccordion = ref<number>(activeQuestionGroupIndex.value)
 </script>
 
 <template>
@@ -76,7 +69,7 @@ const activeAccordion = ref<number>(activeQuestionGroupIndex.value)
                   {{ question.title }}
                 </p>
                 <DsfrBadge
-                  v-if="question.id === currentQuestionId"
+                  v-if="surveysStore.isQuestionInCurrentPage(simulateur.slug, question.id)"
                   class="fr-mt-1w"
                   type="info"
                   small
@@ -97,7 +90,7 @@ const activeAccordion = ref<number>(activeQuestionGroupIndex.value)
                 icon-right
                 :label="surveysStore.hasAnswer(simulateur.slug, question.id) ? 'Modifier' : 'Répondre'"
                 @click.prevent="() => {
-                  surveysStore.setCurrentQuestionId(simulateur.slug, question.id)
+                  surveysStore.setCurrentPageFromQuestionId(simulateur.slug, question.id)
                   router.visit(`/simulateurs/${simulateur.slug}#simulateur-title`)
                 }"
               />

@@ -163,6 +163,7 @@ const textModel = computed(() => {
 <template>
   <div
     :id="comboboxId"
+    class="fr-mb-4w"
     role="combobox"
     data-testid="combobox"
     :aria-expanded="debounceStatus === 'success' && selectOptions.length > 0"

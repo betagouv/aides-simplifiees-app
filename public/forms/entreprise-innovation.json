@@ -745,7 +745,7 @@
               "id": "performancesSuperieures",
               "title": "Le produit final se distinguera-t-il des produits déjà existants de par ses performances supérieures en termes :",
               "type": "checkbox",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
+              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false",
               "choices": [
                 {
                   "id": "techniques",
@@ -904,19 +904,19 @@
           "title": "Subventions et remboursements",
           "questions": [
             {
-              "id": "remboursements_subventions",
+              "id": "remboursements_subventions_prototype",
               "title": "Montant des remboursements des subventions publiques à ajouter à l'assiette du crédit d'impôt",
               "type": "number",
               "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
-              "id": "subventions_publiques",
+              "id": "subventions_publiques_prototype",
               "title": "Montant des subventions publiques reçues par l'entreprise en raison des opérations de conception de prototypes ou installations pilotes de nouveaux produits",
               "type": "number",
               "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
-              "id": "depenses_conseil",
+              "id": "depenses_conseil__prototype",
               "title": "Montant des dépenses exposées auprès de tiers au titre de prestations de conseil pour l'octroi du bénéfice du crédit d'impôt",
               "type": "number",
               "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"

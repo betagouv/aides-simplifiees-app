@@ -739,7 +739,7 @@
               "id": "produitMisMarche",
               "title": "Le produit final a-t-il déjà été mis à disposition sur le marché ?",
               "type": "boolean",
-              "visibleWhen": "prototypeDestination=modele",
+              "visibleWhen": "prototypeDestination=modele"
             },
             {
               "id": "performancesSuperieures",

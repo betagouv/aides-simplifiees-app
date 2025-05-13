@@ -3,6 +3,7 @@ declare global {
   interface SurveyChoice {
     id: string
     title: string
+    tooltip?: string
   }
 
   interface SurveyQuestionAutocompleteConfig {

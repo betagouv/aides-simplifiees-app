@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { DsfrRadioButtonSet, DsfrTooltip } from '@gouvminint/vue-dsfr'
+import { DsfrRadioButtonSet } from '@gouvminint/vue-dsfr'
 import { onMounted, useTemplateRef } from 'vue'
 
 const props = defineProps<{

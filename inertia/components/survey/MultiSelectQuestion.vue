@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { DsfrCheckboxSetProps } from '@gouvminint/vue-dsfr'
-import { DsfrCheckboxSet, DsfrTooltip } from '@gouvminint/vue-dsfr'
+import { DsfrCheckboxSet } from '@gouvminint/vue-dsfr'
 import { onMounted, ref, useTemplateRef, watch } from 'vue'
 
 const props = defineProps<{

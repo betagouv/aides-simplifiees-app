@@ -4,6 +4,7 @@
   "id": "demenagement-logement",
   "title": "Test court",
   "description": "Répondez à ces questions pour découvrir les aides au logement et déménagement auxquelles vous pourriez être éligible",
+  "engine": "openfisca",
   "steps": [
     {
       "id": "profil",

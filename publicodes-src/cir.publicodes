@@ -1,4 +1,5 @@
 #TODO : WIP : CIR
+CIR:
 CIR . montant:
   titre: Montant du Crédit d'Impôt Recherche
   applicable si: CIR . eligibilite
@@ -9,13 +10,13 @@ CIR . totalCredit:
     somme:
       - CIR . montantDepensesRD  # barème métropole et barème DOM
       - CIR . montantDepensesNormalisation  # barème métropole et barème DOM
-      - CIR . montantRemboursementsRD  # barème métropole uniquement
+      - CIR . montantRemboursementRD  # barème métropole uniquement
 
 CIR . montantDepensesRD:
   variations:
-    - si: localisation . metropole
-      alors: CIR . montantDepensesRDBase
-    - sinon: CIR . montantDepensesRDDOM  # TODO filtrer plus finement pour DOM
+    - si: situationGeographique = 'metropole'
+      alors: CIR . montantRDBase
+    - sinon: CIR . montantRDDOM  # TODO filtrer plus finement pour DOM
 
 CIR . montantRDBase:
   baremeMetropole:
@@ -43,27 +44,31 @@ CIR . assietteRDBase:
 CIR . totalDepensesRD:
   valeur:
     somme:
-      - depensesRD . amortissementBiens
-      - depensesRD . indemnisationAssurance
-      - depensesRD . chercheursTechniciens
-      - depensesRD . remunerationInvention
-      - depensesRD . rechercheLiensDependance
-      - depensesRD . rechercheSansLiensDependance
-      - depensesRD . remboursementsSubventions  # vérifier si à lister ici
+      - depensesRDAmortissementBiens
+      - depensesRDIndemnisationAssurance
+      - depensesRDChercheursTechniciens
+      - depensesRDRemunerationInvention
+      - depensesRDRechercheLiensDependance
+      - depensesRDRechercheSansLiensDependance
+      - remboursementsSubventionsORDC  # vérifier si à lister ici
+
+
 
 CIR . deductionsRD:
   valeur:
     somme:
-      - depensesRD . subventionsPubliques
-      - depensesRD . depensesConseil
-      - depensesRD . depensesTiersCir
+      - depensesRDSubventionsPubliques
+      - depensesRDDepensesConseil
+      - depensesRDDepensesTiersCir
 
 
 CIR . montantDepensesNormalisation:
-  variations:
-    - si: localisation . metropole
-      alors: CIR . montantDepensesNormalisationBase
-    - sinon: CIR . montantDepensesNormalisationDOM  # TODO filtrer plus finement pour DOM
+  default: 0
+# TODO: generateur d'erreurs
+#  variations:
+#    - si: situationGeographique = "metropole"
+#      alors: CIR . montantDepensesNormalisationBase
+#    - sinon: CIR . montantDepensesNormalisationDOM  # TODO filtrer plus finement pour DOM
 
 CIR . montantNormalisationBase:
   baremeMetropole:
@@ -91,15 +96,16 @@ CIR . assietteNormalisationBase:
 CIR . totalDepensesNormalisation:
   valeur:
     somme:
-      - depensesNormalisation . salairesNormalisation
-      - depensesNormalisation . depensesDirigeantNormalisation
-      - depensesNormalisation . remboursementsSubventionsNormalisation  # vérifier si à lister ici
+      - depensesNormalisationSalaires
+      - depensesNormalisationDirigeant
+      - depensesNormalisationRemboursementSubventions  # vérifier si à lister ici
+
 
 CIR . deductionsNormalisation:
   valeur:
     somme:
-      - depensesNormalisation . subventionsNormalisation
-      - depensesNormalisation . depensesConseilNormalisation
+      - depensesNormalisationSubventions
+      - depensesNormalisationConseil
 
 
 CIR . montantRemboursement:
@@ -118,7 +124,7 @@ CIR . montantRemboursementRD:
 
 
 CIR . totalRemboursementsRD:
-  valeur: depensesRD . remboursementsSubventions
+  valeur: remboursementsSubventionsORDC
 
 
 CIR . montantRemboursementNormalisation:
@@ -130,7 +136,7 @@ CIR . montantRemboursementNormalisation:
       - taux: 5%
 
 CIR . totalRemboursementsNormalisation:
-  valeur: depensesNormalisation . remboursementsSubventionsNormalisation
+  valeur: depensesNormalisationRemboursementSubventions
 
 # 1. Calcul des aides
 CII . montant:
@@ -155,127 +161,51 @@ CII . depensesBase:
     produit:
       - 20%
       - somme:
-          - depensesPrototype . amortissementsImmobilisations
-          - depensesPrototype . chercheursTechniciens
-          - depensesPrototype . remunerationInvention
-          - depensesPrototype . amortissementsBrevets
-          - depensesPrototype . fraisDepotDessins
-          - depensesPrototype . depensesSousTraitance
-          - depensesPrototype . remboursementsSubventions
+          - depensesPrototypeAmortissementsImmobilisations
+          - depensesPrototypeChercheursTechniciens
+          - depensesPrototypeRemunerationInvention
+          - depensesPrototypeAmortissementsBrevets
+          - depensesPrototypeFraisDepotDessins
+          - depensesPrototypeDepensesSousTraitance
+          - depensesPrototypeRemboursementsSubventions
 
 CII . depensesDOM:
   produit:
     - 40%
     - somme:
-        - depensesPrototype . amortissementsImmobilisationsDom
-        - depensesPrototype . amortissementsBrevetsDom
-        - depensesPrototype . fraisDepotDessinsDom
-        - depensesPrototype . depensesSousTraitanceDom
+        - depensesPrototypeAmortissementsImmobilisationsDom
+        - depensesPrototypeAmortissementsBrevetsDom
+        - depensesPrototypeFraisDepotDessinsDom
+        - depensesPrototypeDepensesSousTraitanceDom
 
 CII . depensesCorse:
   valeur:
     produit:
       - CII . tauxCorse
       - somme:
-          - depensesPrototype . amortissementsImmobilisationsCorse
-          - depensesPrototype . amortissementsBrevetsCorse
-          - depensesPrototype . fraisDepotDessinsCorse
-          - depensesPrototype . depensesSousTraitanceCorse
+          - depensesPrototypeAmortissementsImmobilisationsCorse
+          - depensesPrototypeAmortissementsBrevetsCorse
+          - depensesPrototypeFraisDepotDessinsCorse
+          - depensesPrototypeDepensesSousTraitanceCorse
 
 CII . tauxCorse:
   valeur:
     variations:
       - si:
           toutes ces conditions:
-            - effectifTotal_N < 50
+            - effectifTotalN < 50
             - une de ces conditions:
-                - chiffreAffaires_N <= 10000000
-                - bilanTotal_N <= 10000000
+                - chiffreAffairesN <= 10000000
+                - bilanTotalN <= 10000000
         alors: 40%
       - sinon: 35%
 
 CII . deductions:
   valeur:
     somme:
-      - depensesPrototype . subventionsPubliques
-      - depensesPrototype . depensesConseil
-      - depensesPrototype . depensesTiersCii
-
-# Variables pour les dépenses prototype
-depensesPrototype:
-  titre: Dépenses liées à la réalisation de prototypes ou d'installations pilotes de nouveaux produits
-
-depensesPrototype . amortissementsImmobilisations:
-  titre: Dotations aux amortissements des immobilisations créées ou acquises à l'état neuf et affectées directement à la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits
-  par défaut: 0
-
-depensesPrototype . chercheursTechniciens:
-  titre: Chercheurs et techniciens de recherche qui sont directement et exclusivement affectés aux opérations de recherche et développement
-  par défaut: 0
-
-depensesPrototype . remunerationInvention:
-  titre: Salariés auteurs d'une invention après des opérations de recherche a qui on a versé une rémunération supplémentaire
-  par défaut: 0
-
-depensesPrototype . amortissementsBrevets:
-  titre: Dotations aux amortissements, frais de prise, de maintenance et de défense des brevets et des certificats d'obtention végétale relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits
-  par défaut: 0
-
-depensesPrototype . fraisDepotDessins:
-  titre: Frais de dépôt et de défense des dessins et modèles relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits
-  par défaut: 0
-
-depensesPrototype . depensesSousTraitance:
-  titre: Dépenses afférentes aux opérations de conception de prototypes ou installations pilotes de nouveaux produits dont la réalisation est confiée à des entreprises ou des bureaux d'études et d'ingénierie agréés
-  par défaut: 0
-
-depensesPrototype . remboursementsSubventions:
-  titre: Montant des remboursements des subventions publiques à ajouter à l'assiette du crédit d'impôt
-  par défaut: 0
-
-depensesPrototype . amortissementsImmobilisationsDom:
-  titre: Dont dépenses réalisées dans un département d'Outre-mer
-  par défaut: 0
-
-depensesPrototype . amortissementsBrevetsDom:
-  titre: Dont dépenses réalisées dans un département d'Outre-mer
-  par défaut: 0
-
-depensesPrototype . fraisDepotDessinsDom:
-  titre: Dont dépenses réalisées dans un département d'Outre-mer
-  par défaut: 0
-
-depensesPrototype . depensesSousTraitanceDom:
-  titre: Dont dépenses réalisées dans un département d'Outre-mer
-  par défaut: 0
-
-depensesPrototype . amortissementsImmobilisationsCorse:
-  titre: Dont dépenses réalisées en Corse
-  par défaut: 0
-
-depensesPrototype . amortissementsBrevetsCorse:
-  titre: Dont dépenses réalisées en Corse
-  par défaut: 0
-
-depensesPrototype . fraisDepotDessinsCorse:
-  titre: Dont dépenses réalisées en Corse
-  par défaut: 0
-
-depensesPrototype . depensesSousTraitanceCorse:
-  titre: Dont dépenses réalisées en Corse
-  par défaut: 0
-
-depensesPrototype . subventionsPubliques:
-  titre: Montant des subventions publiques reçues par l'entreprise en raison des opérations de conception de prototypes ou installations pilotes de nouveaux produits
-  par défaut: 0
-
-depensesPrototype . depensesConseil:
-  titre: Montant des dépenses exposées auprès de tiers au titre de prestations de conseil pour l'octroi du bénéfice du crédit d'impôt
-  par défaut: 0
-
-depensesPrototype . depensesTiersCii:
-  titre: Montant des dépenses exposées et facturées pour la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits pour le compte de tiers bénéficiaire du CII
-  par défaut: 0
+      - depensesPrototypeSubventionsPubliques
+      - depensesPrototypeDepensesConseil
+      - depensesPrototypeDepensesTiersCii
 
 CII:
   titre: Crédit d'impôt Innovation
@@ -284,9 +214,9 @@ CII . eligibilite:
   titre: Eligibilité au CII
   valeur:
     toutes ces conditions:
-      - immatriculation = localisation . France
+      - immatriculationFrance
       - CII . activiteEligible
-      - entrepriseDifficulte = non
+      - entrepriseEnDifficulte = non
       - CII . depassementConsecutif = non
       - exoneration = non
 
@@ -300,7 +230,7 @@ JEU:
 JEU . eligibilite:
   titre: Éligibilité au statut JEU
   toutes ces conditions:
-    - immatriculation = localisation . France
+    - immatriculationFrance
     - activiteNouvelle
     - Jeune Entreprise . conditionAge
     - dirigeantsOuActionnairesUniversitaire != 'aucune'
@@ -317,7 +247,7 @@ JEC . eligibilite:
   titre: Éligibilité au statut JEC
   valeur:
     toutes ces conditions:
-      - immatriculation = localisation . France
+      - immatriculationFrance
       - activiteNouvelle = oui
       - JEC . conditionAge
       - capitalDetenu != 'aucune'
@@ -343,38 +273,33 @@ CICo . eligibilite:
   titre: Eligibilité au CICo
   valeur:
     toutes ces conditions:
-      - immatriculation = localisation . France
-      - ORDC . contrat = oui
+      - immatriculationFrance
+      - contratORDC = oui
       - une de ces conditions:
-        - regimeReelImposition = "Régime réél normal"
-        - regimeReelImposition = "Régime réél simplifié"
-        - typeBenefice = "BNC"
-        - typeBenefice = "BIC"
-      - une de ces conditions:
-        - natureActivite . industrielle
-        - natureActivite . commerciale
-        - natureActivite . agricole
+        - natureActivite = 'industrielle'
+        - natureActivite = 'commerciale'
+        - natureActivite = 'agricole'
       - une de ces conditions:
         - exoneration = non
         - toutes ces conditions:
             - exoneration = oui
             - une de ces conditions:
               - JEI . eligibilite = oui
-              - repriseEntrepriseEnDifficulté = oui
-              - zoneSpecifique = 'ZFR'
-              - zoneSpecifique = 'ZFU_TE'
-              - zoneSpecifique = 'BER'
-              - zoneSpecifique = 'ZRD'
-              - zoneSpecifique = 'ZFA_DOM'
-              - zoneSpecifique = 'ZRR'
-              - zoneSpecifique = 'BUD'
-              - zoneSpecifique = 'ZDP'
+              - categorieExoneration = 'reprise-entreprise-en-difficulte'
+              - categorieExonerationZoneSpecifique = 'ZFR'
+              - categorieExonerationZoneSpecifique = 'ZFU_TE'
+              - categorieExonerationZoneSpecifique = 'BER'
+              - categorieExonerationZoneSpecifique = 'ZRD'
+              - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+              - categorieExonerationZoneSpecifique = 'ZRR'
+              - categorieExonerationZoneSpecifique = 'BUD'
+              - categorieExonerationZoneSpecifique = 'ZDP'
 
 
 CICo . montant:
     - produit:
         - CICo . taux
-        - soustraction: ORDC . depenses - ORDC . subventions
+        - soustraction: depensesORDC - subventionsORDC
     - plafond: 6000000 €/an
 
 CICo . taux:
@@ -386,14 +311,6 @@ CICo . taux:
       alors: 50%
     - sinon: 40%
 
-typeEntreprise:
-    une possibilité parmi:
-      possibilités:
-        - 'pme'
-        - 'micro-entreprise'
-        - 'profession libérale'
-        - 'autre'
-
 JEI:
   titre: JEI
 
@@ -401,7 +318,7 @@ JEI . eligibilite:
   titre: eligibilite au statut JEI
   valeur:
     toutes ces conditions:
-      - immatriculation = localisation . France
+      - immatriculationFrance
       - activiteNouvelle
       - Jeune Entreprise . conditionAge
       - capitalDetenu != 'aucune'
@@ -431,13 +348,13 @@ CIR . eligibilite:
   titre: Éligibilité au Crédit d'Impôt Recherche
   valeur:
     toutes ces conditions:
-      - immatriculation = localisation . France
+      - immatriculationFrance
       - une de ces conditions:
-        - natureActivite . industrielle
-        - natureActivite . commerciale
-        - natureActivite . agricole
+        - natureActivite = 'industrielle'
+        - natureActivite = 'commerciale'
+        - natureActivite = 'agricole'
         - toutes ces conditions:
-            - natureActivite . artisanale
+            - natureActivite = 'artisanale'
             - bic
       - une de ces conditions:
         - typeImposition = 'is'
@@ -447,14 +364,12 @@ CIR . eligibilite:
 
 
 # 2. Variables intermédiaires calculées pour simplifier les règles
-entrepriseDifficulte:
-  par défaut: non
 exoneration:
   par défaut: non
   valeur:
     toutes ces conditions:
-      - repriseEntrepriseEnDifficulté = non
-      - zoneSpecifique = 'aucune'
+      - entrepriseEnDifficulte = non
+      - categorieExonerationZoneSpecifique = 'aucune'
 
 ageEntreprise:
   durée:
@@ -464,45 +379,45 @@ ageEntreprise:
 estPetiteOuMoyenneEntreprise:
   valeur:
     toutes ces conditions:
-      - bilanTotal_N <= 43000000 €/an
-      - effectifTotal_N < 250 employé
-      - chiffreAffaires_N <= 50000000 €/an
+      - bilanTotalN <= 43000000 €/an
+      - effectifTotalN < 250 employé
+      - chiffreAffairesN <= 50000000 €/an
 
 
 CII . depassementEffectifN:
-  valeur: effectifTotal_N >= 250
+  valeur: effectifTotalN >= 250
 
 CII . depassementEffectifN1:
-  valeur: effectifTotal_N1 >= 250
+  valeur: effectifTotalN1 >= 250
 
 CII . depassementEffectifN2:
-  valeur: effectifTotal_N2 >= 250
+  valeur: effectifTotalN2 >= 250
 
 CII . depassementFinancierN:
   valeur:
     toutes ces conditions:
-      - chiffreAffaires_N > 50000000
-      - bilanTotal_N > 43000000
+      - chiffreAffairesN > 50000000
+      - bilanTotalN > 43000000
 
 CII . depassementFinancierN1:
   valeur:
     toutes ces conditions:
-      - chiffreAffaires_N1 > 50000000
-      - bilanTotal_N1 > 43000000
+      - chiffreAffairesN1 > 50000000
+      - bilanTotalN1 > 43000000
 
 CII . depassementFinancierN2:
   valeur:
     toutes ces conditions:
-      - chiffreAffaires_N2 > 50000000
-      - bilanTotal_N2 > 43000000
+      - chiffreAffairesN2 > 50000000
+      - bilanTotalN2 > 43000000
 
 
 CII . activiteEligible:
   par défaut: non
   une de ces conditions:
-    - natureActivite . industrielle
-    - natureActivite . commerciale
-    - natureActivite . agricole
+    - natureActivite = 'industrielle'
+    - natureActivite = 'commerciale'
+    - natureActivite = 'agricole'
     - typeEntreprise = 'profession libérale'
 
 CII . depassementConsecutif:
@@ -522,85 +437,51 @@ CII . depassementConsecutif:
           - CII . depassementFinancierN2
 
 # 3. Définition des variables d'entrée
-dirigeantsOuActionnairesUniversitaire:
-  titre: Votre entreprise est-elle dirigée ou détenue à au moins 10 % par des personnes appartenant à l'une des catégories suivantes ?
+immatriculationFrance:
+  par défaut: oui
+
+situationGeographique:
+  par défault: metropole
   une possibilité parmi:
     possibilités:
-      - 'etudiant'
-      - 'diplome master'
-      - 'diplome doctorat'
-      - 'enseignant'
-      - 'aucune'
-
-valorisationRecherche:
-  titre: Votre entreprise a-t-elle pour activité principale la valorisation de travaux de recherches auxquels les dirigeants ou associés ont participé au sein d'un établissement d'enseignement supérieur (au cours de leur scolarité ou dans l'exercice de leurs fonctions) ?
-  par défaut: non
-
-contratValorisation:
-  titre: Un contrat conclu avec cet établissement définit-il les conditions de la valorisation de ces travaux de recherches ?
-  par défaut: non
-
-effectifTotal_N:
-  titre: Effectif de l'année N
-  par défaut: 0
-  unité: employé
-
-effectifTotal_N1:
-  titre: Effectif de l'année N-1
-  par défaut: 0
-  unité: employé
-
-effectifTotal_N2:
-  titre: Effectif de l'année N-2
-  par défaut: 0
-  unité: employé
-
-chiffreAffaires_N:
-  titre: Chiffre d'affaires de l'année N
-  par défaut: 0
-  unité: €/an
-
-chiffreAffaires_N1:
-  titre: Chiffre d'affaires de l'année N-1
-  par défaut: 0
-  unité: €/an
-
-chiffreAffaires_N2:
-  titre: Chiffre d'affaires de l'année N-2
-  par défaut: 0
-  unité: €/an
-
-bilanTotal_N:
-  titre: Bilan total de l'année N
-  par défaut: 0
-  unité: €/an
-
-bilanTotal_N1:
-  titre: Bilan total de l'année N-1
-  par défaut: 0
-  unité: €/an
-
-bilanTotal_N2:
-  titre: Bilan total de l'année N-2
-  par défaut: 0
-  unité: €/an
+      - 'metropole'
+      - 'outremer'
+      - 'corse'
 
 
-
-pourcentageRD:
-  par défaut: 0
-
-
-capitalDetenu:
-  titre:
-  une de ces possibilités:
+#TODO: where statutJuridique is used?
+statutJuridique:
+  une possibilité parmi:
     possibilités:
-      - personnes_physiques
-      - autre_jei
-      - association
-      - etablissement
-      - societe
-      - aucune
+      - 'micro-entreprise'
+      - 'sarl-eurl'
+      - 'sas-sasu'
+      - 'sa'
+      - 'autre'
+
+typeEntreprise:
+    une possibilité parmi:
+      possibilités:
+        - 'micro-entreprise'
+        - 'pme'
+        - 'profession libérale'
+        - 'autre'
+
+natureActivite:
+  une possibilité parmi:
+    possibilités:
+      - 'industrielle'
+      - 'commerciale'
+      - 'agricole'
+      - 'artisanale'
+      - 'autre'
+
+bic:
+  par défaut: oui
+
+
+entrepriseEnDifficulte:
+  par défaut: non
 
 
 anneeDeCreation:
@@ -609,97 +490,81 @@ anneeDeCreation:
 activiteNouvelle:
   par défaut: non
 
-ORDC:
-  titre: Organismes de Recherche et Diffusion des Connaissances
 
-ORDC . contrat:
-  par défaut: non
-
-ORDC . depenses:
-  par défaut: 0
-
-ORDC . subventions:
-  par défaut: 0
-
-repriseEntrepriseEnDifficulté:
-  par défaut: non
-
-zoneSpecifique:
+dirigeantsOuActionnairesUniversitaire:
   une possibilité parmi:
     possibilités:
+      - 'etudiant'
+      - 'diplome-master'
+      - 'diplome-doctorat'
+      - 'enseignant'
       - 'aucune'
-      - 'ZFR'
-      - 'ZFU_TE'
-      - 'BER'
-      - 'ZRD'
-      - "ZFA_DOM"
-      - 'ZRR'
-      - 'FRR'
-      - 'BUD'
-      - 'ZDP'
-
-bic:
-  question: L'entreprise est-elle soumise au régime des BIC (Bénéfices Industriels et Commerciaux) ?
-  # par défaut: 'oui'
-  # une possibilité :
-   # - 'oui'
-  #- 'non'
-  # applicable si: natureActivite . artisanale
-
-immatriculation:
-  titre : là où est immatriculé l'entreprise
-
-natureActivite:
-  une possibilité:
-    - industrielle
-    - commerciale
-    - agricole
-    - artisanale
-    - autre
-  avec:
-    industrielle:
-    commerciale:
-    agricole:
-    artisanale:
-    liberal:
-    autre:
-
-localisation:
-  une possibilité:
-    - France
-    - UE
-    - EEE
-  avec:
-    France:
-    UE:
-    EEE:
 
 
-immatriculationFrance:
-  question: L'entreprise est-elle immatriculée en France ?
-  par défaut: 'oui'
+valorisationRecherche:
+  par défaut: non
+
+contratValorisation:
+  par défaut: non
+
+
+capitalDetenu:
   une possibilité parmi:
     possibilités:
-      - 'oui'
-      - 'non'
+      - 'personnes-physiques'
+      - 'autre-jei'
+      - 'association-fondation'
+      - 'etablissement-public'
+      - 'societe-investissement'
+      - 'aucune'
 
 
+chiffreAffairesN:
+  titre: Chiffre d'affaires de l'année N
+  par défaut: 0
+  unité: €/an
 
-regimeReelImposition:
-  une possibilité parmi:
-    possibilités:
-      - "Non"
-      - "Régime réél normal"
-      - "Régime réél simplifié"
+bilanTotalN:
+  titre: Bilan total de l'année N
+  par défaut: 0
+  unité: €/an
 
-typeBenefice:
-  une possibilité parmi:
-    possibilités:
-      - "BNC"
-      - "BIC"
+effectifTotalN:
+  titre: Effectif de l'année N
+  par défaut: 0
+  unité: employé
+
+chiffreAffairesN1:
+  titre: Chiffre d'affaires de l'année N-1
+  par défaut: 0
+  unité: €/an
+
+bilanTotalN1:
+  titre: Bilan total de l'année N-1
+  par défaut: 0
+  unité: €/an
+
+effectifTotalN1:
+  titre: Effectif de l'année N-1
+  par défaut: 0
+  unité: employé
+
+chiffreAffairesN2:
+  titre: Chiffre d'affaires de l'année N-2
+  par défaut: 0
+  unité: €/an
+
+bilanTotalN2:
+  titre: Bilan total de l'année N-2
+  par défaut: 0
+  unité: €/an
+
+effectifTotalN2:
+  titre: Effectif de l'année N-2
+  par défaut: 0
+  unité: employé
 
 typeImposition:
-  question: Quel est le type d'imposition de l'entreprise ?
   par défaut: 'is'
   une possibilité parmi:
     possibilités:
@@ -719,6 +584,32 @@ typeImposition:
     exonere: Exonéré
 
 
+categorieExoneration:
+  une possibilité parmi:
+    possibilités:
+      - 'jei'
+      - 'reprise-entreprise-en-difficulte'
+      - 'zone-specifique'
+      - 'aucune'
+
+
+categorieExonerationZoneSpecifique:
+  une possibilité parmi:
+    possibilités:
+      - 'aucune'
+      - 'ZFR'
+      - 'ZFU_TE'
+      - 'BER'
+      - 'ZRD'
+      - "ZFA_DOM"
+      - 'ZRR'
+      - 'FRR'
+      - 'BUD'
+      - 'ZDP'
+
+pourcentageRD:
+  par défaut: 0
+
 effectifAugmente:
   titre: L'effectif de l'entreprise est en augmentation
   question: L'effectif de votre entreprise a-t-il augmenté au cours des exercices précédents ?
@@ -736,3 +627,159 @@ depensesStables:
     possibilités:
       - oui
       - non
+
+
+#### Dépenses pour calcul des montant CIR, CII, CICo
+### Dépenses R&D
+depensesRD:
+depensesRDAmortissementBiens:
+depensesRDAmortissementBiensDom:
+
+depensesRDIndemnisationAssurance:
+depensesRDIndemnisationAssuranceDom:
+
+depensesRDChercheursTechniciens:
+depensesRDChercheursTechniciensDom:
+
+depensesRDRemunerationInvention:
+depensesRDRemunerationInventionDom:
+
+depensesRDRechercheLiensDependance:
+depensesRDRechercheLiensDependanceDom:
+
+depensesRDRechercheSansLiensDependance:
+depensesRDRechercheSansLiensDependanceDom:
+
+ORDC:
+  titre: Organismes de Recherche et Diffusion des Connaissances
+
+contratORDC:
+  par défaut: non
+
+respecteCriteresORDC:
+  par défaut: non
+
+depensesORDC:
+  par défaut: 0
+
+subventionsORDC:
+  par défaut: 0
+
+remboursementsSubventionsORDC:
+  par défaut: 0
+
+depensesRDSubventionsPubliques:
+  par défaut: 0
+
+depensesRDDepensesConseil:
+  par défaut: 0
+
+depensesRDDepensesTiersCir:
+  par défaut: 0
+
+### Dépenses Normalisation
+depensesNormalisationSalaires:
+  par défaut: 0
+
+depensesNormalisationSalairesDom:
+  par défaut: 0
+
+depensesNormalisationDirigeant:
+  par défaut: 0
+
+depensesNormalisationDirigeantDom:
+  par défaut: 0
+
+depensesNormalisationRemboursementSubventions:
+  par défaut: 0
+
+depensesNormalisationSubventions:
+  par défaut: 0
+
+depensesNormalisationConseil:
+  par défaut: 0
+
+### Dépenses Prototype
+depensesPrototypeAmortissementsImmobilisations:
+  titre: Dotations aux amortissements des immobilisations créées ou acquises à l'état neuf et affectées directement à la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototypeAmortissementsImmobilisationsDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototypeAmortissementsImmobilisationsCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototypeChercheursTechniciens:
+  titre: Chercheurs et techniciens de recherche qui sont directement et exclusivement affectés aux opérations de recherche et développement
+  par défaut: 0
+
+depensesPrototypeRemunerationInvention:
+  titre: Salariés auteurs d'une invention après des opérations de recherche a qui on a versé une rémunération supplémentaire
+  par défaut: 0
+
+depensesPrototypeAmortissementsBrevets:
+  titre: Dotations aux amortissements, frais de prise, de maintenance et de défense des brevets et des certificats d'obtention végétale relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototypeAmortissementsBrevetsDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototypeAmortissementsBrevetsCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototypeFraisDepotDessins:
+  titre: Frais de dépôt et de défense des dessins et modèles relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototypeFraisDepotDessinsDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototypeFraisDepotDessinsCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototypeDepensesSousTraitance:
+  titre: Dépenses afférentes aux opérations de conception de prototypes ou installations pilotes de nouveaux produits dont la réalisation est confiée à des entreprises ou des bureaux d'études et d'ingénierie agréés
+  par défaut: 0
+
+depensesPrototypeDepensesSousTraitanceDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototypeDepensesSousTraitanceCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototypeRemboursementsSubventions:
+  titre: Montant des remboursements des subventions publiques à ajouter à l'assiette du crédit d'impôt
+  par défaut: 0
+
+depensesPrototypeSubventionsPubliques:
+  titre: Montant des subventions publiques reçues par l'entreprise en raison des opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototypeDepensesConseil:
+  titre: Montant des dépenses exposées auprès de tiers au titre de prestations de conseil pour l'octroi du bénéfice du crédit d'impôt
+  par défaut: 0
+
+depensesPrototypeDepensesTiersCii:
+  titre: Montant des dépenses exposées et facturées pour la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits pour le compte de tiers bénéficiaire du CII
+  par défaut: 0
+
+
+#TODO: Unsure what to do with those variables
+localisation:
+  une possibilité:
+    - France
+    - UE
+    - EEE
+  avec:
+    France:
+    UE:
+    EEE:

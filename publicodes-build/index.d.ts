@@ -165,8 +165,7 @@ export type Situation = Partial<{
   "depensesPrototypeSubventionsPubliques": number,
   "depensesPrototypeDepensesConseil": number,
   "depensesPrototypeDepensesTiersCii": number,
-  "localisation": "'France'" | "'UE'" | "'EEE'",
-  "test": PBoolean
+  "localisation": "'France'" | "'UE'" | "'EEE'"
 }>
 
 /**
@@ -362,8 +361,7 @@ export type RuleValue = Partial<{
   "depensesPrototypeDepensesConseil": number,
   /** Montant des dépenses exposées et facturées pour la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits pour le compte de tiers bénéficiaire du CII */
   "depensesPrototypeDepensesTiersCii": number,
-  "localisation": "France" | "UE" | "EEE",
-  "test": boolean
+  "localisation": "France" | "UE" | "EEE"
 }>
 
 /**

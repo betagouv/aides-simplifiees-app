@@ -44,9 +44,9 @@ export function useEligibilityService() {
     dispositifsToEvaluate: DispositifDetail[]
   ): EligibilityResults {
     const engine = new Engine(sourceRules)
-    console.log('answers', answers)
+
     const mappedAnswers = autoMapAnswersToPublicodesVariables(answers)
-    console.log('mappedAnswers', mappedAnswers)
+
 
     //1. Filter out keys that don't exist in the publicodes model
     const validMappedAnswers: Record<string, any> = {}
@@ -66,7 +66,6 @@ export function useEligibilityService() {
       console.log('Missing keys in publicodes model:', missingKeys)
     }
 
-    console.log('validMappedAnswers', validMappedAnswers)
 
     //2. Transform boolean values to 'oui' or 'non' and wrap string values with quotes
     Object.keys(validMappedAnswers).forEach(key => {
@@ -78,12 +77,11 @@ export function useEligibilityService() {
 
         // Wrap string values with quotes: value -> "'value'"
         validMappedAnswers[key] = `"'${validMappedAnswers[key]}'"`
-        console.log(validMappedAnswers[key])
       }
     })
 
 
-
+    console.log('publicodes situation set to ', validMappedAnswers)
     engine.setSituation(validMappedAnswers)
 
 
@@ -95,7 +93,7 @@ export function useEligibilityService() {
 
     for (const dispositif of dispositifsToEvaluate) {
       try {
-        const evaluation = engine.evaluate(dispositif.id)
+        const evaluation = engine.evaluate(dispositif.id + " . eligibilite")
         const value = evaluation.nodeValue
         const baseResult = {
           id: dispositif.id,
@@ -145,6 +143,8 @@ export function useEligibilityService() {
         })
       }
     }
+
+    console.log('dispositifs évalués', results)
     return results
   }
 

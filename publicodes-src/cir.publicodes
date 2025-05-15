@@ -1,5 +1,6 @@
 #TODO : WIP : CIR
 CIR:
+
 CIR . montant:
   titre: Montant du Crédit d'Impôt Recherche
   applicable si: CIR . eligibilite
@@ -762,9 +763,3 @@ localisation:
     - "'France'"
     - "'UE'"
     - "'EEE'"
-
-test:
-  par défaut: non
-  valeur:
-    toutes ces conditions:
-      - statutJuridique = "'string'"

@@ -45,6 +45,7 @@ setBreadcrumbs([
   },
 ])
 
+const showResume = ref(false)
 const showMethodology = ref(false)
 const activeAccordion = ref()
 </script>
@@ -90,41 +91,45 @@ const activeAccordion = ref()
     />
     <div class="results__content fr-mt-4w">
       <template v-if="hasAides">
-        <div class="results__content-resume">
-          <hgroup>
-            <h3>1. En résumé</h3>
-            <p class="fr-text--lg">
-              Voici un récapitulatif des aides auxquelles vous pourriez être éligible en
-              fonction des informations renseignées :
-            </p>
-          </hgroup>
-
-          <div class="results__warning">
-            <DsfrBadge
-              type="warning"
-              small
-              label="service en construction : ces résultats sont des estimations"
-            />
-          </div>
+        <template v-if="showResume">
           <div
-            v-if="hasMontants"
-            class="fr-card fr-p-3w fr-mt-2w results__montants"
+            class="results__content-resume"
           >
+            <hgroup>
+              <h3>1. En résumé</h3>
+              <p class="fr-text--lg">
+                Voici un récapitulatif des aides auxquelles vous pourriez être éligible en
+                fonction des informations renseignées :
+              </p>
+            </hgroup>
+
+            <div class="results__warning">
+              <DsfrBadge
+                type="warning"
+                small
+                label="service en construction : ces résultats sont des estimations"
+              />
+            </div>
             <div
-              v-for="montant in results.montants"
-              :key="montant.usageAide"
-              class="results__montant"
+              v-if="hasMontants"
+              class="fr-card fr-p-3w fr-mt-2w results__montants"
             >
-              <AideMontantCard v-bind="montant" />
+              <div
+                v-for="montant in results.montants"
+                :key="montant.usageAide"
+                class="results__montant"
+              >
+                <AideMontantCard v-bind="montant" />
+              </div>
             </div>
           </div>
-        </div>
-        <SectionSeparator
-          fluid
-          class="fr-mt-8w"
-        />
+          <SectionSeparator
+            fluid
+            class="fr-mt-8w"
+          />
+        </template>
         <div class="results__liste-aides fr-mt-8w">
-          <h3>2. Les aides que nous avons identifiées</h3>
+          <h3>{{ showResume ? '2. ' : '1.' }} Les aides que nous avons identifiées</h3>
           <p>
             Selon les informations que vous avez fournies, vous pourriez être éligible à ces
             aides. Ces résultats sont basés uniquement sur les données communiquées et ne
@@ -142,7 +147,7 @@ const activeAccordion = ref()
             class="fr-mt-8w"
           />
           <div class="results__liste-annexes fr-mt-8w">
-            <h3>3. Pour aller plus loin</h3>
+            <h3>{{ showResume ? '2. ' : '1.' }} Pour aller plus loin</h3>
             <div class="fr-card">
               <div class="fr-card__body">
                 <div class="fr-card__content">

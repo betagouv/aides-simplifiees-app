@@ -1,5 +1,12 @@
 # CHANGELOG
 
+# 0.8.8
+* Modifications en production pour tests utilisateurs
+* Détail :
+  * Désactive le bloc résumé dans la page de résultats
+  * Ajoute un bouton 'en savoir plus' dans la carte de lien vers le détail d'une aide pour plus d'emphase
+  * Modifie la description de la question 'communes' du formulaire déménagement
+
 # 0.8.7
 * Ajout du bouton crisp hors iframe
 

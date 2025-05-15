@@ -47,7 +47,45 @@ export function useEligibilityService() {
     console.log('answers', answers)
     const mappedAnswers = autoMapAnswersToPublicodesVariables(answers)
     console.log('mappedAnswers', mappedAnswers)
-    engine.setSituation(mappedAnswers)
+
+    //1. Filter out keys that don't exist in the publicodes model
+    const validMappedAnswers: Record<string, any> = {}
+    const missingKeys: string[] = []
+
+    Object.keys(mappedAnswers).forEach(key => {
+      try {
+        // Use type assertion to handle dynamic rule names
+        engine.getRule(key as any)
+        validMappedAnswers[key] = mappedAnswers[key]
+      } catch (e) {
+        missingKeys.push(key)
+      }
+    })
+
+    if (missingKeys.length > 0) {
+      console.log('Missing keys in publicodes model:', missingKeys)
+    }
+
+    console.log('validMappedAnswers', validMappedAnswers)
+
+    //2. Transform boolean values to 'oui' or 'non' and wrap string values with quotes
+    Object.keys(validMappedAnswers).forEach(key => {
+      if (validMappedAnswers[key] === true) {
+        validMappedAnswers[key] = 'oui'
+      } else if (validMappedAnswers[key] === false) {
+        validMappedAnswers[key] = 'non'
+      } else if (typeof validMappedAnswers[key] === 'string') {
+
+        // Wrap string values with quotes: value -> "'value'"
+        validMappedAnswers[key] = `"'${validMappedAnswers[key]}'"`
+        console.log(validMappedAnswers[key])
+      }
+    })
+
+
+
+    engine.setSituation(validMappedAnswers)
+
 
     const results: EligibilityResults = {
       eligibleDispositifs: [],

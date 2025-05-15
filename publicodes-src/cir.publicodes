@@ -14,7 +14,7 @@ CIR . totalCredit:
 
 CIR . montantDepensesRD:
   variations:
-    - si: situationGeographique = 'metropole'
+    - si: situationGeographique = "'metropole'"
       alors: CIR . montantRDBase
     - sinon: CIR . montantRDDOM  # TODO filtrer plus finement pour DOM
 
@@ -233,7 +233,7 @@ JEU . eligibilite:
     - immatriculationFrance
     - activiteNouvelle
     - Jeune Entreprise . conditionAge
-    - dirigeantsOuActionnairesUniversitaire != 'aucune'
+    - dirigeantsOuActionnairesUniversitaire != "'aucune'"
     - valorisationRecherche
     - contratValorisation
     - estPetiteOuMoyenneEntreprise
@@ -250,7 +250,7 @@ JEC . eligibilite:
       - immatriculationFrance
       - activiteNouvelle = oui
       - JEC . conditionAge
-      - capitalDetenu != 'aucune'
+      - capitalDetenu != "'aucune'"
       - estPetiteOuMoyenneEntreprise
       - JEC . critereRD
       - effectifAugmente = oui
@@ -276,24 +276,24 @@ CICo . eligibilite:
       - immatriculationFrance
       - contratORDC = oui
       - une de ces conditions:
-        - natureActivite = 'industrielle'
-        - natureActivite = 'commerciale'
-        - natureActivite = 'agricole'
+        - natureActivite = "'industrielle'"
+        - natureActivite = "'commerciale'"
+        - natureActivite = "'agricole'"
       - une de ces conditions:
         - exoneration = non
         - toutes ces conditions:
             - exoneration = oui
             - une de ces conditions:
               - JEI . eligibilite = oui
-              - categorieExoneration = 'reprise-entreprise-en-difficulte'
-              - categorieExonerationZoneSpecifique = 'ZFR'
-              - categorieExonerationZoneSpecifique = 'ZFU_TE'
-              - categorieExonerationZoneSpecifique = 'BER'
-              - categorieExonerationZoneSpecifique = 'ZRD'
-              - categorieExonerationZoneSpecifique = 'ZFA_DOM'
-              - categorieExonerationZoneSpecifique = 'ZRR'
-              - categorieExonerationZoneSpecifique = 'BUD'
-              - categorieExonerationZoneSpecifique = 'ZDP'
+              - categorieExoneration = "'reprise-entreprise-en-difficulte'"
+              - categorieExonerationZoneSpecifique = "'ZFR'"
+              - categorieExonerationZoneSpecifique = "'ZFU_TE'"
+              - categorieExonerationZoneSpecifique = "'BER'"
+              - categorieExonerationZoneSpecifique = "'ZRD'"
+              - categorieExonerationZoneSpecifique = "'ZFA_DOM'"
+              - categorieExonerationZoneSpecifique = "'ZRR'"
+              - categorieExonerationZoneSpecifique = "'BUD'"
+              - categorieExonerationZoneSpecifique = "'ZDP'"
 
 
 CICo . montant:
@@ -306,8 +306,8 @@ CICo . taux:
   variations:
     - si:
         une de ces conditions:
-          - typeEntreprise = 'pme'
-          - typeEntreprise = 'micro-entreprise'
+          - typeEntreprise = "'pme'"
+          - typeEntreprise = "'micro-entreprise'"
       alors: 50%
     - sinon: 40%
 
@@ -321,7 +321,7 @@ JEI . eligibilite:
       - immatriculationFrance
       - activiteNouvelle
       - Jeune Entreprise . conditionAge
-      - capitalDetenu != 'aucune'
+      - capitalDetenu != "'aucune'"
       - estPetiteOuMoyenneEntreprise
       - pourcentageRD >= 15
 
@@ -350,16 +350,16 @@ CIR . eligibilite:
     toutes ces conditions:
       - immatriculationFrance
       - une de ces conditions:
-        - natureActivite = 'industrielle'
-        - natureActivite = 'commerciale'
-        - natureActivite = 'agricole'
+        - natureActivite = "'industrielle'"
+        - natureActivite = "'commerciale'"
+        - natureActivite = "'agricole'"
         - toutes ces conditions:
-            - natureActivite = 'artisanale'
+            - natureActivite = "'artisanale'"
             - bic
       - une de ces conditions:
-        - typeImposition = 'is'
-        - typeImposition = 'ir'
-      - exoneration = 'non'
+        - typeImposition = "'is'"
+        - typeImposition = "'ir'"
+      - exoneration = non
 
 
 
@@ -369,7 +369,7 @@ exoneration:
   valeur:
     toutes ces conditions:
       - entrepriseEnDifficulte = non
-      - categorieExonerationZoneSpecifique = 'aucune'
+      - categorieExonerationZoneSpecifique = "'aucune'"
 
 ageEntreprise:
   durée:
@@ -415,10 +415,10 @@ CII . depassementFinancierN2:
 CII . activiteEligible:
   par défaut: non
   une de ces conditions:
-    - natureActivite = 'industrielle'
-    - natureActivite = 'commerciale'
-    - natureActivite = 'agricole'
-    - typeEntreprise = 'profession libérale'
+    - natureActivite = "'industrielle'"
+    - natureActivite = "'commerciale'"
+    - natureActivite = "'agricole'"
+    - typeEntreprise = "'profession libérale'"
 
 CII . depassementConsecutif:
   valeur:
@@ -442,39 +442,35 @@ immatriculationFrance:
 
 situationGeographique:
   par défault: metropole
-  une possibilité parmi:
-    possibilités:
-      - 'metropole'
-      - 'outremer'
-      - 'corse'
+  une possibilité:
+    - "'metropole'"
+    - "'outremer'"
+    - "'corse'"
 
 
 #TODO: where statutJuridique is used?
 statutJuridique:
-  une possibilité parmi:
-    possibilités:
-      - 'micro-entreprise'
-      - 'sarl-eurl'
-      - 'sas-sasu'
-      - 'sa'
-      - 'autre'
+  une possibilité:
+    - "'micro-entreprise'"
+    - "'sarl-eurl'"
+    - "'sas-sasu'"
+    - "'sa'"
+    - "'autre'"
 
 typeEntreprise:
-    une possibilité parmi:
-      possibilités:
-        - 'micro-entreprise'
-        - 'pme'
-        - 'profession libérale'
-        - 'autre'
+  une possibilité:
+    - "'micro-entreprise'"
+    - "'pme'"
+    - "'profession libérale'"
+    - "'autre'"
 
 natureActivite:
-  une possibilité parmi:
-    possibilités:
-      - 'industrielle'
-      - 'commerciale'
-      - 'agricole'
-      - 'artisanale'
-      - 'autre'
+  une possibilité:
+    - "'industrielle'"
+    - "'commerciale'"
+    - "'agricole'"
+    - "'artisanale'"
+    - "'autre'"
 
 bic:
   par défaut: oui
@@ -492,13 +488,12 @@ activiteNouvelle:
 
 
 dirigeantsOuActionnairesUniversitaire:
-  une possibilité parmi:
-    possibilités:
-      - 'etudiant'
-      - 'diplome-master'
-      - 'diplome-doctorat'
-      - 'enseignant'
-      - 'aucune'
+  une possibilité:
+    - "'etudiant'"
+    - "'diplome-master'"
+    - "'diplome-doctorat'"
+    - "'enseignant'"
+    - "'aucune'"
 
 
 valorisationRecherche:
@@ -509,14 +504,13 @@ contratValorisation:
 
 
 capitalDetenu:
-  une possibilité parmi:
-    possibilités:
-      - 'personnes-physiques'
-      - 'autre-jei'
-      - 'association-fondation'
-      - 'etablissement-public'
-      - 'societe-investissement'
-      - 'aucune'
+  une possibilité:
+    - "'personnes-physiques'"
+    - "'autre-jei'"
+    - "'association-fondation'"
+    - "'etablissement-public'"
+    - "'societe-investissement'"
+    - "'aucune'"
 
 
 chiffreAffairesN:
@@ -566,11 +560,10 @@ effectifTotalN2:
 
 typeImposition:
   par défaut: 'is'
-  une possibilité parmi:
-    possibilités:
-      - 'is'
-      - 'ir'
-      - 'exonere'
+  une possibilité:
+    - "'is'"
+    - "'ir'"
+    - "'exonere'"
   avec:
     is :
       titre: IS
@@ -585,27 +578,25 @@ typeImposition:
 
 
 categorieExoneration:
-  une possibilité parmi:
-    possibilités:
-      - 'jei'
-      - 'reprise-entreprise-en-difficulte'
-      - 'zone-specifique'
-      - 'aucune'
+  une possibilité:
+    - "'jei'"
+    - "'reprise-entreprise-en-difficulte'"
+    - "'zone-specifique'"
+    - "'aucune'"
 
 
 categorieExonerationZoneSpecifique:
-  une possibilité parmi:
-    possibilités:
-      - 'aucune'
-      - 'ZFR'
-      - 'ZFU_TE'
-      - 'BER'
-      - 'ZRD'
-      - "ZFA_DOM"
-      - 'ZRR'
-      - 'FRR'
-      - 'BUD'
-      - 'ZDP'
+  une possibilité:
+    - "'aucune'"
+    - "'ZFR'"
+    - "'ZFU_TE'"
+    - "'BER'"
+    - "'ZRD'"
+    - "'ZFA_DOM'"
+    - "'ZRR'"
+    - "'FRR'"
+    - "'BUD'"
+    - "'ZDP'"
 
 pourcentageRD:
   par défaut: 0
@@ -614,19 +605,11 @@ effectifAugmente:
   titre: L'effectif de l'entreprise est en augmentation
   question: L'effectif de votre entreprise a-t-il augmenté au cours des exercices précédents ?
   par défaut: non
-  une possibilité parmi:
-    possibilités:
-      - oui
-      - non
 
 depensesStables:
   titre: Les dépenses de l'entreprise sont stables
   question: Les dépenses de votre entreprise sont-elles restées stables au cours des exercices précédents ?
   par défaut: non
-  une possibilité parmi:
-    possibilités:
-      - oui
-      - non
 
 
 #### Dépenses pour calcul des montant CIR, CII, CICo
@@ -776,10 +759,12 @@ depensesPrototypeDepensesTiersCii:
 #TODO: Unsure what to do with those variables
 localisation:
   une possibilité:
-    - France
-    - UE
-    - EEE
-  avec:
-    France:
-    UE:
-    EEE:
+    - "'France'"
+    - "'UE'"
+    - "'EEE'"
+
+test:
+  par défaut: non
+  valeur:
+    toutes ces conditions:
+      - statutJuridique = "'string'"

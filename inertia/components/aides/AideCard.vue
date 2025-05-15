@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { DsfrCardProps } from '@gouvminint/vue-dsfr'
 import { DsfrCard } from '@gouvminint/vue-dsfr'
+import { router } from '@inertiajs/vue3'
 import AideMontant from '~/components/aides/AideMontant.vue'
 import TypeAideTag from '~/components/aides/TypeAideTag.vue'
 
@@ -20,11 +21,24 @@ const periode = props.title?.match('APL') ? '/mois' : undefined
 
 <template>
   <DsfrCard
+    class="brand-aide-card"
     :title="title"
-    :description="description"
+    no-arrow
     :link="link"
+    :description="description"
     :detail="instructeur"
     :detail-icon="{ name: 'ri:government-line', ssr: true }"
+    :buttons="[
+      {
+        label: 'En savoir plus',
+        secondary: true,
+        icon: { name: 'ri:arrow-right-line', ssr: true },
+        iconRight: true,
+        onClick: () => {
+          router.visit(link)
+        },
+      },
+    ]"
     v-bind="{
       horizontal,
       size,
@@ -79,5 +93,8 @@ const periode = props.title?.match('APL') ? '/mois' : undefined
 
 .brand-montant-periode {
   display: inline-block;
+}
+.brand-aide-card:deep(.fr-btns-group) {
+  justify-content: flex-end;
 }
 </style>

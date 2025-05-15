@@ -111,7 +111,7 @@
         {
           "id": "code-postal-nouvelle-ville",
           "title": "Dans quelle ville allez-vous résider ?",
-          "description": "Veuillez saisir le nom ou le code postal de la commune dans laquelle vous allez résider. Une fois que vous avez saisi le nom ou le code postal, cliquez sur \"Entrée\" ou sur l'icône loupe pour confirmer la commune de votre choix parmi la liste qui s'affiche. Nous vous recommandons d'utiliser votre futur code postal.",
+          "description": "Veuillez saisir le nom ou le code postal de la commune dans laquelle vous envisagez de résider. Appuyez ensuite sur \"Entrée\" ou cliquez sur le bouton loupe pour confirmer votre choix parmi la liste de communes qui s'affiche.",
           "type": "combobox",
           "autocompleteFunction": "getInseeNumber"
         },

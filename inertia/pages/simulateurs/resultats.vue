@@ -147,7 +147,7 @@ const activeAccordion = ref()
             class="fr-mt-8w"
           />
           <div class="results__liste-annexes fr-mt-8w">
-            <h3>{{ showResume ? '2. ' : '1.' }} Pour aller plus loin</h3>
+            <h3>{{ showResume ? '3. ' : '2.' }} Pour aller plus loin</h3>
             <div class="fr-card">
               <div class="fr-card__body">
                 <div class="fr-card__content">

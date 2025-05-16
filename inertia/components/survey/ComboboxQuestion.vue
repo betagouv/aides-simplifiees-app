@@ -174,6 +174,7 @@ const textModel = computed(() => {
       :id="searchInputId"
       ref="searchInput"
       v-model="query"
+      large
       :label="question.title"
       :placeholder="config.placeholder"
       :button-text="config.buttonText"

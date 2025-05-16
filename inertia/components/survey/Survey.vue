@@ -159,7 +159,7 @@ const { isIframe } = useIframeDisplay()
 
       <!-- Welcome screen for starting the survey -->
       <template v-else-if="showWelcomeScreen">
-        <SurveyWelcomeScreen />
+        <SurveyWelcomeScreen :simulateur="simulateur" />
         <SurveyNavigation
           :buttons="[
             {

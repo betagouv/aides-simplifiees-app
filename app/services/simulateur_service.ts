@@ -52,10 +52,19 @@ export default class SimulateurService {
 
         // Add choices for question types that need them (radio, checkbox, etc.)
         if (['radio', 'checkbox', 'select'].includes(question.type)) {
-          questionJson.choices = question.choices.map(choice => ({
-            id: choice.slug,
-            title: choice.title,
-          }))
+          questionJson.choices = question.choices.map((choice) => {
+            const choiceObj: any = {
+              id: choice.slug,
+              title: choice.title,
+            }
+
+            // Add tooltip if available
+            if (choice.tooltip) {
+              choiceObj.tooltip = choice.tooltip
+            }
+
+            return choiceObj
+          })
         }
 
         // Add the question to the step
@@ -104,9 +113,20 @@ export default class SimulateurService {
 
     // Create choices for question 1
     await question1.related('choices').createMany([
-      { slug: 'etudiant', title: 'En études ou en alternance' },
-      { slug: 'actif', title: 'Salarié(e) ou Indépendant(e)' },
-      { slug: 'chomeur', title: 'Inscrit(e) comme demandeur d\'emploi' },
+      {
+        slug: 'etudiant',
+        title: 'En études ou en alternance',
+        tooltip: 'Cette option concerne les personnes inscrites dans un établissement d\'enseignement',
+      },
+      {
+        slug: 'actif',
+        title: 'Salarié(e) ou Indépendant(e)',
+      },
+      {
+        slug: 'chomeur',
+        title: 'Inscrit(e) comme demandeur d\'emploi',
+        tooltip: 'Vous devez être inscrit à Pôle Emploi',
+      },
       { slug: 'retraite', title: 'Retraité(e)' },
       { slug: 'inactif', title: 'Autre' },
     ])
@@ -127,11 +147,19 @@ export default class SimulateurService {
 
     // Create choices for question 2
     await question2.related('choices').createMany([
-      { slug: 'locataire', title: 'Locataire (figurant sur le bail, en foyer ou en résidence)' },
-      { slug: 'proprietaire', title: 'Propriétaire ou en location-accession' },
+      {
+        slug: 'locataire',
+        title: 'Locataire (figurant sur le bail, en foyer ou en résidence)',
+        tooltip: 'Vous devez obligatoirement être signataire du bail de location',
+      },
+      {
+        slug: 'proprietaire',
+        title: 'Propriétaire ou en location-accession',
+      },
       {
         slug: 'heberge',
         title: 'Hébergé(e) chez vos parents, un particulier ou en logement de fonction',
+        tooltip: 'Vous ne payez pas de loyer ou vous n\'êtes pas signataire du bail',
       },
       { slug: 'sans-domicile', title: 'Sans domicile stable' },
     ])

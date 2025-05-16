@@ -33,35 +33,139 @@ export type Situation = Partial<{
   "prix . avocat": number,
   "dépenses primeur": number,
   "CIR": PBoolean,
-  "CIR . éligibilité": PBoolean,
-  "CIR . éligibilité . base": PBoolean,
-  "CIR . éligibilité . activités de recherche": PBoolean,
-  "CIR . éligibilité . localisation recherche": PBoolean,
+  "CIR . montant": number | null,
+  "CIR . totalCredit": number,
+  "CIR . montantDepensesRD": PBoolean,
+  "CIR . montantRDBase": PBoolean,
+  "CIR . montantRDDOM": PBoolean,
+  "CIR . assietteRDBase": PBoolean,
+  "CIR . totalDepensesRD": number,
+  "CIR . deductionsRD": number,
+  "CIR . montantDepensesNormalisation": PBoolean,
+  "CIR . montantNormalisationBase": PBoolean,
+  "CIR . montantNormalisationDOM": PBoolean,
+  "CIR . assietteNormalisationBase": PBoolean,
+  "CIR . totalDepensesNormalisation": number,
+  "CIR . deductionsNormalisation": number,
+  "CIR . montantRemboursement": number,
+  "CIR . montantRemboursementRD": PBoolean,
+  "CIR . totalRemboursementsRD": number,
+  "CIR . montantRemboursementNormalisation": PBoolean,
+  "CIR . totalRemboursementsNormalisation": number,
+  "CII . montant": number | null,
+  "CII . montantPlafonne": number,
+  "CII . depensesBase": number,
+  "CII . depensesDOM": number,
+  "CII . depensesCorse": number,
+  "CII . tauxCorse": number,
+  "CII . deductions": number,
+  "CII": PBoolean,
+  "CII . eligibilite": PBoolean,
+  "CICo": PBoolean,
+  "JEU": PBoolean,
+  "JEU . eligibilite": PBoolean,
+  "JEC": PBoolean,
+  "JEC . eligibilite": PBoolean,
+  "JEC . conditionAge": PBoolean,
+  "JEC . critereRD": PBoolean,
+  "CICo . eligibilite": PBoolean,
+  "CICo . montant": PBoolean,
+  "CICo . taux": number,
+  "JEI": PBoolean,
+  "JEI . eligibilite": PBoolean,
+  "Jeune Entreprise": PBoolean,
+  "Jeune Entreprise . conditionAge": PBoolean,
+  "CIR . eligibilite": PBoolean,
+  "exoneration": PBoolean,
+  "ageEntreprise": number,
+  "estPetiteOuMoyenneEntreprise": PBoolean,
+  "CII . depassementEffectifN": PBoolean,
+  "CII . depassementEffectifN1": PBoolean,
+  "CII . depassementEffectifN2": PBoolean,
+  "CII . depassementFinancierN": PBoolean,
+  "CII . depassementFinancierN1": PBoolean,
+  "CII . depassementFinancierN2": PBoolean,
+  "CII . activiteEligible": PBoolean,
+  "CII . depassementConsecutif": PBoolean,
   "immatriculationFrance": PBoolean,
-  "natureActivite": PBoolean,
-  "natureActivite . industrielle": PBoolean,
-  "natureActivite . commerciale": PBoolean,
-  "natureActivite . agricole": PBoolean,
-  "natureActivite . artisanale": PBoolean,
-  "natureActivite . artisanale et bic": PBoolean,
-  "bic": PBoolean | null,
-  "regimeImposition": PBoolean,
-  "regimeImposition . is": PBoolean,
-  "regimeImposition . ir": PBoolean,
-  "categorieExoneration": PBoolean,
-  "categorieExoneration . aucune": PBoolean,
-  "categorieExoneration . temporaire": PBoolean,
-  "categorieExoneration . zonage": PBoolean,
-  "categorieExoneration . jeune entreprise innovante": PBoolean,
-  "natureActivites": PBoolean,
-  "natureActivites . fondamentale": PBoolean,
-  "natureActivites . appliquee": PBoolean,
-  "natureActivites . experimentale": PBoolean,
-  "localisationRecherche": PBoolean,
-  "localisationRecherche . ue": PBoolean,
-  "localisationRecherche . eee": PBoolean,
-  "localisationRecherche . hors ue et eee": PBoolean,
-  "conventionFiscale": PBoolean | null
+  "situationGeographique": "'metropole'" | "'outremer'" | "'corse'",
+  "statutJuridique": "'micro-entreprise'" | "'sarl-eurl'" | "'sas-sasu'" | "'sa'" | "'autre'",
+  "typeEntreprise": "'micro-entreprise'" | "'pme'" | "'profession libérale'" | "'autre'",
+  "natureActivite": "'industrielle'" | "'commerciale'" | "'agricole'" | "'artisanale'" | "'autre'",
+  "bic": PBoolean,
+  "entrepriseEnDifficulte": PBoolean,
+  "anneeDeCreation": PDate,
+  "activiteNouvelle": PBoolean,
+  "dirigeantsOuActionnairesUniversitaire": "'etudiant'" | "'diplome-master'" | "'diplome-doctorat'" | "'enseignant'" | "'aucune'",
+  "valorisationRecherche": PBoolean,
+  "contratValorisation": PBoolean,
+  "capitalDetenu": "'personnes-physiques'" | "'autre-jei'" | "'association-fondation'" | "'etablissement-public'" | "'societe-investissement'" | "'aucune'",
+  "chiffreAffairesN": number,
+  "bilanTotalN": number,
+  "effectifTotalN": number,
+  "chiffreAffairesN1": number,
+  "bilanTotalN1": number,
+  "effectifTotalN1": number,
+  "chiffreAffairesN2": number,
+  "bilanTotalN2": number,
+  "effectifTotalN2": number,
+  "typeImposition": "'is'" | "'ir'" | "'exonere'",
+  "typeImposition . is": PBoolean,
+  "typeImposition . ir": PBoolean,
+  "typeImposition . exonere": PBoolean,
+  "categorieExoneration": "'jei'" | "'reprise-entreprise-en-difficulte'" | "'zone-specifique'" | "'aucune'",
+  "categorieExonerationZoneSpecifique": "'aucune'" | "'ZFR'" | "'ZFU_TE'" | "'BER'" | "'ZRD'" | "'ZFA_DOM'" | "'ZRR'" | "'FRR'" | "'BUD'" | "'ZDP'",
+  "pourcentageRD": number,
+  "effectifAugmente": PBoolean,
+  "depensesStables": PBoolean,
+  "depensesRD": PBoolean,
+  "depensesRDAmortissementBiens": PBoolean,
+  "depensesRDAmortissementBiensDom": PBoolean,
+  "depensesRDIndemnisationAssurance": PBoolean,
+  "depensesRDIndemnisationAssuranceDom": PBoolean,
+  "depensesRDChercheursTechniciens": PBoolean,
+  "depensesRDChercheursTechniciensDom": PBoolean,
+  "depensesRDRemunerationInvention": PBoolean,
+  "depensesRDRemunerationInventionDom": PBoolean,
+  "depensesRDRechercheLiensDependance": PBoolean,
+  "depensesRDRechercheLiensDependanceDom": PBoolean,
+  "depensesRDRechercheSansLiensDependance": PBoolean,
+  "depensesRDRechercheSansLiensDependanceDom": PBoolean,
+  "ORDC": PBoolean,
+  "contratORDC": PBoolean,
+  "respecteCriteresORDC": PBoolean,
+  "depensesORDC": number,
+  "subventionsORDC": number,
+  "remboursementsSubventionsORDC": number,
+  "depensesRDSubventionsPubliques": number,
+  "depensesRDDepensesConseil": number,
+  "depensesRDDepensesTiersCir": number,
+  "depensesNormalisationSalaires": number,
+  "depensesNormalisationSalairesDom": number,
+  "depensesNormalisationDirigeant": number,
+  "depensesNormalisationDirigeantDom": number,
+  "depensesNormalisationRemboursementSubventions": number,
+  "depensesNormalisationSubventions": number,
+  "depensesNormalisationConseil": number,
+  "depensesPrototypeAmortissementsImmobilisations": number,
+  "depensesPrototypeAmortissementsImmobilisationsDom": number,
+  "depensesPrototypeAmortissementsImmobilisationsCorse": number,
+  "depensesPrototypeChercheursTechniciens": number,
+  "depensesPrototypeRemunerationInvention": number,
+  "depensesPrototypeAmortissementsBrevets": number,
+  "depensesPrototypeAmortissementsBrevetsDom": number,
+  "depensesPrototypeAmortissementsBrevetsCorse": number,
+  "depensesPrototypeFraisDepotDessins": number,
+  "depensesPrototypeFraisDepotDessinsDom": number,
+  "depensesPrototypeFraisDepotDessinsCorse": number,
+  "depensesPrototypeDepensesSousTraitance": number,
+  "depensesPrototypeDepensesSousTraitanceDom": number,
+  "depensesPrototypeDepensesSousTraitanceCorse": number,
+  "depensesPrototypeRemboursementsSubventions": number,
+  "depensesPrototypeSubventionsPubliques": number,
+  "depensesPrototypeDepensesConseil": number,
+  "depensesPrototypeDepensesTiersCii": number,
+  "localisation": "'France'" | "'UE'" | "'EEE'"
 }>
 
 /**
@@ -74,52 +178,190 @@ export type RuleValue = Partial<{
   "prix . champignons": number,
   "prix . avocat": number,
   "dépenses primeur": number,
-  /** Crédit d'Impôt Recherche */
   "CIR": boolean,
-  /** Éligibilité au Crédit d'Impôt Recherche */
-  "CIR . éligibilité": boolean,
-  /** Conditions de base d'éligibilité */
-  "CIR . éligibilité . base": boolean,
-  /** Nature des activités de recherche éligibles */
-  "CIR . éligibilité . activités de recherche": boolean,
-  /** Localisation géographique des activités de recherche */
-  "CIR . éligibilité . localisation recherche": boolean,
-  "immatriculationFrance": boolean,
-  /** Nature de l'activité de l'entreprise */
-  "natureActivite": boolean,
-  "natureActivite . industrielle": boolean,
-  "natureActivite . commerciale": boolean,
-  "natureActivite . agricole": boolean,
-  "natureActivite . artisanale": boolean,
-  "natureActivite . artisanale et bic": boolean,
-  "bic": boolean | null,
-  "regimeImposition": boolean,
-  /** IS */
-  "regimeImposition . is": boolean,
-  /** IR */
-  "regimeImposition . ir": boolean,
-  "categorieExoneration": boolean,
-  /** Aucune */
-  "categorieExoneration . aucune": boolean,
-  /** Temporaire */
-  "categorieExoneration . temporaire": boolean,
-  /** Zonage */
-  "categorieExoneration . zonage": boolean,
+  /** Montant du Crédit d'Impôt Recherche */
+  "CIR . montant": number | null,
+  "CIR . totalCredit": number,
+  "CIR . montantDepensesRD": boolean,
+  "CIR . montantRDBase": boolean,
+  "CIR . montantRDDOM": boolean,
+  "CIR . assietteRDBase": boolean,
+  "CIR . totalDepensesRD": number,
+  "CIR . deductionsRD": number,
+  "CIR . montantDepensesNormalisation": boolean,
+  "CIR . montantNormalisationBase": boolean,
+  "CIR . montantNormalisationDOM": boolean,
+  "CIR . assietteNormalisationBase": boolean,
+  "CIR . totalDepensesNormalisation": number,
+  "CIR . deductionsNormalisation": number,
+  "CIR . montantRemboursement": number,
+  "CIR . montantRemboursementRD": boolean,
+  "CIR . totalRemboursementsRD": number,
+  "CIR . montantRemboursementNormalisation": boolean,
+  "CIR . totalRemboursementsNormalisation": number,
+  /** Montant du Crédit d'Impôt Innovation */
+  "CII . montant": number | null,
+  "CII . montantPlafonne": number,
+  "CII . depensesBase": number,
+  "CII . depensesDOM": number,
+  "CII . depensesCorse": number,
+  "CII . tauxCorse": number,
+  "CII . deductions": number,
+  /** Crédit d'impôt Innovation */
+  "CII": boolean,
+  /** Eligibilité au CII */
+  "CII . eligibilite": boolean,
+  /** Crédit d'impôt Collaboratif */
+  "CICo": boolean,
+  /** Jeune entreprise Universitaire */
+  "JEU": boolean,
+  /** Éligibilité au statut JEU */
+  "JEU . eligibilite": boolean,
+  /** Jeune Entreprise de Croissance */
+  "JEC": boolean,
+  /** Éligibilité au statut JEC */
+  "JEC . eligibilite": boolean,
+  /** L'entreprise est suffisamment jeune pour bénéficier des avantages du statut JEC */
+  "JEC . conditionAge": boolean,
+  /** Pourcentage de dépenses de R&D suffisant mais inférieur au seuil JEI */
+  "JEC . critereRD": boolean,
+  /** Eligibilité au CICo */
+  "CICo . eligibilite": boolean,
+  "CICo . montant": boolean,
+  "CICo . taux": number,
   /** JEI */
-  "categorieExoneration . jeune entreprise innovante": boolean,
-  /** Nature des activités de recherche */
-  "natureActivites": boolean,
-  "natureActivites . fondamentale": boolean,
-  "natureActivites . appliquee": boolean,
-  "natureActivites . experimentale": boolean,
-  "localisationRecherche": boolean,
-  /** UE */
-  "localisationRecherche . ue": boolean,
-  /** EEE */
-  "localisationRecherche . eee": boolean,
-  /** Hors de tout */
-  "localisationRecherche . hors ue et eee": boolean,
-  "conventionFiscale": boolean | null
+  "JEI": boolean,
+  /** eligibilite au statut JEI */
+  "JEI . eligibilite": boolean,
+  /** A définir */
+  "Jeune Entreprise": boolean,
+  /** l'entreprise est elle suffisamment jeune pour bénéficier des avantages du statut JEI */
+  "Jeune Entreprise . conditionAge": boolean,
+  /** Éligibilité au Crédit d'Impôt Recherche */
+  "CIR . eligibilite": boolean,
+  "exoneration": boolean,
+  "ageEntreprise": number,
+  "estPetiteOuMoyenneEntreprise": boolean,
+  "CII . depassementEffectifN": boolean,
+  "CII . depassementEffectifN1": boolean,
+  "CII . depassementEffectifN2": boolean,
+  "CII . depassementFinancierN": boolean,
+  "CII . depassementFinancierN1": boolean,
+  "CII . depassementFinancierN2": boolean,
+  "CII . activiteEligible": boolean,
+  "CII . depassementConsecutif": boolean,
+  "immatriculationFrance": boolean,
+  "situationGeographique": "metropole" | "outremer" | "corse",
+  "statutJuridique": "micro-entreprise" | "sarl-eurl" | "sas-sasu" | "sa" | "autre",
+  "typeEntreprise": "micro-entreprise" | "pme" | "profession libérale" | "autre",
+  "natureActivite": "industrielle" | "commerciale" | "agricole" | "artisanale" | "autre",
+  "bic": boolean,
+  "entrepriseEnDifficulte": boolean,
+  "anneeDeCreation": string,
+  "activiteNouvelle": boolean,
+  "dirigeantsOuActionnairesUniversitaire": "etudiant" | "diplome-master" | "diplome-doctorat" | "enseignant" | "aucune",
+  "valorisationRecherche": boolean,
+  "contratValorisation": boolean,
+  "capitalDetenu": "personnes-physiques" | "autre-jei" | "association-fondation" | "etablissement-public" | "societe-investissement" | "aucune",
+  /** Chiffre d'affaires de l'année N */
+  "chiffreAffairesN": number,
+  /** Bilan total de l'année N */
+  "bilanTotalN": number,
+  /** Effectif de l'année N */
+  "effectifTotalN": number,
+  /** Chiffre d'affaires de l'année N-1 */
+  "chiffreAffairesN1": number,
+  /** Bilan total de l'année N-1 */
+  "bilanTotalN1": number,
+  /** Effectif de l'année N-1 */
+  "effectifTotalN1": number,
+  /** Chiffre d'affaires de l'année N-2 */
+  "chiffreAffairesN2": number,
+  /** Bilan total de l'année N-2 */
+  "bilanTotalN2": number,
+  /** Effectif de l'année N-2 */
+  "effectifTotalN2": number,
+  "typeImposition": "is" | "ir" | "exonere",
+  /** IS */
+  "typeImposition . is": boolean,
+  /** IR */
+  "typeImposition . ir": boolean,
+  /** Exonéré d'impôts */
+  "typeImposition . exonere": boolean,
+  "categorieExoneration": "jei" | "reprise-entreprise-en-difficulte" | "zone-specifique" | "aucune",
+  "categorieExonerationZoneSpecifique": "aucune" | "ZFR" | "ZFU_TE" | "BER" | "ZRD" | "ZFA_DOM" | "ZRR" | "FRR" | "BUD" | "ZDP",
+  "pourcentageRD": number,
+  /** L'effectif de l'entreprise est en augmentation */
+  "effectifAugmente": boolean,
+  /** Les dépenses de l'entreprise sont stables */
+  "depensesStables": boolean,
+  "depensesRD": boolean,
+  "depensesRDAmortissementBiens": boolean,
+  "depensesRDAmortissementBiensDom": boolean,
+  "depensesRDIndemnisationAssurance": boolean,
+  "depensesRDIndemnisationAssuranceDom": boolean,
+  "depensesRDChercheursTechniciens": boolean,
+  "depensesRDChercheursTechniciensDom": boolean,
+  "depensesRDRemunerationInvention": boolean,
+  "depensesRDRemunerationInventionDom": boolean,
+  "depensesRDRechercheLiensDependance": boolean,
+  "depensesRDRechercheLiensDependanceDom": boolean,
+  "depensesRDRechercheSansLiensDependance": boolean,
+  "depensesRDRechercheSansLiensDependanceDom": boolean,
+  /** Organismes de Recherche et Diffusion des Connaissances */
+  "ORDC": boolean,
+  "contratORDC": boolean,
+  "respecteCriteresORDC": boolean,
+  "depensesORDC": number,
+  "subventionsORDC": number,
+  "remboursementsSubventionsORDC": number,
+  "depensesRDSubventionsPubliques": number,
+  "depensesRDDepensesConseil": number,
+  "depensesRDDepensesTiersCir": number,
+  "depensesNormalisationSalaires": number,
+  "depensesNormalisationSalairesDom": number,
+  "depensesNormalisationDirigeant": number,
+  "depensesNormalisationDirigeantDom": number,
+  "depensesNormalisationRemboursementSubventions": number,
+  "depensesNormalisationSubventions": number,
+  "depensesNormalisationConseil": number,
+  /** Dotations aux amortissements des immobilisations créées ou acquises à l'état neuf et affectées directement à la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits */
+  "depensesPrototypeAmortissementsImmobilisations": number,
+  /** Dont dépenses réalisées dans un département d'Outre-mer */
+  "depensesPrototypeAmortissementsImmobilisationsDom": number,
+  /** Dont dépenses réalisées en Corse */
+  "depensesPrototypeAmortissementsImmobilisationsCorse": number,
+  /** Chercheurs et techniciens de recherche qui sont directement et exclusivement affectés aux opérations de recherche et développement */
+  "depensesPrototypeChercheursTechniciens": number,
+  /** Salariés auteurs d'une invention après des opérations de recherche a qui on a versé une rémunération supplémentaire */
+  "depensesPrototypeRemunerationInvention": number,
+  /** Dotations aux amortissements, frais de prise, de maintenance et de défense des brevets et des certificats d'obtention végétale relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits */
+  "depensesPrototypeAmortissementsBrevets": number,
+  /** Dont dépenses réalisées dans un département d'Outre-mer */
+  "depensesPrototypeAmortissementsBrevetsDom": number,
+  /** Dont dépenses réalisées en Corse */
+  "depensesPrototypeAmortissementsBrevetsCorse": number,
+  /** Frais de dépôt et de défense des dessins et modèles relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits */
+  "depensesPrototypeFraisDepotDessins": number,
+  /** Dont dépenses réalisées dans un département d'Outre-mer */
+  "depensesPrototypeFraisDepotDessinsDom": number,
+  /** Dont dépenses réalisées en Corse */
+  "depensesPrototypeFraisDepotDessinsCorse": number,
+  /** Dépenses afférentes aux opérations de conception de prototypes ou installations pilotes de nouveaux produits dont la réalisation est confiée à des entreprises ou des bureaux d'études et d'ingénierie agréés */
+  "depensesPrototypeDepensesSousTraitance": number,
+  /** Dont dépenses réalisées dans un département d'Outre-mer */
+  "depensesPrototypeDepensesSousTraitanceDom": number,
+  /** Dont dépenses réalisées en Corse */
+  "depensesPrototypeDepensesSousTraitanceCorse": number,
+  /** Montant des remboursements des subventions publiques à ajouter à l'assiette du crédit d'impôt */
+  "depensesPrototypeRemboursementsSubventions": number,
+  /** Montant des subventions publiques reçues par l'entreprise en raison des opérations de conception de prototypes ou installations pilotes de nouveaux produits */
+  "depensesPrototypeSubventionsPubliques": number,
+  /** Montant des dépenses exposées auprès de tiers au titre de prestations de conseil pour l'octroi du bénéfice du crédit d'impôt */
+  "depensesPrototypeDepensesConseil": number,
+  /** Montant des dépenses exposées et facturées pour la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits pour le compte de tiers bénéficiaire du CII */
+  "depensesPrototypeDepensesTiersCii": number,
+  "localisation": "France" | "UE" | "EEE"
 }>
 
 /**
@@ -132,20 +374,10 @@ export type RuleValue = Partial<{
  * enclosed in '' and boolean values are 'true' or 'false').
  */
 export type Questions = Partial<{
-  "immatriculationFrance": boolean,
-  "natureActivite . industrielle": boolean,
-  "natureActivite . commerciale": boolean,
-  "natureActivite . agricole": boolean,
-  "natureActivite . artisanale": boolean,
-  "natureActivite . artisanale et bic": boolean,
-  "bic": boolean | null,
-  "regimeImposition": boolean,
-  "categorieExoneration": boolean,
-  "natureActivites . fondamentale": boolean,
-  "natureActivites . appliquee": boolean,
-  "natureActivites . experimentale": boolean,
-  "localisationRecherche": boolean,
-  "conventionFiscale": boolean | null
+  /** L'effectif de l'entreprise est en augmentation */
+  "effectifAugmente": boolean,
+  /** Les dépenses de l'entreprise sont stables */
+  "depensesStables": boolean
 }>
 
 /**

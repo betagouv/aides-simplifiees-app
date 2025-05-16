@@ -51,6 +51,7 @@
     "@iframe-resizer/child": "^5.4.5",
     "@iframe-resizer/parent": "^5.4.5",
     "@inertiajs/vue3": "^2.0.6",
+    "@publicodes/tools": "^1.7.2",
     "@vinejs/vine": "^3.0.0",
     "@vue/server-renderer": "^3.5.13",
     "@vueuse/core": "^13.1.0",
@@ -63,7 +64,7 @@
     "pg": "^8.14.1",
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.2.0",
-    "publicodes": "^1.8.2",
+    "publicodes": "^1.8.4",
     "reflect-metadata": "^0.2.2",
     "vue": "^3.5.13",
     "vue-matomo": "^4.2.0"

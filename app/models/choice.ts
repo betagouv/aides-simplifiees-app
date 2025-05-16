@@ -13,6 +13,9 @@ export default class Choice extends BaseModel {
   @column()
   declare title: string
 
+  @column()
+  declare tooltip: string | null
+
   @column({ columnName: 'question_id' })
   declare questionId: number
 

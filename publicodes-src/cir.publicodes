@@ -308,7 +308,7 @@ CICo . taux:
     - si:
         une de ces conditions:
           - typeEntreprise = "'pme'"
-          - typeEntreprise = "'micro-entreprise'"
+          - statutJuridique = "'micro-entreprise'"
       alors: 50%
     - sinon: 40%
 
@@ -456,14 +456,13 @@ statutJuridique:
     - "'sarl-eurl'"
     - "'sas-sasu'"
     - "'sa'"
-    - "'autre'"
+    - "'autre-statut-juridique'"
 
 typeEntreprise:
   une possibilité:
-    - "'micro-entreprise'"
     - "'pme'"
     - "'profession libérale'"
-    - "'autre'"
+    - "'autre-type-entreprise'"
 
 natureActivite:
   une possibilité:
@@ -471,7 +470,7 @@ natureActivite:
     - "'commerciale'"
     - "'agricole'"
     - "'artisanale'"
-    - "'autre'"
+    - "'autre-activite'"
 
 bic:
   par défaut: oui

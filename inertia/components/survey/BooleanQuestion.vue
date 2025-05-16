@@ -9,8 +9,8 @@ const props = defineProps<{
 const question = {
   ...props.question,
   choices: [
-    { title: 'Oui', id: 'true' },
-    { title: 'Non', id: 'false' },
+    { title: 'Oui', id: 'true#' + props.question?.id },
+    { title: 'Non', id: 'false#' + props.question?.id },
   ],
 }
 
@@ -25,14 +25,14 @@ const booleanModel = defineModel<boolean | undefined>()
 const stringModel = customRef((track, trigger) => {
   return {
     get() {
-      return booleanModel.value === true ? 'true' : booleanModel.value === false ? 'false' : undefined
+      return booleanModel.value === true ? 'true#' + props.question?.id : booleanModel.value === false ? 'false#' + props.question?.id : undefined
     },
     set(value: string | undefined) {
       track()
-      if (value === 'true') {
+      if (value === 'true#' + props.question?.id) {
         booleanModel.value = true
       }
-      else if (value === 'false') {
+      else if (value === 'false#' + props.question?.id) {
         booleanModel.value = false
       }
       else {

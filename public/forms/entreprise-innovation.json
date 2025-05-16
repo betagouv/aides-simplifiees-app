@@ -100,35 +100,27 @@
                   "title": "SA"
                 },
                 {
-                  "id": "autre",
+                  "id": "autre-statut-juridique",
                   "title": "Autre"
                 }
               ]
             },
             {
               "id": "type-entreprise",
-              "title": "Quel type d'entreprise êtes vous ?",
+              "title": "Etes vous dans l'un des cas suivants ?",
               "type": "radio",
               "choices": [
                 {
-                  "id": "micro-entreprise",
-                  "title": "Micro-entreprise"
-                },
-                {
                   "id": "pme",
-                  "title": "PME"
-                },
-                {
-                  "id": "micro-entreprise",
-                  "title": "Micro-entreprise"
+                  "title": "Je suis une PME"
                 },
                 {
                   "id": "profession-liberale",
-                  "title": "Profession libérale"
+                  "title": "Je suis une profession libérale"
                 },
                 {
-                  "id": "autre",
-                  "title": "Autre"
+                  "id": "autre-type-entreprise",
+                  "title": "Ni l'une, ni l'autre"
                 }
               ]
             },
@@ -164,7 +156,7 @@
                   "infobulle": "Les professions libérales exercent une activité indépendante de prestations intellectuelles, techniques ou de soins. Elles peuvent être réglementées ou non réglementées. Les professions réglementées sont soumises à des conditions d'accès (diplôme, expérience) et/ou à des conditions d'exploitation (aptitude physique, obligation de formation continue)."
                 },
                 {
-                  "id": "autre",
+                  "id": "autre-activite",
                   "title": "Aucune de ces activités"
                 }
               ]
@@ -315,21 +307,21 @@
           "questions": [
             {
               "id": "chiffre-affaires-N",
-              "title": "[Année N] Chiffre d'affaires annuel (en euros)",
+              "title": "Chiffre d'affaires annuel (en euros)",
               "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
               "type": "number",
               "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N')"
             },
             {
               "id": "bilan-total-N",
-              "title": "[Année N] Total du bilan annuel (en euros)",
+              "title": "Total du bilan annuel (en euros)",
               "description": "Indiquez le total du bilan annuel",
               "type": "number",
               "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N')"
             },
             {
               "id": "effectif-total-N",
-              "title": "[Année N] Nombre total d'employés",
+              "title": "Nombre total d'employés",
               "description": "Indiquez l'effectif total de l'entreprise",
               "type": "number",
               "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N')"
@@ -343,21 +335,21 @@
           "questions": [
             {
               "id": "chiffre-affaires-N1",
-              "title": "[Année N-1] Chiffre d'affaires annuel (en euros)",
+              "title": "Chiffre d'affaires annuel (en euros)",
               "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
               "type": "number",
               "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N1')"
             },
             {
               "id": "bilan-total-N1",
-              "title": "[Année N-1] Total du bilan annuel (en euros)",
+              "title": "Total du bilan annuel (en euros)",
               "description": "Indiquez le total du bilan annuel",
               "type": "number",
               "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N1')"
             },
             {
               "id": "effectif-total-N1",
-              "title": "[Année N-1] Nombre total d'employés",
+              "title": "Nombre total d'employés",
               "description": "Indiquez l'effectif total de l'entreprise",
               "type": "number",
               "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N1')"
@@ -370,21 +362,21 @@
           "questions": [
             {
               "id": "chiffre-affaires-N2",
-              "title": "[Année N-2] Chiffre d'affaires annuel (en euros)",
+              "title": "Chiffre d'affaires annuel (en euros)",
               "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
               "type": "number",
               "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N2')"
             },
             {
               "id": "bilan-total-N2",
-              "title": "[Année N-2] Total du bilan annuel (en euros)",
+              "title": "Total du bilan annuel (en euros)",
               "description": "Indiquez le total du bilan annuel",
               "type": "number",
               "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N2')"
             },
             {
               "id": "effectif-total-N2",
-              "title": "[Année N-2] Nombre total d'employés",
+              "title": "Nombre total d'employés",
               "description": "Indiquez l'effectif total de l'entreprise",
               "type": "number",
               "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N2')"
@@ -492,19 +484,6 @@
               ]
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "resultats-intermediaires",
-      "title": "Résultats mis à jour",
-      "pages": [
-        {
-          "id": "resultats-intermediaires-page",
-          "title": "Mise à jour de votre éligibilité",
-          "type": "intermediary-results",
-          "description": "Voici une évaluation actualisée de votre éligibilité aux dispositifs d'aide.",
-          "dispositifs": ["CIR", "CII", "JEI", "JEU", "JEC"]
         }
       ]
     },

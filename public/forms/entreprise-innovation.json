@@ -498,6 +498,19 @@
       ]
     },
     {
+      "id": "resultats-intermediaires",
+      "title": "Eligibilité des dispositifs",
+      "pages": [
+        {
+          "id": "resultats-intermediaires-page",
+          "title": "Mise à jour de votre éligibilité",
+          "type": "intermediary-results",
+          "description": "Voici une évaluation actualisée de votre éligibilité aux dispositifs d'aide.",
+          "dispositifs": ["CIR", "CII", "JEI", "JEU", "JEC"]
+        }
+      ]
+    },
+    {
       "id": "eligibilite-depenses",
       "title": "Eligibilité des dépenses de l'entreprise",
       "pages": [

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DsfrTileProps } from '@gouvminint/vue-dsfr'
+import houseSvg from '@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg'
 import { DsfrCard, DsfrTile, DsfrTiles } from '@gouvminint/vue-dsfr'
 import { Head } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
@@ -13,13 +14,19 @@ const simulationTiles: DsfrTileProps[] = [
     title: 'Déménagement & logement',
     to: '/simulateurs/demenagement-logement',
     titleTag: 'h2',
-    svgPath: '../../public/artworks/custom-pictograms/demenagement.svg',
+    svgPath: '/artworks/custom-pictograms/demenagement.svg',
+  },
+  {
+    title: 'Innovation pour les entreprises',
+    to: '/simulateurs/entreprise-innovation',
+    titleTag: 'h2',
+    svgPath: '/artworks/custom-pictograms/innovation.svg',
   },
   {
     title: 'Rénovation du logement',
     titleTag: 'h2',
     to: 'https://mesaidesreno.beta.gouv.fr/',
-    svgPath: '../../public/artworks/pictograms/buildings/house.svg',
+    svgPath: houseSvg,
   },
 ]
 </script>

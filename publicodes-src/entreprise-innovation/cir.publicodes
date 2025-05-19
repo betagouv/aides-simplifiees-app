@@ -1,0 +1,174 @@
+CIR:
+
+CIR . eligibilite:
+  par défaut: non
+  titre: Éligibilité au Crédit d'Impôt Recherche
+  valeur:
+    une de ces conditions:
+      - toutes ces conditions:
+        - immatriculationFrance
+        - toutes ces conditions:
+          - immatriculationFrance
+          - natureActivite . artisanale
+          - typeDeRevenus = "'bic'"
+        - une de ces conditions:
+          - toutes ces conditions:
+            - typeImposition = "'is'"
+            - regimeFiscalEstReel
+          - toutes ces conditions:
+            - typeImposition = "'ir'"
+            - regimeFiscalEstReel
+          - toutes ces conditions:
+            - typeImposition = "'exonere'"
+            - une de ces conditions:
+              - JEI . eligibilite
+              - categorieExoneration . repriseEntrepriseEnDifficulte
+              - categorieExonerationZoneSpecifique = "'ZFR'"
+              - categorieExonerationZoneSpecifique = "'ZFU_TE'"
+              - categorieExonerationZoneSpecifique = "'BER'"
+              - categorieExonerationZoneSpecifique = "'ZRD'"
+              - categorieExonerationZoneSpecifique = "'ZFA_DOM'"
+              - categorieExonerationZoneSpecifique = "'ZRR'"
+              - categorieExonerationZoneSpecifique = "'FRR'"
+              - categorieExonerationZoneSpecifique = "'BUD'"
+              - categorieExonerationZoneSpecifique = "'ZDP'"
+
+
+CIR . montant:
+  titre: Montant du Crédit d'Impôt Recherche
+  applicable si: CIR . eligibilite
+  valeur: CIR . totalCredit + CICo . montant
+
+CIR . totalCredit:
+  valeur:
+    somme:
+      - CIR . montantDepensesRD  # barème métropole et barème DOM
+      - CIR . montantDepensesNormalisation  # barème métropole et barème DOM
+      - CIR . montantRemboursementRD  # barème métropole uniquement
+
+CIR . montantDepensesRD:
+  variations:
+    - si: situationGeographique = "'metropole'"
+      alors: CIR . montantRDBase
+    - sinon: CIR . montantRDDOM  # TODO filtrer plus finement pour DOM
+
+CIR . montantRDBase:
+  baremeMetropole:
+    assiette: CIR . assietteRDBase
+    tranches:
+      - taux: 30%
+        plafond: 100000000 €
+      - taux: 5%
+
+CIR . montantRDDOM:
+  baremeMetropole:
+    assiette: CIR . assietteRDBase
+    tranches:
+      - taux: 50%
+        plafond: 100000000 €
+      - taux: 5%
+
+
+CIR . assietteRDBase:
+  soustraction:  # TODO vérifier par rapport à bolt : depenses  * (depenses - deductions / depenses) = depenses * ratio
+    - CIR . totalDepensesRD
+    - CIR . deductionsRD
+
+
+CIR . totalDepensesRD:
+  valeur:
+    somme:
+      - depensesRDAmortissementBiens
+      - depensesRDIndemnisationAssurance
+      - depensesRDChercheursTechniciens
+      - depensesRDRemunerationInvention
+      - depensesRDRechercheLiensDependance
+      - depensesRDRechercheSansLiensDependance
+      - remboursementsSubventionsORDC  # vérifier si à lister ici
+
+
+
+CIR . deductionsRD:
+  valeur:
+    somme:
+      - depensesRDSubventionsPubliques
+      - depensesRDDepensesConseil
+      - depensesRDDepensesTiersCir
+
+
+CIR . montantDepensesNormalisation:
+  default: 0
+# TODO: generateur d'erreurs
+#  variations:
+#    - si: situationGeographique = "metropole"
+#      alors: CIR . montantDepensesNormalisationBase
+#    - sinon: CIR . montantDepensesNormalisationDOM  # TODO filtrer plus finement pour DOM
+
+CIR . montantNormalisationBase:
+  baremeMetropole:
+    assiette: CIR . assietteNormalisationBase
+    tranches:
+      - taux: 30%
+        plafond: 100000000 €
+      - taux: 5%
+
+CIR . montantNormalisationDOM:
+  baremeMetropole:
+    assiette: CIR . assietteNormalisationBase
+    tranches:
+      - taux: 50%
+        plafond: 100000000 €
+      - taux: 5%
+
+
+CIR . assietteNormalisationBase:
+  soustraction:  # TODO vérifier par rapport à bolt : depenses  * (depenses - deductions / depenses) = depenses * ratio
+    - CIR . totalDepensesNormalisation
+    - CIR . deductionsNormalisation
+
+
+CIR . totalDepensesNormalisation:
+  valeur:
+    somme:
+      - depensesNormalisationSalaires
+      - depensesNormalisationDirigeant
+      - depensesNormalisationRemboursementSubventions  # vérifier si à lister ici
+
+
+CIR . deductionsNormalisation:
+  valeur:
+    somme:
+      - depensesNormalisationSubventions
+      - depensesNormalisationConseil
+
+
+CIR . montantRemboursement:
+  somme:
+    - CIR . montantRemboursementRD
+    - CIR . montantRemboursementNormalisation
+
+
+CIR . montantRemboursementRD:
+  bareme:
+    assiette: CIR . totalRemboursementsRD
+    tranches:
+      - taux: 30%
+        plafond: 100000000 €
+      - taux: 5%
+
+
+CIR . totalRemboursementsRD:
+  valeur: remboursementsSubventionsORDC
+
+
+CIR . montantRemboursementNormalisation:
+  bareme:
+    assiette: CIR . totalRemboursementsNormalisation
+    tranches:
+      - taux: 30%
+        plafond: 100000000 €
+      - taux: 5%
+
+CIR . totalRemboursementsNormalisation:
+  valeur: depensesNormalisationRemboursementSubventions
+

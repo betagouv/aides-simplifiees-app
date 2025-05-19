@@ -80,53 +80,6 @@
           "id": "statut-juridique",
           "questions": [
             {
-              "id": "statut-juridique",
-              "title": "Quel est le statut juridique de votre entreprise ?",
-              "type": "radio",
-              "visibleWhen": "immatriculation-france=true",
-              "choices": [
-                {
-                  "id": "micro-entreprise",
-                  "title": "Micro-entreprise/Entreprise individuelle"
-                },
-                {
-                  "id": "sarl-eurl",
-                  "title": "SARL/EURL"
-                },
-                {
-                  "id": "sas-sasu",
-                  "title": "SAS/SASU"
-                },
-                {
-                  "id": "sa",
-                  "title": "SA"
-                },
-                {
-                  "id": "autre-statut-juridique",
-                  "title": "Autre"
-                }
-              ]
-            },
-            {
-              "id": "type-entreprise",
-              "title": "Êtes-vous dans l'un des cas suivants ?",
-              "type": "radio",
-              "choices": [
-                {
-                  "id": "pme",
-                  "title": "PME"
-                },
-                {
-                  "id": "profession-liberale",
-                  "title": "Profession libérale"
-                },
-                {
-                  "id": "autre-type-entreprise",
-                  "title": "Ni l'un, ni l'autre"
-                }
-              ]
-            },
-            {
               "id": "nature-activite",
               "title": "Quelle est la nature de l'activité de votre entreprise ?",
               "description": "Sélectionnez tous les types d'activités exercés par votre entreprise (plusieurs choix possibles).",
@@ -162,12 +115,6 @@
                   "title": "Aucune de ces activités"
                 }
               ]
-            },
-            {
-              "id": "bic",
-              "title": "Votre entreprise génère-t-elle des bénéfices industriels et commerciaux (BIC) ?",
-              "type": "boolean",
-              "visibleWhen": "nature-activite.includes('artisanale')"
             },
             {
               "id": "entreprise-en-difficulte",
@@ -401,8 +348,44 @@
           ]
         },
         {
-          "id": "type-imposition",
+          "id": "imposition",
           "questions": [
+            {
+              "id": "type-de-revenus",
+              "title": "Votre entreprise génère-t-elle des bénéfices industriels et commerciaux (BIC) ou des bénéfices non commerciaux (BNC) ?",
+              "type": "radio",
+              "visibleWhen": "immatriculation-france=true",
+              "choices": [
+                {
+                  "id": "bic",
+                  "title": "Bénéfices industriels et commerciaux (BIC)"
+                },
+                {
+                  "id": "bnc",
+                  "title": "Bénéfices non commerciaux (BNC)"
+                }
+              ]
+            },
+            {
+              "id": "regime-fiscal",
+              "title": "Quel est le régime fiscal de votre entreprise ?",
+              "type": "radio",
+              "visibleWhen": "immatriculation-france=true",
+              "choices": [
+                {
+                  "id": "micro",
+                  "title": "Régime micro-entreprise"
+                },
+                {
+                  "id": "reel-simplifie",
+                  "title": "Régime réel simplifié"
+                },
+                {
+                  "id": "reel-normal",
+                  "title": "Régime réel normal"
+                }
+              ]
+            },
             {
               "id": "type-imposition",
               "title": "Quel est le régime d'imposition de votre entreprise ?",
@@ -483,10 +466,6 @@
                 {
                   "id": "frr",
                   "title": "Fond de Revitalisation Rurale (FRR)"
-                },
-                {
-                  "id": "bud",
-                  "title": "Bassin urbainn à dynamiser (BUD)"
                 },
                 {
                   "id": "bud",
@@ -689,25 +668,32 @@
               "visibleWhen": "type-depenses.includes('rd')"
             },
             {
+              "id": "regime-reel",
+              "title": "Êtes-vous soumise à un régime réel d'imposition automatiquement ou sur option (réel normal ou simplifié, BNC, BIC) ?",
+              "description": "(indispensable CICo)",
+              "type": "boolean",
+              "visibleWhen": "contrat-ORDC=true"
+            },
+            {
               "id": "respecte-criteres-ORDC",
               "title": "Le contrat respecte-t-il les critères suivants ?",
               "description": "Est conclu entre le 1er janvier 2022 et le 31 décembre 2025. Est conclu avant le début des travaux de recherche en collaboration. Précise les objectifs communs et la répartition des travaux de recherches. Fixe les modalités de partage des risques et des résultats. Prévoit la facturation des dépenses au coût de revient. Prévoit que l'ORDC supporte au moins 10% des coûts du projet. Permet à l'ORDC de publier les résultats de ses propres recherches faites dans le cadre de la collaboration avec l'entreprise",
               "type": "boolean",
-              "visibleWhen": "contrat_ordc=true"
+              "visibleWhen": "contrat-ORDC=true"
             },
             {
               "id": "depenses-ORDC",
               "title": "Montant des dépenses facturées par l'ORDC dans le cadre de ce projet de recherche collaborative",
               "default": 0,
               "type": "number",
-              "visibleWhen": "contrat_ordc=true && respecte_criteres=true"
+              "visibleWhen": "contrat-ORDC=true && respecte_criteres=true"
             },
             {
               "id": "subventions-ORDC",
               "title": "Montant des aides publiques reçues par l'entreprise en raison des opérations menées en collaboration avec un ORDC agréé (à déduire de l'assiette du CICo)",
               "default": 0,
               "type": "number",
-              "visibleWhen": "contrat_ordc=true && respecte_criteres=true"
+              "visibleWhen": "contrat-ORDC=true && respecte_criteres=true"
             },
             {
               "id": "remboursements-subventions-ORDC",

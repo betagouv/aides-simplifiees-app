@@ -1,0 +1,46 @@
+CICo:
+  titre: Crédit d'impôt Collaboratif
+
+CICo . eligibilite:
+  titre: Eligibilité au CICo
+  valeur:
+    toutes ces conditions:
+      - immatriculationFrance
+      - contratORDC
+      - une de ces conditions:
+        - natureActivite . industrielle
+        - natureActivite . commerciale
+        - natureActivite . agricole
+      - regimeFiscalEstReel
+      - une de ces conditions:
+        - typeImposition != "'exonere'"
+        - toutes ces conditions:
+            - typeImposition = "'exonere'"
+            - une de ces conditions:
+              - JEI . eligibilite
+              - categorieExoneration . repriseEntrepriseEnDifficulte
+              - categorieExonerationZoneSpecifique = "'ZFR'"
+              - categorieExonerationZoneSpecifique = "'ZFU_TE'"
+              - categorieExonerationZoneSpecifique = "'BER'"
+              - categorieExonerationZoneSpecifique = "'ZRD'"
+              - categorieExonerationZoneSpecifique = "'ZFA_DOM'"
+              - categorieExonerationZoneSpecifique = "'ZRR'"
+              - categorieExonerationZoneSpecifique = "'BUD'"
+              - categorieExonerationZoneSpecifique = "'ZDP'"
+
+
+
+CICo . montant:
+    - produit:
+        - CICo . taux
+        - soustraction: depensesORDC - subventionsORDC
+    - plafond: 6000000 €/an
+
+CICo . taux:
+  variations:
+    - si:
+        une de ces conditions:
+          - estUnePME
+          - regimeFiscal = "'micro'"
+      alors: 50%
+    - sinon: 40%

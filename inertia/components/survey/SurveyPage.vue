@@ -3,6 +3,7 @@ import type SimulateurController from '#controllers/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { usePage } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import SurveyIntermediaryResultsPage from '~/components/survey/SurveyIntermediaryResultsPage.vue'
 import SurveyQuestion from '~/components/survey/SurveyQuestion.vue'
 import { useSurveysStore } from '~/stores/surveys'
 
@@ -37,15 +38,20 @@ const visibleQuestionsInCurrentPage = computed(() => surveysStore.getVisibleQues
     >
       @todo: Add a11y text for screen readers "Page x sur y de l'étape"
     </h2> -->
-    <template
-      v-for="question in visibleQuestionsInCurrentPage"
-      :key="question.id"
-    >
-      <SurveyQuestion
-        :question="question"
-        :simulateur-slug="simulateur.slug"
-        :size="currentPage.title ? 'sm' : 'md'"
-      />
+    <template v-if="(currentPage as SurveyQuestionsPage)?.questions">
+      <template
+        v-for="question in visibleQuestionsInCurrentPage"
+        :key="question.id"
+      >
+        <SurveyQuestion
+          :question="question"
+          :simulateur-slug="simulateur.slug"
+          :size="currentPage.title ? 'sm' : 'md'"
+        />
+      </template>
+    </template>
+    <template v-else-if="(currentPage as SurveyResultsPage)?.type === 'intermediary-results'">
+      <SurveyIntermediaryResultsPage />
     </template>
   </div>
 </template>

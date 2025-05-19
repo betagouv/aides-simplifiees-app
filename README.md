@@ -121,6 +121,11 @@ Générer le script de redimensionnement d'iframe (versionné dans `config/ifram
 pnpm build:iframe-integration
 ```
 
+Générer les fichiers publicodes :
+```bash
+pnpm build:publicodes
+```
+
 ## Contribution
 
 Les contributions sont les bienvenues. Veuillez soumettre une pull request ou ouvrir une issue pour toute suggestion ou amélioration.

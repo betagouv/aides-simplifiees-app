@@ -6,6 +6,7 @@ import { renderToString } from '@vue/server-renderer'
 import { createPinia } from 'pinia'
 import { createSSRApp, h } from 'vue'
 import RouterLink from '~/components/RouterLink.vue'
+import DsfrTooltipPatch from '~/components/DsfrTooltipPatch.vue'
 import collections from '~/icon_collections'
 import { getLayout } from './shared'
 
@@ -36,6 +37,7 @@ export default function render(page: any) {
 
       // Replace RouterLink with a custom component that uses Inertia's Link
       ssrApp.component('RouterLink', RouterLink)
+      ssrApp.component('DsfrTooltip', DsfrTooltipPatch)
       return ssrApp
     },
   })

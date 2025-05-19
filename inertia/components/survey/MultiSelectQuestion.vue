@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { DsfrCheckboxSetProps } from '@gouvminint/vue-dsfr'
 import { DsfrCheckboxSet } from '@gouvminint/vue-dsfr'
-import { ref, watch } from 'vue'
+import { onMounted, ref, useTemplateRef, watch } from 'vue'
 
 const props = defineProps<{
   question: SurveyQuestion
@@ -16,7 +16,6 @@ watch(_model, (newValue) => {
     model.value = newValue
   }
 })
-
 // Convert question choices to DsfrCheckboxSet options format
 const options: DsfrCheckboxSetProps['options'] = props.question.choices
   ?.map(choice => ({
@@ -25,22 +24,61 @@ const options: DsfrCheckboxSetProps['options'] = props.question.choices
     value: choice.id,
     label: choice.title,
   })) ?? []
+
+const checkboxSet = useTemplateRef('checkboxSet')
+const tooltips = useTemplateRef('tooltips')
+onMounted(() => {
+  moveTooltips()
+})
+function moveTooltips() {
+  tooltips.value
+    ?.forEach((tooltipContainer) => {
+      if (!tooltipContainer) {
+        return
+      }
+      const id = tooltipContainer.id.replace('tooltip-', '')
+      const checkboxLabel = checkboxSet.value?.$el.querySelector(`label[for="${id}"]`)
+      // move the tooltip after the checkbox label
+      if (checkboxLabel) {
+        checkboxLabel.parentNode?.parentNode?.appendChild(tooltipContainer)
+      }
+    })
+}
 </script>
 
 <template>
   <DsfrCheckboxSet
+    ref="checkboxSet"
     v-model="_model"
     :title-id="`question-${question.id}`"
     class="custom-rich-checkbox"
     :name="question.id"
     :options="options"
   />
+  <div
+    v-for="choice in (question.choices?.filter(choice => Boolean(choice.tooltip)) as (SurveyChoice)[])"
+    :id="`tooltip-${question.id}-${choice.id}`"
+    :key="`tooltip-${question.id}-${choice.id}`"
+    ref="tooltips"
+  >
+    <DsfrTooltip
+      :content="(choice.tooltip as string)"
+    />
+  </div>
 </template>
 
 <style scoped lang="scss">
 // Custom styling for DsfrCheckboxSet, based on dsfr rich radio button
+.custom-rich-checkbox:deep(.fr-fieldset__element) {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
 .custom-rich-checkbox:deep(.fr-checkbox-group) {
+  flex: 1;
+
   label {
+    flex: 1;
     --idle: transparent;
     --hover: var(--background-default-grey-hover);
     --active: var(--background-default-grey-active);

@@ -22,8 +22,8 @@ const { isIframe } = useIframeDisplay()
       <!-- Content for both iframe and regular site -->
       <p v-if="simulateur?.slug === 'entreprise-innovation'">
         <span class="fr-text--bold">Bienvenue !</span>
-        Ce simulateur vous permet d'estimer 6 aides financières pour <strong>favoriser l'innovation de votre entreprise</strong>
-        Ce service est en construction : vos retours sont les bienvenus pour l'améliorer.
+        Ce simulateur vous permet d'estimer 6 aides financières pour <strong>favoriser l'innovation de votre entreprise</strong>.
+        <br/>Ce service est en construction : vos retours sont les bienvenus pour l'améliorer.
       </p>
       <p v-else>
         <span class="fr-text--bold">Bienvenue !</span>

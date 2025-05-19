@@ -1,5 +1,7 @@
 import Engine from 'publicodes'
 import sourceRules from '#publicodes-build/index'
+import { useSurveysStore } from '~/stores/surveys'
+
 
 export interface DispositifDetail {
   id: string
@@ -28,6 +30,19 @@ function toCamelCase(str: string): string {
   return str.replace(/[-_](\w)/g, (_, c) => c ? c.toUpperCase() : '')
 }
 
+// Utility: convert camelCase to kebab-case
+function toKebabCase(str: string): string {
+  return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
+}
+
+// Utility: convert date from YYYY-MM-DD to DD/MM/YYYY
+function convertDateToFrenchFormat(dateStr: string): string {
+  if (!dateStr || typeof dateStr !== 'string') return dateStr
+  const parts = dateStr.split('-')
+  if (parts.length !== 3) return dateStr
+  return `${parts[2]}/${parts[1]}/${parts[0]}`
+}
+
 // Automatic mapping: map survey answers to publicodes variables by casting ids
 function autoMapAnswersToPublicodesVariables(answers: Record<string, any>): Record<string, any> {
   const mapped: Record<string, any> = {}
@@ -38,15 +53,16 @@ function autoMapAnswersToPublicodesVariables(answers: Record<string, any>): Reco
 }
 
 export function useEligibilityService() {
+
   function calculateEligibility(
     surveyId: string,
     answers: Record<string, any>,
     dispositifsToEvaluate: DispositifDetail[]
   ): EligibilityResults {
     const engine = new Engine(sourceRules)
+    const surveysStore = useSurveysStore()
 
     const mappedAnswers = autoMapAnswersToPublicodesVariables(answers)
-
 
     //1. Filter out keys that don't exist in the publicodes model
     const validMappedAnswers: Record<string, any> = {}
@@ -66,24 +82,45 @@ export function useEligibilityService() {
       console.log('Missing keys in publicodes model:', missingKeys)
     }
 
+    //2. Transform values to publicodes format
+    const transformedAnswers: Record<string, any> = {}
 
-    //2. Transform boolean values to 'oui' or 'non' and wrap string values with quotes
-    Object.keys(validMappedAnswers).forEach(key => {
-      if (validMappedAnswers[key] === true) {
-        validMappedAnswers[key] = 'oui'
-      } else if (validMappedAnswers[key] === false) {
-        validMappedAnswers[key] = 'non'
-      } else if (typeof validMappedAnswers[key] === 'string') {
+    Object.entries(validMappedAnswers).forEach(([key, value]) => {
+      const question = surveysStore.findQuestionById(surveyId, toKebabCase(key))
 
-        // Wrap string values with quotes: value -> "'value'"
-        validMappedAnswers[key] = `"'${validMappedAnswers[key]}'"`
+      if (question?.type === 'checkbox' && Array.isArray(value)) {
+        // For checkbox questions, create a new entry for each possible choice
+        question.choices?.forEach(choice => {
+          const publicodesKey = `${key} . ${toCamelCase(choice.id)}`
+          transformedAnswers[publicodesKey] = value.includes(choice.id) ? 'oui' : 'non'
+        })
+      } else {
+        // For non-checkbox questions, transform the value based on its type
+        let transformedValue = value
+        if (value === true) {
+          transformedValue = 'oui'
+        } else if (value === false) {
+          transformedValue = 'non'
+        } else if (typeof value === 'string') {
+          // Convert date format if the question type is date
+          if (question?.type === 'date') {
+            transformedValue = convertDateToFrenchFormat(value)
+          } else {
+            // Wrap string values with quotes: value -> "'value'"
+            transformedValue = `"'${value}'"`
+          }
+        }
+        transformedAnswers[key] = transformedValue
       }
     })
 
+    engine.setSituation(transformedAnswers)
 
-    console.log('publicodes situation set to ', validMappedAnswers)
-    engine.setSituation(validMappedAnswers)
+    console.log("--------------------------------")
+    console.log(transformedAnswers)
+    console.log(engine.evaluate("JEU . eligibilite"))
 
+    console.log("--------------------------------")
 
     const results: EligibilityResults = {
       eligibleDispositifs: [],

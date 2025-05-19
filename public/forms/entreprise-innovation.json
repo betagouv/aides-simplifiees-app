@@ -18,6 +18,11 @@
         "description": "Le CII soutient les PME qui mènent des projets d'innovation."
       },
       {
+        "id": "CICo",
+        "title": "Crédit d'Impôt Recherche et Innovation (CICo)",
+        "description": "Le CICo permet de financer vos activités de recherche et développement."
+      },
+      {
         "id": "JEI",
         "title": "Jeune Entreprise Innovante (JEI)",
         "description": "Le statut JEI offre des exonérations fiscales et sociales aux jeunes entreprises innovantes."
@@ -172,10 +177,10 @@
               "visibleWhen": "immatriculation-france=true"
             },
             {
-              "id": "annee-de-creation",
+              "id": "date-de-creation",
               "title": "Quelle est l'année de création de votre entreprise ?",
               "description": "(indispensable CII et CICo) Indiquez l'année exacte de création",
-              "type": "number",
+              "type": "date",
               "visibleWhen": "immatriculation-france=true"
             }
           ]
@@ -195,7 +200,7 @@
               "title": "Votre entreprise exerce-t-elle une activité nouvelle ?",
               "description": "(indispensable JEI, JEU, JEC) Une entreprise n'est pas considérée comme nouvelle si elle reprend une activité existante avec des liens évidents avec une autre entreprise, comme la continuité des contrats, des moyens (locaux, personnel, matériel) ou de la clientèle. De même, si une entreprise récemment créée est simplement une extension d'une activité déjà en place sans réelle autonomie, elle ne sera pas reconnue comme nouvelle. Enfin, dans le cas de restructurations (fusion, scission, apport partiel d'actif), si l'activité, les liens ou les ressources sont en partie transférés, l'entreprise ne peut pas non plus être qualifiée de nouvelle.",
               "type": "boolean",
-              "visibleWhen": "immatriculation-france=true && date-creation >= 2014"
+              "visibleWhen": "immatriculation-france=true"
             },
             {
               "id": "dirigeants-ou-actionnaires-universitaire",
@@ -231,7 +236,7 @@
               "title": "Votre entreprise valorise-t-elle des travaux de recherche ?",
               "description": "Votre entreprise a-t-elle pour activité principale la valorisation de travaux de recherches auxquels les dirigeants ou associés ont participé au sein d'un établissement d'enseignement supérieur (au cours de leur scolarité ou dans l'exercice de leurs fonctions) ?",
               "type": "boolean",
-              "visibleWhen": "activite-nouvelle=true && (dirigeants.includes('etudiant') || dirigeants.includes('diplome') || dirigeants.includes('enseignant'))"
+              "visibleWhen": "activite-nouvelle=true && (dirigeants-ou-actionnaires-universitaire.includes('etudiant') || dirigeants-ou-actionnaires-universitaire.includes('diplome-doctorat') || dirigeants-ou-actionnaires-universitaire.includes('diplome-master') || dirigeants-ou-actionnaires-universitaire.includes('enseignant'))"
             },
             {
               "id": "contrat-valorisation",
@@ -448,7 +453,7 @@
               "id": "categorie-exoneration-zone-specifique",
               "title": "Catégorie d'exonération (plusieurs choix possibles)",
               "description": "Si vous êtes exonéré d'impôt, votre entreprise correspond-elle à l'une des catégories suivantes ?(Indispensable CICo, CII et CIR, si entreprise exonérée d'impôt)",
-              "type": "checkbox",
+              "type": "radio",
               "visibleWhen": "categorie-exoneration.includes('zone-specifique')",
               "choices": [
                 {
@@ -506,7 +511,7 @@
           "title": "Mise à jour de votre éligibilité",
           "type": "intermediary-results",
           "description": "Voici une évaluation actualisée de votre éligibilité aux dispositifs d'aide.",
-          "dispositifs": ["CIR", "CII", "JEI", "JEU", "JEC"]
+          "dispositifs": ["CIR", "CII", "CICo", "JEI", "JEU", "JEC"]
         }
       ]
     },
@@ -556,10 +561,10 @@
           ]
         },
         {
-          "id":"page-pourcentage-rd",
+          "id":"page-pourcentage-RD",
           "questions": [
             {
-              "id": "pourcentage-rd",
+              "id": "pourcentage-RD",
               "title": "Quel est le pourcentage des dépenses de votre entreprise en R&D pour la dernière année comptable ?",
               "description": "Veuillez exprimer le pourcentage en nombre entier. Exemple : '10' pour 10%",
               "default": 0,
@@ -568,7 +573,6 @@
             }
           ]
         },
-
         {
           "id": "rd-page",
           "title": "Détail par nature des dépenses éligibles",

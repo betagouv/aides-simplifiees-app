@@ -234,11 +234,10 @@ JEU . eligibilite:
     - immatriculationFrance
     - activiteNouvelle
     - Jeune Entreprise . conditionAge
-    - dirigeantsOuActionnairesUniversitaire != "'aucune'"
+    - dirigeantsOuActionnairesUniversitaire . aucune = non
     - valorisationRecherche
     - contratValorisation
     - estPetiteOuMoyenneEntreprise
-
 
 
 JEC:
@@ -249,25 +248,33 @@ JEC . eligibilite:
   valeur:
     toutes ces conditions:
       - immatriculationFrance
-      - activiteNouvelle = oui
+      - activiteNouvelle
       - JEC . conditionAge
-      - capitalDetenu != "'aucune'"
+      - capitalDetenu . aucune = non
       - estPetiteOuMoyenneEntreprise
       - JEC . critereRD
-      - effectifAugmente = oui
-      - depensesStables = oui
+      - effectifAugmente
+      - depensesStables
 
 JEC . conditionAge:
   titre: L'entreprise est suffisamment jeune pour bénéficier des avantages du statut JEC
   valeur: ageEntreprise < 8 an
 
+#JEC . critereRD:
+#  titre: Pourcentage de dépenses de R&D suffisant mais inférieur au seuil JEI
+#  valeur:
+#    une de ces conditions:
+#      - est non défini: pourcentageRD
+#      - toutes ces conditions:
+#        - est défini: pourcentageRD
+#        - pourcentageRD >= 5
+#        - pourcentageRD < 20 # Erreur dans Bolt
+
 JEC . critereRD:
-  titre: Pourcentage de dépenses de R&D suffisant mais inférieur au seuil JEI
   valeur:
     toutes ces conditions:
       - pourcentageRD >= 5
       - pourcentageRD < 20 # Erreur dans Bolt
-
 
 # Attention : erreur dans Bolt
 CICo . eligibilite:
@@ -316,15 +323,24 @@ JEI:
   titre: JEI
 
 JEI . eligibilite:
+  par défaut: non
   titre: eligibilite au statut JEI
   valeur:
     toutes ces conditions:
       - immatriculationFrance
       - activiteNouvelle
       - Jeune Entreprise . conditionAge
-      - capitalDetenu != "'aucune'"
+      - pourcentageRDCondition
       - estPetiteOuMoyenneEntreprise
-      - pourcentageRD >= 15
+      - capitalDetenu . aucune = non
+
+pourcentageRDCondition:
+  valeur:
+    une de ces conditions:
+      - est non défini: pourcentageRD
+      - toutes ces conditions:
+        - est défini: pourcentageRD
+        - pourcentageRD >= 15
 
 
 Jeune Entreprise:
@@ -333,7 +349,7 @@ Jeune Entreprise . conditionAge:
   titre: l'entreprise est elle suffisamment jeune pour bénéficier des avantages du statut JEI
   valeur:
     variations:
-      - si: anneeDeCreation >= 2023
+      - si: dateDeCreation >= "2023/01/01"
         alors:
           variations:
           - si: ageEntreprise >= 8 an
@@ -370,12 +386,12 @@ exoneration:
   valeur:
     toutes ces conditions:
       - entrepriseEnDifficulte = non
-      - categorieExonerationZoneSpecifique = "'aucune'"
+      - categorieExoneration . aucune = non
 
 ageEntreprise:
   durée:
     unité: an
-    depuis: anneeDeCreation
+    depuis: dateDeCreation
 
 estPetiteOuMoyenneEntreprise:
   valeur:
@@ -416,9 +432,9 @@ CII . depassementFinancierN2:
 CII . activiteEligible:
   par défaut: non
   une de ces conditions:
-    - natureActivite = "'industrielle'"
-    - natureActivite = "'commerciale'"
-    - natureActivite = "'agricole'"
+    - natureActivite . industrielle
+    - natureActivite . commerciale
+    - natureActivite . agricole
     - typeEntreprise = "'profession libérale'"
 
 CII . depassementConsecutif:
@@ -465,12 +481,16 @@ typeEntreprise:
     - "'autre-type-entreprise'"
 
 natureActivite:
-  une possibilité:
-    - "'industrielle'"
-    - "'commerciale'"
-    - "'agricole'"
-    - "'artisanale'"
-    - "'autre-activite'"
+natureActivite . industrielle:
+  par défaut: non
+natureActivite . commerciale:
+  par défaut: non
+natureActivite . agricole:
+  par défaut: non
+natureActivite . artisanale:
+  par défaut: non
+natureActivite . autreActivite:
+  par défaut: non
 
 bic:
   par défaut: oui
@@ -480,20 +500,24 @@ entrepriseEnDifficulte:
   par défaut: non
 
 
-anneeDeCreation:
-  par défaut: 01/1900
+dateDeCreation:
+  par défaut: 01/01/1900
 
 activiteNouvelle:
   par défaut: non
 
 
 dirigeantsOuActionnairesUniversitaire:
-  une possibilité:
-    - "'etudiant'"
-    - "'diplome-master'"
-    - "'diplome-doctorat'"
-    - "'enseignant'"
-    - "'aucune'"
+dirigeantsOuActionnairesUniversitaire . etudiant:
+  par défaut: non
+dirigeantsOuActionnairesUniversitaire . diplomeMaster:
+  par défaut: non
+dirigeantsOuActionnairesUniversitaire . diplomeDoctorat:
+  par défaut: non
+dirigeantsOuActionnairesUniversitaire . enseignant:
+  par défaut: non
+dirigeantsOuActionnairesUniversitaire . aucune:
+  par défaut: non
 
 
 valorisationRecherche:
@@ -504,13 +528,19 @@ contratValorisation:
 
 
 capitalDetenu:
-  une possibilité:
-    - "'personnes-physiques'"
-    - "'autre-jei'"
-    - "'association-fondation'"
-    - "'etablissement-public'"
-    - "'societe-investissement'"
-    - "'aucune'"
+capitalDetenu . personnesPhysiques:
+  par défaut: non
+capitalDetenu . autreJei:
+  par défaut: non
+capitalDetenu . associationFondation:
+  par défaut: non
+capitalDetenu . etablissementPublic:
+  par défaut: non
+capitalDetenu . societeInvestissement:
+  par défaut: non
+capitalDetenu . aucune:
+  par défaut: non
+
 
 
 chiffreAffairesN:
@@ -578,38 +608,45 @@ typeImposition:
 
 
 categorieExoneration:
-  une possibilité:
-    - "'jei'"
-    - "'reprise-entreprise-en-difficulte'"
-    - "'zone-specifique'"
-    - "'aucune'"
+categorieExoneration . jei:
+  par défaut: non
+categorieExoneration . repriseEntrepriseEnDifficulte:
+  par défaut: non
+categorieExoneration . zoneSpecifique:
+  par défaut: non
+categorieExoneration . aucune:
+  par défaut: non
 
 
 categorieExonerationZoneSpecifique:
-  une possibilité:
-    - "'aucune'"
-    - "'ZFR'"
-    - "'ZFU_TE'"
-    - "'BER'"
-    - "'ZRD'"
-    - "'ZFA_DOM'"
-    - "'ZRR'"
-    - "'FRR'"
-    - "'BUD'"
-    - "'ZDP'"
+categorieExonerationZoneSpecifique . zfr:
+  par défaut: non
+categorieExonerationZoneSpecifique . zfuTe:
+  par défaut: non
+categorieExonerationZoneSpecifique . ber:
+  par défaut: non
+categorieExonerationZoneSpecifique . zrd:
+  par défaut: non
+categorieExonerationZoneSpecifique . zfo:
+  par défaut: non
+categorieExonerationZoneSpecifique . zrr:
+  par défaut: non
+categorieExonerationZoneSpecifique . frr:
+  par défaut: non
+categorieExonerationZoneSpecifique . bud:
+  par défaut: non
+categorieExonerationZoneSpecifique . zdp:
+  par défaut: non
 
 pourcentageRD:
-  par défaut: 0
 
 effectifAugmente:
   titre: L'effectif de l'entreprise est en augmentation
   question: L'effectif de votre entreprise a-t-il augmenté au cours des exercices précédents ?
-  par défaut: non
 
 depensesStables:
   titre: Les dépenses de l'entreprise sont stables
   question: Les dépenses de votre entreprise sont-elles restées stables au cours des exercices précédents ?
-  par défaut: non
 
 
 #### Dépenses pour calcul des montant CIR, CII, CICo
@@ -762,3 +799,33 @@ localisation:
     - "'France'"
     - "'UE'"
     - "'EEE'"
+
+chiffreAffairesSelector:
+chiffreAffairesSelector . yearN:
+  par défaut: non
+chiffreAffairesSelector . yearN1:
+  par défaut: non
+chiffreAffairesSelector . yearN2:
+  par défaut: non
+chiffreAffairesSelector . noBilan:
+  par défaut: non
+
+typeDepenses:
+typeDepenses . rd:
+  par défaut: non
+typeDepenses . normalisation:
+  par défaut: non
+typeDepenses . prototype:
+  par défaut: non
+
+performancesSuperieures:
+performancesSuperieures . techniques:
+  par défaut: non
+performancesSuperieures . eco:
+  par défaut: non
+performancesSuperieures . ergonomiques:
+  par défaut: non
+performancesSuperieures . fonctionnalites:
+  par défaut: non
+performancesSuperieures . aucune:
+  par défaut: non

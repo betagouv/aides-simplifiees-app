@@ -35,6 +35,7 @@ const stepTitles = computed(() => {
 })
 
 const pageContainer = ref<HTMLElement | null>(null)
+const formContainer = ref<HTMLElement | null>(null)
 const surveyPageChangeAnnouncer = ref<HTMLElement | null>(null)
 
 /**
@@ -43,7 +44,12 @@ const surveyPageChangeAnnouncer = ref<HTMLElement | null>(null)
  */
 function focusRenderedSurveyPage() {
   nextTick(() => {
+    formContainer.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
     if (pageContainer.value) {
+      // Scroll to the top of the survey page
       // Focus on the page container for tab navigation
       pageContainer.value.focus()
     }
@@ -118,7 +124,9 @@ const showFinishBtn = computed(() => isLastPage.value && areAllRequiredQuestions
 </script>
 
 <template>
-  <div>
+  <div
+    ref="formContainer"
+  >
     <!-- Live region for announcing survey page changes to screen readers -->
     <div
       ref="surveyPageChangeAnnouncer"

@@ -409,6 +409,34 @@ export const useSurveysStore = defineStore(
       return groupedQuestions
     }
 
+    function getGroupedVisibleQuestions(simulateurId: string): QuestionGroup[] {
+      const steps = getAllSteps(simulateurId)
+      const groupedQuestions = steps
+        .map((step) => {
+          const questions = step.pages
+            .flatMap((page) => {
+              return (page as SurveyQuestionsPage)
+                .questions
+                ?.map((question) => {
+                  return {
+                    id: question.id,
+                    title: question.title,
+                    answer: getAnswer(simulateurId, question.id),
+                    visible: isQuestionVisible(simulateurId, question.id),
+                  }
+                })
+                ?.filter((question) => {
+                  return question.visible
+                }) ?? []
+            })
+          return {
+            title: step.title,
+            questions,
+          }
+        })
+      return groupedQuestions
+    }
+
     function getVisibleQuestions(simulateurId: string): SurveyQuestion[] {
       const questions = getQuestions(simulateurId)
       const visibleQuestions = questions
@@ -656,6 +684,7 @@ export const useSurveysStore = defineStore(
       isFirstPage,
       isLastPage,
       getGroupedQuestions,
+      getGroupedVisibleQuestions,
       isQuestionInCurrentPage,
       resetSurvey,
       setFirstPage,

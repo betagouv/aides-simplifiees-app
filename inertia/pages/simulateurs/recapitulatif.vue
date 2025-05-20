@@ -19,7 +19,7 @@ const simulateurTitle = simulateur.title || simulateur.slug
 const surveysStore = useSurveysStore()
 
 surveysStore.loadSchema(simulateur.slug)
-const groupedQuestions = computed(() => surveysStore.getGroupedQuestions(simulateur.slug))
+const groupedQuestions = computed(() => surveysStore.getGroupedVisibleQuestions(simulateur.slug))
 const currentStepIndex = computed(() => surveysStore.getCurrentStepIndex(simulateur.slug))
 const activeAccordion = ref<number | undefined>(currentStepIndex.value ?? undefined)
 

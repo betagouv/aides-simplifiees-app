@@ -8,6 +8,7 @@ defineProps<{
     pages: number
     notions: number
     aides: number
+    simulateurs: number
   }
 }>()
 </script>
@@ -56,6 +57,17 @@ defineProps<{
             description="Recense les aides disponibles"
             link="/admin/aides"
             icon-class="fr-icon-hand-coin-line"
+          />
+        </div>
+      </div>
+
+      <div class="fr-grid-row fr-grid-row--gutters fr-mt-4w">
+        <div class="fr-col-12 fr-col-md-4">
+          <DsfrCard
+            title="Simulateurs"
+            description="Gère les simulateurs et leurs paramètres"
+            link="/admin/simulateurs"
+            icon-class="fr-icon-calculator-line"
           />
         </div>
       </div>

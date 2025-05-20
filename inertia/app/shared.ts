@@ -5,9 +5,10 @@ export function getLayout(uri: string) {
   let layout = DefaultLayout
   if (
     uri !== '/simulateurs/index'
+    && uri !== '/admin/simulateurs/index'
     && (
-      uri.match(/\/simulateurs\/[^/]+|\/simulateur-notion/)
-      || uri.match(/\/aides\/resultats-aide/)
+      uri.match(/^\/simulateurs\/[^/]+|\/simulateur-notion/)
+      || uri.match(/^\/aides\/resultats-aide/)
     )
   ) {
     layout = UserSimulationLayoutfrom

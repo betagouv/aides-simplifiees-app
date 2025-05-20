@@ -12,6 +12,7 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createSSRApp, h } from 'vue'
 import VueMatomo from 'vue-matomo'
 import RouterLink from '~/components/RouterLink.vue'
+import DsfrTooltipPatch from '~/components/DsfrTooltipPatch.vue'
 import collections from '~/icon_collections'
 import { getLayout } from './shared'
 import '@gouvfr/dsfr/dist/core/core.main.min.css'
@@ -71,8 +72,8 @@ createInertiaApp({
         siteId: matomoSiteId,
       })
 
-      if(import.meta.env.MODE === "production") {
-        ;(window as any)._paq.push(['setCookieSameSite', 'None']);
+      if (import.meta.env.MODE === 'production') {
+        ;(window as any)._paq.push(['setCookieSameSite', 'None'])
       }
     }
 
@@ -83,6 +84,7 @@ createInertiaApp({
 
     // Replace RouterLink with a custom component that uses Inertia's Link
     app.component('RouterLink', RouterLink)
+    app.component('DsfrTooltip', DsfrTooltipPatch)
     app.mount(el)
   },
 })

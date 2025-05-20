@@ -34,9 +34,17 @@ export default class SimulateurSeeder extends BaseSeeder {
 
     // Choix pour la question "statut-professionnel"
     await statutQuestion.related('choices').createMany([
-      { slug: 'etudiant', title: 'En études ou en alternance' },
+      {
+        slug: 'etudiant',
+        title: 'En études ou en alternance',
+        tooltip: 'Cette option concerne les personnes inscrites dans un établissement d\'enseignement supérieur ou secondaire',
+      },
       { slug: 'actif', title: 'Salarié(e) ou Indépendant(e)' },
-      { slug: 'chomeur', title: 'Inscrit(e) comme demandeur d\'emploi' },
+      {
+        slug: 'chomeur',
+        title: 'Inscrit(e) comme demandeur d\'emploi',
+        tooltip: 'Vous devez être inscrit à Pôle Emploi pour accéder à certaines aides spécifiques',
+      },
       { slug: 'retraite', title: 'Retraité(e)' },
       { slug: 'inactif', title: 'Autre' },
     ])
@@ -81,11 +89,16 @@ export default class SimulateurSeeder extends BaseSeeder {
 
     // Choix pour la question "situation-logement"
     await situationLogementQuestion.related('choices').createMany([
-      { slug: 'locataire', title: 'Locataire (figurant sur le bail, en foyer ou en résidence)' },
+      {
+        slug: 'locataire',
+        title: 'Locataire (figurant sur le bail, en foyer ou en résidence)',
+        tooltip: 'Vous devez obligatoirement être signataire du bail de location pour accéder à la plupart des aides',
+      },
       { slug: 'proprietaire', title: 'Propriétaire ou en location-accession' },
       {
         slug: 'heberge',
         title: 'Hébergé(e) chez vos parents, un particulier ou en logement de fonction',
+        tooltip: 'Vous ne payez pas de loyer ou vous n\'êtes pas signataire du bail',
       },
       { slug: 'sans-domicile', title: 'Sans domicile stable' },
     ])
@@ -100,8 +113,16 @@ export default class SimulateurSeeder extends BaseSeeder {
     // Choix pour la question "type-logement"
     await typeLogementQuestion.related('choices').createMany([
       { slug: 'logement-non-meuble', title: 'Logement non meublé' },
-      { slug: 'logement-meuble', title: 'Logement meublé' },
-      { slug: 'logement-foyer', title: 'Foyer (résidence CROUS, etc.) ou logement conventionné' },
+      {
+        slug: 'logement-meuble',
+        title: 'Logement meublé',
+        tooltip: 'Un logement meublé doit contenir tous les équipements nécessaires à la vie quotidienne',
+      },
+      {
+        slug: 'logement-foyer',
+        title: 'Foyer (résidence CROUS, etc.) ou logement conventionné',
+        tooltip: 'Les résidences CROUS et autres logements conventionnés peuvent donner accès à des aides spécifiques',
+      },
       { slug: 'logement-chambre', title: 'Chambre chez un particulier' },
     ])
 
@@ -123,27 +144,29 @@ export default class SimulateurSeeder extends BaseSeeder {
 
     // Choix pour la question "type-revenus"
     await typeRevenusQuestion.related('choices').createMany([
-      { slug: 'revenus-activite', title: 'Revenus d\'activité (salaires, primes)' },
-      { slug: 'revenus-chomage', title: 'Chômage' },
-      { slug: 'revenus-bourses', title: 'Bourses' },
-      { slug: 'revenus-entreprise', title: 'Revenus professionnels non salariés' },
+      {
+        slug: 'revenus-activite',
+        title: 'Revenus d\'activité (salaires, primes)',
+        tooltip: 'Incluez tous les revenus liés à votre activité professionnelle : salaires, primes, indemnités de fin de contrat, etc.',
+      },
+      {
+        slug: 'revenus-chomage',
+        title: 'Chômage',
+        tooltip: 'ARE (Allocation d\'aide au Retour à l\'Emploi) ou ASS (Allocation de Solidarité Spécifique)',
+      },
+      {
+        slug: 'revenus-bourses',
+        title: 'Bourses',
+        tooltip: 'Bourses sur critères sociaux, bourses au mérite, aides à la mobilité, etc.',
+      },
+      {
+        slug: 'revenus-entreprise',
+        title: 'Revenus professionnels non salariés',
+        tooltip: 'Revenus d\'activité indépendante, micro-entreprise, profession libérale, etc.',
+      },
       { slug: 'revenus-parents', title: 'Ressources des parents' },
       { slug: 'aucun-autres-revenus', title: 'Aucun autre revenu à déclarer' },
     ])
-
-    // Question de confirmation finale
-    const confirmationQuestion = await revenusStep.related('questions').create({
-      slug: 'confirmation-end',
-      title: 'Voulez-vous confirmer ces informations ?',
-      description:
-        'En poursuivant, vous affirmez être conscients que les informations d\'eligibilité sont données à titre indicatif et ne sont pas contractuelles.',
-      type: 'checkbox',
-    })
-
-    // Choix pour la question "confirmation-end"
-    await confirmationQuestion
-      .related('choices')
-      .createMany([{ slug: 'confirmation-end-oui', title: 'Oui' }])
 
     // Générer le builtJson
     await simulateurService.generateBuiltJson(simulateur.id)

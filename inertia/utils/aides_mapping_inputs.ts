@@ -82,11 +82,6 @@ export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifie
     dispatch: dispatchEtudiantMobilite,
     period: 'MONTH',
   },
-  'loyer-difficile-payer': {
-    // true
-    // TODO: link to APL calculation?
-    exclude: true,
-  },
   'confirmation-end': {
     // end of survey
     exclude: true,

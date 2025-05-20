@@ -11,7 +11,14 @@ const props = defineProps<{
  */
 const numberModel = defineModel<number | undefined>()
 
-if (props.question.default !== undefined) {
+/**
+ * If the question has a default value and the model is undefined,
+ * we set the model to the default value
+ */
+if (
+  props.question.default !== undefined
+  && numberModel.value === undefined
+) {
   numberModel.value = Number(props.question.default)
 }
 

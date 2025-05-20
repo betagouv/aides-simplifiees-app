@@ -1,0 +1,18 @@
+JEI:
+  titre: JEI
+
+JEI . eligibilite:
+  titre: eligibilite au statut JEI
+  valeur:
+    toutes ces conditions:
+      - immatriculationFrance
+      - estUnePME
+      - Jeune Entreprise . conditionAge
+      - JEI . pourcentageRDCondition
+      - capitalDetenu . aucune = non
+      - activiteNouvelle
+
+JEI . pourcentageRDCondition:
+  valeur:
+    toutes ces conditions:
+      - pourcentageRD >= 20

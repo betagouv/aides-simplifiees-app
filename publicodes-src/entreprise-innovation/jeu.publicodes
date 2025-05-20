@@ -1,0 +1,15 @@
+JEU:
+  titre: Jeune entreprise Universitaire
+
+JEU . eligibilite:
+  titre: Éligibilité au statut JEU
+  toutes ces conditions:
+    - immatriculationFrance
+    - estUnePME
+    - Jeune Entreprise . conditionAge
+    - dirigeantsOuActionnairesUniversitaire . aucune = non
+    - capitalDetenu . aucune = non
+    - valorisationRecherche
+    - contratValorisation
+    - activiteNouvelle
+

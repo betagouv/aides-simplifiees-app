@@ -663,6 +663,7 @@ export const useSurveysStore = defineStore(
       offComplete,
       tryComplete,
       isQuestionVisible,
+      findQuestionById,
     }
   },
   {

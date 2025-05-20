@@ -118,8 +118,12 @@ export function useEligibilityService() {
 
     console.log("--------------------------------")
     console.log(transformedAnswers)
-    console.log(engine.evaluate("JEU . eligibilite"))
-
+    console.log(engine.evaluate("JEI . eligibilite"))
+    console.log(engine.evaluate("JEI . pourcentageRDCondition"))
+    console.log(engine.evaluate("estUnePME"))
+    console.log(engine.evaluate("Jeune Entreprise . conditionAge"))
+    console.log(engine.evaluate("activiteNouvelle"))
+    console.log(engine.evaluate("capitalDetenu . aucune = non").nodeValue)
     console.log("--------------------------------")
 
     const results: EligibilityResults = {

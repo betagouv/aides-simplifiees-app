@@ -1,23 +1,22 @@
 CIR:
 
 CIR . eligibilite:
-  par défaut: non
   titre: Éligibilité au Crédit d'Impôt Recherche
   valeur:
     une de ces conditions:
       - toutes ces conditions:
         - immatriculationFrance
-        - toutes ces conditions:
-          - immatriculationFrance
-          - natureActivite . artisanale
-          - typeDeRevenus = "'bic'"
+        - une de ces conditions:
+          - natureActivite . industrielle
+          - natureActivite . commerciale
+          - natureActivite . agricole
         - une de ces conditions:
           - toutes ces conditions:
             - typeImposition = "'is'"
             - regimeFiscalEstReel
           - toutes ces conditions:
-            - typeImposition = "'ir'"
-            - regimeFiscalEstReel
+              - typeImposition = "'ir'"
+              - regimeFiscalEstReel
           - toutes ces conditions:
             - typeImposition = "'exonere'"
             - une de ces conditions:
@@ -32,6 +31,13 @@ CIR . eligibilite:
               - categorieExonerationZoneSpecifique = "'FRR'"
               - categorieExonerationZoneSpecifique = "'BUD'"
               - categorieExonerationZoneSpecifique = "'ZDP'"
+      - toutes ces conditions:
+        - natureActivite . artisanale
+        - regimeFiscalEstReel
+        - typeDeRevenus = "'bic'"
+
+
+
 
 
 CIR . montant:

@@ -2,7 +2,6 @@ JEI:
   titre: JEI
 
 JEI . eligibilite:
-  par défaut: non
   titre: eligibilite au statut JEI
   valeur:
     toutes ces conditions:
@@ -13,15 +12,7 @@ JEI . eligibilite:
       - capitalDetenu . aucune = non
       - activiteNouvelle
 
-#JEI . pourcentageRDCondition:
-#  valeur:
-#    une de ces conditions:
-#      - est non défini: pourcentageRD
-#      - toutes ces conditions:
-#        - est défini: pourcentageRD
-#        - pourcentageRD >= 20
-
-
-
 JEI . pourcentageRDCondition:
-  valeur: pourcentageRD >= 20
+  valeur:
+    toutes ces conditions:
+      - pourcentageRD >= 20

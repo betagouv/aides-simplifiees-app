@@ -546,7 +546,6 @@
               "id": "pourcentage-RD",
               "title": "Quel est le pourcentage des dépenses de votre entreprise en R&D pour la dernière année comptable ?",
               "description": "Veuillez exprimer le pourcentage en nombre entier. Exemple : '10' pour 10%",
-              "default": 0,
               "type": "number",
               "visibleWhen": "type-depenses.includes('rd')"
             }

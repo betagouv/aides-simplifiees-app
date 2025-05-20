@@ -204,12 +204,6 @@
           "visibleWhen": "situation-logement=locataire"
         },
         {
-          "id": "loyer-difficile-payer",
-          "title": "Rencontrez-vous des difficultés importantes pour accéder à un logement ou payer votre loyer ?",
-          "type": "boolean",
-          "visibleWhen": "situation-logement=locataire"
-        },
-        {
           "id": "primo-accedant",
           "title": "Êtes-vous un primo-accédant ?",
           "type": "boolean",
@@ -344,7 +338,6 @@
         "nombre-personnes-logement": 1,
         "loyer-montant-mensuel": 700,
         "loyer-montant-charges": 100,
-        "loyer-difficile-payer": true,
         "type-revenus": [
           "aucun-autres-revenus"
         ],
@@ -392,7 +385,6 @@
         "nombre-personnes-logement": 2,
         "loyer-montant-mensuel": 600,
         "loyer-montant-charges": 70,
-        "loyer-difficile-payer": true,
         "type-revenus": [
           "revenus-activite"
         ],
@@ -442,7 +434,6 @@
         "nombre-personnes-logement": 1,
         "loyer-montant-mensuel": 900,
         "loyer-montant-charges": 150,
-        "loyer-difficile-payer": true,
         "type-revenus": [
           "revenus-activite",
           "revenus-entreprise"
@@ -491,7 +482,6 @@
         "nombre-personnes-logement": 1,
         "loyer-montant-mensuel": 1000,
         "loyer-montant-charges": 100,
-        "loyer-difficile-payer": true,
         "type-revenus": [
           "revenus-activite"
         ],
@@ -538,7 +528,6 @@
         "nombre-personnes-logement": 2,
         "loyer-montant-mensuel": 700,
         "loyer-montant-charges": 70,
-        "loyer-difficile-payer": true,
         "type-revenus": [
           "revenus-activite"
         ],
@@ -625,7 +614,6 @@
         "nombre-personnes-logement": 4,
         "loyer-montant-mensuel": 1800,
         "loyer-montant-charges": 160,
-        "loyer-difficile-payer": true,
         "type-revenus": [
           "revenus-chomage"
         ],

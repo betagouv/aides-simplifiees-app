@@ -120,5 +120,13 @@ router
     router.get('/admin/aides/:id/edit', [AdminController, 'editAide']).as('admin.aides.edit')
     router.post('/admin/aides/:id', [AdminController, 'updateAide']).as('admin.aides.update')
     router.delete('/admin/aides/:id', [AdminController, 'deleteAide']).as('admin.aides.delete')
+
+    // CRUD pour les Simulateurs
+    router.get('/admin/simulateurs', [AdminController, 'listSimulateurs']).as('admin.simulateurs.index')
+    router.get('/admin/simulateurs/create', [AdminController, 'createSimulateur']).as('admin.simulateurs.create')
+    router.post('/admin/simulateurs', [AdminController, 'storeSimulateur']).as('admin.simulateurs.store')
+    router.get('/admin/simulateurs/:id/edit', [AdminController, 'editSimulateur']).as('admin.simulateurs.edit')
+    router.post('/admin/simulateurs/:id', [AdminController, 'updateSimulateur']).as('admin.simulateurs.update')
+    router.delete('/admin/simulateurs/:id', [AdminController, 'deleteSimulateur']).as('admin.simulateurs.delete')
   })
   .middleware([middleware.admin()])

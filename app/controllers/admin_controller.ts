@@ -3,15 +3,17 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Aide from '#models/aide'
 import Notion from '#models/notion'
 import Page from '#models/page'
+import Simulateur from '#models/simulateur'
 import string from '@adonisjs/core/helpers/string'
 
 export default class AdminController {
   // Dashboard d'administration
   public async dashboard({ inertia }: HttpContext) {
-    const [pagesCount, notionsCount, aidesCount] = await Promise.all([
+    const [pagesCount, notionsCount, aidesCount, simulateursCount] = await Promise.all([
       Page.query().count('* as total'),
       Notion.query().count('* as total'),
       Aide.query().count('* as total'),
+      Simulateur.query().count('* as total'),
     ])
 
     return inertia.render('admin/dashboard', {
@@ -19,6 +21,7 @@ export default class AdminController {
         pages: (pagesCount[0] as any).total,
         notions: (notionsCount[0] as any).total,
         aides: (aidesCount[0] as any).total,
+        simulateurs: (simulateursCount[0] as any).total,
       },
     })
   }
@@ -222,5 +225,77 @@ export default class AdminController {
     await aide.delete()
 
     return response.redirect().toRoute('admin.aides.index')
+  }
+
+  // CRUD pour les Simulateurs
+  public async listSimulateurs({ inertia }: HttpContext) {
+    const simulateurs = await Simulateur.all()
+
+    return inertia.render('admin/simulateurs/index', { simulateurs })
+  }
+
+  public async createSimulateur({ inertia }: HttpContext) {
+    return inertia.render('admin/simulateurs/create')
+  }
+
+  public async storeSimulateur({ request, response }: HttpContext) {
+    const data = request.only([
+      'title',
+      'slug',
+      'description',
+      'shortTitle',
+      'pictogramPath',
+      'status',
+    ])
+
+    await Simulateur.create({
+      ...data,
+      builtJson: JSON.stringify({}),
+    })
+
+    return response.redirect().toRoute('admin.simulateurs.index')
+  }
+
+  public async editSimulateur({ params, inertia, response }: HttpContext) {
+    const simulateur = await Simulateur.find(params.id)
+
+    if (!simulateur) {
+      return response.status(404).send('Simulateur non trouvé')
+    }
+
+    return inertia.render('admin/simulateurs/edit', { simulateur })
+  }
+
+  public async updateSimulateur({ params, request, response }: HttpContext) {
+    const simulateur = await Simulateur.find(params.id)
+
+    if (!simulateur) {
+      return response.status(404).send('Simulateur non trouvé')
+    }
+
+    const data = request.only([
+      'title',
+      'description',
+      'shortTitle',
+      'pictogramPath',
+      'status',
+    ])
+
+    simulateur.merge(data)
+    await simulateur.save()
+
+    return response.redirect().toRoute('admin.simulateurs.index')
+  }
+
+  public async deleteSimulateur({ params, response }: HttpContext) {
+    const simulateur = await Simulateur.find(params.id)
+
+    if (!simulateur) {
+      return response.status(404).send('Simulateur non trouvé')
+    }
+
+    await simulateur.delete()
+
+    return response.redirect().toRoute('admin.simulateurs.index')
   }
 }

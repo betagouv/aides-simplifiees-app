@@ -131,20 +131,6 @@ export default class SimulateurSeeder extends BaseSeeder {
       { slug: 'aucun-autres-revenus', title: 'Aucun autre revenu à déclarer' },
     ])
 
-    // Question de confirmation finale
-    const confirmationQuestion = await revenusStep.related('questions').create({
-      slug: 'confirmation-end',
-      title: 'Voulez-vous confirmer ces informations ?',
-      description:
-        'En poursuivant, vous affirmez être conscients que les informations d\'eligibilité sont données à titre indicatif et ne sont pas contractuelles.',
-      type: 'checkbox',
-    })
-
-    // Choix pour la question "confirmation-end"
-    await confirmationQuestion
-      .related('choices')
-      .createMany([{ slug: 'confirmation-end-oui', title: 'Oui' }])
-
     // Générer le builtJson
     await simulateurService.generateBuiltJson(simulateur.id)
 

@@ -296,15 +296,6 @@
             "id": "montant-parents",
             "buttonLabel": "En savoir plus"
           }
-        },
-        {
-          "id": "confirmation-end",
-          "title": "Voulez-vous confirmer ces informations ?",
-          "description": "En poursuivant, vous affirmez être conscients que les informations d'eligibilité sont données à titre indicatif et ne sont pas contractuelles.",
-          "type": "checkbox",
-          "choices": [
-            { "id": "confirmation-end-oui", "title": "Oui" }
-          ]
         }
       ]
     }

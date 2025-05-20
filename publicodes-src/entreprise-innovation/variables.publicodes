@@ -181,7 +181,6 @@ ORDC:
   titre: Organismes de Recherche et Diffusion des Connaissances
 
 contratORDC:
-  par défaut: non
 
 regimeReel:
   par défaut: non

@@ -20,6 +20,7 @@ watch(_model, (newValue) => {
 // Convert question choices to DsfrCheckboxSet options format
 const options: DsfrCheckboxSetProps['options'] = props.question.choices
   ?.map(choice => ({
+    id: `${props.question.id}-${choice.id}`,
     name: `${props.question.id}-${choice.id}`,
     value: choice.id,
     label: choice.title,

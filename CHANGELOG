@@ -1,37 +1,51 @@
 # CHANGELOG
 
-# 0.8.10
+## 0.9.0
+* Ajouts de fonctionnalités
+* Détail :
+  * Permet d'afficher une infobulle par choix au sein d'une question
+* Modifications de contenu
+* Détail :
+  * En réponse à #57 : Dans le questionnaire déménagement, suppression de la question "difficulté à payer son loyer"
+  * En réponse à #53 : Dans le questionnaire déménagement, suppression de la question de validation des réponses
+  * En réponse à #36 : Dans le questionnaire déménagement, supprimer la section 'Votre foyer'
+* Correctifs
+* Détail :
+  * Ajoute l'identifiant de la question à l'id d'un choix pour s'assurer de son unicité
+  * Dans un champ de type 'number', n'applique la valeur définie par défaut que si le modèle est non-défini
+
+### 0.8.10
 Élargit le bouton de recherche de la combobox
 
-# 0.8.9
+### 0.8.9
 * Modification mineure de contenu
 
-# 0.8.8
+### 0.8.8
 * Modifications en production pour tests utilisateurs
 * Détail :
   * Désactive le bloc résumé dans la page de résultats
   * Ajoute un bouton 'en savoir plus' dans la carte de lien vers le détail d'une aide pour plus d'emphase
   * Modifie la description de la question 'communes' du formulaire déménagement
 
-# 0.8.7
+### 0.8.7
 * Ajout du bouton crisp hors iframe
 
-# 0.8.6
+### 0.8.6
 * Rédaction du README.md
 
-# 0.8.5
+### 0.8.5
 * Pages statiques 404 et 500
 
-# 0.8.4
+### 0.8.4
 * Debugs divers sur les statistiques
 
-# 0.8.3
+### 0.8.3
 * Debug de la feature de statistiques Matomo pour prendre en compte les formats [simulatorId][source] et [simulatorId]source (erreur legacy)
 
-# 0.8.2
+### 0.8.2
 * Ajout de la page Cookies
 
-# 0.8.1
+### 0.8.1
 * Ajout de dépendances ts pour la transpilation sous linux
 
 # 0.8.0

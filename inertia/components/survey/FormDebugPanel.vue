@@ -9,7 +9,7 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
+} = usePage<InferPageProps<SimulateurController, 'renderSimulateur'>>()
 
 const surveysStore = useSurveysStore()
 

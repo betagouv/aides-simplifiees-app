@@ -1,9 +1,12 @@
-export function formatDateTime(date: Date): {
+export function formatDateTime(date: Date | string): {
   date: string
   time: string
 } | null {
   if (!date) {
     return null
+  }
+  if (typeof date === 'string') {
+    date = new Date(date)
   }
   return {
     date: date.toLocaleDateString('fr-FR', {

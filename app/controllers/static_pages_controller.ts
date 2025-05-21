@@ -1,8 +1,19 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import Simulateur from '#models/simulateur'
 
 export default class StaticPagesController {
   public async home({ inertia }: HttpContext) {
-    return inertia.render('home')
+    // Fetch published simulateurs
+    const simulateurs = await Simulateur.query()
+      .where('status', 'published')
+
+    return inertia.render('home', {
+      simulateurs: simulateurs.map((simulateur) => {
+        return simulateur.serialize({
+          fields: ['id', 'title', 'slug', 'description', 'pictogramPath'],
+        })
+      }),
+    })
   }
 
   public async partenaires({ inertia }: HttpContext) {

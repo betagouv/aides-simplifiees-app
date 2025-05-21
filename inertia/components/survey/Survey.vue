@@ -22,7 +22,7 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
+} = usePage<InferPageProps<SimulateurController, 'renderSimulateur'>>()
 
 // Form schema loading and state management
 const surveysStore = useSurveysStore()

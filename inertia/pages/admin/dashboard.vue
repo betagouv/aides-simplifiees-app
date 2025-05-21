@@ -1,73 +1,44 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
+import type AdminController from '#controllers/admin_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { DsfrCard } from '@gouvminint/vue-dsfr'
+import { Head, usePage } from '@inertiajs/vue3'
+import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
+import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-defineProps<{
-  counts: {
-    pages: number
-    notions: number
-    aides: number
-    simulateurs: number
-  }
-}>()
+const {
+  props: {
+    items,
+  },
+} = usePage<InferPageProps<AdminController, 'dashboard'>>()
+
+const { setBreadcrumbs } = useBreadcrumbStore()
+setBreadcrumbs([
+  { text: 'Administration', to: '/admin' },
+])
 </script>
 
 <template>
   <Head title="Administration" />
-
-  <BrandBackgroundContainer
-    textured
-    contrast
-  >
-    <SectionContainer type="page-header">
-      <h1 class="brand-contrast-text">
-        <br>Administration
-      </h1>
-    </SectionContainer>
-  </BrandBackgroundContainer>
-
+  <AdminPageHeading title="Administration" />
   <BrandBackgroundContainer
     textured
     subtle
   >
-    <SectionContainer type="page-block">
+    <SectionContainer type="page-footer">
       <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-md-4">
+        <div
+          v-for="item in items"
+          :key="item.name"
+          class="fr-col-12 fr-col-md-4"
+        >
           <DsfrCard
-            title="Pages"
-            description="Pages statiques du site (cgu, accessibilité, mentions légales, etc.)"
-            link="/admin/pages"
-            icon-class="fr-icon-file-line"
-          />
-        </div>
-
-        <div class="fr-col-12 fr-col-md-4">
-          <DsfrCard
-            title="Notions"
-            description="Adminstre les pages d'explication : notions, en lien avec les question du simulateur"
-            link="/admin/notions"
-            icon-class="fr-icon-bookmark-line"
-          />
-        </div>
-
-        <div class="fr-col-12 fr-col-md-4">
-          <DsfrCard
-            title="Aides"
-            description="Recense les aides disponibles"
-            link="/admin/aides"
-            icon-class="fr-icon-hand-coin-line"
-          />
-        </div>
-      </div>
-
-      <div class="fr-grid-row fr-grid-row--gutters fr-mt-4w">
-        <div class="fr-col-12 fr-col-md-4">
-          <DsfrCard
-            title="Simulateurs"
-            description="Gère les simulateurs et leurs paramètres"
-            link="/admin/simulateurs"
-            icon-class="fr-icon-calculator-line"
+            :title="item.name"
+            :description="item.description"
+            :link="item.route"
+            :end-detail="`${item.count} items`"
           />
         </div>
       </div>

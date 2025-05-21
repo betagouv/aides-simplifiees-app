@@ -12,7 +12,7 @@ const {
   props: {
     aides,
   },
-} = usePage<InferPageProps<DynamicContentController, 'listAides'>>()
+} = usePage<InferPageProps<DynamicContentController, 'renderPublicAidesList'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([

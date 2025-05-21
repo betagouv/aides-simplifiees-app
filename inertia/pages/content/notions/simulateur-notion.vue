@@ -11,7 +11,7 @@ const {
     notion,
     html,
   },
-} = usePage<InferPageProps<DynamicContentController, 'showNotion'>>()
+} = usePage<InferPageProps<DynamicContentController, 'renderNotion'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 

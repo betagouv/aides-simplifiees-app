@@ -12,7 +12,7 @@ const {
     hash,
     html,
   },
-} = usePage<InferPageProps<DynamicContentController, 'showResultatsAide'>>()
+} = usePage<InferPageProps<DynamicContentController, 'renderResultatsAide'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([

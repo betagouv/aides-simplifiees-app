@@ -19,7 +19,7 @@ const {
     results,
     createdAt,
   },
-} = usePage<InferPageProps<SimulateurController, 'showResultats'>>()
+} = usePage<InferPageProps<SimulateurController, 'renderResultats'>>()
 
 const simulateurTitle = simulateur.title || simulateur.slug
 const simulationDateTime = formatDateTime(new Date(createdAt))

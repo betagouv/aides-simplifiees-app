@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
-import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
-import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
+import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
@@ -17,17 +16,10 @@ setBreadcrumbs([
     title="Devenir partenaire"
     description="Facilitez l'accès aux aides sur votre territoire. Optimisez le parcours usager du simulateur au dépôt de dossier et améliorez l'efficacité de vos dispositifs d'aide."
   />
-  <BrandBackgroundContainer
-    textured
-    contrast
-  >
-    <BreadcrumbSectionContainer contrast />
-    <SectionContainer type="page-header">
-      <h1 class="brand-contrast-text">
-        <span class="brand-contrast-text--highlight"> Vous êtes une administration&nbsp;: </span><br>facilitez le parcours d'accès aux aides
-      </h1>
-    </SectionContainer>
-  </BrandBackgroundContainer>
+  <AdminPageHeading
+    highlighted-title="Vous êtes une administration&nbsp;:"
+    title="le parcours d'accès aux aides"
+  />
   <SectionContainer type="page-footer">
     <div>
       <p class="fr-text--lg">

@@ -6,24 +6,27 @@ export default class Notion extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+
+  @column()
+  declare status: 'published' | 'draft' | 'unlisted'
+
   @column()
   declare title: string
 
   @column()
   declare slug: string
 
-  @column({ columnName: 'content' })
-  declare content: string
-
   @column()
   declare description: string | null
 
   @column()
-  declare category: string | null
+  declare metaDescription: string | null
 
-  @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
-
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
+  @column({ columnName: 'content' })
+  declare content: string
 }

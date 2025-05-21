@@ -37,17 +37,19 @@ CII . montant:
   titre: Montant du Crédit d'Impôt Innovation
   unité: €
   applicable si: CII . eligibilite
-  le maximum de:
+  valeur:
+    le maximum de:
       - 0
       - CII . montantPlafonne
 
 CII . montantPlafonne:
   unité: €
-  somme:
-    - CII . depensesBase
-    - CII . depensesDOM
-    - CII . depensesCorse
-    - (-1) * CII . deductions
+  valeur:
+    somme:
+      - CII . depensesBase
+      - CII . depensesDOM
+      - CII . depensesCorse
+      - (-CII . deductions)
   plafond: 400000€
 
 CII . depensesBase:

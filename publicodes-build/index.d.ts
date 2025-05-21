@@ -148,6 +148,24 @@ export type Situation = Partial<{
   "typeDeRevenus": "'bic'" | "'bnc'",
   "regimeFiscal": "'micro'" | "'reel-simplifie'" | "'reel-normal'",
   "typeImposition": "'is'" | "'ir'" | "'exonere'",
+  "prototypeDestination": PBoolean,
+  "produitMisMarche": PBoolean,
+  "depensesRdIndemnisationAssuranceDom": PBoolean,
+  "depensesRdIndemnisationAssurance": PBoolean,
+  "depensesRdAmortissementBiensDom": PBoolean,
+  "depensesRdAmortissementBiens": PBoolean,
+  "depensesRdRemunerationInventionDom": PBoolean,
+  "depensesRdRemunerationInvention": PBoolean,
+  "depensesRdChercheursTechniciensDom": PBoolean,
+  "depensesRdChercheursTechniciens": PBoolean,
+  "depensesRdRechercheSansLiensDependanceDom": PBoolean,
+  "depensesRdRechercheSansLiensDependance": PBoolean,
+  "depensesRdRechercheLiensDependanceDom": PBoolean,
+  "depensesRdRechercheLiensDependance": PBoolean,
+  "depensesRdDepensesTiersCir": PBoolean,
+  "depensesRdDepensesConseil": PBoolean,
+  "depensesRdSubventionsPubliques": PBoolean,
+  "depensesNormalisationRemboursementsSubventions": PBoolean,
   "JEU": PBoolean,
   "JEU . eligibilite": PBoolean,
   "JEI": PBoolean,
@@ -201,7 +219,7 @@ export type Situation = Partial<{
   "CII . depassementConsecutif": PBoolean,
   "CICo": PBoolean,
   "CICo . eligibilite": PBoolean,
-  "CICo . montant": PBoolean,
+  "CICo . montant": number,
   "CICo . taux": number
 }>
 
@@ -360,6 +378,24 @@ export type RuleValue = Partial<{
   "typeDeRevenus": "bic" | "bnc",
   "regimeFiscal": "micro" | "reel-simplifie" | "reel-normal",
   "typeImposition": "is" | "ir" | "exonere",
+  "prototypeDestination": boolean,
+  "produitMisMarche": boolean,
+  "depensesRdIndemnisationAssuranceDom": boolean,
+  "depensesRdIndemnisationAssurance": boolean,
+  "depensesRdAmortissementBiensDom": boolean,
+  "depensesRdAmortissementBiens": boolean,
+  "depensesRdRemunerationInventionDom": boolean,
+  "depensesRdRemunerationInvention": boolean,
+  "depensesRdChercheursTechniciensDom": boolean,
+  "depensesRdChercheursTechniciens": boolean,
+  "depensesRdRechercheSansLiensDependanceDom": boolean,
+  "depensesRdRechercheSansLiensDependance": boolean,
+  "depensesRdRechercheLiensDependanceDom": boolean,
+  "depensesRdRechercheLiensDependance": boolean,
+  "depensesRdDepensesTiersCir": boolean,
+  "depensesRdDepensesConseil": boolean,
+  "depensesRdSubventionsPubliques": boolean,
+  "depensesNormalisationRemboursementsSubventions": boolean,
   /** Jeune entreprise Universitaire */
   "JEU": boolean,
   /** Éligibilité au statut JEU */
@@ -429,7 +465,7 @@ export type RuleValue = Partial<{
   "CICo": boolean,
   /** Eligibilité au CICo */
   "CICo . eligibilite": boolean,
-  "CICo . montant": boolean,
+  "CICo . montant": number,
   "CICo . taux": number
 }>
 

@@ -338,3 +338,28 @@ typeImposition:
     - "'is'"
     - "'ir'"
     - "'exonere'"
+
+
+prototypeDestination:
+produitMisMarche:
+
+
+
+
+#TODO : used for CIR, still
+depensesRdIndemnisationAssuranceDom:
+depensesRdIndemnisationAssurance:
+depensesRdAmortissementBiensDom:
+depensesRdAmortissementBiens:
+depensesRdRemunerationInventionDom:
+depensesRdRemunerationInvention:
+depensesRdChercheursTechniciensDom:
+depensesRdChercheursTechniciens:
+depensesRdRechercheSansLiensDependanceDom:
+depensesRdRechercheSansLiensDependance:
+depensesRdRechercheLiensDependanceDom:
+depensesRdRechercheLiensDependance:
+depensesRdDepensesTiersCir:
+depensesRdDepensesConseil:
+depensesRdSubventionsPubliques:
+depensesNormalisationRemboursementsSubventions:

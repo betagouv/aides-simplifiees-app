@@ -699,14 +699,14 @@
               "title": "Montant des dépenses facturées par l'ORDC dans le cadre de ce projet de recherche collaborative",
               "default": 0,
               "type": "number",
-              "visibleWhen": "contrat-ordc=true && respecte_criteres=true"
+              "visibleWhen": "contrat-ordc=true && respecte-criteres-ordc=true"
             },
             {
               "id": "subventions-ordc",
               "title": "Montant des aides publiques reçues par l'entreprise en raison des opérations menées en collaboration avec un ORDC agréé (à déduire de l'assiette du CICo)",
               "default": 0,
               "type": "number",
-              "visibleWhen": "contrat-ordc=true && respecte_criteres=true"
+              "visibleWhen": "contrat-ordc=true && respecte-criteres-ordc=true"
             },
             {
               "id": "remboursements-subventions-ordc",
@@ -858,19 +858,6 @@
           ]
         },
         {
-          "id": "prototype-depenses",
-          "title": "Dépenses de conception de prototypes ou d'installations pilotes",
-          "questions": [
-            {
-              "id": "montant_depenses",
-              "title": "Quel est le montant de vos dépenses internes et de sous-traitance pour la conception du prototype ou de l'installation pilote ?",
-              "default": 0,
-              "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
-            }
-          ]
-        },
-        {
           "id": "prototype-immobilisations",
           "title": "Détail par nature de dépenses éligibles",
           "questions": [
@@ -879,21 +866,21 @@
               "title": "Dotations aux amortissements des immobilisations créées ou acquises à l'état neuf et affectées directement à la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-amortissements-immobilisations-dom",
               "title": "Dont dépenses réalisées dans un département d'Outre-mer",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-amortissements-immobilisations-corse",
               "title": "Dont dépenses réalisées en Corse",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -906,14 +893,14 @@
               "title": "Chercheurs et techniciens de recherche qui sont directement et exclusivement affectés aux opérations de recherche et développement",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-remuneration-invention",
               "title": "Salariés auteurs d'une invention après des opérations de recherche a qui on a versé une rémunération supplémentaire",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -926,7 +913,7 @@
               "title": "Dotations aux amortissements, frais de prise, de maintenance et de défense des brevets et des certificats d'obtention végétale relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
               "infobulle": "Ces dépenses bénéficient d'une exception de territorialité. Indiquez le montant des dépenses exposées sans considération de la localisation des opérations"
             },
             {
@@ -934,14 +921,14 @@
               "title": "Dont dépenses réalisées dans un département d'Outre-mer",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-amortissements-brevets-corse",
               "title": "Dont dépenses réalisées en Corse",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -954,7 +941,7 @@
               "title": "Frais de dépôt et de défense des dessins et modèles relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
               "infobulle": "Ces dépenses bénéficient d'une exception de territorialité. Indiquez le montant des dépenses exposées sans considération de la localisation des opérations"
             },
             {
@@ -962,14 +949,14 @@
               "title": "Dont dépenses réalisées dans un département d'Outre-mer",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-frais-depot-dessins-corse",
               "title": "Dont dépenses réalisées en Corse",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -982,21 +969,21 @@
               "title": "Dépenses afférentes aux opérations de conception de prototypes ou installations pilotes de nouveaux produits dont la réalisation est confiée à des entreprises ou des bureaux d'études et d'ingénierie agréés",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-depenses-sous-traitance-dom",
               "title": "Dont dépenses réalisées dans un département d'Outre-mer",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-depenses-sous-traitance-corse",
               "title": "Dont dépenses réalisées en Corse",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -1009,28 +996,28 @@
               "title": "Montant des remboursements des subventions publiques à ajouter à l'assiette du crédit d'impôt",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-subventions-publiques",
               "title": "Montant des subventions publiques reçues par l'entreprise en raison des opérations de conception de prototypes ou installations pilotes de nouveaux produits",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-depenses-conseil",
               "title": "Montant des dépenses exposées auprès de tiers au titre de prestations de conseil pour l'octroi du bénéfice du crédit d'impôt",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-depenses-tiers-cii",
               "title": "Montant des dépenses exposées et facturées pour la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits pour le compte de tiers bénéficiaire du CII",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         }

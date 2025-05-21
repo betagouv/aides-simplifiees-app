@@ -12,7 +12,7 @@ const {
   props: {
     notions,
   },
-} = usePage<InferPageProps<DynamicContentController, 'listNotions'>>()
+} = usePage<InferPageProps<DynamicContentController, 'renderPublicNotionsList'>>()
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },

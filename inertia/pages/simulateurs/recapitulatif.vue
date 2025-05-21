@@ -12,7 +12,7 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<SimulateurController, 'showRecapitulatif'>>()
+} = usePage<InferPageProps<SimulateurController, 'renderRecapitulatif'>>()
 
 const simulateurTitle = simulateur.title || simulateur.slug
 

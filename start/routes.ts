@@ -56,30 +56,29 @@ router.get('/iframe-integration.js', ({ response }) => {
 /**
  * Dynamic Content
  */
-router.get('/content/:page_slug', [DynamicContentController, 'showPage'])
-router.get('/notions', [DynamicContentController, 'listNotions'])
-router.get('/notions/:notion_slug', [DynamicContentController, 'showNotion'])
-router.get('/aides', [DynamicContentController, 'listAides'])
-router.get('/aides/:aide_slug', [DynamicContentController, 'showAide'])
+router.get('/content/:page_slug', [DynamicContentController, 'renderPage'])
+router.get('/notions', [DynamicContentController, 'renderPublicNotionsList'])
+router.get('/notions/:notion_slug', [DynamicContentController, 'renderNotion'])
+router.get('/aides', [DynamicContentController, 'renderPublicAidesList'])
+router.get('/aides/:aide_slug', [DynamicContentController, 'renderAide'])
 
 /**
  * Simulateurs
  */
-router.get('/simulateurs', [SimulateurController, 'listSimulateurs'])
-// Specific simulateur routes
+router.get('/simulateurs', [SimulateurController, 'renderPublicSimulateursList'])
 router
   .group(() => {
     router
-      .get('/simulateurs/:simulateur_slug', [SimulateurController, 'showSimulateur'])
+      .get('/simulateurs/:simulateur_slug', [SimulateurController, 'renderSimulateur'])
       .middleware([
         middleware.resumeQuery(),
       ])
-    router.get('/simulateurs/:simulateur_slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
-    router.get('/simulateurs/:simulateur_slug/resultats', [SimulateurController, 'showResultats'])
-    router.get('/simulateurs/:simulateur_slug/resultats/:hash', [SimulateurController, 'showResultats'])
-    router.get('/simulateurs/:simulateur_slug/resultats/mock-hash', [SimulateurController, 'showResultats'])
-    router.get('/simulateurs/:simulateur_slug/resultats/:hash/aides/:aide_slug', [DynamicContentController, 'showResultatsAide'])
-    router.get('/simulateurs/:simulateur_slug/notions/:notion_slug', [DynamicContentController, 'showSimulateurNotion'])
+    router.get('/simulateurs/:simulateur_slug/recapitulatif', [SimulateurController, 'renderRecapitulatif'])
+    router.get('/simulateurs/:simulateur_slug/resultats', [SimulateurController, 'renderResultats'])
+    router.get('/simulateurs/:simulateur_slug/resultats/:hash', [SimulateurController, 'renderResultats'])
+    router.get('/simulateurs/:simulateur_slug/resultats/mock-hash', [SimulateurController, 'renderResultats'])
+    router.get('/simulateurs/:simulateur_slug/resultats/:hash/aides/:aide_slug', [DynamicContentController, 'renderResultatsAide'])
+    router.get('/simulateurs/:simulateur_slug/notions/:notion_slug', [DynamicContentController, 'renderSimulationNotion'])
   })
   .middleware([
     middleware.preserveDebugParam(),
@@ -91,42 +90,49 @@ router
  */
 router
   .group(() => {
-    // Dashboard
-    router.get('/admin', [AdminController, 'dashboard']).as('admin.index')
+    /**
+     * Dashboard
+     */
+    router.get('/admin', [AdminController, 'dashboard'])
 
-    // CRUD pour les Pages
-    router.get('/admin/pages', [AdminController, 'listPages']).as('admin.pages.index')
-    router.get('/admin/pages/create', [AdminController, 'createPage']).as('admin.pages.create')
-    router.post('/admin/pages', [AdminController, 'storePage']).as('admin.pages.store')
-    router.get('/admin/pages/:id/edit', [AdminController, 'editPage']).as('admin.pages.edit')
-    router.post('/admin/pages/:id', [AdminController, 'updatePage']).as('admin.pages.update')
+    /**
+     * CRUD pour les Pages
+     */
+    router.get('/admin/pages', [AdminController, 'renderListPages'])
+    router.get('/admin/pages/create', [AdminController, 'renderCreatePage'])
+    router.get('/admin/pages/:id', [AdminController, 'renderEditPage'])
+    router.post('/admin/pages', [AdminController, 'createPage'])
+    router.put('/admin/pages/:id', [AdminController, 'updatePage'])
+    router.delete('/admin/pages/:id', [AdminController, 'deletePage'])
 
-    // CRUD pour les Notions
-    router.get('/admin/notions', [AdminController, 'listNotions']).as('admin.notions.index')
-    router
-      .get('/admin/notions/create', [AdminController, 'createNotion'])
-      .as('admin.notions.create')
-    router.post('/admin/notions', [AdminController, 'storeNotion']).as('admin.notions.store')
-    router.get('/admin/notions/:id/edit', [AdminController, 'editNotion']).as('admin.notions.edit')
-    router.post('/admin/notions/:id', [AdminController, 'updateNotion']).as('admin.notions.update')
-    router
-      .delete('/admin/notions/:id', [AdminController, 'deleteNotion'])
-      .as('admin.notions.delete')
+    /**
+     * CRUD pour les Notions
+     */
+    router.get('/admin/notions', [AdminController, 'renderPublicNotionsList'])
+    router.get('/admin/notions/create', [AdminController, 'renderCreateNotion'])
+    router.get('/admin/notions/:id', [AdminController, 'renderEditNotion'])
+    router.post('/admin/notions', [AdminController, 'createNotion'])
+    router.put('/admin/notions/:id', [AdminController, 'updateNotion'])
+    router.delete('/admin/notions/:id', [AdminController, 'deleteNotion'])
 
-    // CRUD pour les Aides
-    router.get('/admin/aides', [AdminController, 'listAides']).as('admin.aides.index')
-    router.get('/admin/aides/create', [AdminController, 'createAide']).as('admin.aides.create')
-    router.post('/admin/aides', [AdminController, 'storeAide']).as('admin.aides.store')
-    router.get('/admin/aides/:id/edit', [AdminController, 'editAide']).as('admin.aides.edit')
-    router.post('/admin/aides/:id', [AdminController, 'updateAide']).as('admin.aides.update')
-    router.delete('/admin/aides/:id', [AdminController, 'deleteAide']).as('admin.aides.delete')
+    /**
+     * CRUD pour les Aides
+     */
+    router.get('/admin/aides', [AdminController, 'renderPublicAidesList'])
+    router.get('/admin/aides/create', [AdminController, 'renderCreateAide'])
+    router.get('/admin/aides/:id', [AdminController, 'renderEditAide'])
+    router.post('/admin/aides', [AdminController, 'createAide'])
+    router.put('/admin/aides/:id', [AdminController, 'updateAide'])
+    router.delete('/admin/aides/:id', [AdminController, 'deleteAide'])
 
-    // CRUD pour les Simulateurs
-    router.get('/admin/simulateurs', [AdminController, 'listSimulateurs']).as('admin.simulateurs.index')
-    router.get('/admin/simulateurs/create', [AdminController, 'createSimulateur']).as('admin.simulateurs.create')
-    router.post('/admin/simulateurs', [AdminController, 'storeSimulateur']).as('admin.simulateurs.store')
-    router.get('/admin/simulateurs/:id/edit', [AdminController, 'editSimulateur']).as('admin.simulateurs.edit')
-    router.post('/admin/simulateurs/:id', [AdminController, 'updateSimulateur']).as('admin.simulateurs.update')
-    router.delete('/admin/simulateurs/:id', [AdminController, 'deleteSimulateur']).as('admin.simulateurs.delete')
+    /**
+     * CRUD pour les Simulateurs
+     */
+    router.get('/admin/simulateurs', [AdminController, 'renderListSimulateurs'])
+    router.get('/admin/simulateurs/create', [AdminController, 'renderCreateSimulateur'])
+    router.get('/admin/simulateurs/:id', [AdminController, 'renderEditSimulateur'])
+    router.post('/admin/simulateurs', [AdminController, 'createSimulateur'])
+    router.put('/admin/simulateurs/:id', [AdminController, 'updateSimulateur'])
+    router.delete('/admin/simulateurs/:id', [AdminController, 'deleteSimulateur'])
   })
   .middleware([middleware.admin()])

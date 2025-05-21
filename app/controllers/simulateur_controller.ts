@@ -8,16 +8,30 @@ import SimulateurService from '#services/simulateur_service'
 export default class SimulateurController {
   private simulateurService = new SimulateurService()
 
-  // List all simulateurs
-  public async listSimulateurs({ inertia }: HttpContext) {
-    const simulateurs = await Simulateur.all()
+  /**
+   * Render the list page of public simulateurs
+   */
+  public async renderPublicSimulateursList({ inertia }: HttpContext) {
+    const simulateurs = await Simulateur.query()
+      .where('status', 'published')
 
-    return inertia.render('simulateurs/index', { simulateurs })
+    return inertia.render('simulateurs/index', {
+      simulateurs: simulateurs.map((simulateur) => {
+        return simulateur.serialize({
+          fields: ['title', 'slug', 'description', 'pictogramPath'],
+        })
+      }) as SerializedSimulateur[],
+    })
   }
 
-  // Show a simulateur
-  public async showSimulateur({ params, inertia, response }: HttpContext) {
-    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
+  /**
+   * Render a single simulateur page
+   */
+  public async renderSimulateur({ params, inertia, response }: HttpContext) {
+    const simulateur = await Simulateur.query()
+      .where('slug', params.simulateur_slug)
+      .whereIn('status', ['published', 'unlisted'])
+      .first()
 
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')
@@ -36,7 +50,10 @@ export default class SimulateurController {
     })
   }
 
-  public async showRecapitulatif({ params, inertia, response }: HttpContext) {
+  /**
+   * Render the recapitulatif page for a simulateur
+   */
+  public async renderRecapitulatif({ params, inertia, response }: HttpContext) {
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')
@@ -46,46 +63,7 @@ export default class SimulateurController {
     })
   }
 
-  // Generate and update built_json for a simulateur
-  public async generateBuiltJson({ params, response }: HttpContext) {
-    const id = params.id
-
-    try {
-      const builtJson = await this.simulateurService.generateBuiltJson(id)
-      return response.json({
-        success: true,
-        data: JSON.parse(builtJson),
-      })
-    }
-    catch (error) {
-      return response.status(404).json({
-        success: false,
-        message: `Simulateur with id ${id} not found`,
-        error: error.message,
-      })
-    }
-  }
-
-  // Create a sample simulateur (for testing)
-  public async createSample({ response }: HttpContext) {
-    try {
-      const simulateur = await this.simulateurService.createSampleSimulateur()
-      return response.json({
-        success: true,
-        message: 'Sample simulateur created successfully',
-        simulateur,
-      })
-    }
-    catch (error) {
-      return response.status(500).json({
-        success: false,
-        message: 'Failed to create sample simulateur',
-        error: error.message,
-      })
-    }
-  }
-
-  public async showResultats({ params, inertia, request, response }: HttpContext) {
+  public async renderResultats({ params, inertia, request, response }: HttpContext) {
     // Fetch the simulateur by ID or slug
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
@@ -147,6 +125,45 @@ export default class SimulateurController {
       results: await this.transformSimulationResults(formSubmission.results, params),
       secureHash: params.hash as string,
     })
+  }
+
+  // Generate and update built_json for a simulateur
+  public async generateBuiltJson({ params, response }: HttpContext) {
+    const id = params.id
+
+    try {
+      const builtJson = await this.simulateurService.generateBuiltJson(id)
+      return response.json({
+        success: true,
+        data: JSON.parse(builtJson),
+      })
+    }
+    catch (error) {
+      return response.status(404).json({
+        success: false,
+        message: `Simulateur with id ${id} not found`,
+        error: error.message,
+      })
+    }
+  }
+
+  // Create a sample simulateur (for testing)
+  public async createSample({ response }: HttpContext) {
+    try {
+      const simulateur = await this.simulateurService.createSampleSimulateur()
+      return response.json({
+        success: true,
+        message: 'Sample simulateur created successfully',
+        simulateur,
+      })
+    }
+    catch (error) {
+      return response.status(500).json({
+        success: false,
+        message: 'Failed to create sample simulateur',
+        error: error.message,
+      })
+    }
   }
 
   /**

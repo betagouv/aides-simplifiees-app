@@ -1,27 +1,26 @@
 <script setup lang="ts">
+import type StaticPagesController from '#controllers/static_pages_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
 import type { DsfrTileProps } from '@gouvminint/vue-dsfr'
 import { DsfrCard, DsfrTile, DsfrTiles } from '@gouvminint/vue-dsfr'
-import { Head } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 
+const {
+  props: {
+    simulateurs,
+  },
+} = usePage<InferPageProps<StaticPagesController, 'home'>>()
 const baselineTitle = 'Trouvez les aides&nbsp;adaptées à&nbsp;votre&nbsp;situation'
 const baselineSubtitle = 'Un service simple et rapide pour savoir à quelles aides vous avez droit.'
 
-const simulationTiles: DsfrTileProps[] = [
-  {
-    title: 'Déménagement & logement',
-    to: '/simulateurs/demenagement-logement',
-    titleTag: 'h2',
-    svgPath: '../../public/artworks/custom-pictograms/demenagement.svg',
-  },
-  {
-    title: 'Rénovation du logement',
-    titleTag: 'h2',
-    to: 'https://mesaidesreno.beta.gouv.fr/',
-    svgPath: '../../public/artworks/pictograms/buildings/house.svg',
-  },
-]
+const simulationTiles: DsfrTileProps[] = simulateurs
+  .map(simulateur => ({
+    title: simulateur.title,
+    to: `/simulateurs/${simulateur.slug}`,
+    svgPath: simulateur.pictogramPath,
+  }))
 </script>
 
 <template>

@@ -6,11 +6,29 @@ export default class Aide extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+
+  @column()
+  declare status: 'published' | 'draft' | 'unlisted'
+
   @column()
   declare title: string
 
   @column()
   declare slug: string
+
+  @column()
+  declare description: string | null
+
+  @column()
+  declare metaDescription: string | null
+
+  @column({ columnName: 'content' })
+  declare content: string
 
   @column()
   declare type: TypeAide
@@ -21,22 +39,10 @@ export default class Aide extends BaseModel {
   @column()
   declare instructeur: string
 
-  @column()
-  declare description: string
-
   @column({
     columnName: 'textes_loi',
     prepare: value => (typeof value === 'string' ? value : JSON.stringify(value)),
     consume: value => (typeof value === 'string' ? JSON.parse(value) : value),
   })
   declare textesLoi: TexteLoi[]
-
-  @column({ columnName: 'content' })
-  declare content: string
-
-  @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
-
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime
 }

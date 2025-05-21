@@ -5,7 +5,6 @@ JEC . eligibilite:
   titre: Éligibilité au statut JEC
   valeur:
     toutes ces conditions:
-      - immatriculationFrance
       - estUnePME
       - JEC . conditionAge
       - JEC . critereRD
@@ -21,5 +20,5 @@ JEC . conditionAge:
 JEC . critereRD:
   valeur:
     toutes ces conditions:
-      - pourcentageRD >= 5
-      - pourcentageRD < 20
+      - pourcentageRd >= 5
+      - pourcentageRd < 20

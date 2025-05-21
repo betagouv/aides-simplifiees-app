@@ -1,14 +1,3 @@
-immatriculationFrance:
-  par défaut: oui
-
-situationGeographique:
-  par défault: "'metropole'"
-  une possibilité:
-    - "'metropole'"
-    - "'outremer'"
-    - "'corse'"
-
-
 natureActivite:
 natureActivite . industrielle:
   par défaut: non
@@ -21,6 +10,12 @@ natureActivite . artisanale:
 natureActivite . autreActivite:
   par défaut: non
 
+
+situationGeographique:
+  par défaut: "'metropole'"
+  une possibilité:
+    - "'metropole'"
+    - "'outremer'"
 
 entrepriseEnDifficulte:
   par défaut: non
@@ -145,7 +140,7 @@ categorieExonerationZoneSpecifique . bud:
 categorieExonerationZoneSpecifique . zdp:
   par défaut: non
 
-pourcentageRD:
+pourcentageRd:
 
 effectifAugmente:
   titre: L'effectif de l'entreprise est en augmentation
@@ -177,24 +172,18 @@ depensesRDRechercheLiensDependanceDom:
 depensesRDRechercheSansLiensDependance:
 depensesRDRechercheSansLiensDependanceDom:
 
-ORDC:
-  titre: Organismes de Recherche et Diffusion des Connaissances
+contratOrdc:
 
-contratORDC:
-
-regimeReel:
+respecteCriteresOrdc:
   par défaut: non
 
-respecteCriteresORDC:
-  par défaut: non
-
-depensesORDC:
+depensesOrdc:
   par défaut: 0
 
-subventionsORDC:
+subventionsOrdc:
   par défaut: 0
 
-remboursementsSubventionsORDC:
+remboursementsSubventionsOrdc:
   par défaut: 0
 
 depensesRDSubventionsPubliques:
@@ -330,7 +319,7 @@ performancesSuperieures . ergonomiques:
   par défaut: non
 performancesSuperieures . fonctionnalites:
   par défaut: non
-performancesSuperieures . aucune:
+performancesSuperieures . performancesSuperieuresAucune:
   par défaut: non
 
 typeDeRevenus:

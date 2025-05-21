@@ -76,9 +76,9 @@ function handleSubmit() {
           <form @submit.prevent="handleSubmit">
             <div class="fr-grid-row fr-grid-row--gutters">
               <div class="fr-col-12">
+                <label class="fr-label">Titre</label>
                 <DsfrInput
                   v-model="form.title"
-                  label="Titre"
                   required
                 />
               </div>
@@ -86,9 +86,9 @@ function handleSubmit() {
 
             <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
               <div class="fr-col-12">
+                <label class="fr-label">Description (meta)</label>
                 <DsfrInput
                   v-model="form.metaDescription"
-                  label="Description (meta)"
                   hint="Description courte pour les moteurs de recherche"
                 />
               </div>

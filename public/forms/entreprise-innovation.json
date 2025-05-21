@@ -5,6 +5,38 @@
   "title": "Dispositifs d'innovation et de recherche",
   "description": "Répondez à ces questions pour découvrir les dispositifs d'innovation et de recherche auxquels votre entreprise pourrait être éligible (CIR, CII, CICo, JEI, JEU, JEC)",
   "engine": "publicodes",
+  "dispositifs": [
+    {
+      "id": "CIR",
+      "title": "Crédit d'Impôt Recherche (CIR)",
+      "description": "Le CIR permet de financer vos activités de recherche et développement."
+    },
+    {
+      "id": "CII",
+      "title": "Crédit d'Impôt Innovation (CII)",
+      "description": "Le CII soutient les PME qui mènent des projets d'innovation."
+    },
+    {
+      "id": "CICo",
+      "title": "Crédit d'Impôt Recherche et Innovation (CICo)",
+      "description": "Le CICo permet de financer vos activités de recherche et développement."
+    },
+    {
+      "id": "JEI",
+      "title": "Jeune Entreprise Innovante (JEI)",
+      "description": "Le statut JEI offre des exonérations fiscales et sociales aux jeunes entreprises innovantes."
+    },
+    {
+      "id": "JEU",
+      "title": "Jeune Entreprise Universitaire (JEU)",
+      "description": "Le statut JEU offre des avantages aux entreprises créées par des étudiants ou chercheurs."
+    },
+    {
+      "id": "JEC",
+      "title": "Jeune Entreprise de Croissance (JEC)",
+      "description": "La JEC offre des avantages fiscaux pour les entreprises en forte croissance."
+    }
+  ],
   "intermediaryResults": {
     "dispositifs": [
       {
@@ -45,46 +77,19 @@
       "title": "Informations générales sur l'entreprise",
       "pages": [
         {
-          "id": "immatriculation-france",
-          "questions": [
-            {
-              "id": "immatriculation-france",
-              "title": "Votre entreprise est-elle immatriculée en France ?",
-              "description": "(indispensable JEI, JEU, JEC, CIR, CII, CICo)",
-              "type": "boolean"
-            },
-            {
-              "id": "situation-geographique",
-              "title": "Quelle est sa situation géographique ?",
-              "description": "(indispensable pour CII et CIR)",
-              "type": "radio",
-              "visibleWhen": "immatriculation-france=true",
-              "choices": [
-                {
-                  "id": "metropole",
-                  "title": "Métropole"
-                },
-                {
-                  "id": "outremer",
-                  "title": "Départements d'outre-mer"
-                },
-                {
-                  "id": "corse",
-                  "title": "Corse"
-                }
-              ]
-            }
-          ]
-        },
-        {
           "id": "statut-juridique",
           "questions": [
+            {
+              "id": "date-de-creation",
+              "title": "Quelle est la date de création de votre entreprise ?",
+              "description": "(indispensable CII et CICo) Indiquez la date exacte de création de votre entreprise tel que mentionné sur le RCS ou le Kbis",
+              "type": "date"
+            },
             {
               "id": "nature-activite",
               "title": "Quelle est la nature de l'activité de votre entreprise ?",
               "description": "Sélectionnez tous les types d'activités exercés par votre entreprise (plusieurs choix possibles).",
               "type": "checkbox",
-              "visibleWhen": "immatriculation-france=true",
               "choices": [
                 {
                   "id": "industrielle",
@@ -117,19 +122,29 @@
               ]
             },
             {
+              "id": "situation-geographique",
+              "title": "Où l'entreprise est-elle située ?",
+              "description": "(indispensable pour CII et CIR)",
+              "type": "radio",
+              "choices": [
+                {
+                  "id": "metropole",
+                  "title": "Métropole"
+                },
+                {
+                  "id": "outremer",
+                  "title": "Départements d'outre-mer"
+                }
+              ]
+            },
+            {
               "id": "entreprise-en-difficulte",
               "title": "Votre entreprise est-elle en difficulté au sens de la réglementation européenne ?",
               "description": "(indispensable CII et CICo) Une entreprise est considérée comme en difficulté lorsqu'elle n'est pas en mesure, avec ses propres ressources ou celles de ses actionnaires et créanciers, d'enrayer des pertes qui la conduiraient, sans intervention publique, à une disparition quasi certaine à court ou moyen terme.",
               "type": "boolean",
-              "visibleWhen": "immatriculation-france=true"
-            },
-            {
-              "id": "date-de-creation",
-              "title": "Quelle est l'année de création de votre entreprise ?",
-              "description": "(indispensable CII et CICo) Indiquez l'année exacte de création",
-              "type": "date",
-              "visibleWhen": "immatriculation-france=true"
+              "visibleWhen": ""
             }
+
           ]
         }
       ]
@@ -147,7 +162,7 @@
               "title": "Votre entreprise exerce-t-elle une activité nouvelle ?",
               "description": "(indispensable JEI, JEU, JEC) Une entreprise n'est pas considérée comme nouvelle si elle reprend une activité existante avec des liens évidents avec une autre entreprise, comme la continuité des contrats, des moyens (locaux, personnel, matériel) ou de la clientèle. De même, si une entreprise récemment créée est simplement une extension d'une activité déjà en place sans réelle autonomie, elle ne sera pas reconnue comme nouvelle. Enfin, dans le cas de restructurations (fusion, scission, apport partiel d'actif), si l'activité, les liens ou les ressources sont en partie transférés, l'entreprise ne peut pas non plus être qualifiée de nouvelle.",
               "type": "boolean",
-              "visibleWhen": "immatriculation-france=true"
+              "visibleWhen": ""
             },
             {
               "id": "dirigeants-ou-actionnaires-universitaire",
@@ -183,13 +198,19 @@
               "title": "Votre entreprise valorise-t-elle des travaux de recherche ?",
               "description": "Votre entreprise a-t-elle pour activité principale la valorisation de travaux de recherches auxquels les dirigeants ou associés ont participé au sein d'un établissement d'enseignement supérieur (au cours de leur scolarité ou dans l'exercice de leurs fonctions) ?",
               "type": "boolean",
-              "visibleWhen": "activite-nouvelle=true && (dirigeants-ou-actionnaires-universitaire.includes('etudiant') || dirigeants-ou-actionnaires-universitaire.includes('diplome-doctorat') || dirigeants-ou-actionnaires-universitaire.includes('diplome-master') || dirigeants-ou-actionnaires-universitaire.includes('enseignant'))"
+              "visibleWhen": [
+                "activite-nouvelle=true",
+                "dirigeants-ou-actionnaires-universitaire.includes('etudiant') || dirigeants-ou-actionnaires-universitaire.includes('diplome-doctorat') || dirigeants-ou-actionnaires-universitaire.includes('diplome-master') || dirigeants-ou-actionnaires-universitaire.includes('enseignant')"
+              ]
             },
             {
               "id": "contrat-valorisation",
               "title": "Un contrat conclu avec cet établissement définit-il les conditions de la valorisation de ces travaux de recherches ?",
               "type": "boolean",
-              "visibleWhen": "valorisation-recherche=true"
+              "visibleWhen": [
+                "activite-nouvelle=true",
+                "valorisation-recherche=true"
+              ]
             },
             {
               "id": "capital-detenu",
@@ -234,7 +255,7 @@
               "title": "Situation de l'entreprise au cours des 3 dernières années",
               "description": "Pour chacune des années sélectionnées, nous vous inviterons à renseigner les informations suivantes : chiffre d'affaires, total du bilan et nombre total d'employés.",
               "type": "checkbox",
-              "visibleWhen": "immatriculation-france=true",
+
               "choices": [
                 {
                   "id": "year_N",
@@ -266,7 +287,7 @@
               "default": 0,
               "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
               "type": "number",
-              "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N')"
+              "visibleWhen": " && chiffre-affaires-selector.includes('year_N')"
             },
             {
               "id": "bilan-total-N",
@@ -274,7 +295,7 @@
               "default": 0,
               "description": "Indiquez le total du bilan annuel",
               "type": "number",
-              "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N')"
+              "visibleWhen": " && chiffre-affaires-selector.includes('year_N')"
             },
             {
               "id": "effectif-total-N",
@@ -282,7 +303,7 @@
               "default": 0,
               "description": "Indiquez l'effectif total de l'entreprise",
               "type": "number",
-              "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N')"
+              "visibleWhen": " && chiffre-affaires-selector.includes('year_N')"
             }
 
           ]
@@ -297,7 +318,7 @@
               "default": 0,
               "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
               "type": "number",
-              "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N1')"
+              "visibleWhen": " && chiffre-affaires-selector.includes('year_N1')"
             },
             {
               "id": "bilan-total-N1",
@@ -305,7 +326,7 @@
               "default": 0,
               "description": "Indiquez le total du bilan annuel",
               "type": "number",
-              "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N1')"
+              "visibleWhen": " && chiffre-affaires-selector.includes('year_N1')"
             },
             {
               "id": "effectif-total-N1",
@@ -313,7 +334,7 @@
               "default": 0,
               "description": "Indiquez l'effectif total de l'entreprise",
               "type": "number",
-              "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N1')"
+              "visibleWhen": " && chiffre-affaires-selector.includes('year_N1')"
             }
           ]
         },
@@ -327,7 +348,7 @@
               "default": 0,
               "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
               "type": "number",
-              "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N2')"
+              "visibleWhen": " && chiffre-affaires-selector.includes('year_N2')"
             },
             {
               "id": "bilan-total-N2",
@@ -335,7 +356,7 @@
               "default": 0,
               "description": "Indiquez le total du bilan annuel",
               "type": "number",
-              "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N2')"
+              "visibleWhen": " && chiffre-affaires-selector.includes('year_N2')"
             },
             {
               "id": "effectif-total-N2",
@@ -343,7 +364,7 @@
               "default": 0,
               "description": "Indiquez l'effectif total de l'entreprise",
               "type": "number",
-              "visibleWhen": "immatriculation-france=true && chiffre-affaires-selector.includes('year_N2')"
+              "visibleWhen": " && chiffre-affaires-selector.includes('year_N2')"
             }
           ]
         },
@@ -354,7 +375,7 @@
               "id": "type-de-revenus",
               "title": "Votre entreprise génère-t-elle des bénéfices industriels et commerciaux (BIC) ou des bénéfices non commerciaux (BNC) ?",
               "type": "radio",
-              "visibleWhen": "immatriculation-france=true",
+
               "choices": [
                 {
                   "id": "bic",
@@ -370,7 +391,7 @@
               "id": "regime-fiscal",
               "title": "Quel est le régime fiscal de votre entreprise ?",
               "type": "radio",
-              "visibleWhen": "immatriculation-france=true",
+
               "choices": [
                 {
                   "id": "micro",
@@ -390,7 +411,7 @@
               "id": "type-imposition",
               "title": "Quel est le régime d'imposition de votre entreprise ?",
               "type": "radio",
-              "visibleWhen": "immatriculation-france=true",
+
               "choices": [
                 {
                   "id": "is",
@@ -540,10 +561,10 @@
           ]
         },
         {
-          "id":"page-pourcentage-RD",
+          "id":"page-pourcentage-rd",
           "questions": [
             {
-              "id": "pourcentage-RD",
+              "id": "pourcentage-rd",
               "title": "Quel est le pourcentage des dépenses de votre entreprise en R&D pour la dernière année comptable ?",
               "description": "Veuillez exprimer le pourcentage en nombre entier. Exemple : '10' pour 10%",
               "type": "number",
@@ -660,42 +681,35 @@
           "title": "Dépenses afférentes aux projets de R&D menés en collaboration avec un organisme de recherche et de diffusion des connaissances (ORDC) agréé. ",
           "questions": [
             {
-              "id": "contrat-ORDC",
+              "id": "contrat-ordc",
               "title": "Avez-vous conclu un contrat de collaboration avec un ORDC pour la réalisation d'une opération de R&D ?",
               "description": "(indispensable CICo)",
               "type": "boolean",
               "visibleWhen": "type-depenses.includes('rd')"
             },
             {
-              "id": "regime-reel",
-              "title": "Êtes-vous soumise à un régime réel d'imposition automatiquement ou sur option (réel normal ou simplifié, BNC, BIC) ?",
-              "description": "(indispensable CICo)",
-              "type": "boolean",
-              "visibleWhen": "contrat-ORDC=true"
-            },
-            {
-              "id": "respecte-criteres-ORDC",
+              "id": "respecte-criteres-ordc",
               "title": "Le contrat respecte-t-il les critères suivants ?",
               "description": "Est conclu entre le 1er janvier 2022 et le 31 décembre 2025. Est conclu avant le début des travaux de recherche en collaboration. Précise les objectifs communs et la répartition des travaux de recherches. Fixe les modalités de partage des risques et des résultats. Prévoit la facturation des dépenses au coût de revient. Prévoit que l'ORDC supporte au moins 10% des coûts du projet. Permet à l'ORDC de publier les résultats de ses propres recherches faites dans le cadre de la collaboration avec l'entreprise",
               "type": "boolean",
-              "visibleWhen": "contrat-ORDC=true"
+              "visibleWhen": "contrat-ordc=true"
             },
             {
-              "id": "depenses-ORDC",
+              "id": "depenses-ordc",
               "title": "Montant des dépenses facturées par l'ORDC dans le cadre de ce projet de recherche collaborative",
               "default": 0,
               "type": "number",
-              "visibleWhen": "contrat-ORDC=true && respecte_criteres=true"
+              "visibleWhen": "contrat-ordc=true && respecte_criteres=true"
             },
             {
-              "id": "subventions-ORDC",
+              "id": "subventions-ordc",
               "title": "Montant des aides publiques reçues par l'entreprise en raison des opérations menées en collaboration avec un ORDC agréé (à déduire de l'assiette du CICo)",
               "default": 0,
               "type": "number",
-              "visibleWhen": "contrat-ORDC=true && respecte_criteres=true"
+              "visibleWhen": "contrat-ordc=true && respecte_criteres=true"
             },
             {
-              "id": "remboursements-subventions-ORDC",
+              "id": "remboursements-subventions-ordc",
               "title": "Montant des remboursements des subventions publiques à ajouter à l'assiette du crédit d'impôt au titre de l'année considérée",
               "default": 0,
               "type": "number",
@@ -811,13 +825,13 @@
               "id": "produit-mis-marche",
               "title": "Le produit final a-t-il déjà été mis à disposition sur le marché ?",
               "type": "boolean",
-              "visibleWhen": "prototypeDestination=modele"
+              "visibleWhen": "prototype-destination=modele"
             },
             {
               "id": "performances-superieures",
               "title": "Le produit final se distinguera-t-il des produits déjà existants de par ses performances supérieures en termes :",
               "type": "checkbox",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false",
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false",
               "choices": [
                 {
                   "id": "techniques",
@@ -852,7 +866,7 @@
               "title": "Quel est le montant de vos dépenses internes et de sous-traitance pour la conception du prototype ou de l'installation pilote ?",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -865,21 +879,21 @@
               "title": "Dotations aux amortissements des immobilisations créées ou acquises à l'état neuf et affectées directement à la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-amortissements-immobilisations-dom",
               "title": "Dont dépenses réalisées dans un département d'Outre-mer",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-amortissements-immobilisations-corse",
               "title": "Dont dépenses réalisées en Corse",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -892,14 +906,14 @@
               "title": "Chercheurs et techniciens de recherche qui sont directement et exclusivement affectés aux opérations de recherche et développement",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-remuneration-invention",
               "title": "Salariés auteurs d'une invention après des opérations de recherche a qui on a versé une rémunération supplémentaire",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -912,7 +926,7 @@
               "title": "Dotations aux amortissements, frais de prise, de maintenance et de défense des brevets et des certificats d'obtention végétale relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
               "infobulle": "Ces dépenses bénéficient d'une exception de territorialité. Indiquez le montant des dépenses exposées sans considération de la localisation des opérations"
             },
             {
@@ -920,14 +934,14 @@
               "title": "Dont dépenses réalisées dans un département d'Outre-mer",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-amortissements-brevets-corse",
               "title": "Dont dépenses réalisées en Corse",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -940,7 +954,7 @@
               "title": "Frais de dépôt et de défense des dessins et modèles relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
               "infobulle": "Ces dépenses bénéficient d'une exception de territorialité. Indiquez le montant des dépenses exposées sans considération de la localisation des opérations"
             },
             {
@@ -948,14 +962,14 @@
               "title": "Dont dépenses réalisées dans un département d'Outre-mer",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-frais-depot-dessins-corse",
               "title": "Dont dépenses réalisées en Corse",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -968,21 +982,21 @@
               "title": "Dépenses afférentes aux opérations de conception de prototypes ou installations pilotes de nouveaux produits dont la réalisation est confiée à des entreprises ou des bureaux d'études et d'ingénierie agréés",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-depenses-sous-traitance-dom",
               "title": "Dont dépenses réalisées dans un département d'Outre-mer",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-depenses-sous-traitance-corse",
               "title": "Dont dépenses réalisées en Corse",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         },
@@ -995,28 +1009,28 @@
               "title": "Montant des remboursements des subventions publiques à ajouter à l'assiette du crédit d'impôt",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-subventions-publiques",
               "title": "Montant des subventions publiques reçues par l'entreprise en raison des opérations de conception de prototypes ou installations pilotes de nouveaux produits",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-depenses-conseil",
               "title": "Montant des dépenses exposées auprès de tiers au titre de prestations de conseil pour l'octroi du bénéfice du crédit d'impôt",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-depenses-tiers-cii",
               "title": "Montant des dépenses exposées et facturées pour la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits pour le compte de tiers bénéficiaire du CII",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototypeDestination=modele && produitMisMarche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performancesSuperieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
           ]
         }

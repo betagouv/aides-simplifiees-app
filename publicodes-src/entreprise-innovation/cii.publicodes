@@ -5,7 +5,6 @@ CII . eligibilite:
   titre: Eligibilité au CII
   valeur:
     toutes ces conditions:
-      - immatriculationFrance
       - estUnePME
       - une de ces conditions:
         - natureActivite . industrielle

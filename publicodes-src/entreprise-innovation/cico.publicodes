@@ -5,8 +5,7 @@ CICo . eligibilite:
   titre: Eligibilité au CICo
   valeur:
     toutes ces conditions:
-      - immatriculationFrance
-      - contratORDC
+      - contratOrdc
       - une de ces conditions:
         - natureActivite . industrielle
         - natureActivite . commerciale
@@ -33,7 +32,7 @@ CICo . eligibilite:
 CICo . montant:
     - produit:
         - CICo . taux
-        - soustraction: depensesORDC - subventionsORDC
+        - soustraction: depensesOrdc - subventionsOrdc
     - plafond: 6000000 €/an
 
 CICo . taux:

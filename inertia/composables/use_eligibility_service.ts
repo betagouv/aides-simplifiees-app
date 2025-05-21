@@ -1,7 +1,7 @@
 import Engine from 'publicodes'
 import sourceRules from '#publicodes-build/index'
 import { useSurveysStore } from '~/stores/surveys'
-
+import { SimulationResultsAides } from '~/types/aides'
 
 export interface DispositifDetail {
   id: string
@@ -23,6 +23,7 @@ export interface EligibilityResults {
   eligibleDispositifs: DispositifEligibilityInfo[]
   potentialDispositifs: DispositifEligibilityInfo[]
   ineligibleDispositifs: DispositifEligibilityInfo[]
+  aidesResults: SimulationResultsAides
 }
 
 // Utility: convert kebab-case or snake_case to camelCase
@@ -53,13 +54,14 @@ function autoMapAnswersToPublicodesVariables(answers: Record<string, any>): Reco
 }
 
 export function useEligibilityService() {
+  //Export engine
+  const engine = new Engine(sourceRules)
 
   function calculateEligibility(
     surveyId: string,
     answers: Record<string, any>,
     dispositifsToEvaluate: DispositifDetail[]
   ): EligibilityResults {
-    const engine = new Engine(sourceRules)
     const surveysStore = useSurveysStore()
 
     const mappedAnswers = autoMapAnswersToPublicodesVariables(answers)
@@ -116,24 +118,11 @@ export function useEligibilityService() {
 
     engine.setSituation(transformedAnswers)
 
-    console.log("--------------------------------")
-    console.log(transformedAnswers)
-    console.log(engine.evaluate("immatriculationFrance"))
-    console.log(engine.evaluate("contratORDC"))
-    console.log(engine.evaluate("natureActivite . industrielle"))
-    console.log(engine.evaluate('regimeFiscal'), engine.evaluate('regimeFiscalEstReel = "reel-normal"'))
-    console.log(engine.evaluate("typeImposition"))
-
-
-
-    console.log("--------------------------------")
-
-
-
     const results: EligibilityResults = {
       eligibleDispositifs: [],
       potentialDispositifs: [],
       ineligibleDispositifs: [],
+      aidesResults: {}
     }
 
     for (const dispositif of dispositifsToEvaluate) {
@@ -146,6 +135,19 @@ export function useEligibilityService() {
           description: dispositif.description,
           value: value,
         }
+
+        // Add to aidesResults
+        results.aidesResults[dispositif.id + "-eligibilite"] = value
+
+        // Try to evaluate montant if it exists
+        try {
+          const montantEvaluation = engine.evaluate(dispositif.id + " . montant")
+          results.aidesResults[dispositif.id] = montantEvaluation.nodeValue
+        } catch (e) {
+          // If montant doesn't exist, set it to 0
+          results.aidesResults[dispositif.id] = 0
+        }
+
         if (value === true) {
           results.eligibleDispositifs.push({
             ...baseResult,
@@ -195,5 +197,6 @@ export function useEligibilityService() {
 
   return {
     calculateEligibility,
+    engine,
   }
 }

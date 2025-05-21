@@ -96,9 +96,9 @@ function handleSubmit() {
           <form @submit.prevent="handleSubmit">
             <div class="fr-grid-row fr-grid-row--gutters">
               <div class="fr-col-12 fr-col-md-8">
+                <label class="fr-label">Titre</label>
                 <DsfrInput
                   v-model="form.title"
-                  label="Titre"
                   required
                 />
               </div>
@@ -118,9 +118,9 @@ function handleSubmit() {
 
             <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
               <div class="fr-col-12">
+                <label class="fr-label">Description</label>
                 <DsfrInput
                   v-model="form.description"
-                  label="Description"
                   hint="Description courte de l'aide"
                 />
               </div>
@@ -128,23 +128,23 @@ function handleSubmit() {
 
             <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
               <div class="fr-col-12 fr-col-md-4">
+                <label class="fr-label">Type</label>
                 <DsfrInput
                   v-model="form.type"
-                  label="Type"
                   hint="Type d'aide (ex: subvention, crédit d'impôt)"
                 />
               </div>
               <div class="fr-col-12 fr-col-md-4">
+                <label class="fr-label">Usage</label>
                 <DsfrInput
                   v-model="form.usage"
-                  label="Usage"
                   hint="Usage de l'aide (ex: rénovation, création d'entreprise)"
                 />
               </div>
               <div class="fr-col-12 fr-col-md-4">
+                <label class="fr-label">Instructeur</label>
                 <DsfrInput
                   v-model="form.instructeur"
-                  label="Instructeur"
                   hint="Organisme instructeur (ex: Région, Département)"
                 />
               </div>
@@ -158,23 +158,23 @@ function handleSubmit() {
                 class="fr-grid-row fr-grid-row--gutters fr-mb-2w texte-loi-item"
               >
                 <div class="fr-col-12 fr-col-md-2">
+                  <label class="fr-label">Préfixe</label>
                   <DsfrInput
                     v-model="texteLoi.prefix"
-                    label="Préfixe"
                     placeholder="Art."
                   />
                 </div>
                 <div class="fr-col-12 fr-col-md-4">
+                  <label class="fr-label">Référence</label>
                   <DsfrInput
                     v-model="texteLoi.label"
-                    label="Référence"
                     placeholder="L. 123-45 du code..."
                   />
                 </div>
                 <div class="fr-col-12 fr-col-md-5">
+                  <label class="fr-label">URL</label>
                   <DsfrInput
                     v-model="texteLoi.url"
-                    label="URL"
                     placeholder="https://www.legifrance.gouv.fr/..."
                   />
                 </div>

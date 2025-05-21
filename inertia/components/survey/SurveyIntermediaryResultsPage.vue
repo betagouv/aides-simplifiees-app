@@ -47,6 +47,7 @@ const calculatedResults = ref<EligibilityResults>({
   eligibleDispositifs: [],
   potentialDispositifs: [],
   ineligibleDispositifs: [],
+  aidesResults: {},
 })
 
 const hasEligibleAides = computed(() => calculatedResults.value.eligibleDispositifs.length > 0)
@@ -59,6 +60,7 @@ function performEligibilityCalculation() {
       eligibleDispositifs: [],
       potentialDispositifs: [],
       ineligibleDispositifs: [],
+      aidesResults: {},
     }
     return
   }

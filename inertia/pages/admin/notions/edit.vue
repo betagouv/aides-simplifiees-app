@@ -80,9 +80,9 @@ function handleSubmit() {
           <form @submit.prevent="handleSubmit">
             <div class="fr-grid-row fr-grid-row--gutters">
               <div class="fr-col-12 fr-col-md-8">
+                <label class="fr-label">Titre</label>
                 <DsfrInput
                   v-model="form.title"
-                  label="Titre"
                   required
                 />
               </div>
@@ -102,9 +102,9 @@ function handleSubmit() {
 
             <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
               <div class="fr-col-12">
+                <label class="fr-label">Description</label>
                 <DsfrInput
                   v-model="form.description"
-                  label="Description"
                   hint="Brève description de la notion (facultatif)"
                 />
               </div>
@@ -112,9 +112,9 @@ function handleSubmit() {
 
             <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
               <div class="fr-col-12">
+                <label class="fr-label">Catégorie</label>
                 <DsfrInput
                   v-model="form.category"
-                  label="Catégorie"
                   hint="Catégorie de la notion (facultatif)"
                 />
               </div>

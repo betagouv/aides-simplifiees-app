@@ -5,7 +5,6 @@ CIR . eligibilite:
   valeur:
     une de ces conditions:
       - toutes ces conditions:
-        - immatriculationFrance
         - une de ces conditions:
           - natureActivite . industrielle
           - natureActivite . commerciale
@@ -90,7 +89,7 @@ CIR . totalDepensesRD:
       - depensesRDRemunerationInvention
       - depensesRDRechercheLiensDependance
       - depensesRDRechercheSansLiensDependance
-      - remboursementsSubventionsORDC  # vérifier si à lister ici
+      - remboursementsSubventionsOrdc  # vérifier si à lister ici
 
 
 
@@ -164,7 +163,7 @@ CIR . montantRemboursementRD:
 
 
 CIR . totalRemboursementsRD:
-  valeur: remboursementsSubventionsORDC
+  valeur: remboursementsSubventionsOrdc
 
 
 CIR . montantRemboursementNormalisation:

@@ -4,6 +4,7 @@ import Aide from '#models/aide'
 import FormSubmission from '#models/form_submission'
 import Simulateur from '#models/simulateur'
 import SimulateurService from '#services/simulateur_service'
+import { dd } from '@adonisjs/core/services/dumper'
 
 export default class SimulateurController {
   private simulateurService = new SimulateurService()
@@ -110,6 +111,8 @@ export default class SimulateurController {
         'mobilite-parcoursup': 500,
         'mobilite-parcoursup-eligibilite': true,
       }
+
+
       return inertia.render('simulateurs/resultats', {
         simulateur,
         createdAt: new Date(),
@@ -136,9 +139,12 @@ export default class SimulateurController {
       createdAt: DateTime
     }
 
+
+
     if (!formSubmission) {
       return response.status(404).send('Résultats non trouvés')
     }
+
 
     // Render the results page with the form submission data if available
     return inertia.render('simulateurs/resultats', {

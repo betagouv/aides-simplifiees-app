@@ -366,9 +366,18 @@ export const useSurveysStore = defineStore(
 
       // If the question has a visibility condition, evaluate it
       if (question.visibleWhen) {
-        const isVisible = evaluateCondition(question.visibleWhen, currentAnswers)
-        // debug.log(`[surveysStore][${simulateurId}] Visibility check for ${questionId}: ${isVisible} (condition: ${question.visibleWhen})`)
-        return isVisible
+        // Handle both string and array formats for visibleWhen
+        if (Array.isArray(question.visibleWhen)) {
+          // If it's an array, evaluate all conditions with AND logic
+          const isVisible = question.visibleWhen.every(condition =>
+            evaluateCondition(condition, currentAnswers)
+          )
+          return isVisible
+        } else {
+          // Single condition as a string (existing behavior)
+          const isVisible = evaluateCondition(question.visibleWhen, currentAnswers)
+          return isVisible
+        }
       }
 
       // By default, a question is visible

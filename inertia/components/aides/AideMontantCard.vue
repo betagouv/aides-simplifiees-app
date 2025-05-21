@@ -32,6 +32,15 @@ function formatUsageAide(usageAide: UsageAide): RichUSageAide {
       icon: 'ri:arrow-left-right-line',
       description: 'Prêt à 0% pour financer votre <b>dépôt de garantie</b>',
     },
+    'credit-impot': {
+      icon: 'ri:arrow-left-right-line',
+      description: 'Crédit(s) d\'impôt',
+    },
+    'jeune-entreprise': {
+      icon: 'ri:arrow-left-right-line',
+      description: 'Avantage fiscal',
+    },
+
   }
 
   return usageAideMap[usageAide] || ''

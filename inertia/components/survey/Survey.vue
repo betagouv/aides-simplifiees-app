@@ -9,6 +9,7 @@ import SurveyChoiceScreen from '~/components/survey/SurveyChoiceScreen.vue'
 import SurveyForm from '~/components/survey/SurveyForm.vue'
 import SurveyNavigation from '~/components/survey/SurveyNavigation.vue'
 import SurveyWelcomeScreen from '~/components/survey/SurveyWelcomeScreen.vue'
+import { useEligibilityService } from '~/composables/use_eligibility_service'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
 import { useMatomo } from '~/composables/use_matomo'
 import { useSubmissionStore } from '~/stores/submissions'
@@ -83,7 +84,47 @@ function restartForm() {
 // Gérer la soumission du formulaire
 function handleFormComplete(): void {
   const simulateurVisibleAnswers = surveysStore.getAnswersForCalculation(simulateur.slug)
-  submissionStore
+
+
+  const schema = surveysStore.getSchema(simulateur.slug);
+  if(schema?.engine === 'publicodes') {
+
+    const aidesToEvaluate = schema?.dispositifs;
+
+    console.log('schema', aidesToEvaluate);
+
+    const {engine, calculateEligibility} = useEligibilityService()
+    const eligibilityResults = calculateEligibility(simulateur.slug, simulateurVisibleAnswers, aidesToEvaluate)
+
+    /*console.log('eligibilityResults', eligibilityResults);
+    console.log(engine.evaluate('CIR . montant'))
+    console.log(engine.evaluate('CICo . montant'))
+    console.log(engine.evaluate('CII . montant'))
+    return;*/
+
+    submissionStore.submitFormPublicodes(simulateur.slug, simulateurVisibleAnswers, eligibilityResults.aidesResults)
+    .then((success: boolean) => {
+      console.log('success submitFormPublicodes', success);
+      if (success) {
+        setTimeout(() => {
+          // Inertia router redirection instead of window.location.href
+          const secureHash = submissionStore.getSecureHash(simulateur.slug)
+          router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
+            preserveState: true,
+            preserveScroll: true,
+          })
+        }, 1000)
+      }
+      else {
+        setTimeout(() => {
+          resumeForm()
+        }, 1500)
+      }
+    })
+
+
+  } else {
+    submissionStore
     .submitForm(simulateur.slug, simulateurVisibleAnswers)
     .then((success: boolean) => {
       if (success) {
@@ -102,6 +143,10 @@ function handleFormComplete(): void {
         }, 1500)
       }
     })
+  }
+
+
+
 }
 
 onMounted(() => {

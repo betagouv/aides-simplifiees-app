@@ -96,13 +96,13 @@ function handleFormComplete(): void {
     const {engine, calculateEligibility} = useEligibilityService()
     const eligibilityResults = calculateEligibility(simulateur.slug, simulateurVisibleAnswers, aidesToEvaluate)
 
+
     /*
     console.log("-------")
     console.log('eligibilityResults', eligibilityResults);
     console.log(simulateurVisibleAnswers)
-    console.log("CII")
-    console.log(engine.evaluate('CII . eligibilite'))
-    console.log(engine.evaluate('CII . montantPlafonne'))
+    console.log("CIR")
+    console.log(engine.evaluate('CIR . montant'))
     console.log("-------")
     return;*/
 

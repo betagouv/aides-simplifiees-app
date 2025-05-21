@@ -37,143 +37,102 @@ CIR . eligibilite:
 
 
 
-
-
 CIR . montant:
-  titre: Montant du Crédit d'Impôt Recherche
-  applicable si: CIR . eligibilite
-  valeur: CIR . totalCredit + CICo . montant
-
-CIR . totalCredit:
   valeur:
     somme:
-      - CIR . montantDepensesRD  # barème métropole et barème DOM
-      - CIR . montantDepensesNormalisation  # barème métropole et barème DOM
-      - CIR . montantRemboursementRD  # barème métropole uniquement
+      - CIR . creditMetropole
+      - CIR . creditDom
 
-CIR . montantDepensesRD:
-  variations:
-    - si: situationGeographique = "'metropole'"
-      alors: CIR . montantRDBase
-    - sinon: CIR . montantRDDOM  # TODO filtrer plus finement pour DOM
 
-CIR . montantRDBase:
-  baremeMetropole:
-    assiette: CIR . assietteRDBase
+CIR . creditMetropole:
+  barème:
+    assiette: CIR . depensesMetropole
     tranches:
       - taux: 30%
-        plafond: 100000000 €
+        plafond: 100000000
       - taux: 5%
 
-CIR . montantRDDOM:
-  baremeMetropole:
-    assiette: CIR . assietteRDBase
+CIR . creditDom:
+  barème:
+    assiette: CIR . depensesDom
     tranches:
       - taux: 50%
-        plafond: 100000000 €
+        plafond: 100000000
       - taux: 5%
 
 
-CIR . assietteRDBase:
-  soustraction:  # TODO vérifier par rapport à bolt : depenses  * (depenses - deductions / depenses) = depenses * ratio
-    - CIR . totalDepensesRD
-    - CIR . deductionsRD
-
-
-CIR . totalDepensesRD:
+CIR . depensesMetropole:
   valeur:
     somme:
-      - depensesRDAmortissementBiens
-      - depensesRDIndemnisationAssurance
-      - depensesRDChercheursTechniciens
-      - depensesRDRemunerationInvention
-      - depensesRDRechercheLiensDependance
-      - depensesRDRechercheSansLiensDependance
-      - remboursementsSubventionsOrdc  # vérifier si à lister ici
+      - somme:
+          - depensesRdAmortissementBiens
+          - (-depensesRdAmortissementBiensDom)
+      - somme:
+          - depensesRdIndemnisationAssurance
+          - (-depensesRdIndemnisationAssuranceDom)
+      - somme:
+          - depensesRdChercheursTechniciens
+          - (-depensesRdChercheursTechniciensDom)
+      - somme:
+          - depensesRdRemunerationInvention
+          - (-depensesRdRemunerationInventionDom)
+      - somme:
+          - depensesNormalisationSalaires
+          - (-depensesNormalisationSalairesDom)
+      - somme:
+          - depensesPrototypeFraisDepotDessins
+          - (-depensesPrototypeFraisDepotDessinsDom)
+      - somme:
+          - somme:
+            - depensesRdRechercheLiensDependance
+            - (-depensesRdRechercheLiensDependanceDom)
+          - somme:
+            - depensesRdRechercheSansLiensDependance
+            - (-depensesRdRechercheSansLiensDependanceDom)
+      - somme: #TODO: Pas présent pour les DOM : à vérifier que c'est bien le baréme métropole qui s'applique / ou alors faire une seule assiete DOM ou métropole avec un seul taux et non plusieurs taux
+          - depensesOrdc
+          - (-subventionsOrdc)
+          - remboursementsSubventionsOrdc
+      - somme:
+          - 0
+          - (-CIR . deductions . metropole)
 
 
+# TODO: "Autres dépenses de fonctionnement faites dans le cadre des opérations de recherche et développement (40 % des dépenses de personnel et 75 %des dépenses d'amortissement)"
+# TODO:  "Dépenses liées à l'élaboration de nouvelles créations par les entreprises du secteur textile-habillement-cuir, y compris lorsqu'elles sont confiées à des stylistes ou bureaux de style agréés (jusqu'au 31 décembre 2027)."
 
-CIR . deductionsRD:
+
+CIR . depensesDom:
   valeur:
     somme:
-      - depensesRDSubventionsPubliques
-      - depensesRDDepensesConseil
-      - depensesRDDepensesTiersCir
+      - depensesRdAmortissementBiensDom
+      - depensesRdIndemnisationAssuranceDom
+      - depensesRdChercheursTechniciensDom
+      - depensesRdRemunerationInventionDom
+      - depensesNormalisationSalairesDom
+      - depensesPrototypeFraisDepotDessinsDom
+      - somme:
+          - depensesRdRechercheLiensDependanceDom
+          - depensesRdRechercheSansLiensDependanceDom
+      - somme:
+          - 0
+          - (-CIR . deductions . dom)
 
-
-CIR . montantDepensesNormalisation:
-  default: 0
-# TODO: generateur d'erreurs
-#  variations:
-#    - si: situationGeographique = "metropole"
-#      alors: CIR . montantDepensesNormalisationBase
-#    - sinon: CIR . montantDepensesNormalisationDOM  # TODO filtrer plus finement pour DOM
-
-CIR . montantNormalisationBase:
-  baremeMetropole:
-    assiette: CIR . assietteNormalisationBase
-    tranches:
-      - taux: 30%
-        plafond: 100000000 €
-      - taux: 5%
-
-CIR . montantNormalisationDOM:
-  baremeMetropole:
-    assiette: CIR . assietteNormalisationBase
-    tranches:
-      - taux: 50%
-        plafond: 100000000 €
-      - taux: 5%
-
-
-CIR . assietteNormalisationBase:
-  soustraction:  # TODO vérifier par rapport à bolt : depenses  * (depenses - deductions / depenses) = depenses * ratio
-    - CIR . totalDepensesNormalisation
-    - CIR . deductionsNormalisation
-
-
-CIR . totalDepensesNormalisation:
+CIR . deductions:
   valeur:
     somme:
-      - depensesNormalisationSalaires
-      - depensesNormalisationDirigeant
-      - depensesNormalisationRemboursementSubventions  # vérifier si à lister ici
+      - depensesRdSubventionsPubliques
+      - depensesRdDepensesConseil
+      - depensesRdDepensesTiersCir
 
+CIR . deductions . dom:
+    variations:
+      - si: situationGeographique = "dom"
+        alors: CIR . deductions
+      - sinon: 0
 
-CIR . deductionsNormalisation:
-  valeur:
-    somme:
-      - depensesNormalisationSubventions
-      - depensesNormalisationConseil
-
-
-CIR . montantRemboursement:
-  somme:
-    - CIR . montantRemboursementRD
-    - CIR . montantRemboursementNormalisation
-
-
-CIR . montantRemboursementRD:
-  bareme:
-    assiette: CIR . totalRemboursementsRD
-    tranches:
-      - taux: 30%
-        plafond: 100000000 €
-      - taux: 5%
-
-
-CIR . totalRemboursementsRD:
-  valeur: remboursementsSubventionsOrdc
-
-
-CIR . montantRemboursementNormalisation:
-  bareme:
-    assiette: CIR . totalRemboursementsNormalisation
-    tranches:
-      - taux: 30%
-        plafond: 100000000 €
-      - taux: 5%
-
-CIR . totalRemboursementsNormalisation:
-  valeur: depensesNormalisationRemboursementSubventions
-
+CIR . deductions . metropole:
+    variations:
+      - si: situationGeographique = "metropole"
+        alors: CIR . deductions
+      - sinon: 0

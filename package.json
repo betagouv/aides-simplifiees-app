@@ -1,9 +1,8 @@
 {
-  "name": "as",
+  "name": "aides-simplifiees-app",
   "type": "module",
   "version": "1.0.0",
-  "private": true,
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-only",
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build --ignore-ts-errors && pnpm build:iframe-integration",

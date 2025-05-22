@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 import type SimulateurController from '#controllers/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
-import { DsfrAlert } from '@gouvminint/vue-dsfr'
+import { DsfrAlert, DsfrCallout } from '@gouvminint/vue-dsfr'
 import { usePage } from '@inertiajs/vue3'
-import { computed, onMounted, ref, watch } from 'vue'
+import { useDynamicEligibility } from '~/composables/use_dynamic_eligibility'
 import { useMatomo } from '~/composables/use_matomo'
-import { useSurveysStore } from '~/stores/surveys'
-import { useEligibilityService, type DispositifDetail as AideDetail, type EligibilityResults } from '~/composables/use_eligibility_service'
 
 const {
   props: {
@@ -17,149 +15,76 @@ const {
 // Track view in Matomo
 useMatomo().trackEvent('Simulateur', 'IntermediaryResults', simulateur.slug)
 
-// Access the survey store
-const surveysStore = useSurveysStore()
-const { calculateEligibility } = useEligibilityService()
-
-// Get answers from the survey
-const surveyAnswers = computed(() => surveysStore.getAnswersForCalculation(simulateur.slug))
-const currentPage = computed(() => surveysStore.getCurrentPage(simulateur.slug) as SurveyResultsPage)
-const schema = computed(() => surveysStore.getSchema(simulateur.slug))
-
-// Get aides from the page configuration
-const aidesToEvaluate = computed((): AideDetail[] => {
-  if (currentPage.value?.type === 'intermediary-results' && currentPage.value?.dispositifs) {
-    const aideDetailsList = schema.value?.intermediaryResults?.dispositifs || []
-    return currentPage.value.dispositifs.map(aideId => {
-      const aideDetail = aideDetailsList.find(d => d.id === aideId)
-      return {
-        id: aideId,
-        title: aideDetail?.title || aideId,
-        description: aideDetail?.description || `Aide ${aideId}`
-      }
-    })
-  }
-  return []
-})
-
-// State for calculated results
-const calculatedResults = ref<EligibilityResults>({
-  eligibleDispositifs: [],
-  potentialDispositifs: [],
-  ineligibleDispositifs: [],
-  aidesResults: {},
-})
-
-const hasEligibleAides = computed(() => calculatedResults.value.eligibleDispositifs.length > 0)
-const hasPotentialAides = computed(() => calculatedResults.value.potentialDispositifs.length > 0)
-const hasIneligibleAides = computed(() => calculatedResults.value.ineligibleDispositifs.length > 0)
-
-function performEligibilityCalculation() {
-  if (!simulateur.slug || !aidesToEvaluate.value.length) {
-    calculatedResults.value = {
-      eligibleDispositifs: [],
-      potentialDispositifs: [],
-      ineligibleDispositifs: [],
-      aidesResults: {},
-    }
-    return
-  }
-  calculatedResults.value = calculateEligibility(
-    simulateur.slug,
-    surveyAnswers.value,
-    aidesToEvaluate.value
-  )
-}
-
-watch([surveyAnswers, aidesToEvaluate], () => {
-  performEligibilityCalculation()
-}, { deep: true })
-
-onMounted(() => {
-  performEligibilityCalculation()
-})
+const {
+  aidesToEvaluate,
+  calculatedResults,
+  hasEligibleAides,
+  hasPotentialAides,
+  hasIneligibleAides,
+} = useDynamicEligibility(simulateur.slug)
 </script>
 
 <template>
   <div>
-    <div
+    <!-- Eligible aides -->
+    <DsfrCallout
       v-if="hasEligibleAides"
-      class="fr-mb-3w"
+      class="fr-p-3w fr-callout--green-emeraude"
     >
-      <h3 class="fr-h6">Aides pour lesquelles vous semblez éligible</h3>
-      <p>
-        En fonction des informations que vous avez déjà fournies, vous semblez éligible
-        aux aides suivantes :
-      </p>
+      <h3 class="fr-text--md">
+        Selon les informations fournies, vous semblez éligible aux aides suivantes :
+      </h3>
       <ul>
         <li
           v-for="aide in calculatedResults.eligibleDispositifs"
           :key="aide.id"
         >
-          <strong>{{ aide.title }}</strong>
-          <p>
-            {{ aide.description }}
-          </p>
-          <p v-if="aide.reason">
-            <small>Note : {{ aide.reason }}</small>
+          <p class="fr-text--md">
+            {{ aide.title }}
           </p>
         </li>
       </ul>
-    </div>
+    </DsfrCallout>
 
     <!-- Potential aides -->
-    <div
+    <DsfrCallout
       v-if="hasPotentialAides"
-      class="fr-mb-3w"
+      class="fr-p-3w fr-callout--blue-cumulus"
     >
-      <h3 class="fr-h6">
-        Aides pour lesquelles vous pourriez être éligible
-      </h3>
-      <p>
+      <h3 class="fr-text--md">
         Ces aides nécessitent plus d'informations pour déterminer votre éligibilité :
-      </p>
+      </h3>
       <ul>
         <li
           v-for="aide in calculatedResults.potentialDispositifs"
           :key="aide.id"
         >
-          <strong>{{ aide.title }}</strong>
-          <p>
-            {{ aide.description }}
-          </p>
-          <p v-if="aide.reason">
-            <small>Note : {{ aide.reason }}</small>
+          <p class="fr-text--md">
+            {{ aide.title }}
           </p>
         </li>
       </ul>
-    </div>
+    </DsfrCallout>
 
     <!-- Ineligible aides -->
-    <div
+    <DsfrCallout
       v-if="hasIneligibleAides"
-      class="fr-mb-3w"
+      class="fr-p-3w fr-callout--pink-tuile"
     >
-      <h3>Aides pour lesquelles vous n'êtes pas éligible</h3>
-      <p>
-        Selon les informations fournies, vous ne remplissez pas les critères d'éligibilité pour :
-      </p>
+      <h3 class="fr-text--md">
+        Selon les informations fournies, vous ne remplissez pas les critères d'éligibilité des dispositifs suivants :
+      </h3>
       <ul>
         <li
           v-for="aide in calculatedResults.ineligibleDispositifs"
           :key="aide.id"
         >
-          <strong>{{ aide.title }}</strong>
-          <p>
-            {{ aide.description }}
-          </p>
-          <p
-            v-if="aide.reason"
-          >
-            <small>Raison : {{ aide.reason }}</small>
+          <p class="fr-text--md">
+            {{ aide.title }}<span v-if="aide.reason"> : {{ aide.reason }}</span>
           </p>
         </li>
       </ul>
-    </div>
+    </DsfrCallout>
 
     <!-- No aides message -->
     <DsfrAlert
@@ -168,7 +93,7 @@ onMounted(() => {
       type="info"
       description="Nous analysons votre situation. Continuez la simulation pour affiner les résultats ou vérifiez les informations fournies."
     />
-     <DsfrAlert
+    <DsfrAlert
       v-if="aidesToEvaluate.length === 0"
       title="Aucune aide à évaluer"
       type="info"

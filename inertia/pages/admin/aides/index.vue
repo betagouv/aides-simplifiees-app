@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type AdminController from '#controllers/admin_controller'
+import type AdminAideController from '#controllers/admin/admin_aide_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
-import AdminListContainer from '~/components/admin/AdminListContainer.vue'
+import AdminListContainer from '~/components/admin/AdminItemsListContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const {
   props: {
     aides,
   },
-} = usePage<InferPageProps<AdminController, 'renderPublicAidesList'>>()
+} = usePage<InferPageProps<AdminAideController, 'index'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -23,6 +23,7 @@ setBreadcrumbs([
   <AdminListContainer
     title="Administration des aides"
     entity-name="une aide"
+    inertia-props-name="aides"
     entity-gender="f"
     entity-name-plural="aides"
     create-path="/admin/aides/create"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type AdminController from '#controllers/admin_controller'
+import type AdminNotionController from '#controllers/admin/admin_notion_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, router, usePage } from '@inertiajs/vue3'
 import NotionForm from '~/components/admin/NotionForm.vue'
@@ -12,7 +12,7 @@ const {
   props: {
     notion,
   },
-} = usePage<InferPageProps<AdminController, 'renderEditNotion'>>()
+} = usePage<InferPageProps<AdminNotionController, 'edit'>>()
 
 const pageTitle = `Modifier la notion « ${notion.title} »`
 

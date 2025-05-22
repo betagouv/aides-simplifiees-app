@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type SimulateurController from '#controllers/simulateur_controller'
+import type SimulateurController from '#controllers/content/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrAccordion, DsfrAccordionsGroup, DsfrBadge, DsfrButton } from '@gouvminint/vue-dsfr'
-import { router, usePage } from '@inertiajs/vue3'
+import { Head, router, usePage } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
 import DsfrLink from '~/components/DsfrLink.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
@@ -12,7 +12,7 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<SimulateurController, 'renderRecapitulatif'>>()
+} = usePage<InferPageProps<SimulateurController, 'showRecapitulatif'>>()
 
 const simulateurTitle = simulateur.title || simulateur.slug
 
@@ -36,6 +36,10 @@ setBreadcrumbs([
 </script>
 
 <template>
+  <Head
+    :title="`Récapitulatif de votre simulation '${simulateur.title}'`"
+    :description="`Découvrez les aides auxquelles vous êtes eligibles avec le récapitulatif de votre simulation '${simulateur.title}'.`"
+  />
   <div v-if="simulateur">
     <hgroup class="fr-mb-4w">
       <h2>Récapitulatif des informations que vous avez renseignées</h2>

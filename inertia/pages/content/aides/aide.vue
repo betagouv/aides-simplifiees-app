@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type AideController from '#controllers/content/aide_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
@@ -13,7 +13,7 @@ const {
     aide,
     html,
   },
-} = usePage<InferPageProps<DynamicContentController, 'renderAide'>>()
+} = usePage<InferPageProps<AideController, 'show'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([

@@ -60,6 +60,7 @@ watch(selectedTab, async (tab) => {
           v-if="selectedTab === 'editor'"
           id="md-editor-textarea"
           v-model="model"
+          required
           class="md-editor__textarea fr-p-2w"
           placeholder="Contenu de la page en Markdown..."
         />

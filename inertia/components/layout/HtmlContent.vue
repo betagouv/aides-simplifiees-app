@@ -1,13 +1,14 @@
 <script lang="ts" setup>
+import type { DateTime } from 'luxon'
 import { formatDateTime } from '~/utils/date_time'
 
 const props = defineProps<{
   title: string
-  updatedAt?: string
+  updatedAt: string | null | DateTime
   html: string
 }>()
-console.log('props', props)
-const formatted = props.updatedAt ? formatDateTime(props.updatedAt) : null
+
+const formatted = formatDateTime(props.updatedAt)
 </script>
 
 <template>
@@ -16,7 +17,7 @@ const formatted = props.updatedAt ? formatDateTime(props.updatedAt) : null
       <hgroup>
         <h1>{{ title }}</h1>
         <p
-          v-if="formatted?.date && formatted?.time"
+          v-if="formatted"
           class="fr-hint-text fr-text--md"
         >
           Dernière mise à jour le {{ formatted.date }} à {{ formatted.time }}

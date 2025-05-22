@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type NotionController from '#controllers/content/notion_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
@@ -13,7 +13,7 @@ const {
     notion,
     html,
   },
-} = usePage<InferPageProps<DynamicContentController, 'renderNotion'>>()
+} = usePage<InferPageProps<NotionController, 'show'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 

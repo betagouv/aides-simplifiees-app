@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type SimulateurController from '#controllers/simulateur_controller'
+import type SimulateurController from '#controllers/content/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
@@ -11,7 +11,7 @@ const {
   props: {
     simulateurs,
   },
-} = usePage<InferPageProps<SimulateurController, 'renderPublicSimulateursList'>>()
+} = usePage<InferPageProps<SimulateurController, 'index'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([

@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import type AdminSimulateurController from '#controllers/admin/admin_simulateur_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrInputGroup, DsfrSelect } from '@gouvminint/vue-dsfr'
 import { useForm } from '@inertiajs/vue3'
-import AdminForm from '~/components/admin/AdminForm.vue'
+import AdminForm from '~/components/admin/AdminItemFormContainer.vue'
 import DsfrSlugInput from '~/components/admin/DsfrSlugInput.vue'
 
 const props = defineProps<{
-  defaultValues?: SerializedSimulateur
+  defaultValues?: InferPageProps<AdminSimulateurController, 'edit'>['simulateur']
 }>()
 
 defineEmits<{

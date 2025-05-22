@@ -1,0 +1,147 @@
+CII:
+  titre: Crédit d'impôt Innovation
+
+CII . eligibilite:
+  titre: Eligibilité au CII
+  valeur:
+    toutes ces conditions:
+      - estUnePME
+      - une de ces conditions:
+        - natureActivite . industrielle
+        - natureActivite . commerciale
+        - natureActivite . agricole
+      - une de ces conditions:
+        - toutes ces conditions:
+            - typeImposition = 'is'
+            - regimeFiscalEstReel
+        - toutes ces conditions:
+            - typeImposition = 'ir'
+            - regimeFiscalEstReel
+        - toutes ces conditions:
+            - typeImposition = 'exonere'
+            - une de ces conditions:
+              - JEI . eligibilite
+              - categorieExoneration . repriseEntrepriseEnDifficulte
+              - categorieExonerationZoneSpecifique = 'ZFR'
+              - categorieExonerationZoneSpecifique = 'ZFU_TE'
+              - categorieExonerationZoneSpecifique = 'BER'
+              - categorieExonerationZoneSpecifique = 'ZRD'
+              - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+              - categorieExonerationZoneSpecifique = 'ZRR'
+              - categorieExonerationZoneSpecifique = 'FRR'
+              - categorieExonerationZoneSpecifique = 'BUD'
+              - categorieExonerationZoneSpecifique = 'ZDP'
+
+
+CII . montant:
+  titre: Montant du Crédit d'Impôt Innovation
+  unité: €
+  applicable si: CII . eligibilite
+  valeur:
+    le maximum de:
+      - 0
+      - CII . montantPlafonne
+
+CII . montantPlafonne:
+  unité: €
+  valeur:
+    somme:
+      - CII . depensesBase
+      - CII . depensesDOM
+      - CII . depensesCorse
+      - (-CII . deductions)
+  plafond: 400000€
+
+CII . depensesBase:
+  valeur:
+    produit:
+      - 20%
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisations
+          - depensesPrototypeChercheursTechniciens
+          - depensesPrototypeRemunerationInvention
+          - depensesPrototypeAmortissementsBrevets
+          - depensesPrototypeFraisDepotDessins
+          - depensesPrototypeDepensesSousTraitance
+          - depensesPrototypeRemboursementsSubventions
+
+CII . depensesDOM:
+  produit:
+    - 40%
+    - somme:
+        - depensesPrototypeAmortissementsImmobilisationsDom
+        - depensesPrototypeAmortissementsBrevetsDom
+        - depensesPrototypeFraisDepotDessinsDom
+        - depensesPrototypeDepensesSousTraitanceDom
+
+CII . depensesCorse:
+  valeur:
+    produit:
+      - CII . tauxCorse
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisationsCorse
+          - depensesPrototypeAmortissementsBrevetsCorse
+          - depensesPrototypeFraisDepotDessinsCorse
+          - depensesPrototypeDepensesSousTraitanceCorse
+
+CII . tauxCorse:
+  valeur:
+    variations:
+      - si:
+          toutes ces conditions:
+            - effectifTotalN < 50
+            - une de ces conditions:
+                - chiffreAffairesN <= 10000000
+                - bilanTotalN <= 10000000
+        alors: 40%
+      - sinon: 35%
+
+CII . deductions:
+  valeur:
+    somme:
+      - depensesPrototypeSubventionsPubliques
+      - depensesPrototypeDepensesConseil
+      - depensesPrototypeDepensesTiersCii
+
+CII . depassementEffectifN:
+  valeur: effectifTotalN >= 250
+
+CII . depassementEffectifN1:
+  valeur: effectifTotalN1 >= 250
+
+CII . depassementEffectifN2:
+  valeur: effectifTotalN2 >= 250
+
+CII . depassementFinancierN:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffairesN > 50000000
+      - bilanTotalN > 43000000
+
+CII . depassementFinancierN1:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffairesN1 > 50000000
+      - bilanTotalN1 > 43000000
+
+CII . depassementFinancierN2:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffairesN2 > 50000000
+      - bilanTotalN2 > 43000000
+
+CII . depassementConsecutif:
+  valeur:
+    une de ces conditions:
+      - toutes ces conditions:
+          - CII . depassementEffectifN
+          - CII . depassementEffectifN1
+      - toutes ces conditions:
+          - CII . depassementEffectifN1
+          - CII . depassementEffectifN2
+      - toutes ces conditions:
+          - CII . depassementFinancierN
+          - CII . depassementFinancierN1
+      - toutes ces conditions:
+          - CII . depassementFinancierN1
+          - CII . depassementFinancierN2

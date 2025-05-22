@@ -1,0 +1,138 @@
+CIR:
+
+CIR . eligibilite:
+  titre: Éligibilité au Crédit d'Impôt Recherche
+  valeur:
+    une de ces conditions:
+      - toutes ces conditions:
+        - une de ces conditions:
+          - natureActivite . industrielle
+          - natureActivite . commerciale
+          - natureActivite . agricole
+        - une de ces conditions:
+          - toutes ces conditions:
+            - typeImposition = 'is'
+            - regimeFiscalEstReel
+          - toutes ces conditions:
+              - typeImposition = 'ir'
+              - regimeFiscalEstReel
+          - toutes ces conditions:
+            - typeImposition = 'exonere'
+            - une de ces conditions:
+              - JEI . eligibilite
+              - categorieExoneration . repriseEntrepriseEnDifficulte
+              - categorieExonerationZoneSpecifique = 'ZFR'
+              - categorieExonerationZoneSpecifique = 'ZFU_TE'
+              - categorieExonerationZoneSpecifique = 'BER'
+              - categorieExonerationZoneSpecifique = 'ZRD'
+              - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+              - categorieExonerationZoneSpecifique = 'ZRR'
+              - categorieExonerationZoneSpecifique = 'FRR'
+              - categorieExonerationZoneSpecifique = 'BUD'
+              - categorieExonerationZoneSpecifique = 'ZDP'
+      - toutes ces conditions:
+        - natureActivite . artisanale
+        - regimeFiscalEstReel
+        - typeDeRevenus = 'bic'
+
+
+
+CIR . montant:
+  valeur:
+    somme:
+      - CIR . creditMetropole
+      - CIR . creditDom
+
+
+CIR . creditMetropole:
+  barème:
+    assiette: CIR . depensesMetropole
+    tranches:
+      - taux: 30%
+        plafond: 100000000
+      - taux: 5%
+
+CIR . creditDom:
+  barème:
+    assiette: CIR . depensesDom
+    tranches:
+      - taux: 50%
+        plafond: 100000000
+      - taux: 5%
+
+
+CIR . depensesMetropole:
+  valeur:
+    somme:
+      - somme:
+          - depensesRdAmortissementBiens
+          - (-depensesRdAmortissementBiensDom)
+      - somme:
+          - depensesRdIndemnisationAssurance
+          - (-depensesRdIndemnisationAssuranceDom)
+      - somme:
+          - depensesRdChercheursTechniciens
+          - (-depensesRdChercheursTechniciensDom)
+      - somme:
+          - depensesRdRemunerationInvention
+          - (-depensesRdRemunerationInventionDom)
+      - somme:
+          - depensesNormalisationSalaires
+          - (-depensesNormalisationSalairesDom)
+      - somme:
+          - depensesPrototypeFraisDepotDessins
+          - (-depensesPrototypeFraisDepotDessinsDom)
+      - somme:
+          - somme:
+            - depensesRdRechercheLiensDependance
+            - (-depensesRdRechercheLiensDependanceDom)
+          - somme:
+            - depensesRdRechercheSansLiensDependance
+            - (-depensesRdRechercheSansLiensDependanceDom)
+      - somme: #TODO: Pas présent pour les DOM : à vérifier que c'est bien le baréme métropole qui s'applique / ou alors faire une seule assiete DOM ou métropole avec un seul taux et non plusieurs taux
+          - depensesOrdc
+          - (-subventionsOrdc)
+          - remboursementsSubventionsOrdc
+      - somme:
+          - 0
+          - (-CIR . deductions . metropole)
+
+
+# TODO: "Autres dépenses de fonctionnement faites dans le cadre des opérations de recherche et développement (40 % des dépenses de personnel et 75 %des dépenses d'amortissement)"
+# TODO:  "Dépenses liées à l'élaboration de nouvelles créations par les entreprises du secteur textile-habillement-cuir, y compris lorsqu'elles sont confiées à des stylistes ou bureaux de style agréés (jusqu'au 31 décembre 2027)."
+
+
+CIR . depensesDom:
+  valeur:
+    somme:
+      - depensesRdAmortissementBiensDom
+      - depensesRdIndemnisationAssuranceDom
+      - depensesRdChercheursTechniciensDom
+      - depensesRdRemunerationInventionDom
+      - depensesNormalisationSalairesDom
+      - depensesPrototypeFraisDepotDessinsDom
+      - somme:
+          - depensesRdRechercheLiensDependanceDom
+          - depensesRdRechercheSansLiensDependanceDom
+      - somme:
+          - 0
+          - (-CIR . deductions . dom)
+
+CIR . deductions:
+  valeur:
+    somme:
+      - depensesRdSubventionsPubliques
+      - depensesRdDepensesConseil
+      - depensesRdDepensesTiersCir
+
+CIR . deductions . dom:
+    variations:
+      - si: situationGeographique = "dom"
+        alors: CIR . deductions
+      - sinon: 0
+
+CIR . deductions . metropole:
+    variations:
+      - si: situationGeographique = "metropole"
+        alors: CIR . deductions
+      - sinon: 0

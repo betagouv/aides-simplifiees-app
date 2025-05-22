@@ -14,7 +14,7 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
+} = usePage<InferPageProps<SimulateurController, 'renderSimulateur'>>()
 
 const { debugMode } = storeToRefs(useSurveyDebugStore())
 </script>

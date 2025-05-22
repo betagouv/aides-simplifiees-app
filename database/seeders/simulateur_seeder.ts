@@ -13,7 +13,6 @@ export default class SimulateurSeeder extends BaseSeeder {
       title: 'Aides financières au déménagement et au logement',
       description:
         'Répondez à ces questions pour découvrir les aides au logement et déménagement auxquelles vous pourriez être éligible',
-      shortTitle: 'Logement',
       pictogramPath: '/artworks/custom-pictograms/demenagement.svg',
       status: 'published',
     })

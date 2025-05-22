@@ -9,6 +9,7 @@ import SurveyChoiceScreen from '~/components/survey/SurveyChoiceScreen.vue'
 import SurveyForm from '~/components/survey/SurveyForm.vue'
 import SurveyNavigation from '~/components/survey/SurveyNavigation.vue'
 import SurveyWelcomeScreen from '~/components/survey/SurveyWelcomeScreen.vue'
+import { useEligibilityService } from '~/composables/use_eligibility_service'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
 import { useMatomo } from '~/composables/use_matomo'
 import { useSubmissionStore } from '~/stores/submissions'
@@ -21,7 +22,7 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
+} = usePage<InferPageProps<SimulateurController, 'renderSimulateur'>>()
 
 // Form schema loading and state management
 const surveysStore = useSurveysStore()
@@ -38,7 +39,7 @@ const resultsFetchStatus = computed(() => submissionStore.getSubmissionStatus(si
 const forceResume = getParam(url, 'resume') === 'true'
 
 // Fetch the survey schema
-surveysStore.loadSurveySchema(simulateur.slug)
+surveysStore.loadSchema(simulateur.slug)
 
 if (forceResume && hasAnswers.value) {
   // Resume the form if the query parameter is present
@@ -83,25 +84,66 @@ function restartForm() {
 // Gérer la soumission du formulaire
 function handleFormComplete(): void {
   const simulateurVisibleAnswers = surveysStore.getAnswersForCalculation(simulateur.slug)
-  submissionStore
-    .submitForm(simulateur.slug, simulateurVisibleAnswers)
-    .then((success: boolean) => {
-      if (success) {
-        setTimeout(() => {
+
+  const schema = surveysStore.getSchema(simulateur.slug)
+  if (schema?.engine === 'publicodes') {
+    const aidesToEvaluate = schema?.dispositifs
+
+    console.log('schema', aidesToEvaluate)
+
+    const { calculateEligibility } = useEligibilityService()
+    const eligibilityResults = calculateEligibility(simulateur.slug, simulateurVisibleAnswers, aidesToEvaluate)
+
+    /*
+    console.log("-------")
+    console.log('eligibilityResults', eligibilityResults);
+    console.log(simulateurVisibleAnswers)
+    console.log("CIR")
+    console.log(engine.evaluate('CIR . montant'))
+    console.log("-------")
+    return; */
+
+    submissionStore.submitFormPublicodes(simulateur.slug, simulateurVisibleAnswers, eligibilityResults.aidesResults)
+      .then((success: boolean) => {
+        console.log('success submitFormPublicodes', success)
+        if (success) {
+          setTimeout(() => {
           // Inertia router redirection instead of window.location.href
-          const secureHash = submissionStore.getSecureHash(simulateur.slug)
-          router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
-            preserveState: true,
-            preserveScroll: true,
-          })
-        }, 1000)
-      }
-      else {
-        setTimeout(() => {
-          resumeForm()
-        }, 1500)
-      }
-    })
+            const secureHash = submissionStore.getSecureHash(simulateur.slug)
+            router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
+              preserveState: true,
+              preserveScroll: true,
+            })
+          }, 1000)
+        }
+        else {
+          setTimeout(() => {
+            resumeForm()
+          }, 1500)
+        }
+      })
+  }
+  else {
+    submissionStore
+      .submitForm(simulateur.slug, simulateurVisibleAnswers)
+      .then((success: boolean) => {
+        if (success) {
+          setTimeout(() => {
+          // Inertia router redirection instead of window.location.href
+            const secureHash = submissionStore.getSecureHash(simulateur.slug)
+            router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
+              preserveState: true,
+              preserveScroll: true,
+            })
+          }, 1000)
+        }
+        else {
+          setTimeout(() => {
+            resumeForm()
+          }, 1500)
+        }
+      })
+  }
 }
 
 onMounted(() => {
@@ -111,19 +153,21 @@ onBeforeUnmount(() => {
   surveysStore.deleteCompleteListeners()
 })
 
-// Heading levels based on iframe context
 const { isIframe } = useIframeDisplay()
-const surveyH1 = computed(() => isIframe.value ? 'h1' : 'h2')
 </script>
 
 <template>
   <div>
-    <component
-      :is="surveyH1"
+    <!--
+    If rendered in an iframe, we need to add an invisible h1 tag to the page for a11y purpose.
+    If not in an iframe, an h1 has already been added earlier in the layout (see UserSimulation.vue)
+    -->
+    <h1
+      v-if="isIframe"
       class="fr-sr-only"
     >
-      Votre simulation
-    </component>
+      Votre simulation « {{ simulateur.title }} »
+    </h1>
 
     <LoadingSpinner v-if="schemaStatus === 'pending'" />
     <DsfrAlert
@@ -157,7 +201,7 @@ const surveyH1 = computed(() => isIframe.value ? 'h1' : 'h2')
 
       <!-- Welcome screen for starting the survey -->
       <template v-else-if="showWelcomeScreen">
-        <SurveyWelcomeScreen />
+        <SurveyWelcomeScreen :simulateur="simulateur" />
         <SurveyNavigation
           :buttons="[
             {

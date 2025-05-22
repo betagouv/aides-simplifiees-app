@@ -18,3 +18,9 @@ const model = defineModel<string | undefined>()
     :hint="question.description"
   />
 </template>
+
+<style scoped lang="scss">
+.fr-input-group {
+  margin-bottom: 2.5rem;
+}
+</style>

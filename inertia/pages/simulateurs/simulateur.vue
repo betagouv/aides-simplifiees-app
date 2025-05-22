@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type SimulateurController from '#controllers/simulateur_controller'
+import type SimulateurController from '#controllers/content/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import { onMounted } from 'vue'
@@ -11,7 +11,7 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
+} = usePage<InferPageProps<SimulateurController, 'show'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -35,10 +35,7 @@ onMounted(() => {
 <template>
   <Head
     :title="`Simulateur '${simulateur.title}'`"
-    :description="
-      simulateur.description
-        || `En quelques clics sur le simulateur '${simulateur.title}', découvrez si vous pouvez bénéficier d'aides financières.`
-    "
+    :description="simulateur.metaDescription || simulateur.description"
   />
   <Survey />
 </template>

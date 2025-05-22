@@ -47,6 +47,73 @@ export const useSubmissionStore = defineStore(
       secureHashes.value[simulateurId] = hash
     }
 
+    const submitFormPublicodes = async (simulateurId: string, answers: any, aidesResults: SimulationResultsAides) => {
+      debug.log('[Submission Store] submitForm', simulateurId, answers)
+
+      // Sending the data to a web API to calculate a set of 'aides'
+
+      try {
+        setSubmissionStatus(simulateurId, 'pending')
+
+        if (aidesResults) {
+          setResults(simulateurId, aidesResults)
+          setSubmissionStatus(simulateurId, 'success')
+
+          // Track form submission in Matomo
+          const matomo = useMatomo()
+          matomo.trackSurveySubmit(simulateurId)
+
+          // Store form data and results
+          try {
+            const storeResponse = await axios.post(
+              '/api/store-form-data',
+              {
+                simulateurId,
+                answers,
+                results: aidesResults,
+              },
+              {
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'X-Requested-With': 'XMLHttpRequest',
+                },
+              },
+            )
+
+            if (storeResponse.data.success) {
+              debug.log('[Submission Store] Form data stored successfully:', storeResponse.data)
+
+              // Store the secure hash for potential future use
+              if (storeResponse.data.secureHash) {
+                setSecureHash(simulateurId, storeResponse.data.secureHash)
+              }
+
+              return true
+            }
+            else {
+              setSubmissionStatus(simulateurId, 'error')
+              console.error('[Submission Store] Failed to store form data:', storeResponse.data)
+            }
+          }
+          catch (storageError) {
+            setSubmissionStatus(simulateurId, 'error')
+            console.error('[Submission Store] Error storing form data:', storageError)
+          }
+
+          return true
+        }
+      }
+      catch (error) {
+        setSubmissionStatus(simulateurId, 'error')
+        console.error('[Submission Store] Error during form submission:', error)
+        return false
+      }
+
+      setResults(simulateurId, aidesResults)
+      setSubmissionStatus(simulateurId, 'success')
+    }
+
     const submitForm = async (simulateurId: string, answers: any) => {
       debug.log('[Submission Store] submitForm', simulateurId, answers)
 
@@ -143,6 +210,7 @@ export const useSubmissionStore = defineStore(
       getSecureHash,
       setSecureHash,
       submitForm,
+      submitFormPublicodes,
     }
   },
   {

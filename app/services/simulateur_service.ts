@@ -92,7 +92,6 @@ export default class SimulateurService {
       slug: 'logement-mobilite',
       title: 'Logement et mobilité',
       description: 'Découvrez les aides disponibles pour votre logement et votre mobilité',
-      shortTitle: 'Logement',
       pictogramPath: '/icons/logement.svg',
       status: 'draft',
     })

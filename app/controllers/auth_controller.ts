@@ -28,7 +28,7 @@ export default class AuthController {
         await auth.use('web').login(user)
 
         // Redirect to admin dashboard
-        return response.redirect().toRoute('admin.index')
+        return response.redirect().toRoute('/admin')
       }
       // eslint-disable-next-line unused-imports/no-unused-vars
       catch (authError) {

@@ -4,6 +4,7 @@
   "id": "demenagement-logement",
   "title": "Déménagement et logement",
   "description": "Répondez à ces questions pour découvrir les aides au logement et déménagement auxquelles vous pourriez être éligible",
+  "engine": "openfisca",
   "steps": [
     {
       "id": "profil",
@@ -17,7 +18,8 @@
           "choices": [
             {
               "id": "etudiant",
-              "title": "En études ou en formation (lycée, BTS, université, alternance...)"
+              "title": "En études ou en formation (lycée, BTS, université, alternance...)",
+              "tooltip": "Cette option concerne les personnes inscrites dans un établissement d'enseignement supérieur ou secondaire"
             },
             {
               "id": "actif",

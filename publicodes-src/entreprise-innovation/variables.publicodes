@@ -1,0 +1,364 @@
+natureActivite:
+natureActivite . industrielle:
+  par défaut: non
+natureActivite . commerciale:
+  par défaut: non
+natureActivite . agricole:
+  par défaut: non
+natureActivite . artisanale:
+  par défaut: non
+natureActivite . autreActivite:
+  par défaut: non
+
+
+situationGeographique:
+  par défaut: "'metropole'"
+  une possibilité:
+    - "'metropole'"
+    - "'outremer'"
+
+entrepriseEnDifficulte:
+  par défaut: non
+
+dateDeCreation:
+  par défaut: 01/01/1900
+
+activiteNouvelle:
+  par défaut: non
+
+
+dirigeantsOuActionnairesUniversitaire:
+dirigeantsOuActionnairesUniversitaire . etudiant:
+  par défaut: non
+dirigeantsOuActionnairesUniversitaire . diplomeMaster:
+  par défaut: non
+dirigeantsOuActionnairesUniversitaire . diplomeDoctorat:
+  par défaut: non
+dirigeantsOuActionnairesUniversitaire . enseignant:
+  par défaut: non
+dirigeantsOuActionnairesUniversitaire . aucune:
+  par défaut: non
+
+
+valorisationRecherche:
+  par défaut: non
+
+contratValorisation:
+  par défaut: non
+
+
+capitalDetenu:
+capitalDetenu . personnesPhysiques:
+  par défaut: non
+capitalDetenu . autreJei:
+  par défaut: non
+capitalDetenu . associationFondation:
+  par défaut: non
+capitalDetenu . etablissementPublic:
+  par défaut: non
+capitalDetenu . societeInvestissement:
+  par défaut: non
+capitalDetenu . aucune:
+  par défaut: non
+
+
+
+chiffreAffairesN:
+  titre: Chiffre d'affaires de l'année N
+  par défaut: 0
+  unité: €/an
+
+bilanTotalN:
+  titre: Bilan total de l'année N
+  par défaut: 0
+  unité: €/an
+
+effectifTotalN:
+  titre: Effectif de l'année N
+  par défaut: 0
+  unité: employé
+
+chiffreAffairesN1:
+  titre: Chiffre d'affaires de l'année N-1
+  par défaut: 0
+  unité: €/an
+
+bilanTotalN1:
+  titre: Bilan total de l'année N-1
+  par défaut: 0
+  unité: €/an
+
+effectifTotalN1:
+  titre: Effectif de l'année N-1
+  par défaut: 0
+  unité: employé
+
+chiffreAffairesN2:
+  titre: Chiffre d'affaires de l'année N-2
+  par défaut: 0
+  unité: €/an
+
+bilanTotalN2:
+  titre: Bilan total de l'année N-2
+  par défaut: 0
+  unité: €/an
+
+effectifTotalN2:
+  titre: Effectif de l'année N-2
+  par défaut: 0
+  unité: employé
+
+
+categorieExoneration:
+categorieExoneration . jei:
+  par défaut: non
+categorieExoneration . repriseEntrepriseEnDifficulte:
+  par défaut: non
+categorieExoneration . zoneSpecifique:
+  par défaut: non
+categorieExoneration . aucune:
+  par défaut: non
+
+
+categorieExonerationZoneSpecifique:
+categorieExonerationZoneSpecifique . zfr:
+  par défaut: non
+categorieExonerationZoneSpecifique . zfuTe:
+  par défaut: non
+categorieExonerationZoneSpecifique . ber:
+  par défaut: non
+categorieExonerationZoneSpecifique . zrd:
+  par défaut: non
+categorieExonerationZoneSpecifique . zfo:
+  par défaut: non
+categorieExonerationZoneSpecifique . zrr:
+  par défaut: non
+categorieExonerationZoneSpecifique . frr:
+  par défaut: non
+categorieExonerationZoneSpecifique . bud:
+  par défaut: non
+categorieExonerationZoneSpecifique . zdp:
+  par défaut: non
+
+pourcentageRd:
+
+effectifAugmente:
+  titre: L'effectif de l'entreprise est en augmentation
+  question: L'effectif de votre entreprise a-t-il augmenté au cours des exercices précédents ?
+
+depensesStables:
+  titre: Les dépenses de l'entreprise sont stables
+  question: Les dépenses de votre entreprise sont-elles restées stables au cours des exercices précédents ?
+
+
+#### Dépenses pour calcul des montant CIR, CII, CICo
+### Dépenses R&D
+depensesRD:
+depensesRDAmortissementBiens:
+depensesRDAmortissementBiensDom:
+
+depensesRDIndemnisationAssurance:
+depensesRDIndemnisationAssuranceDom:
+
+depensesRDChercheursTechniciens:
+depensesRDChercheursTechniciensDom:
+
+depensesRDRemunerationInvention:
+depensesRDRemunerationInventionDom:
+
+depensesRDRechercheLiensDependance:
+depensesRDRechercheLiensDependanceDom:
+
+depensesRDRechercheSansLiensDependance:
+depensesRDRechercheSansLiensDependanceDom:
+
+contratOrdc:
+
+respecteCriteresOrdc:
+  par défaut: non
+
+depensesOrdc:
+  par défaut: 0
+
+subventionsOrdc:
+  par défaut: 0
+
+remboursementsSubventionsOrdc:
+  par défaut: 0
+
+depensesRDSubventionsPubliques:
+  par défaut: 0
+
+depensesRDDepensesConseil:
+  par défaut: 0
+
+depensesRDDepensesTiersCir:
+  par défaut: 0
+
+### Dépenses Normalisation
+depensesNormalisationSalaires:
+  par défaut: 0
+
+depensesNormalisationSalairesDom:
+  par défaut: 0
+
+depensesNormalisationDirigeant:
+  par défaut: 0
+
+depensesNormalisationDirigeantDom:
+  par défaut: 0
+
+depensesNormalisationRemboursementSubventions:
+  par défaut: 0
+
+depensesNormalisationSubventions:
+  par défaut: 0
+
+depensesNormalisationConseil:
+  par défaut: 0
+
+### Dépenses Prototype
+depensesPrototypeAmortissementsImmobilisations:
+  titre: Dotations aux amortissements des immobilisations créées ou acquises à l'état neuf et affectées directement à la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototypeAmortissementsImmobilisationsDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototypeAmortissementsImmobilisationsCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototypeChercheursTechniciens:
+  titre: Chercheurs et techniciens de recherche qui sont directement et exclusivement affectés aux opérations de recherche et développement
+  par défaut: 0
+
+depensesPrototypeRemunerationInvention:
+  titre: Salariés auteurs d'une invention après des opérations de recherche a qui on a versé une rémunération supplémentaire
+  par défaut: 0
+
+depensesPrototypeAmortissementsBrevets:
+  titre: Dotations aux amortissements, frais de prise, de maintenance et de défense des brevets et des certificats d'obtention végétale relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototypeAmortissementsBrevetsDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototypeAmortissementsBrevetsCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototypeFraisDepotDessins:
+  titre: Frais de dépôt et de défense des dessins et modèles relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototypeFraisDepotDessinsDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototypeFraisDepotDessinsCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototypeDepensesSousTraitance:
+  titre: Dépenses afférentes aux opérations de conception de prototypes ou installations pilotes de nouveaux produits dont la réalisation est confiée à des entreprises ou des bureaux d'études et d'ingénierie agréés
+  par défaut: 0
+
+depensesPrototypeDepensesSousTraitanceDom:
+  titre: Dont dépenses réalisées dans un département d'Outre-mer
+  par défaut: 0
+
+depensesPrototypeDepensesSousTraitanceCorse:
+  titre: Dont dépenses réalisées en Corse
+  par défaut: 0
+
+depensesPrototypeRemboursementsSubventions:
+  titre: Montant des remboursements des subventions publiques à ajouter à l'assiette du crédit d'impôt
+  par défaut: 0
+
+depensesPrototypeSubventionsPubliques:
+  titre: Montant des subventions publiques reçues par l'entreprise en raison des opérations de conception de prototypes ou installations pilotes de nouveaux produits
+  par défaut: 0
+
+depensesPrototypeDepensesConseil:
+  titre: Montant des dépenses exposées auprès de tiers au titre de prestations de conseil pour l'octroi du bénéfice du crédit d'impôt
+  par défaut: 0
+
+depensesPrototypeDepensesTiersCii:
+  titre: Montant des dépenses exposées et facturées pour la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits pour le compte de tiers bénéficiaire du CII
+  par défaut: 0
+
+
+chiffreAffairesSelector:
+chiffreAffairesSelector . yearN:
+  par défaut: non
+chiffreAffairesSelector . yearN1:
+  par défaut: non
+chiffreAffairesSelector . yearN2:
+  par défaut: non
+chiffreAffairesSelector . noBilan:
+  par défaut: non
+
+
+typeDepenses:
+typeDepenses . rd:
+  par défaut: non
+typeDepenses . normalisation:
+  par défaut: non
+typeDepenses . prototype:
+  par défaut: non
+
+performancesSuperieures:
+performancesSuperieures . techniques:
+  par défaut: non
+performancesSuperieures . eco:
+  par défaut: non
+performancesSuperieures . ergonomiques:
+  par défaut: non
+performancesSuperieures . fonctionnalites:
+  par défaut: non
+performancesSuperieures . performancesSuperieuresAucune:
+  par défaut: non
+
+typeDeRevenus:
+  une possibilité:
+    - "'bic'"
+    - "'bnc'"
+
+regimeFiscal:
+  une possibilité:
+    - "'micro'"
+    - "'reel-simplifie'"
+    - "'reel-normal'"
+
+typeImposition:
+  une possibilité:
+    - "'is'"
+    - "'ir'"
+    - "'exonere'"
+
+
+prototypeDestination:
+produitMisMarche:
+
+
+
+
+depensesRdIndemnisationAssuranceDom:
+depensesRdIndemnisationAssurance:
+depensesRdAmortissementBiensDom:
+depensesRdAmortissementBiens:
+depensesRdRemunerationInventionDom:
+depensesRdRemunerationInvention:
+depensesRdChercheursTechniciensDom:
+depensesRdChercheursTechniciens:
+depensesRdRechercheSansLiensDependanceDom:
+depensesRdRechercheSansLiensDependance:
+depensesRdRechercheLiensDependanceDom:
+depensesRdRechercheLiensDependance:
+depensesRdDepensesTiersCir:
+depensesRdDepensesConseil:
+depensesRdSubventionsPubliques:
+depensesNormalisationRemboursementsSubventions:

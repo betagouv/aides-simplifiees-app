@@ -16,14 +16,17 @@
     --blue-france-950-100: #21213f;
   }
 }
+
 html {
   @media screen and (min-width: em) {
     scroll-padding-top: 1rem;
   }
+
   @media screen and (min-width: 48em) {
     scroll-padding-top: 2rem;
   }
 }
+
 .brand-contrast-text {
   color: var(--brand-contrast-text);
 }
@@ -36,6 +39,10 @@ html {
   color: var(--brand-contrast-text--highlight);
 }
 
+.brand-contrast-text--hint-text {
+  color: var(--brand-contrast-text--disabled);
+}
+
 .brand-title-gradient,
 .fr-header__service-title {
   [data-fr-theme="light"] & {
@@ -44,6 +51,7 @@ html {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+
   [data-fr-theme="dark"] & {
     background: linear-gradient(45deg, #8585F6 30%, #CCCCFA 100%);
     background-clip: text;
@@ -53,9 +61,50 @@ html {
 }
 
 .brand-html-content {
-  h2, h3, h4, h5, h6 {
+
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     &:not(:first-child) {
       margin-top: 1.25em;
     }
+  }
+
+  th {
+    text-align: left !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+
+  thead {
+    border-bottom: 2px solid var(--border-default-grey);
+  }
+
+  tbodytr {
+    border-bottom: 1px solid var(--border-default-grey);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  th,
+  td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-default-grey);
+  }
+
+  /* Adjustments for dark mode, if your app supports it */
+  .dark-mode thead,
+  .dark-mode th,
+  .dark-mode td,
+  .dark-mode tbody tr {
+    border-color: var(--border-default-grey-dark, #666);
   }
 }

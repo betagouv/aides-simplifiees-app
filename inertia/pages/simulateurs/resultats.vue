@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type SimulateurController from '#controllers/simulateur_controller'
+import type SimulateurController from '#controllers/content/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrAccordion, DsfrAccordionsGroup, DsfrBadge, VIcon } from '@gouvminint/vue-dsfr'
 import { Head, usePage } from '@inertiajs/vue3'
@@ -21,9 +21,6 @@ const {
   },
 } = usePage<InferPageProps<SimulateurController, 'showResultats'>>()
 
-const simulateurTitle = simulateur.title || simulateur.slug
-const simulationDateTime = formatDateTime(new Date(createdAt))
-
 const hasAides = results.aides?.length > 0
 const hasMontants = results.montants?.length > 0
 const hasAidesNonEligibles = results.aidesNonEligibles?.length > 0
@@ -38,7 +35,7 @@ const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Simulateurs', to: '/simulateurs' },
-  { text: simulateurTitle, to: `/simulateurs/${simulateur.slug}#simulateur-title` },
+  { text: simulateur.title, to: `/simulateurs/${simulateur.slug}#simulateur-title` },
   {
     text: 'Résultats',
     to: `/simulateurs/${simulateur.slug}/resultats${secureHash ? `/${secureHash}` : ''}#simulateur-title`,
@@ -48,25 +45,27 @@ setBreadcrumbs([
 const showResume = ref(false)
 const showMethodology = ref(false)
 const activeAccordion = ref()
+
+const simulationDateTime = formatDateTime(createdAt)
 </script>
 
 <template>
   <Head
-    :title="`Résultats de votre simulation '${simulateurTitle}'`"
-    :description="`Découvrez les aides auxquelles vous êtes eligibles avec les résultats de votre simulation '${simulateurTitle}'.`"
+    :title="`Résultats de votre simulation '${simulateur.title}'`"
+    :description="`Découvrez les aides auxquelles vous êtes eligibles avec les résultats de votre simulation '${simulateur.title}'.`"
   />
   <article class="results">
     <header class="results__header">
       <div>
         <hgroup>
           <h2
-            v-if="simulateurTitle"
+            v-if="simulateur.title"
             class="results__title"
           >
             Résultats de votre simulation
           </h2>
           <p
-            v-if="simulationDateTime?.date && simulationDateTime?.time"
+            v-if="simulationDateTime"
             class="results__datetime fr-mt-n2w"
             :style="{ color: 'var(--text-mention-grey)' }"
           >

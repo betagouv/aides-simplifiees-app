@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type AideController from '#controllers/content/aide_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import DsfrLink from '~/components/DsfrLink.vue'
@@ -12,7 +12,7 @@ const {
     hash,
     html,
   },
-} = usePage<InferPageProps<DynamicContentController, 'showResultatsAide'>>()
+} = usePage<InferPageProps<AideController, 'showWithResults'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -24,11 +24,8 @@ setBreadcrumbs([
 
 <template>
   <Head
-    :title="`Aide '${aide.title}'`"
-    :description="
-      aide.description
-        || `Découvrez toutes les informations sur l'aide '${aide.title}' pour vous accompagner dans vos démarches.`
-    "
+    :title="aide.title"
+    :description="aide.metaDescription ?? aide.description ?? ''"
   />
   <article class="brand-html-content">
     <header class="fr-mb-6w">

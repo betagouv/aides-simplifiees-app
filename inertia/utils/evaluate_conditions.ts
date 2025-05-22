@@ -54,6 +54,38 @@ export function evaluateCondition(conditionStr: string, answers: Record<string, 
       }
     }
 
+    // Handle excludes syntax for checkboxes
+    // Example: "dirigeants-ou-actionnaires-universitaire.excludes('etudiant')"
+    if (conditionStr.includes('.excludes(')) {
+      const matches = conditionStr.match(/^(.+)\.excludes\((.+)\)$/)
+      if (matches && matches.length === 3) {
+        const questionId = matches[1].trim()
+        // Parse the comma-separated values inside the parentheses
+        const valuesToCheck = matches[2]
+          .split(',')
+          .map(v => v.trim().replace(/^["'](.+)["']$/, '$1')) // Remove quotes
+
+        const selectedValues = getAnswerValue(questionId)
+
+        // If no selection made yet, return true (since we're checking for exclusion)
+        if (!selectedValues) {
+          return true
+        }
+
+        // For a single value (radio buttons), check if it's NOT in the values to check
+        if (typeof selectedValues === 'string') {
+          return !valuesToCheck.includes(selectedValues)
+        }
+
+        // For multiple values (checkboxes), check if NONE of the values are in the selected values
+        if (Array.isArray(selectedValues)) {
+          return !valuesToCheck.some(v => selectedValues.includes(v))
+        }
+
+        return true
+      }
+    }
+
     // Handle comparison operations
     const comparisonOperators = ['>=', '<=', '>', '<', '=', '!=']
     for (const operator of comparisonOperators) {

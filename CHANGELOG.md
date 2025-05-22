@@ -1,5 +1,15 @@
 # CHANGELOG
 
+# 1.0.0
+* Ajouts de fonctionnalités
+* Détail :
+  * Ajout de Publicodes comme moteur possible pour les simulateurs
+  * Ajout d’un module de gestion des simulateurs avec CRUD complet
+  * Évolution du formalisme de description des formulaires (gestion des questions/étapes/pages)
+  * Ajout de l'affichage d'infobulles pour les choix de réponses
+  * Harmonisation des champs dans les modèles de données (notamment status, description, metaDescription)
+  * Mise à jour des controlleurs et sérialisation des entités via DTOs (Data Transfer Objects)
+
 ## 0.9.0
 * Ajouts de fonctionnalités
 * Détail :

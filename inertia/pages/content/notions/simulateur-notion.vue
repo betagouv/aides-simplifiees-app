@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type NotionController from '#controllers/content/notion_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import DsfrLink from '~/components/DsfrLink.vue'
@@ -11,7 +11,7 @@ const {
     notion,
     html,
   },
-} = usePage<InferPageProps<DynamicContentController, 'showNotion'>>()
+} = usePage<InferPageProps<NotionController, 'showWithSimulateur'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 

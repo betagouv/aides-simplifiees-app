@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DsfrAlert, DsfrBadge, DsfrButton, DsfrCard, DsfrModal } from '@gouvminint/vue-dsfr'
-import { router } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
 import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
@@ -8,16 +8,17 @@ import SectionContainer from '~/components/layout/SectionContainer.vue'
 
 interface ListItem {
   id: number
-  updatedAt: string | Date
   title: string
   slug: string
   status: string
-  description?: string
+  updatedAt?: string | Date | null
+  description?: string | null
 }
 
 const props = withDefaults(defineProps<{
   title: string
   items: ListItem[]
+  inertiaPropsName: string
   entityName: string
   entityGender: 'm' | 'f'
   entityNamePlural: string
@@ -50,7 +51,10 @@ function formatStatus(status: string): string {
   return statusMap[status]?.label || status
 }
 
-function formatDate(date: string | Date): string {
+function formatDate(date: string | Date | null | undefined): string | null {
+  if (!date) {
+    return null
+  }
   return new Date(date).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: '2-digit',
@@ -75,7 +79,13 @@ function deleteItem() {
   if (itemToDelete.value) {
     router.delete(`${props.deletePathPrefix}/${itemToDelete.value}`, {
       preserveScroll: true,
-      onFinish: () => closeDialog(),
+      onFinish: () => {
+        closeDialog()
+        // refresh the page to reflect the deletion
+        router.visit(usePage().url, {
+          only: [props.inertiaPropsName],
+        })
+      },
     })
   }
 }
@@ -112,13 +122,19 @@ function deleteItem() {
           <DsfrCard
             :title="item.title"
             :description="item.description || 'Aucune description'"
-            :detail="`Modifié${entityName.endsWith('e') ? 'e' : ''} le ${formatDate(item.updatedAt)}`"
+            :detail="(() => {
+              const formatted = formatDate(item.updatedAt)
+              if (!formatted) {
+                return undefined
+              }
+              return `Modifié${entityName.endsWith('e') ? 'e' : ''} le ${formatted}`
+            })()"
             no-arrow
             :buttons="[
               {
                 label: 'Éditer',
                 icon: { name: 'ri:edit-line', ssr: true },
-                onClick: () => router.visit(`${props.editPathPrefix}/${item.id}`),
+                onClick: () => router.visit(`${props.editPathPrefix}/${item.id}/edit`),
               },
               {
                 label: 'Consulter',

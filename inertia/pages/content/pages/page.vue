@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type PageController from '#controllers/content/page_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
@@ -13,7 +13,8 @@ const {
     page,
     html,
   },
-} = usePage<InferPageProps<DynamicContentController, 'renderPage'>>()
+} = usePage<InferPageProps<PageController, 'show'>>()
+
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },

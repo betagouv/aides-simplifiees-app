@@ -11,7 +11,7 @@ const {
   props: {
     simulateurs,
   },
-} = usePage<InferPageProps<StaticPagesController, 'home'>>()
+} = usePage<InferPageProps<StaticPagesController, 'showHome'>>()
 const baselineTitle = 'Trouvez les aides&nbsp;adaptées à&nbsp;votre&nbsp;situation'
 const baselineSubtitle = 'Un service simple et rapide pour savoir à quelles aides vous avez droit.'
 

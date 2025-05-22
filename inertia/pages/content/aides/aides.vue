@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type AideController from '#controllers/content/aide_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import AideCard from '~/components/aides/AideCard.vue'
@@ -12,7 +12,7 @@ const {
   props: {
     aides,
   },
-} = usePage<InferPageProps<DynamicContentController, 'renderPublicAidesList'>>()
+} = usePage<InferPageProps<AideController, 'index'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -40,8 +40,8 @@ setBreadcrumbs([
           <div class="fr-col-12 fr-col-sm-6 fr-col-md-4">
             <AideCard
               :title="aide.title"
-              :description="aide.description"
-              :link="`/aides/${aide.slug || aide.id}`"
+              :description="aide.description || ''"
+              :link="`/aides/${aide.slug}`"
               :instructeur="aide.instructeur"
               :type-aide="aide.type"
               :usage="aide.usage"

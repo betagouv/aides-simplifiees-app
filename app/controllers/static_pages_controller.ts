@@ -1,38 +1,34 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import SimulateurController from '#controllers/content/simulateur_controller'
 import Simulateur from '#models/simulateur'
 
 export default class StaticPagesController {
-  public async home({ inertia }: HttpContext) {
-    // Fetch published simulateurs
+  public async showHome({ inertia }: HttpContext) {
     const simulateurs = await Simulateur.query()
       .where('status', 'published')
 
     return inertia.render('home', {
-      simulateurs: simulateurs.map((simulateur) => {
-        return simulateur.serialize({
-          fields: ['id', 'title', 'slug', 'description', 'pictogramPath'],
-        })
-      }),
+      simulateurs: new SimulateurController.ListDto(simulateurs).toJson(),
     })
   }
 
-  public async partenaires({ inertia }: HttpContext) {
-    return inertia.render('content/pages/partenaires')
+  public async showPartenaires({ inertia }: HttpContext) {
+    return inertia.render('static/partenaires')
   }
 
-  public async integrerNosSimulateurs({ inertia }: HttpContext) {
-    return inertia.render('content/pages/integrer-nos-simulateurs')
+  public async showIntegrerNosSimulateurs({ inertia }: HttpContext) {
+    return inertia.render('static/integrer-nos-simulateurs')
   }
 
-  public async contact({ inertia }: HttpContext) {
-    return inertia.render('content/pages/contact')
+  public async showContact({ inertia }: HttpContext) {
+    return inertia.render('static/contact')
   }
 
-  public async statistiques({ inertia }: HttpContext) {
-    return inertia.render('statistiques')
+  public async showStatistiques({ inertia }: HttpContext) {
+    return inertia.render('static/statistiques')
   }
 
-  public async cookies({ inertia }: HttpContext) {
-    return inertia.render('content/pages/cookies')
+  public async showCookies({ inertia }: HttpContext) {
+    return inertia.render('static/cookies')
   }
 }

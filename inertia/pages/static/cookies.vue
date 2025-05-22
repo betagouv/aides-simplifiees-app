@@ -23,7 +23,7 @@ setBreadcrumbs([
     subtle
   >
     <BreadcrumbSectionContainer />
-    <SectionContainer type="page-header">
+    <SectionContainer type="page-full">
       <h1>
         Cookies
       </h1>

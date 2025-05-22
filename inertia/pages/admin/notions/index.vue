@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type AdminController from '#controllers/admin_controller'
+import type AdminNotionController from '#controllers/admin/admin_notion_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
-import AdminListContainer from '~/components/admin/AdminListContainer.vue'
+import AdminListContainer from '~/components/admin/AdminItemsListContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const {
   props: {
     notions,
   },
-} = usePage<InferPageProps<AdminController, 'renderPublicNotionsList'>>()
+} = usePage<InferPageProps<AdminNotionController, 'index'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -24,6 +24,7 @@ setBreadcrumbs([
     title="Administration des notions"
     entity-name="notion"
     entity-gender="f"
+    inertia-props-name="notions"
     entity-name-plural="notions"
     create-path="/admin/notions/create"
     edit-path-prefix="/admin/notions"

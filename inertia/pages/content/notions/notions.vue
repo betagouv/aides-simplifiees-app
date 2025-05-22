@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type DynamicContentController from '#controllers/dynamic_content_controller'
+import type NotionController from '#controllers/content/notion_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrCard } from '@gouvminint/vue-dsfr'
 import { Head, usePage } from '@inertiajs/vue3'
@@ -12,7 +12,7 @@ const {
   props: {
     notions,
   },
-} = usePage<InferPageProps<DynamicContentController, 'renderPublicNotionsList'>>()
+} = usePage<InferPageProps<NotionController, 'index'>>()
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
@@ -34,13 +34,13 @@ setBreadcrumbs([
         </h1>
         <template
           v-for="notion in notions"
-          :key="notion.id || notion.slug"
+          :key="notion.slug"
         >
           <div class="fr-col-4">
             <DsfrCard
               :title="notion.title"
               :description="notion.description || ''"
-              :link="`/notions/${notion.slug || notion.id}`"
+              :link="`/notions/${notion.slug}`"
             />
           </div>
         </template>

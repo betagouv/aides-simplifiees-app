@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type AdminController from '#controllers/admin_controller'
+import type AdminSimulateurController from '#controllers/admin/admin_simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
-import AdminListContainer from '~/components/admin/AdminListContainer.vue'
+import AdminListContainer from '~/components/admin/AdminItemsListContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const {
   props: {
     simulateurs,
   },
-} = usePage<InferPageProps<AdminController, 'renderListSimulateurs'>>()
+} = usePage<InferPageProps<AdminSimulateurController, 'index'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -25,6 +25,7 @@ setBreadcrumbs([
     entity-name="simulateur"
     entity-name-plural="simulateurs"
     entity-gender="m"
+    inertia-props-name="simulateurs"
     create-path="/admin/simulateurs/create"
     edit-path-prefix="/admin/simulateurs"
     view-path-prefix="/simulateurs"

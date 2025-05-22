@@ -6,28 +6,58 @@ import Simulateur from '#models/simulateur'
 import SimulateurService from '#services/simulateur_service'
 
 export default class SimulateurController {
+  /**
+   * Class to serialize a single simulateur data for sharing types with Inertia in the show view.
+   * @see https://docs.adonisjs.com/guides/views-and-templates/inertia#model-serialization
+   */
+  public static SingleDto = class {
+    constructor(private simulateur: Simulateur) { }
+    toJson() {
+      return {
+        title: this.simulateur.title,
+        slug: this.simulateur.slug,
+        pictogramPath: this.simulateur.pictogramPath,
+        description: this.simulateur.description,
+        metaDescription: this.simulateur.metaDescription,
+      }
+    }
+  }
+
+  /**
+   * Class to serialize the list of simulateurs data for sharing types with Inertia in the index view.
+   */
+  public static ListDto = class {
+    constructor(private simulateurs: Simulateur[]) { }
+
+    toJson() {
+      return this.simulateurs.map((simulateur) => {
+        return {
+          title: simulateur.title,
+          slug: simulateur.slug,
+          pictogramPath: simulateur.pictogramPath,
+        }
+      })
+    }
+  }
+
   private simulateurService = new SimulateurService()
 
   /**
    * Render the list page of public simulateurs
    */
-  public async renderPublicSimulateursList({ inertia }: HttpContext) {
+  public async index({ inertia }: HttpContext) {
     const simulateurs = await Simulateur.query()
       .where('status', 'published')
 
     return inertia.render('simulateurs/index', {
-      simulateurs: simulateurs.map((simulateur) => {
-        return simulateur.serialize({
-          fields: ['title', 'slug', 'description', 'pictogramPath'],
-        })
-      }) as SerializedSimulateur[],
+      simulateurs: new SimulateurController.ListDto(simulateurs).toJson(),
     })
   }
 
   /**
    * Render a single simulateur page
    */
-  public async renderSimulateur({ params, inertia, response }: HttpContext) {
+  public async show({ params, inertia, response }: HttpContext) {
     const simulateur = await Simulateur.query()
       .where('slug', params.simulateur_slug)
       .whereIn('status', ['published', 'unlisted'])
@@ -37,33 +67,25 @@ export default class SimulateurController {
       return response.status(404).send('Simulateur non trouvé')
     }
 
-    // Preload steps, questions and choices for the simulateur
-    await simulateur.load('steps', (stepsQuery) => {
-      stepsQuery.preload('questions', (questionsQuery) => {
-        questionsQuery.preload('choices')
-      })
-    })
-
     return inertia.render('simulateurs/simulateur', {
-      simulateur,
-      simulateurJson: JSON.parse(simulateur.builtJson || '{}'),
+      simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
     })
   }
 
   /**
    * Render the recapitulatif page for a simulateur
    */
-  public async renderRecapitulatif({ params, inertia, response }: HttpContext) {
+  public async showRecapitulatif({ params, inertia, response }: HttpContext) {
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')
     }
     return inertia.render('simulateurs/recapitulatif', {
-      simulateur,
+      simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
     })
   }
 
-  public async renderResultats({ params, inertia, request, response }: HttpContext) {
+  public async showResultats({ params, inertia, request, response }: HttpContext) {
     // Fetch the simulateur by ID or slug
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
@@ -89,7 +111,7 @@ export default class SimulateurController {
         'mobilite-parcoursup-eligibilite': true,
       }
       return inertia.render('simulateurs/resultats', {
-        simulateur,
+        simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
         createdAt: new Date(),
         results: await this.transformSimulationResults(mockCalculationResponse, {
           simulateur_slug: params.simulateur_slug,
@@ -120,8 +142,8 @@ export default class SimulateurController {
 
     // Render the results page with the form submission data if available
     return inertia.render('simulateurs/resultats', {
-      simulateur,
-      createdAt: formSubmission.createdAt.toJSDate(),
+      simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
+      createdAt: formSubmission.createdAt,
       results: await this.transformSimulationResults(formSubmission.results, params),
       secureHash: params.hash as string,
     })

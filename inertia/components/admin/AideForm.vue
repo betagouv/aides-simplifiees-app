@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import type AdminAideController from '#controllers/admin/admin_aide_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrButton, DsfrInputGroup, DsfrSelect } from '@gouvminint/vue-dsfr'
 import { useForm } from '@inertiajs/vue3'
-import AdminForm from '~/components/admin/AdminForm.vue'
+import AdminForm from '~/components/admin/AdminItemFormContainer.vue'
 import DsfrSlugInput from '~/components/admin/DsfrSlugInput.vue'
 import RichTextEditor from '~/components/admin/RichTextEditor.vue'
 
 const props = defineProps<{
-  defaultValues?: SerializedAide
+  defaultValues?: InferPageProps<AdminAideController, 'edit'>['aide']
 }>()
 
 defineEmits<{

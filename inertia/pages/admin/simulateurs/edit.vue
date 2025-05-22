@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type AdminController from '#controllers/admin_controller'
+import type AdminSimulateurController from '#controllers/admin/admin_simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, router, usePage } from '@inertiajs/vue3'
 import SimulateurForm from '~/components/admin/SimulateurForm.vue'
@@ -12,8 +12,8 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<AdminController, 'renderEditSimulateur'>>()
-console.log(simulateur)
+} = usePage<InferPageProps<AdminSimulateurController, 'edit'>>()
+
 const pageTitle = `Modifier le simulateur « ${simulateur.title} »`
 
 const { setBreadcrumbs } = useBreadcrumbStore()

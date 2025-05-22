@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type AdminController from '#controllers/admin_controller'
+import type AdminAideController from '#controllers/admin/admin_aide_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, router, usePage } from '@inertiajs/vue3'
 import AideForm from '~/components/admin/AideForm.vue'
@@ -12,7 +12,7 @@ const {
   props: {
     aide,
   },
-} = usePage<InferPageProps<AdminController, 'renderEditAide'>>()
+} = usePage<InferPageProps<AdminAideController, 'edit'>>()
 
 const pageTitle = `Modifier l'aide « ${aide.title} »`
 

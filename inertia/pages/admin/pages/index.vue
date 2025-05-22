@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type AdminController from '#controllers/admin_controller'
+import type AdminPageController from '#controllers/admin/admin_page_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
-import AdminListContainer from '~/components/admin/AdminListContainer.vue'
+import AdminListContainer from '~/components/admin/AdminItemsListContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const {
   props: {
     pages,
   },
-} = usePage<InferPageProps<AdminController, 'renderListPages'>>()
+} = usePage<InferPageProps<AdminPageController, 'index'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -24,6 +24,7 @@ setBreadcrumbs([
     title="Administration des pages"
     entity-name="page"
     entity-gender="f"
+    inertia-props-name="pages"
     entity-name-plural="pages"
     create-path="/admin/pages/create"
     edit-path-prefix="/admin/pages"

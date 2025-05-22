@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type AdminController from '#controllers/admin_controller'
+import type AdminPageController from '#controllers/admin/admin_page_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, router, usePage } from '@inertiajs/vue3'
 import PageForm from '~/components/admin/PageForm.vue'
@@ -12,7 +12,7 @@ const {
   props: {
     page,
   },
-} = usePage<InferPageProps<AdminController, 'renderEditPage'>>()
+} = usePage<InferPageProps<AdminPageController, 'edit'>>()
 
 const pageTitle = `Modifier la page « ${page.title} »`
 

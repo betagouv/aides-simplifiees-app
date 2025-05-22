@@ -63,7 +63,6 @@ export const useSubmissionStore = defineStore(
           const matomo = useMatomo()
           matomo.trackSurveySubmit(simulateurId)
 
-
           // Store form data and results
           try {
             const storeResponse = await axios.post(
@@ -104,21 +103,15 @@ export const useSubmissionStore = defineStore(
 
           return true
         }
-
-
-      } catch (error) {
+      }
+      catch (error) {
         setSubmissionStatus(simulateurId, 'error')
         console.error('[Submission Store] Error during form submission:', error)
         return false
       }
 
-
-
-
       setResults(simulateurId, aidesResults)
       setSubmissionStatus(simulateurId, 'success')
-
-
     }
 
     const submitForm = async (simulateurId: string, answers: any) => {

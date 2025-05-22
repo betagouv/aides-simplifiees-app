@@ -561,7 +561,7 @@
           ]
         },
         {
-          "id":"page-pourcentage-rd",
+          "id": "page-pourcentage-rd",
           "questions": [
             {
               "id": "pourcentage-rd",
@@ -721,7 +721,7 @@
         {
           "id": "rd-deductions",
           "title": "Détail des sommes à déduire de l'assiette du crédit d'impôt",
-          "questions":[
+          "questions": [
 
             {
               "id": "depenses-rd-subventions-publiques",

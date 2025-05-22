@@ -85,17 +85,14 @@ function restartForm() {
 function handleFormComplete(): void {
   const simulateurVisibleAnswers = surveysStore.getAnswersForCalculation(simulateur.slug)
 
+  const schema = surveysStore.getSchema(simulateur.slug)
+  if (schema?.engine === 'publicodes') {
+    const aidesToEvaluate = schema?.dispositifs
 
-  const schema = surveysStore.getSchema(simulateur.slug);
-  if(schema?.engine === 'publicodes') {
+    console.log('schema', aidesToEvaluate)
 
-    const aidesToEvaluate = schema?.dispositifs;
-
-    console.log('schema', aidesToEvaluate);
-
-    const {engine, calculateEligibility} = useEligibilityService()
+    const { calculateEligibility } = useEligibilityService()
     const eligibilityResults = calculateEligibility(simulateur.slug, simulateurVisibleAnswers, aidesToEvaluate)
-
 
     /*
     console.log("-------")
@@ -104,53 +101,49 @@ function handleFormComplete(): void {
     console.log("CIR")
     console.log(engine.evaluate('CIR . montant'))
     console.log("-------")
-    return;*/
+    return; */
 
     submissionStore.submitFormPublicodes(simulateur.slug, simulateurVisibleAnswers, eligibilityResults.aidesResults)
-    .then((success: boolean) => {
-      console.log('success submitFormPublicodes', success);
-      if (success) {
-        setTimeout(() => {
+      .then((success: boolean) => {
+        console.log('success submitFormPublicodes', success)
+        if (success) {
+          setTimeout(() => {
           // Inertia router redirection instead of window.location.href
-          const secureHash = submissionStore.getSecureHash(simulateur.slug)
-          router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
-            preserveState: true,
-            preserveScroll: true,
-          })
-        }, 1000)
-      }
-      else {
-        setTimeout(() => {
-          resumeForm()
-        }, 1500)
-      }
-    })
-
-
-  } else {
-    submissionStore
-    .submitForm(simulateur.slug, simulateurVisibleAnswers)
-    .then((success: boolean) => {
-      if (success) {
-        setTimeout(() => {
-          // Inertia router redirection instead of window.location.href
-          const secureHash = submissionStore.getSecureHash(simulateur.slug)
-          router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
-            preserveState: true,
-            preserveScroll: true,
-          })
-        }, 1000)
-      }
-      else {
-        setTimeout(() => {
-          resumeForm()
-        }, 1500)
-      }
-    })
+            const secureHash = submissionStore.getSecureHash(simulateur.slug)
+            router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
+              preserveState: true,
+              preserveScroll: true,
+            })
+          }, 1000)
+        }
+        else {
+          setTimeout(() => {
+            resumeForm()
+          }, 1500)
+        }
+      })
   }
-
-
-
+  else {
+    submissionStore
+      .submitForm(simulateur.slug, simulateurVisibleAnswers)
+      .then((success: boolean) => {
+        if (success) {
+          setTimeout(() => {
+          // Inertia router redirection instead of window.location.href
+            const secureHash = submissionStore.getSecureHash(simulateur.slug)
+            router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
+              preserveState: true,
+              preserveScroll: true,
+            })
+          }, 1000)
+        }
+        else {
+          setTimeout(() => {
+            resumeForm()
+          }, 1500)
+        }
+      })
+  }
 }
 
 onMounted(() => {

@@ -2,6 +2,7 @@
 import type StaticPagesController from '#controllers/static_pages_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import type { DsfrTileProps } from '@gouvminint/vue-dsfr'
+import houseSvg from '@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg'
 import { DsfrCard, DsfrTile, DsfrTiles } from '@gouvminint/vue-dsfr'
 import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
@@ -21,6 +22,15 @@ const simulationTiles: DsfrTileProps[] = simulateurs
     to: `/simulateurs/${simulateur.slug}`,
     svgPath: simulateur.pictogramPath,
   }))
+
+if (simulationTiles.length < 2) {
+  simulationTiles.push({
+    title: 'Rénovation du logement',
+    titleTag: 'h2',
+    to: 'https://mesaidesreno.beta.gouv.fr/',
+    svgPath: houseSvg,
+  })
+}
 </script>
 
 <template>

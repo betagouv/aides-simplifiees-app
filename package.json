@@ -1,9 +1,8 @@
 {
-  "name": "as",
+  "name": "aides-simplifiees-app",
   "type": "module",
-  "version": "0.9.0",
-  "private": true,
-  "license": "UNLICENSED",
+  "version": "1.0.1",
+  "license": "AGPL-3.0-only",
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build --ignore-ts-errors && pnpm build:iframe-integration",
@@ -46,7 +45,7 @@
     "@adonisjs/vite": "^4.0.0",
     "@gouvfr/dsfr": "~1.13.0",
     "@gouvfr/dsfr-chart": "^2.0.3",
-    "@gouvminint/vue-dsfr": "^8.3.1",
+    "@gouvminint/vue-dsfr": "^8.4.0",
     "@iconify/vue": "^4.3.0",
     "@iframe-resizer/child": "^5.4.5",
     "@iframe-resizer/parent": "^5.4.5",

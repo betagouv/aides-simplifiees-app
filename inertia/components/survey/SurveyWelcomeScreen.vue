@@ -3,7 +3,7 @@ import DsfrLink from '~/components/DsfrLink.vue'
 import MatomoOptOut from '~/components/MatomoOptOut.vue'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
 
-const props = defineProps<{
+defineProps<{
   simulateur: string
 }>()
 
@@ -23,12 +23,12 @@ const { isIframe } = useIframeDisplay()
       <p v-if="simulateur?.slug === 'entreprise-innovation'">
         <span class="fr-text--bold">Bienvenue !</span>
         Ce simulateur vous permet d'estimer 6 aides financières pour <strong>favoriser l'innovation de votre entreprise</strong>.
-        <br/>Ce service est en construction : vos retours sont les bienvenus pour l'améliorer.
+        <br>Ce service est en construction : vos retours sont les bienvenus pour l'améliorer.
       </p>
       <p v-else>
         <span class="fr-text--bold">Bienvenue !</span>
-        Ce simulateur vous permet d'estimer 5 aides financières pour le logement et le déménagement, conçu en priorité pour <strong>les lycéens et étudiants qui s'installent seuls.</strong>
-        Ce service est en construction : vos retours sont les bienvenus pour l'améliorer.
+        Ce simulateur vous permet d'estimer 5 aides financières pour le logement et le déménagement, conçu en priorité pour <strong>les lycéens et étudiants qui déménagent seuls au sein du territoire français.</strong>
+        Ce service est en construction : vos retours sont les bienvenus pour l'améliorer et prendre en compte plus de situations.
       </p>
       <p>
         En accédant au service, vous acceptez les

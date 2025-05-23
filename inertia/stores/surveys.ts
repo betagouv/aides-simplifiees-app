@@ -370,10 +370,11 @@ export const useSurveysStore = defineStore(
         if (Array.isArray(question.visibleWhen)) {
           // If it's an array, evaluate all conditions with AND logic
           const isVisible = question.visibleWhen.every(condition =>
-            evaluateCondition(condition, currentAnswers)
+            evaluateCondition(condition, currentAnswers),
           )
           return isVisible
-        } else {
+        }
+        else {
           // Single condition as a string (existing behavior)
           const isVisible = evaluateCondition(question.visibleWhen, currentAnswers)
           return isVisible

@@ -1,7 +1,7 @@
 <script lang="ts" setup generic="T, U">
 import type { ComponentPublicInstance } from 'vue'
 import type { AutocompleteFn } from '~/utils/autocomplete_functions'
-import { DsfrAlert, DsfrInput, DsfrSearchBar, DsfrSelect } from '@gouvminint/vue-dsfr'
+import { DsfrAlert, DsfrButton, DsfrInput, DsfrSearchBar, DsfrSelect } from '@gouvminint/vue-dsfr'
 import { useAsyncState } from '@vueuse/core'
 import { computed, customRef, nextTick, ref, watch } from 'vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'

@@ -1,7 +1,7 @@
-import Engine from 'publicodes'
+import type { SimulationResultsAides } from '~/types/aides'
 import sourceRules from '#publicodes-build/index'
+import Engine from 'publicodes'
 import { useSurveysStore } from '~/stores/surveys'
-import { SimulationResultsAides } from '~/types/aides'
 
 export interface DispositifDetail {
   id: string
@@ -38,9 +38,11 @@ function toKebabCase(str: string): string {
 
 // Utility: convert date from YYYY-MM-DD to DD/MM/YYYY
 function convertDateToFrenchFormat(dateStr: string): string {
-  if (!dateStr || typeof dateStr !== 'string') return dateStr
+  if (!dateStr || typeof dateStr !== 'string')
+    return dateStr
   const parts = dateStr.split('-')
-  if (parts.length !== 3) return dateStr
+  if (parts.length !== 3)
+    return dateStr
   return `${parts[2]}/${parts[1]}/${parts[0]}`
 }
 
@@ -54,28 +56,30 @@ function autoMapAnswersToPublicodesVariables(answers: Record<string, any>): Reco
 }
 
 export function useEligibilityService() {
-  //Export engine
+  // Export engine
   const engine = new Engine(sourceRules)
 
   function calculateEligibility(
     surveyId: string,
     answers: Record<string, any>,
-    dispositifsToEvaluate: DispositifDetail[]
+    dispositifsToEvaluate: DispositifDetail[],
   ): EligibilityResults {
     const surveysStore = useSurveysStore()
 
     const mappedAnswers = autoMapAnswersToPublicodesVariables(answers)
 
-    //1. Filter out keys that don't exist in the publicodes model
+    // 1. Filter out keys that don't exist in the publicodes model
     const validMappedAnswers: Record<string, any> = {}
     const missingKeys: string[] = []
 
-    Object.keys(mappedAnswers).forEach(key => {
+    Object.keys(mappedAnswers).forEach((key) => {
       try {
         // Use type assertion to handle dynamic rule names
         engine.getRule(key as any)
         validMappedAnswers[key] = mappedAnswers[key]
-      } catch (e) {
+      }
+      // eslint-disable-next-line unused-imports/no-unused-vars
+      catch (e) {
         missingKeys.push(key)
       }
     })
@@ -84,7 +88,7 @@ export function useEligibilityService() {
       console.log('Missing keys in publicodes model:', missingKeys)
     }
 
-    //2. Transform values to publicodes format
+    // 2. Transform values to publicodes format
     const transformedAnswers: Record<string, any> = {}
 
     Object.entries(validMappedAnswers).forEach(([key, value]) => {
@@ -92,22 +96,26 @@ export function useEligibilityService() {
 
       if (question?.type === 'checkbox' && Array.isArray(value)) {
         // For checkbox questions, create a new entry for each possible choice
-        question.choices?.forEach(choice => {
+        question.choices?.forEach((choice) => {
           const publicodesKey = `${key} . ${toCamelCase(choice.id)}`
           transformedAnswers[publicodesKey] = value.includes(choice.id) ? 'oui' : 'non'
         })
-      } else {
+      }
+      else {
         // For non-checkbox questions, transform the value based on its type
         let transformedValue = value
         if (value === true) {
           transformedValue = 'oui'
-        } else if (value === false) {
+        }
+        else if (value === false) {
           transformedValue = 'non'
-        } else if (typeof value === 'string') {
+        }
+        else if (typeof value === 'string') {
           // Convert date format if the question type is date
           if (question?.type === 'date') {
             transformedValue = convertDateToFrenchFormat(value)
-          } else {
+          }
+          else {
             // Wrap string values with quotes: value -> "'value'"
             transformedValue = `"${value}"`
           }
@@ -122,28 +130,30 @@ export function useEligibilityService() {
       eligibleDispositifs: [],
       potentialDispositifs: [],
       ineligibleDispositifs: [],
-      aidesResults: {}
+      aidesResults: {},
     }
 
     for (const dispositif of dispositifsToEvaluate) {
       try {
-        const evaluation = engine.evaluate(dispositif.id + " . eligibilite")
+        const evaluation = engine.evaluate(`${dispositif.id} . eligibilite`)
         const value = evaluation.nodeValue
         const baseResult = {
           id: dispositif.id,
           title: dispositif.title || dispositif.id,
           description: dispositif.description,
-          value: value,
+          value,
         }
 
         // Add to aidesResults
-        results.aidesResults[dispositif.id + "-eligibilite"] = value
+        results.aidesResults[`${dispositif.id}-eligibilite`] = value
 
         // Try to evaluate montant if it exists
         try {
-          const montantEvaluation = engine.evaluate(dispositif.id + " . montant")
+          const montantEvaluation = engine.evaluate(`${dispositif.id} . montant`)
           results.aidesResults[dispositif.id] = montantEvaluation.nodeValue
-        } catch (e) {
+        }
+        // eslint-disable-next-line unused-imports/no-unused-vars
+        catch (e) {
           // If montant doesn't exist, set it to 0
           results.aidesResults[dispositif.id] = 0
         }
@@ -153,21 +163,25 @@ export function useEligibilityService() {
             ...baseResult,
             status: 'eligible',
           })
-        } else if (value === false) {
-          let reason = "Les conditions d'éligibilité ne sont pas remplies."
+        }
+        else if (value === false) {
+          let reason = 'Les conditions d\'éligibilité ne sont pas remplies.'
           try {
             const reasonEval = engine.evaluate(`${dispositif.id} . raison non éligible`)
             if (typeof reasonEval.nodeValue === 'string' && reasonEval.nodeValue.trim() !== '') {
               reason = reasonEval.nodeValue
             }
-          } catch (e) { /* ignore */ }
+          }
+          // eslint-disable-next-line unused-imports/no-unused-vars
+          catch (e) { /* ignore */ }
           results.ineligibleDispositifs.push({
             ...baseResult,
             status: 'ineligible',
             reason,
           })
-        } else {
-          let reason = "Des informations supplémentaires sont nécessaires pour déterminer l'éligibilité."
+        }
+        else {
+          let reason = 'Des informations supplémentaires sont nécessaires pour déterminer l\'éligibilité.'
           const missingVars = Object.keys(evaluation.missingVariables || {})
           if (missingVars.length > 0) {
             reason = `Informations manquantes : ${missingVars.join(', ')}.`
@@ -179,7 +193,8 @@ export function useEligibilityService() {
             missingInfo: missingVars,
           })
         }
-      } catch (error) {
+      }
+      catch (error) {
         results.potentialDispositifs.push({
           id: dispositif.id,
           title: dispositif.title || dispositif.id,

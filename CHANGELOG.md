@@ -1,6 +1,23 @@
 # CHANGELOG
 
-## 0.9.0
+# 1.0.1 [#76](https://github.com/betagouv/aides-simplifiees-app/pull/76)
+* Évolutions mineures
+* Détail :
+  * Met à jour le package.json pour spécifier la license et le nom du projet
+  * Mises à jour de contenu mineures
+
+
+# 1.0.0 [#73](https://github.com/betagouv/aides-simplifiees-app/pull/73)
+* Ajouts de fonctionnalités
+* Détail :
+  * Ajout de Publicodes comme moteur possible pour les simulateurs
+  * Ajout d’un module de gestion des simulateurs avec CRUD complet
+  * Évolution du formalisme de description des formulaires (gestion des questions/étapes/pages)
+  * Ajout de l'affichage d'infobulles pour les choix de réponses
+  * Harmonisation des champs dans les modèles de données (notamment status, description, metaDescription)
+  * Mise à jour des controlleurs et sérialisation des entités via DTOs (Data Transfer Objects)
+
+## 0.9.0 [#67](https://github.com/betagouv/aides-simplifiees-app/pull/67)
 * Ajouts de fonctionnalités
 * Détail :
   * Permet d'afficher une infobulle par choix au sein d'une question

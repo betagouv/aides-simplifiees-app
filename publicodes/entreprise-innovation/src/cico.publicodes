@@ -39,9 +39,7 @@ CICo . eligibilite . explications:
   applicable si:
     est défini: est eligible
   non applicable si: est eligible
-  texte: >
-    Vous n'êtes pas éligible au Crédit d'Impôt Collaboratif (CICo) car :
-
+  texte: |
     {{ contratOrdc }}
     {{ natureActivite }}
     {{ regimeFiscalEstReel }}
@@ -53,21 +51,21 @@ CICo . eligibilite . explications:
         est défini: contratOrdc
       non applicable si: contratOrdc
       texte: |
-        - Votre entreprise n'a pas de contrat de recherche et développement collaboratif (ORDC).
+        Votre entreprise n'a pas de contrat de recherche et développement collaboratif (ORDC).
     natureActivite:
       non applicable si: natureActivite
       texte: |
-        - La nature d'activité de votre entreprise n'est pas éligible.
+        La nature d'activité de votre entreprise n'est pas éligible.
     regimeFiscalEstReel:
       non applicable si: regimeFiscalEstReel
       texte: |
-        - Votre entreprise n'est pas soumise à un régime réel d'imposition.
+        Votre entreprise n'est pas soumise à un régime réel d'imposition.
     imposition:
       applicable si:
         est défini: imposition
       non applicable si: imposition
       texte: |
-        - Votre entreprise est exonérée d'impôt.
+        Votre entreprise est exonérée d'impôt.
 
         NB : Les entreprises exonérées d'impôt sont éligibles au CICo uniquement si :
         - elles sont des Jeunes Entreprises Innovantes (JEI)

@@ -1,0 +1,26 @@
+{
+  "name": "entreprise-innovation",
+  "description": "Modèle publicodes des aides à l'innovation pour les entreprises",
+  "version": "0.1.0",
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "main": "publicodes-build/index.js",
+  "types": "publicodes-build/index.d.ts",
+  "files": [
+    "publicodes-build"
+  ],
+  "scripts": {
+    "compile": "publicodes compile",
+    "dev": "publicodes dev",
+    "pretest": "npm run compile",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "publicodes": "^1.8.5"
+  },
+  "devDependencies": {
+    "@publicodes/tools": "^1.7.2",
+    "vitest": "^2.1.2"
+  }
+}

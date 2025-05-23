@@ -31,7 +31,7 @@
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
     "#config/*": "./config/*.js",
-    "#publicodes-build/*": "./publicodes-build/*.js"
+    "#publicodes/*": "./publicodes/"
   },
   "dependencies": {
     "@adonisjs/auth": "^9.3.1",

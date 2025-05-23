@@ -1,7 +1,7 @@
-JEU:
+jeu:
   titre: Jeune entreprise Universitaire
 
-JEU . eligibilite:
+jeu . eligibilite:
   titre: Éligibilité au statut JEU
   toutes ces conditions:
     - estUnePME

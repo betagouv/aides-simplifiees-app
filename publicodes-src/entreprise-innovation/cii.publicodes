@@ -1,7 +1,7 @@
-CII:
+cii:
   titre: Crédit d'impôt Innovation
 
-CII . eligibilite:
+cii . eligibilite:
   titre: Eligibilité au CII
   valeur:
     toutes ces conditions:
@@ -20,7 +20,7 @@ CII . eligibilite:
         - toutes ces conditions:
             - typeImposition = 'exonere'
             - une de ces conditions:
-              - JEI . eligibilite
+              - jei . eligibilite
               - categorieExoneration . repriseEntrepriseEnDifficulte
               - categorieExonerationZoneSpecifique = 'ZFR'
               - categorieExonerationZoneSpecifique = 'ZFU_TE'
@@ -33,26 +33,26 @@ CII . eligibilite:
               - categorieExonerationZoneSpecifique = 'ZDP'
 
 
-CII . montant:
+cii . montant:
   titre: Montant du Crédit d'Impôt Innovation
   unité: €
-  applicable si: CII . eligibilite
+  applicable si: cii . eligibilite
   valeur:
     le maximum de:
       - 0
-      - CII . montantPlafonne
+      - cii . montantPlafonne
 
-CII . montantPlafonne:
+cii . montantPlafonne:
   unité: €
   valeur:
     somme:
-      - CII . depensesBase
-      - CII . depensesDOM
-      - CII . depensesCorse
-      - (-CII . deductions)
+      - cii . depensesBase
+      - cii . depensesDOM
+      - cii . depensesCorse
+      - (-cii . deductions)
   plafond: 400000€
 
-CII . depensesBase:
+cii . depensesBase:
   valeur:
     produit:
       - 20%
@@ -65,7 +65,7 @@ CII . depensesBase:
           - depensesPrototypeDepensesSousTraitance
           - depensesPrototypeRemboursementsSubventions
 
-CII . depensesDOM:
+cii . depensesDOM:
   produit:
     - 40%
     - somme:
@@ -74,17 +74,17 @@ CII . depensesDOM:
         - depensesPrototypeFraisDepotDessinsDom
         - depensesPrototypeDepensesSousTraitanceDom
 
-CII . depensesCorse:
+cii . depensesCorse:
   valeur:
     produit:
-      - CII . tauxCorse
+      - cii . tauxCorse
       - somme:
           - depensesPrototypeAmortissementsImmobilisationsCorse
           - depensesPrototypeAmortissementsBrevetsCorse
           - depensesPrototypeFraisDepotDessinsCorse
           - depensesPrototypeDepensesSousTraitanceCorse
 
-CII . tauxCorse:
+cii . tauxCorse:
   valeur:
     variations:
       - si:
@@ -96,52 +96,52 @@ CII . tauxCorse:
         alors: 40%
       - sinon: 35%
 
-CII . deductions:
+cii . deductions:
   valeur:
     somme:
       - depensesPrototypeSubventionsPubliques
       - depensesPrototypeDepensesConseil
       - depensesPrototypeDepensesTiersCii
 
-CII . depassementEffectifN:
+cii . depassementEffectifN:
   valeur: effectifTotalN >= 250
 
-CII . depassementEffectifN1:
+cii . depassementEffectifN1:
   valeur: effectifTotalN1 >= 250
 
-CII . depassementEffectifN2:
+cii . depassementEffectifN2:
   valeur: effectifTotalN2 >= 250
 
-CII . depassementFinancierN:
+cii . depassementFinancierN:
   valeur:
     toutes ces conditions:
       - chiffreAffairesN > 50000000
       - bilanTotalN > 43000000
 
-CII . depassementFinancierN1:
+cii . depassementFinancierN1:
   valeur:
     toutes ces conditions:
       - chiffreAffairesN1 > 50000000
       - bilanTotalN1 > 43000000
 
-CII . depassementFinancierN2:
+cii . depassementFinancierN2:
   valeur:
     toutes ces conditions:
       - chiffreAffairesN2 > 50000000
       - bilanTotalN2 > 43000000
 
-CII . depassementConsecutif:
+cii . depassementConsecutif:
   valeur:
     une de ces conditions:
       - toutes ces conditions:
-          - CII . depassementEffectifN
-          - CII . depassementEffectifN1
+          - cii . depassementEffectifN
+          - cii . depassementEffectifN1
       - toutes ces conditions:
-          - CII . depassementEffectifN1
-          - CII . depassementEffectifN2
+          - cii . depassementEffectifN1
+          - cii . depassementEffectifN2
       - toutes ces conditions:
-          - CII . depassementFinancierN
-          - CII . depassementFinancierN1
+          - cii . depassementFinancierN
+          - cii . depassementFinancierN1
       - toutes ces conditions:
-          - CII . depassementFinancierN1
-          - CII . depassementFinancierN2
+          - cii . depassementFinancierN1
+          - cii . depassementFinancierN2

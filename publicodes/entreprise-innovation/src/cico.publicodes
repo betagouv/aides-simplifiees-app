@@ -1,6 +1,7 @@
 cico:
   titre: Crédit d'impôt Collaboratif
 
+
 cico . eligibilite:
   titre: Eligibilité au CICo
   toutes ces conditions:

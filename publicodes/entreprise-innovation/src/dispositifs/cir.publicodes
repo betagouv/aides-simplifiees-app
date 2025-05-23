@@ -2,37 +2,30 @@ cir:
 
 cir . eligibilite:
   titre: Éligibilité au Crédit d'Impôt Recherche
-  une de ces conditions:
-    - toutes ces conditions:
-      - natureActivite . commercialeIndustrielleAgricole
-      - une de ces conditions:
-        - toutes ces conditions:
-          - typeImposition = 'is'
+  variations:
+    - si: natureActivite . commercialeIndustrielleAgricole
+      alors: regimeFiscalReelOuConditionDExoneration
+    - si:  natureActivite . artisanale
+      alors:
+        toutes ces conditions:
           - regimeFiscalEstReel
-        - toutes ces conditions:
-            - typeImposition = 'ir'
-            - regimeFiscalEstReel
-        - toutes ces conditions:
-          - typeImposition = 'exonere'
-          - une de ces conditions:
-            - jei . eligibilite
-            - categorieExoneration . repriseEntrepriseEnDifficulte
-            - categorieExonerationZoneSpecifique = 'ZFR'
-            - categorieExonerationZoneSpecifique = 'ZFU_TE'
-            - categorieExonerationZoneSpecifique = 'BER'
-            - categorieExonerationZoneSpecifique = 'ZRD'
-            - categorieExonerationZoneSpecifique = 'ZFA_DOM'
-            - categorieExonerationZoneSpecifique = 'ZRR'
-            - categorieExonerationZoneSpecifique = 'FRR'
-            - categorieExonerationZoneSpecifique = 'BUD'
-            - categorieExonerationZoneSpecifique = 'ZDP'
-    - toutes ces conditions:
-      - natureActivite . artisanale
-      - regimeFiscalEstReel
-      - typeDeRevenus = 'bic'
+          - typeDeRevenus = 'bic'
+    - sinon: non
 
-
-
+cir . eligibilite . explications:
+  applicable si: eligibilite = non
+  variations:
+    - si: natureActivite . commercialeIndustrielleAgricole
+      alors:
+        texte: |
+          Votre entreprise est une entreprise commerciale, industrielle ou agricole et
+          {{ regimeFiscalReelOuConditionDExoneration . explications }}
+    - si: natureActivite . artisanale
+      alors:
+        texte: |
+          Votre entreprise est artisanale et n'est pas imposée au régime réel d'imposition (BIC ou BNC).
+    - sinon:
+        texte: Votre nature d'activité n'est pas éligible au CIR.
 
 cir . montant:
   valeur:

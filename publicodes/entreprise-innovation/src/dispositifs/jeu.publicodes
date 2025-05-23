@@ -1,0 +1,30 @@
+jeu:
+  titre: Jeune entreprise Universitaire
+
+jeu . eligibilite:
+  titre: Éligibilité au statut JEU
+  toutes ces conditions:
+  - estUnePME
+  - jeuneEntreprise . conditionAge
+  - jeu . eligibilite . dirigeantsOuActionnairesUniversitaire
+  - capitalDetenu . eligibilite
+  - valorisationRecherche
+  - contratValorisation
+  - activiteNouvelle
+
+jeu . eligibilite . explications:
+  applicable si: eligibilite = non
+  texte: |
+    {{estUnePME . explications}}
+    {{jeuneEntreprise . conditionAge . explications}}
+    {{jeu . eligibilite . dirigeantsOuActionnairesUniversitaire . explication}}
+    {{capitalDetenu . eligibilite . explications}}
+    {{valorisationRecherche . explications}}
+    {{contratValorisation . explications}}
+    {{activiteNouvelle . explications}}
+
+jeu . eligibilite . dirigeantsOuActionnairesUniversitaire: dirigeantsOuActionnairesUniversitaire . aucune = non
+jeu . eligibilite . dirigeantsOuActionnairesUniversitaire . explication:
+  applicable si: jeu . eligibilite . dirigeantsOuActionnairesUniversitaire
+  texte: |
+    Au moins un dirigeant ou actionnaire de l'entreprise est universitaire.

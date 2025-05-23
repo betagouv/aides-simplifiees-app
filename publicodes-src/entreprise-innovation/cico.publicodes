@@ -1,7 +1,7 @@
-CICo:
+cico:
   titre: Crédit d'impôt Collaboratif
 
-CICo . eligibilite:
+cico . eligibilite:
   titre: Eligibilité au CICo
   valeur:
     toutes ces conditions:
@@ -16,7 +16,7 @@ CICo . eligibilite:
         - toutes ces conditions:
             - typeImposition = 'exonere'
             - une de ces conditions:
-              - JEI . eligibilite
+              - jei . eligibilite
               - categorieExoneration . repriseEntrepriseEnDifficulte
               - categorieExonerationZoneSpecifique = 'ZFR'
               - categorieExonerationZoneSpecifique = 'ZFU_TE'
@@ -29,16 +29,16 @@ CICo . eligibilite:
 
 
 
-CICo . montant:
+cico . montant:
   valeur:
     produit:
-      - CICo . taux
+      - cico . taux
       - somme:
         - depensesOrdc
         - (-subventionsOrdc)
   plafond: 6000000 €/an
 
-CICo . taux:
+cico . taux:
   variations:
     - si:
         une de ces conditions:

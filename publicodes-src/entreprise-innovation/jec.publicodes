@@ -1,23 +1,23 @@
-JEC:
+jec:
   titre: Jeune Entreprise de Croissance
 
-JEC . eligibilite:
+jec . eligibilite:
   titre: Éligibilité au statut JEC
   valeur:
     toutes ces conditions:
       - estUnePME
-      - JEC . conditionAge
-      - JEC . critereRD
+      - jec . conditionAge
+      - jec . critereRD
       - effectifAugmente
       - depensesStables
       - capitalDetenu . aucune = non
       - activiteNouvelle
 
-JEC . conditionAge:
+jec . conditionAge:
   titre: L'entreprise est suffisamment jeune pour bénéficier des avantages du statut JEC
   valeur: ageEntreprise < 8 an
 
-JEC . critereRD:
+jec . critereRD:
   valeur:
     toutes ces conditions:
       - pourcentageRd >= 5

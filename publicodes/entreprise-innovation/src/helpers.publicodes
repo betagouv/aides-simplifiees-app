@@ -1,21 +1,20 @@
 # Définition des variables de calcul intermédiaire
-Jeune Entreprise:
+jeuneEntreprise:
   titre: A définir
-Jeune Entreprise . conditionAge:
+
+jeuneEntreprise . conditionAge:
   titre: l'entreprise est elle suffisamment jeune pour bénéficier des avantages du statut JEI
-  valeur:
-    variations:
-      - si: dateDeCreation >= "2023/01/01"
-        alors:
-          variations:
-          - si: ageEntreprise >= 8 an
-            alors: non
-          - sinon: oui
-      - sinon:
-          variations:
-          - si: ageEntreprise >= 11 an
-            alors: non
-          - sinon: oui
+  valeur: ageEntreprise < age limite
+  avec:
+    age limite:
+      variations:
+        - si: dateDeCreation >= "2023/01/01"
+          alors: 8 an
+        - sinon: 11 an
+    explications:
+      applicable si: conditionAge = non
+      texte: |
+        Votre entreprise doit être créée depuis moins de {{ age limite }}.
 
 
 
@@ -40,3 +39,10 @@ estUnePME:
         - bilanTotalN <= 43000000 €/an
         - effectifTotalN < 250 employé
         - chiffreAffairesN <= 50000000 €/an
+
+estUnePME . explications:
+  applicable si: estUnePME = non
+  texte: |
+    Votre entreprise n'est pas considérée comme une PME au sens de la réglementation européenne.
+    Pour plus d'informations, consultez le site de l'INSEE : https://www.insee.fr/fr/information/2015444
+    ou le site de l'UE : https://ec.europa.eu/growth/smes/business-friendly-environment/sme-definition_fr

@@ -1,15 +1,14 @@
-CICo:
+cico:
   titre: Crédit d'impôt Collaboratif
 
-CICo . eligibilite:
+cico . eligibilite:
   titre: Eligibilité au CICo
+  toutes ces conditions:
+    - contratOrdc
+    - natureActivite
+    - regimeFiscalEstReel
+    - imposition
   avec:
-    est eligible:
-      toutes ces conditions:
-        - contratOrdc
-        - natureActivite
-        - regimeFiscalEstReel
-        - imposition
 
     natureActivite:
       une de ces conditions:
@@ -22,7 +21,7 @@ CICo . eligibilite:
         - si: typeImposition = 'exonere'
           alors:
              une de ces conditions:
-              - JEI . eligibilite
+              - jei . eligibilite
               - categorieExoneration . repriseEntrepriseEnDifficulte
               # Question : zone spécifique sous forme de chaine de car vs booléen ?
               - categorieExonerationZoneSpecifique = 'ZFR'
@@ -35,10 +34,8 @@ CICo . eligibilite:
               - categorieExonerationZoneSpecifique = 'ZDP'
         - sinon: oui
 
-CICo . eligibilite . explications:
-  applicable si:
-    est défini: est eligible
-  non applicable si: est eligible
+cico . eligibilite . explications:
+  non applicable si: eligibilite
   texte: |
     {{ contratOrdc }}
     {{ natureActivite }}
@@ -47,8 +44,6 @@ CICo . eligibilite . explications:
 
   avec:
     contratOrdc:
-      applicable si:
-        est défini: contratOrdc
       non applicable si: contratOrdc
       texte: |
         Votre entreprise n'a pas de contrat de recherche et développement collaboratif (ORDC).
@@ -61,8 +56,6 @@ CICo . eligibilite . explications:
       texte: |
         Votre entreprise n'est pas soumise à un régime réel d'imposition.
     imposition:
-      applicable si:
-        est défini: imposition
       non applicable si: imposition
       texte: |
         Votre entreprise est exonérée d'impôt.
@@ -73,16 +66,16 @@ CICo . eligibilite . explications:
         - elles bénéficie situées dans une zone spécifiques (ZFR, ZFU_TE, BER, ZRD, ZFA_DOM, ZRR, BUD ou ZDP)
 
 
-CICo . montant:
+cico . montant:
   valeur:
     produit:
-      - CICo . taux
+      - cico . taux
       - somme:
         - depensesOrdc
         - (-subventionsOrdc)
   plafond: 6000000 €/an
 
-CICo . taux:
+cico . taux:
   variations:
     - si:
         une de ces conditions:

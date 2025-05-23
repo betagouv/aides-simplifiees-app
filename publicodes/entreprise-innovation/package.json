@@ -17,10 +17,12 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "publicodes": "^1.8.5"
+    "publicodes": "^1.9.0"
   },
   "devDependencies": {
-    "@publicodes/tools": "^1.7.2",
     "vitest": "^2.1.2"
+  },
+  "dependencies": {
+    "@publicodes/tools": "^1.7.2"
   }
 }

@@ -2,9 +2,13 @@ cir:
 
 cir . eligibilite:
   titre: Éligibilité au Crédit d'Impôt Recherche
-  avec:
-    est eligible:
-      une de ces conditions:
+  une de ces conditions:
+    - toutes ces conditions:
+      - une de ces conditions:
+        - natureActivite . industrielle
+        - natureActivite . commerciale
+        - natureActivite . agricole
+      - une de ces conditions:
         - toutes ces conditions:
           - une de ces conditions:
             - natureActivite . industrielle

@@ -3,14 +3,24 @@ jeu:
 
 jeu . eligibilite:
   titre: Éligibilité au statut JEU
-  avec:
-    est eligible:
-      toutes ces conditions:
-      - estUnePME
-      - Jeune Entreprise . conditionAge
-      - dirigeantsOuActionnairesUniversitaire . aucune = non
-      - capitalDetenu . aucune = non
-      - valorisationRecherche
-      - contratValorisation
-      - activiteNouvelle
+  toutes ces conditions:
+  - estUnePME
+  - jeuneEntreprise . conditionAge
+  - dirigeantsOuActionnairesUniversitaire . aucune = non
+  - capitalDetenu . aucune = non
+  - valorisationRecherche
+  - contratValorisation
+  - activiteNouvelle
 
+jeu . eligibilite . explications:
+
+  texte: |
+    {{estUnePME . explications}}
+    {{jeuneEntreprise . conditionAge . explications}}
+    {{dirigeantsOuActionnairesUniversitaire}}
+
+  avec:
+    dirigeantsOuActionnairesUniversitaire:
+      applicable si: dirigeantsOuActionnairesUniversitaire . aucune
+      texte: |
+        Au moins un dirigeant ou actionnaire de l'entreprise est universitaire.

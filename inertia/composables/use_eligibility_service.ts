@@ -58,7 +58,11 @@ function autoMapAnswersToPublicodesVariables(
 
 export function useEligibilityService() {
   // Export engine
-  const engine = new Engine(sourceRules);
+  const engine = new Engine(sourceRules, {
+    flag: {
+      automaticBranchDisabling: false,
+    },
+  });
 
   function calculateEligibility(
     surveyId: string,
@@ -126,36 +130,6 @@ export function useEligibilityService() {
     });
 
     engine.setSituation(transformedAnswers);
-    const situation = {
-      dateDeCreation: "11/02/2025",
-      "natureActivite . industrielle": "non",
-      "natureActivite . commerciale": "non",
-      "natureActivite . agricole": "non",
-      "natureActivite . artisanale": "oui",
-      "natureActivite . autreActivite": "non",
-      situationGeographique: '"metropole"',
-      entrepriseEnDifficulte: "non",
-      activiteNouvelle: "oui",
-      "dirigeantsOuActionnairesUniversitaire . etudiant": "non",
-      "dirigeantsOuActionnairesUniversitaire . diplomeMaster": "non",
-      "dirigeantsOuActionnairesUniversitaire . diplomeDoctorat": "non",
-      "dirigeantsOuActionnairesUniversitaire . enseignant": "non",
-      "dirigeantsOuActionnairesUniversitaire . aucune": "oui",
-      "capitalDetenu . personnesPhysiques": "oui",
-      "capitalDetenu . autreJei": "non",
-      "capitalDetenu . associationFondation": "non",
-      "capitalDetenu . etablissementPublic": "non",
-      "capitalDetenu . societeInvestissement": "non",
-      "capitalDetenu . aucune": "non",
-      "chiffreAffairesSelector . yearN": "non",
-      "chiffreAffairesSelector . yearN1": "non",
-      "chiffreAffairesSelector . yearN2": "non",
-      "chiffreAffairesSelector . noBilan": "oui",
-      typeDeRevenus: '"bic"',
-      regimeFiscal: '"reel-simplifie"',
-      typeImposition: '"is"',
-    };
-    engine.setSituation(situation);
 
     const results: EligibilityResults = {
       eligibleDispositifs: [],
@@ -166,9 +140,7 @@ export function useEligibilityService() {
 
     for (const dispositif of dispositifsToEvaluate) {
       try {
-        const evaluation = engine.evaluate(
-          `${dispositif.id} . eligibilite . est eligible`,
-        );
+        const evaluation = engine.evaluate(`${dispositif.id} . eligibilite`);
         const value = evaluation.nodeValue;
         const baseResult = {
           id: dispositif.id,

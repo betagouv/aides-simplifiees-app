@@ -3,35 +3,48 @@ cii:
 
 cii . eligibilite:
   titre: Eligibilité au CII
-  valeur:
-    toutes ces conditions:
-      - estUnePME
-      - une de ces conditions:
-        - natureActivite . industrielle
-        - natureActivite . commerciale
-        - natureActivite . agricole
-      - une de ces conditions:
-        - toutes ces conditions:
-            - typeImposition = 'is'
-            - regimeFiscalEstReel
-        - toutes ces conditions:
-            - typeImposition = 'ir'
-            - regimeFiscalEstReel
-        - toutes ces conditions:
-            - typeImposition = 'exonere'
-            - une de ces conditions:
-              - jei . eligibilite
-              - categorieExoneration . repriseEntrepriseEnDifficulte
-              - categorieExonerationZoneSpecifique = 'ZFR'
-              - categorieExonerationZoneSpecifique = 'ZFU_TE'
-              - categorieExonerationZoneSpecifique = 'BER'
-              - categorieExonerationZoneSpecifique = 'ZRD'
-              - categorieExonerationZoneSpecifique = 'ZFA_DOM'
-              - categorieExonerationZoneSpecifique = 'ZRR'
-              - categorieExonerationZoneSpecifique = 'FRR'
-              - categorieExonerationZoneSpecifique = 'BUD'
-              - categorieExonerationZoneSpecifique = 'ZDP'
+  toutes ces conditions:
+    - estUnePME
+    - natureActivite . commercialeIndustrielleAgricole
+    - imposition
 
+cii . eligibilite . imposition:
+  variations:
+    - si: typeImposition = 'exonere'
+      alors:
+        une de ces conditions:
+        - jei . eligibilite
+        - categorieExoneration . repriseEntrepriseEnDifficulte
+        - categorieExonerationZoneSpecifique = 'ZFR'
+        - categorieExonerationZoneSpecifique = 'ZFU_TE'
+        - categorieExonerationZoneSpecifique = 'BER'
+        - categorieExonerationZoneSpecifique = 'ZRD'
+        - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+        - categorieExonerationZoneSpecifique = 'ZRR'
+        - categorieExonerationZoneSpecifique = 'FRR'
+        - categorieExonerationZoneSpecifique = 'BUD'
+        - categorieExonerationZoneSpecifique = 'ZDP'
+    - sinon: regimeFiscalEstReel
+
+cii . eligibilite . explications:
+  applicable si: eligibilite = non
+  texte: |
+    {{ estUnePME . explications }}
+    {{ natureActivite . commercialeIndustrielleAgricole . explications }}
+    {{ explications . imposition }}
+
+cii . eligibilite . explications . imposition:
+  applicable si: imposition = non
+  variations:
+    - si: typeImposition = 'exonere'
+      alors:
+        texte: |
+          Votre entreprise est exonérée d'impôt.
+          NB : Les entreprises exonérées d'impôt sont éligibles au CII uniquement si :
+          - elles sont des Jeunes Entreprises Innovantes (JEI)
+          - elles sont des entreprises reprises en difficulté
+          - elles bénéficient de zones spécifiques (ZFR, ZFU_TE, BER, ZRD, ZFA_DOM, ZRR, BUD ou ZDP)
+    - sinon: regimeFiscalEstReel . explications
 
 cii . montant:
   titre: Montant du Crédit d'Impôt Innovation

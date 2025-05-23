@@ -2,38 +2,34 @@ cir:
 
 cir . eligibilite:
   titre: Éligibilité au Crédit d'Impôt Recherche
-  valeur:
-    une de ces conditions:
-      - toutes ces conditions:
-        - une de ces conditions:
-          - natureActivite . industrielle
-          - natureActivite . commerciale
-          - natureActivite . agricole
-        - une de ces conditions:
-          - toutes ces conditions:
-            - typeImposition = 'is'
+  une de ces conditions:
+    - toutes ces conditions:
+      - natureActivite . commercialeIndustrielleAgricole
+      - une de ces conditions:
+        - toutes ces conditions:
+          - typeImposition = 'is'
+          - regimeFiscalEstReel
+        - toutes ces conditions:
+            - typeImposition = 'ir'
             - regimeFiscalEstReel
-          - toutes ces conditions:
-              - typeImposition = 'ir'
-              - regimeFiscalEstReel
-          - toutes ces conditions:
-            - typeImposition = 'exonere'
-            - une de ces conditions:
-              - jei . eligibilite
-              - categorieExoneration . repriseEntrepriseEnDifficulte
-              - categorieExonerationZoneSpecifique = 'ZFR'
-              - categorieExonerationZoneSpecifique = 'ZFU_TE'
-              - categorieExonerationZoneSpecifique = 'BER'
-              - categorieExonerationZoneSpecifique = 'ZRD'
-              - categorieExonerationZoneSpecifique = 'ZFA_DOM'
-              - categorieExonerationZoneSpecifique = 'ZRR'
-              - categorieExonerationZoneSpecifique = 'FRR'
-              - categorieExonerationZoneSpecifique = 'BUD'
-              - categorieExonerationZoneSpecifique = 'ZDP'
-      - toutes ces conditions:
-        - natureActivite . artisanale
-        - regimeFiscalEstReel
-        - typeDeRevenus = 'bic'
+        - toutes ces conditions:
+          - typeImposition = 'exonere'
+          - une de ces conditions:
+            - jei . eligibilite
+            - categorieExoneration . repriseEntrepriseEnDifficulte
+            - categorieExonerationZoneSpecifique = 'ZFR'
+            - categorieExonerationZoneSpecifique = 'ZFU_TE'
+            - categorieExonerationZoneSpecifique = 'BER'
+            - categorieExonerationZoneSpecifique = 'ZRD'
+            - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+            - categorieExonerationZoneSpecifique = 'ZRR'
+            - categorieExonerationZoneSpecifique = 'FRR'
+            - categorieExonerationZoneSpecifique = 'BUD'
+            - categorieExonerationZoneSpecifique = 'ZDP'
+    - toutes ces conditions:
+      - natureActivite . artisanale
+      - regimeFiscalEstReel
+      - typeDeRevenus = 'bic'
 
 
 

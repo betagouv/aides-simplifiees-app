@@ -1,0 +1,94 @@
+CICo:
+  titre: Crédit d'impôt Collaboratif
+
+CICo . eligibilite:
+  titre: Eligibilité au CICo
+  avec:
+    est eligible:
+      toutes ces conditions:
+        - contratOrdc
+        - natureActivite
+        - regimeFiscalEstReel
+        - imposition
+
+    natureActivite:
+      une de ces conditions:
+        - natureActivite . industrielle
+        - natureActivite . commerciale
+        - natureActivite . agricole
+
+    imposition:
+      variations:
+        - si: typeImposition = 'exonere'
+          alors:
+             une de ces conditions:
+              - JEI . eligibilite
+              - categorieExoneration . repriseEntrepriseEnDifficulte
+              # Question : zone spécifique sous forme de chaine de car vs booléen ?
+              - categorieExonerationZoneSpecifique = 'ZFR'
+              - categorieExonerationZoneSpecifique = 'ZFU_TE'
+              - categorieExonerationZoneSpecifique = 'BER'
+              - categorieExonerationZoneSpecifique = 'ZRD'
+              - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+              - categorieExonerationZoneSpecifique = 'ZRR'
+              - categorieExonerationZoneSpecifique = 'BUD'
+              - categorieExonerationZoneSpecifique = 'ZDP'
+        - sinon: oui
+
+CICo . eligibilite . explications:
+  applicable si:
+    est défini: est eligible
+  non applicable si: est eligible
+  texte: >
+    Vous n'êtes pas éligible au Crédit d'Impôt Collaboratif (CICo) car :
+
+    {{ contratOrdc }}
+    {{ natureActivite }}
+    {{ regimeFiscalEstReel }}
+    {{ imposition }}
+
+  avec:
+    contratOrdc:
+      applicable si:
+        est défini: contratOrdc
+      non applicable si: contratOrdc
+      texte: |
+        - Votre entreprise n'a pas de contrat de recherche et développement collaboratif (ORDC).
+    natureActivite:
+      non applicable si: natureActivite
+      texte: |
+        - La nature d'activité de votre entreprise n'est pas éligible.
+    regimeFiscalEstReel:
+      non applicable si: regimeFiscalEstReel
+      texte: |
+        - Votre entreprise n'est pas soumise à un régime réel d'imposition.
+    imposition:
+      applicable si:
+        est défini: imposition
+      non applicable si: imposition
+      texte: |
+        - Votre entreprise est exonérée d'impôt.
+
+        NB : Les entreprises exonérées d'impôt sont éligibles au CICo uniquement si :
+        - elles sont des Jeunes Entreprises Innovantes (JEI)
+        - elles sont des entreprises reprises en difficulté
+        - elles bénéficie situées dans une zone spécifiques (ZFR, ZFU_TE, BER, ZRD, ZFA_DOM, ZRR, BUD ou ZDP)
+
+
+CICo . montant:
+  valeur:
+    produit:
+      - CICo . taux
+      - somme:
+        - depensesOrdc
+        - (-subventionsOrdc)
+  plafond: 6000000 €/an
+
+CICo . taux:
+  variations:
+    - si:
+        une de ces conditions:
+          - estUnePME
+          - regimeFiscal = "'micro'"
+      alors: 50%
+    - sinon: 40%

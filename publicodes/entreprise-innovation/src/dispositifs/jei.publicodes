@@ -1,0 +1,27 @@
+jei:
+  titre: JEI
+
+jei . eligibilite:
+  titre: eligibilite au statut JEI
+  toutes ces conditions:
+    - estUnePME
+    - jeuneEntreprise . conditionAge
+    - jei . pourcentageRdCondition
+    - capitalDetenu . eligibilite . explications
+    - activiteNouvelle
+
+jei . eligibilite . explications:
+  applicable si: eligibilite = non
+  texte: |
+    {{ estUnePME . explications }}
+    {{ jeuneEntreprise . conditionAge . explications }}
+    {{ jei . pourcentageRdCondition . explications }}
+    {{ capitalDetenu . eligibilite . explications }}
+    {{ activiteNouvelle . explications }}
+
+jei . pourcentageRdCondition: pourcentageRd >= jei . pourcentageRdCondition . tauxMinimum
+jei . pourcentageRdCondition . tauxMinimum: 20
+jei . pourcentageRdCondition . explications:
+  applicable si: pourcentageRdCondition = non
+  texte: |
+    Le taux de dépense R&D doit être supérieur à {{ jei . pourcentageRdCondition . tauxMinimum }}%.

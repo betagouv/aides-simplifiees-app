@@ -1,67 +1,64 @@
-CIR:
+cir:
 
-CIR . eligibilite:
+cir . eligibilite:
   titre: Éligibilité au Crédit d'Impôt Recherche
-  valeur:
-    une de ces conditions:
-      - toutes ces conditions:
-        - une de ces conditions:
-          - natureActivite . industrielle
-          - natureActivite . commerciale
-          - natureActivite . agricole
-        - une de ces conditions:
-          - toutes ces conditions:
-            - typeImposition = 'is'
+  une de ces conditions:
+    - toutes ces conditions:
+      - natureActivite . commercialeIndustrielleAgricole
+      - une de ces conditions:
+        - toutes ces conditions:
+          - typeImposition = 'is'
+          - regimeFiscalEstReel
+        - toutes ces conditions:
+            - typeImposition = 'ir'
             - regimeFiscalEstReel
-          - toutes ces conditions:
-              - typeImposition = 'ir'
-              - regimeFiscalEstReel
-          - toutes ces conditions:
-            - typeImposition = 'exonere'
-            - une de ces conditions:
-              - JEI . eligibilite
-              - categorieExoneration . repriseEntrepriseEnDifficulte
-              - categorieExonerationZoneSpecifique = 'ZFR'
-              - categorieExonerationZoneSpecifique = 'ZFU_TE'
-              - categorieExonerationZoneSpecifique = 'BER'
-              - categorieExonerationZoneSpecifique = 'ZRD'
-              - categorieExonerationZoneSpecifique = 'ZFA_DOM'
-              - categorieExonerationZoneSpecifique = 'ZRR'
-              - categorieExonerationZoneSpecifique = 'FRR'
-              - categorieExonerationZoneSpecifique = 'BUD'
-              - categorieExonerationZoneSpecifique = 'ZDP'
-      - toutes ces conditions:
-        - natureActivite . artisanale
-        - regimeFiscalEstReel
-        - typeDeRevenus = 'bic'
+        - toutes ces conditions:
+          - typeImposition = 'exonere'
+          - une de ces conditions:
+            - jei . eligibilite
+            - categorieExoneration . repriseEntrepriseEnDifficulte
+            - categorieExonerationZoneSpecifique = 'ZFR'
+            - categorieExonerationZoneSpecifique = 'ZFU_TE'
+            - categorieExonerationZoneSpecifique = 'BER'
+            - categorieExonerationZoneSpecifique = 'ZRD'
+            - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+            - categorieExonerationZoneSpecifique = 'ZRR'
+            - categorieExonerationZoneSpecifique = 'FRR'
+            - categorieExonerationZoneSpecifique = 'BUD'
+            - categorieExonerationZoneSpecifique = 'ZDP'
+    - toutes ces conditions:
+      - natureActivite . artisanale
+      - regimeFiscalEstReel
+      - typeDeRevenus = 'bic'
 
 
 
-CIR . montant:
+
+cir . montant:
   valeur:
     somme:
-      - CIR . creditMetropole
-      - CIR . creditDom
+      - cir . creditMetropole
+      - cir . creditDom
 
 
-CIR . creditMetropole:
+cir . creditMetropole:
   barème:
-    assiette: CIR . depensesMetropole
+    assiette: cir . depensesMetropole
     tranches:
       - taux: 30%
         plafond: 100000000
       - taux: 5%
 
-CIR . creditDom:
+cir . creditDom:
   barème:
-    assiette: CIR . depensesDom
+    assiette: cir . depensesDom
     tranches:
       - taux: 50%
         plafond: 100000000
       - taux: 5%
 
 
-CIR . depensesMetropole:
+cir . depensesMetropole:
   valeur:
     somme:
       - somme:
@@ -95,14 +92,14 @@ CIR . depensesMetropole:
           - remboursementsSubventionsOrdc
       - somme:
           - 0
-          - (-CIR . deductions . metropole)
+          - (-cir . deductions . metropole)
 
 
 # TODO: "Autres dépenses de fonctionnement faites dans le cadre des opérations de recherche et développement (40 % des dépenses de personnel et 75 %des dépenses d'amortissement)"
 # TODO:  "Dépenses liées à l'élaboration de nouvelles créations par les entreprises du secteur textile-habillement-cuir, y compris lorsqu'elles sont confiées à des stylistes ou bureaux de style agréés (jusqu'au 31 décembre 2027)."
 
 
-CIR . depensesDom:
+cir . depensesDom:
   valeur:
     somme:
       - depensesRdAmortissementBiensDom
@@ -116,23 +113,23 @@ CIR . depensesDom:
           - depensesRdRechercheSansLiensDependanceDom
       - somme:
           - 0
-          - (-CIR . deductions . dom)
+          - (-cir . deductions . dom)
 
-CIR . deductions:
+cir . deductions:
   valeur:
     somme:
       - depensesRdSubventionsPubliques
       - depensesRdDepensesConseil
       - depensesRdDepensesTiersCir
 
-CIR . deductions . dom:
+cir . deductions . dom:
     variations:
       - si: situationGeographique = "dom"
-        alors: CIR . deductions
+        alors: cir . deductions
       - sinon: 0
 
-CIR . deductions . metropole:
+cir . deductions . metropole:
     variations:
       - si: situationGeographique = "metropole"
-        alors: CIR . deductions
+        alors: cir . deductions
       - sinon: 0

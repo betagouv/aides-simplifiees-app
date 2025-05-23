@@ -4,6 +4,7 @@ declare global {
     id: string
     title: string
     tooltip?: string
+    exclusive?: boolean
   }
 
   interface SurveyQuestionAutocompleteConfig {

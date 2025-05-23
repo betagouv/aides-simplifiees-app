@@ -1,0 +1,160 @@
+cii:
+  titre: Crédit d'impôt Innovation
+
+cii . eligibilite:
+  titre: Eligibilité au CII
+  toutes ces conditions:
+    - estUnePME
+    - natureActivite . commercialeIndustrielleAgricole
+    - imposition
+
+cii . eligibilite . imposition:
+  variations:
+    - si: typeImposition = 'exonere'
+      alors:
+        une de ces conditions:
+        - jei . eligibilite
+        - categorieExoneration . repriseEntrepriseEnDifficulte
+        - categorieExonerationZoneSpecifique = 'ZFR'
+        - categorieExonerationZoneSpecifique = 'ZFU_TE'
+        - categorieExonerationZoneSpecifique = 'BER'
+        - categorieExonerationZoneSpecifique = 'ZRD'
+        - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+        - categorieExonerationZoneSpecifique = 'ZRR'
+        - categorieExonerationZoneSpecifique = 'FRR'
+        - categorieExonerationZoneSpecifique = 'BUD'
+        - categorieExonerationZoneSpecifique = 'ZDP'
+    - sinon: regimeFiscalEstReel
+
+cii . eligibilite . explications:
+  applicable si: eligibilite = non
+  texte: |
+    {{ estUnePME . explications }}
+    {{ natureActivite . commercialeIndustrielleAgricole . explications }}
+    {{ explications . imposition }}
+
+cii . eligibilite . explications . imposition:
+  applicable si: imposition = non
+  variations:
+    - si: typeImposition = 'exonere'
+      alors:
+        texte: |
+          Votre entreprise est exonérée d'impôt.
+          NB : Les entreprises exonérées d'impôt sont éligibles au CII uniquement si :
+          - elles sont des Jeunes Entreprises Innovantes (JEI)
+          - elles sont des entreprises reprises en difficulté
+          - elles bénéficient de zones spécifiques (ZFR, ZFU_TE, BER, ZRD, ZFA_DOM, ZRR, BUD ou ZDP)
+    - sinon: regimeFiscalEstReel . explications
+
+cii . montant:
+  titre: Montant du Crédit d'Impôt Innovation
+  unité: €
+  applicable si: cii . eligibilite
+  valeur:
+    le maximum de:
+      - 0
+      - cii . montantPlafonne
+
+cii . montantPlafonne:
+  unité: €
+  valeur:
+    somme:
+      - cii . depensesBase
+      - cii . depensesDOM
+      - cii . depensesCorse
+      - (-cii . deductions)
+  plafond: 400000€
+
+cii . depensesBase:
+  valeur:
+    produit:
+      - 20%
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisations
+          - depensesPrototypeChercheursTechniciens
+          - depensesPrototypeRemunerationInvention
+          - depensesPrototypeAmortissementsBrevets
+          - depensesPrototypeFraisDepotDessins
+          - depensesPrototypeDepensesSousTraitance
+          - depensesPrototypeRemboursementsSubventions
+
+cii . depensesDOM:
+  produit:
+    - 40%
+    - somme:
+        - depensesPrototypeAmortissementsImmobilisationsDom
+        - depensesPrototypeAmortissementsBrevetsDom
+        - depensesPrototypeFraisDepotDessinsDom
+        - depensesPrototypeDepensesSousTraitanceDom
+
+cii . depensesCorse:
+  valeur:
+    produit:
+      - cii . tauxCorse
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisationsCorse
+          - depensesPrototypeAmortissementsBrevetsCorse
+          - depensesPrototypeFraisDepotDessinsCorse
+          - depensesPrototypeDepensesSousTraitanceCorse
+
+cii . tauxCorse:
+  valeur:
+    variations:
+      - si:
+          toutes ces conditions:
+            - effectifTotalN < 50
+            - une de ces conditions:
+                - chiffreAffairesN <= 10000000
+                - bilanTotalN <= 10000000
+        alors: 40%
+      - sinon: 35%
+
+cii . deductions:
+  valeur:
+    somme:
+      - depensesPrototypeSubventionsPubliques
+      - depensesPrototypeDepensesConseil
+      - depensesPrototypeDepensesTiersCii
+
+cii . depassementEffectifN:
+  valeur: effectifTotalN >= 250
+
+cii . depassementEffectifN1:
+  valeur: effectifTotalN1 >= 250
+
+cii . depassementEffectifN2:
+  valeur: effectifTotalN2 >= 250
+
+cii . depassementFinancierN:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffairesN > 50000000
+      - bilanTotalN > 43000000
+
+cii . depassementFinancierN1:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffairesN1 > 50000000
+      - bilanTotalN1 > 43000000
+
+cii . depassementFinancierN2:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffairesN2 > 50000000
+      - bilanTotalN2 > 43000000
+
+cii . depassementConsecutif:
+  valeur:
+    une de ces conditions:
+      - toutes ces conditions:
+          - cii . depassementEffectifN
+          - cii . depassementEffectifN1
+      - toutes ces conditions:
+          - cii . depassementEffectifN1
+          - cii . depassementEffectifN2
+      - toutes ces conditions:
+          - cii . depassementFinancierN
+          - cii . depassementFinancierN1
+      - toutes ces conditions:
+          - cii . depassementFinancierN1
+          - cii . depassementFinancierN2

@@ -1,21 +1,53 @@
 <script lang="ts" setup>
 import type { DsfrCheckboxSetProps } from '@gouvminint/vue-dsfr'
 import { DsfrCheckboxSet } from '@gouvminint/vue-dsfr'
-import { onMounted, ref, useTemplateRef, watch } from 'vue'
+import { onMounted, ref, useTemplateRef } from 'vue'
 
 const props = defineProps<{
   question: SurveyQuestion
 }>()
+
 const model = defineModel<string[]>()
-const _model = ref<string[]>(model.value && model.value.length > 0 ? model.value : [])
-watch(_model, (newValue) => {
+// Initialize the internal model from the parent model
+const internalModel = ref<string[]>(model.value || [])
+
+// Handle manual selection
+function handleSelectionChange(selection: string[]) {
+  // Identify exclusive choices
+  const exclusiveChoices = props.question.choices?.filter(choice => choice.exclusive === true)
+    .map(choice => choice.id) || []
+
+  // Find what was newly selected by comparing with previous state
+  const newlySelected = selection.filter(id => !internalModel.value.includes(id))
+
+  let newValue: string[] = [...selection]
+
+  if (newlySelected.length > 0) {
+    // Something was newly selected
+
+    // Check if it was an exclusive choice
+    const clickedExclusiveChoice = newlySelected.find(id => exclusiveChoices.includes(id))
+
+    if (clickedExclusiveChoice) {
+      // If clicked on an exclusive choice, only keep that choice
+      newValue = [clickedExclusiveChoice]
+    } else {
+      // If clicked on a normal choice, remove all exclusive choices
+      newValue = selection.filter(id => !exclusiveChoices.includes(id))
+    }
+  }
+
+  // Update internal model
+  internalModel.value = newValue
+
+  // Update parent model with standard rule
   if (newValue.length === 0) {
     model.value = undefined
-  }
-  else {
+  } else {
     model.value = newValue
   }
-})
+}
+
 // Convert question choices to DsfrCheckboxSet options format
 const options: DsfrCheckboxSetProps['options'] = props.question.choices
   ?.map(choice => ({
@@ -49,7 +81,8 @@ function moveTooltips() {
 <template>
   <DsfrCheckboxSet
     ref="checkboxSet"
-    v-model="_model"
+    :model-value="internalModel"
+    @update:model-value="handleSelectionChange"
     :title-id="`question-${question.id}`"
     class="custom-rich-checkbox"
     :name="question.id"
@@ -110,3 +143,4 @@ function moveTooltips() {
   }
 }
 </style>
+

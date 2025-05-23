@@ -7,32 +7,32 @@
   "engine": "publicodes",
   "dispositifs": [
     {
-      "id": "CIR",
+      "id": "cir",
       "title": "Crédit d'Impôt Recherche (CIR)",
       "description": "Le CIR permet de financer vos activités de recherche et développement."
     },
     {
-      "id": "CII",
+      "id": "cii",
       "title": "Crédit d'Impôt Innovation (CII)",
       "description": "Le CII soutient les PME qui mènent des projets d'innovation."
     },
     {
-      "id": "CICo",
+      "id": "cico",
       "title": "Crédit d'Impôt Recherche et Innovation (CICo)",
       "description": "Le CICo permet de financer vos activités de recherche et développement."
     },
     {
-      "id": "JEI",
+      "id": "jei",
       "title": "Jeune Entreprise Innovante (JEI)",
       "description": "Le statut JEI offre des exonérations fiscales et sociales aux jeunes entreprises innovantes."
     },
     {
-      "id": "JEU",
+      "id": "jeu",
       "title": "Jeune Entreprise Universitaire (JEU)",
       "description": "Le statut JEU offre des avantages aux entreprises créées par des étudiants ou chercheurs."
     },
     {
-      "id": "JEC",
+      "id": "jec",
       "title": "Jeune Entreprise de Croissance (JEC)",
       "description": "La JEC offre des avantages fiscaux pour les entreprises en forte croissance."
     }
@@ -45,27 +45,27 @@
         "description": "Le CIR permet de financer vos activités de recherche et développement."
       },
       {
-        "id": "CII",
+        "id": "cii",
         "title": "Crédit d'Impôt Innovation (CII)",
         "description": "Le CII soutient les PME qui mènent des projets d'innovation."
       },
       {
-        "id": "CICo",
+        "id": "cico",
         "title": "Crédit d'Impôt Recherche et Innovation (CICo)",
         "description": "Le CICo permet de financer vos activités de recherche et développement."
       },
       {
-        "id": "JEI",
+        "id": "jei",
         "title": "Jeune Entreprise Innovante (JEI)",
         "description": "Le statut JEI offre des exonérations fiscales et sociales aux jeunes entreprises innovantes."
       },
       {
-        "id": "JEU",
+        "id": "jeu",
         "title": "Jeune Entreprise Universitaire (JEU)",
         "description": "Le statut JEU offre des avantages aux entreprises créées par des étudiants ou chercheurs."
       },
       {
-        "id": "JEC",
+        "id": "jec",
         "title": "Jeune Entreprise de Croissance (JEC)",
         "description": "La JEC offre des avantages fiscaux pour les entreprises en forte croissance."
       }
@@ -95,29 +95,30 @@
                   "id": "industrielle",
                   "title": "Industrielle (indispensable CICo, CII, CIR)",
                   "description": "(indispensable CICo, CII, CIR)",
-                  "infobulle": "L'activité de nature industrielle correspond à une activité artisanale qui s'est développé de façon importante. Cela correspond à une production ou à une transformation grâce à l'utilisation d'outils industriels, extraction, industries minières, manutention, magasinage et stockage (construction aéronautique, automobile, métallurgie, etc.)."
+                  "tooltip": "Une activité de nature industrielle correspond à une activité artisanale qui s'est développé de façon importante. Cela correspond à une production ou à une transformation grâce à l'utilisation d'outils industriels, extraction, industries minières, manutention, magasinage et stockage (construction aéronautique, automobile, métallurgie, etc.)."
                 },
                 {
                   "id": "commerciale",
                   "title": "Commerciale (indispensable CICo, CII, CIR)",
                   "description": "(indispensable CICo, CII, CIR)",
-                  "infobulle": "Votre activité est considérée comme commerciale si vous :\n\n- Achetez des biens ou des marchandises pour les revendre dans un but lucratif.\n- Proposez des services dans divers secteurs (hôtellerie, restauration, transport, spectacles, sécurité, informatique, design, etc.).\n- Louez des biens, marchandises ou services\n\nA noter : les biens que vous vendez ou louez doivent être des biens meubles (bien qui peut être déplacé). Il peut s'agir d'un bien corporel (objet, mobilier ou marchandise par exemple) ou d'un bien incorporel (par exemple droits d'auteur, parts sociales, etc.).\n\nDiplôme requis :\n\nAucun diplôme ou savoir-faire spécifique n'est nécessaire pour exercer une activité commerciale.\n\nActivités autorisées et exclues :\n\n- Autorisées : restauration rapide, food truck, livraison, développement informatique, design, photographie, DJ, distribution musicale, etc.\n- Exclues : agent immobilier, coiffeur, opticien, pharmacien, topographe, bureau de tabac."
+                  "tooltip": "Votre activité est considérée comme commerciale si vous :\n\n- Achetez des biens ou des marchandises pour les revendre dans un but lucratif.\n- Proposez des services dans divers secteurs (hôtellerie, restauration, transport, spectacles, sécurité, informatique, design, etc.).\n- Louez des biens, marchandises ou services\n\nA noter : les biens que vous vendez ou louez doivent être des biens meubles (bien qui peut être déplacé). Il peut s'agir d'un bien corporel (objet, mobilier ou marchandise par exemple) ou d'un bien incorporel (par exemple droits d'auteur, parts sociales, etc.).\n\nDiplôme requis :\n\nAucun diplôme ou savoir-faire spécifique n'est nécessaire pour exercer une activité commerciale.\n\nActivités autorisées et exclues :\n\n- Autorisées : restauration rapide, food truck, livraison, développement informatique, design, photographie, DJ, distribution musicale, etc.\n- Exclues : agent immobilier, coiffeur, opticien, pharmacien, topographe, bureau de tabac."
                 },
                 {
                   "id": "agricole",
-                  "title": "Agricole",
+                  "title": "Agricole (indispensable CICo, CII, CIR)",
                   "description": "(indispensable CICo, CII, CIR)",
-                  "infobulle": "Une activité est agricole si elle dépend du cycle biologique végétal ou animal dans le cadre d'une exploitation ou d'une production.\n\nCe critère est déterminant et s'applique quelle que soit la forme juridique de votre exploitation (entreprise individuelle, société, groupement agricole). Il peut s'agir également d'une activité qui prolonge l'activité de production agricole.\n\nAinsi les activités suivantes sont considérées comme agricoles :\n\n- Activités de \"tourisme à la ferme\" (gîtes, chambres d'hôtes, tables d'hôtes, fermes auberges, etc.) ayant pour support l'exploitation agricole\n- Activités de préparation et d'entraînement des chevaux et ponies domestiques en vue de leur exploitation : courses, concours, cours, etc.\n- Production et commercialisation de biogaz, d'électricité et de chaleur par la méthanisation, lorsqu'elle est issue en majorité de matières provenant d'exploitations agricoles\n- Transformation et vente directe des produits issus de l'exploitation (fromages, beurre, confiture, crème glacée, viande, etc.)\n\nÀ noter : la pension de chevaux ou leur exploitation pour des spectacles ne sont pas des activités agricoles. Ce sont des activités commerciales."
+                  "tooltip": "Une activité est agricole si elle dépend du cycle biologique végétal ou animal dans le cadre d'une exploitation ou d'une production.\n\nCe critère est déterminant et s'applique quelle que soit la forme juridique de votre exploitation (entreprise individuelle, société, groupement agricole). Il peut s'agir également d'une activité qui prolonge l'activité de production agricole.\n\nAinsi les activités suivantes sont considérées comme agricoles :\n\n- Activités de \"tourisme à la ferme\" (gîtes, chambres d'hôtes, tables d'hôtes, fermes auberges, etc.) ayant pour support l'exploitation agricole\n- Activités de préparation et d'entraînement des chevaux et ponies domestiques en vue de leur exploitation : courses, concours, cours, etc.\n- Production et commercialisation de biogaz, d'électricité et de chaleur par la méthanisation, lorsqu'elle est issue en majorité de matières provenant d'exploitations agricoles\n- Transformation et vente directe des produits issus de l'exploitation (fromages, beurre, confiture, crème glacée, viande, etc.)\n\nÀ noter : la pension de chevaux ou leur exploitation pour des spectacles ne sont pas des activités agricoles. Ce sont des activités commerciales."
                 },
                 {
                   "id": "artisanale",
-                  "title": "Artisanale",
+                  "title": "Artisanale (indispensable CIR)",
                   "description": "(indispensable pour le CIR)",
-                  "infobulle": "Les professions libérales exercent une activité indépendante de prestations intellectuelles, techniques ou de soins. Elles peuvent être réglementées ou non réglementées. Les professions réglementées sont soumises à des conditions d'accès (diplôme, expérience) et/ou à des conditions d'exploitation (aptitude physique, obligation de formation continue)."
+                  "tooltip": "Les professions libérales exercent une activité indépendante de prestations intellectuelles, techniques ou de soins. Elles peuvent être réglementées ou non réglementées. Les professions réglementées sont soumises à des conditions d'accès (diplôme, expérience) et/ou à des conditions d'exploitation (aptitude physique, obligation de formation continue)."
                 },
                 {
                   "id": "autre-activite",
-                  "title": "Aucune de ces activités"
+                  "title": "Aucune de ces activités",
+                  "exclusive": true
                 }
               ]
             },
@@ -140,9 +141,8 @@
             {
               "id": "entreprise-en-difficulte",
               "title": "Votre entreprise est-elle en difficulté au sens de la réglementation européenne ?",
-              "description": "(indispensable CII et CICo) Une entreprise est considérée comme en difficulté lorsqu'elle n'est pas en mesure, avec ses propres ressources ou celles de ses actionnaires et créanciers, d'enrayer des pertes qui la conduiraient, sans intervention publique, à une disparition quasi certaine à court ou moyen terme.",
-              "type": "boolean",
-              "visibleWhen": ""
+              "description": "(indispensable CII et CICo) Une entreprise est considérée comme étant en difficulté lorsqu'elle n'est pas en mesure, avec ses propres ressources ou celles de ses actionnaires et créanciers, d'enrayer des pertes qui la conduiraient, sans intervention publique, à une disparition quasi certaine à court ou moyen terme.",
+              "type": "boolean"
             }
 
           ]
@@ -161,8 +161,7 @@
               "id": "activite-nouvelle",
               "title": "Votre entreprise exerce-t-elle une activité nouvelle ?",
               "description": "(indispensable JEI, JEU, JEC) Une entreprise n'est pas considérée comme nouvelle si elle reprend une activité existante avec des liens évidents avec une autre entreprise, comme la continuité des contrats, des moyens (locaux, personnel, matériel) ou de la clientèle. De même, si une entreprise récemment créée est simplement une extension d'une activité déjà en place sans réelle autonomie, elle ne sera pas reconnue comme nouvelle. Enfin, dans le cas de restructurations (fusion, scission, apport partiel d'actif), si l'activité, les liens ou les ressources sont en partie transférés, l'entreprise ne peut pas non plus être qualifiée de nouvelle.",
-              "type": "boolean",
-              "visibleWhen": ""
+              "type": "boolean"
             },
             {
               "id": "dirigeants-ou-actionnaires-universitaire",
@@ -189,7 +188,8 @@
                 },
                 {
                   "id": "aucune",
-                  "title": "Aucune de ces catégories"
+                  "title": "Aucune de ces catégories",
+                  "exclusive": true
                 }
               ]
             },
@@ -241,7 +241,8 @@
                 },
                 {
                   "id": "aucune",
-                  "title": "Aucune de ces réponses"
+                  "title": "Aucune de ces réponses",
+                  "exclusive": true
                 }
               ]
             }
@@ -253,7 +254,7 @@
             {
               "id": "chiffre-affaires-selector",
               "title": "Situation de l'entreprise au cours des 3 dernières années",
-              "description": "Pour chacune des années sélectionnées, nous vous inviterons à renseigner les informations suivantes : chiffre d'affaires, total du bilan et nombre total d'employés.",
+              "description": "Pour chacune des années sélectionnées, nous vous inviterons à renseigner les informations suivantes : chiffre d'affaires, total du bilan et nombre total d'employés. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : (i) CA ≤ 50M€ ou bilan ≤ 43M€ (ii) Moins de 250 salariés. Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs.",
               "type": "checkbox",
 
               "choices": [
@@ -271,7 +272,8 @@
                 },
                 {
                   "id": "no_bilan",
-                  "title": "Je n'ai pas de bilan comptable"
+                  "title": "Je n'ai pas de bilan comptable",
+                  "exclusive": true
                 }
               ]
             }
@@ -287,7 +289,7 @@
               "default": 0,
               "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
               "type": "number",
-              "visibleWhen": " && chiffre-affaires-selector.includes('year_N')"
+              "visibleWhen": "chiffre-affaires-selector.includes('year_N')"
             },
             {
               "id": "bilan-total-N",
@@ -295,7 +297,7 @@
               "default": 0,
               "description": "Indiquez le total du bilan annuel",
               "type": "number",
-              "visibleWhen": " && chiffre-affaires-selector.includes('year_N')"
+              "visibleWhen": "chiffre-affaires-selector.includes('year_N')"
             },
             {
               "id": "effectif-total-N",
@@ -303,7 +305,7 @@
               "default": 0,
               "description": "Indiquez l'effectif total de l'entreprise",
               "type": "number",
-              "visibleWhen": " && chiffre-affaires-selector.includes('year_N')"
+              "visibleWhen": "chiffre-affaires-selector.includes('year_N')"
             }
 
           ]
@@ -318,7 +320,7 @@
               "default": 0,
               "description": "Indiquez le chiffre d'affaires annuel. Les dispositifs JEI, JEU, JEC et CII s'appliquent uniquement aux PME : CA ≤ 50M€ ou bilan ≤ 43M€ Moins de 250 salariés Un dépassement de seuil n'a d'effet qu'après 2 exercices consécutifs",
               "type": "number",
-              "visibleWhen": " && chiffre-affaires-selector.includes('year_N1')"
+              "visibleWhen": "chiffre-affaires-selector.includes('year_N1')"
             },
             {
               "id": "bilan-total-N1",
@@ -326,7 +328,7 @@
               "default": 0,
               "description": "Indiquez le total du bilan annuel",
               "type": "number",
-              "visibleWhen": " && chiffre-affaires-selector.includes('year_N1')"
+              "visibleWhen": "chiffre-affaires-selector.includes('year_N1')"
             },
             {
               "id": "effectif-total-N1",
@@ -334,7 +336,7 @@
               "default": 0,
               "description": "Indiquez l'effectif total de l'entreprise",
               "type": "number",
-              "visibleWhen": " && chiffre-affaires-selector.includes('year_N1')"
+              "visibleWhen": "chiffre-affaires-selector.includes('year_N1')"
             }
           ]
         },
@@ -444,12 +446,13 @@
                 },
                 {
                   "id": "zone-specifique",
-                  "title": "Zone Franche Urbaine (ZFU)"
+                  "title": "Entreprise située dans une zone spécifique (précisez)"
                 },
 
                 {
                   "id": "aucune",
-                  "title": "Aucune de ces catégories"
+                  "title": "Aucune de ces catégories",
+                  "exclusive": true
                 }
               ]
             },
@@ -490,13 +493,40 @@
                 },
                 {
                   "id": "bud",
-                  "title": "Bassin urbainn à dynamiser (BUD)"
+                  "title": "Bassin urbain à dynamiser (BUD)"
                 },
                 {
                   "id": "zdp",
                   "title": "Zone de développement prioritaire"
                 }
               ]
+            }
+          ]
+        },
+        {
+          "id": "page-croissance",
+          "title": "Croissance des effectifs et des dépenses de recherche",
+          "questions": [
+            {
+              "id": "effectif-augmente",
+              "title": "L'effectif de votre entreprise a t-il augmenté d'au moins 100 % et d'au moins 10 salariés en équivalents temps plein (ETP), par rapport à celui constaté à la clôture de l'exercice qui précède l'avant dernier exercice ?",
+              "type": "boolean"
+            },
+            {
+              "id": "depenses-stables",
+              "title": "Au cours de l'exercice pour lequel l'effectif a augmenté, le montant des dépenses de votre entreprise en recherche a t-il augmenté par rapport à celui de l'exercice précédent",
+              "type": "boolean"
+            }
+          ]
+        },
+        {
+          "id":"page-pourcentage-rd",
+          "questions": [
+            {
+              "id": "pourcentage-rd",
+              "title": "Quel est le pourcentage des dépenses de votre entreprise en R&D pour la dernière année comptable ?",
+              "description": "Veuillez exprimer le pourcentage en nombre entier. Exemple : '10' pour 10%",
+              "type": "number"
             }
           ]
         }
@@ -530,45 +560,20 @@
               "choices": [
                 {
                   "id": "rd",
-                  "title": "Recherche et développement (R&D) (indispensable CIR, CICo, JEI et JEC)"
+                  "title": "Recherche et développement (R&D) (indispensable CIR, CICo, JEI et JEC)",
+                  "tooltip": "Inutile de sélectionner cette option si vous avez établi à l'étape précédente que vous n'étiez éligible ni au CIR, ni au CICo, JEI ou JEC"
                 },
                 {
                   "id": "normalisation",
-                  "title": "Activités de normalisation (indispensable CIR)"
+                  "title": "Activités de normalisation (indispensable CIR)",
+                  "tooltip": "Inutile de sélectionner cette option si vous avez établi à l'étape précédente que vous n'étiez pas éligible au CIR"
                 },
                 {
                   "id": "prototype",
-                  "title": "Conception d'un prototype ou d'une installation pilote (indispensable CII)"
+                  "title": "Conception d'un prototype ou d'une installation pilote (indispensable CII)",
+                  "tooltip": "Inutile de sélectionner cette option si vous avez établi à l'étape précédente que vous n'étiez pas éligible au CII"
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "page-croissance",
-          "title": "Croissance des effectifs et des dépenses de recherche",
-          "questions": [
-            {
-              "id": "effectif-augmente",
-              "title": "L'effectif de votre entreprise a t-il augmenté d'au moins 100 % et d'au moins 10 salariés en équivalents temps plein (ETP), par rapport à celui constaté à la clôture de l'exercice qui précède l'avant dernier exercice ?",
-              "type": "boolean"
-            },
-            {
-              "id": "depenses-stables",
-              "title": "Au cours de l'exercice pour lequel l'effectif a augmenté, le montant des dépenses de votre entreprise en recherche a t-il augmenté par rapport à celui de l'exercice précédent",
-              "type": "boolean"
-            }
-          ]
-        },
-        {
-          "id": "page-pourcentage-rd",
-          "questions": [
-            {
-              "id": "pourcentage-rd",
-              "title": "Quel est le pourcentage des dépenses de votre entreprise en R&D pour la dernière année comptable ?",
-              "description": "Veuillez exprimer le pourcentage en nombre entier. Exemple : '10' pour 10%",
-              "type": "number",
-              "visibleWhen": "type-depenses.includes('rd')"
             }
           ]
         },
@@ -582,7 +587,7 @@
               "default": 0,
               "type": "number",
               "visibleWhen": "type-depenses.includes('rd')",
-              "infobulle": "Ils doivent être utilisés dans la réalisation d'opérations de recherche scientifique et technique. Ils peuvent également être utilisés dans la réalisation d'opérations de conception de prototypes ou d'installations pilotes"
+              "tooltip": "Ils doivent être utilisés dans la réalisation d'opérations de recherche scientifique et technique. Ils peuvent également être utilisés dans la réalisation d'opérations de conception de prototypes ou d'installations pilotes"
             },
             {
               "id": "depenses-rd-amortissement-biens-dom",
@@ -597,7 +602,7 @@
               "default": 0,
               "type": "number",
               "visibleWhen": "type-depenses.includes('rd')",
-              "infobulle": "En cas de perte ou dommages sur un bien ou un bâtiment"
+              "tooltip": "En cas de perte ou dommages sur un bien ou un bâtiment"
             },
             {
               "id": "depenses-rd-indemnisation-assurance-dom",
@@ -714,7 +719,7 @@
               "default": 0,
               "type": "number",
               "visibleWhen": "type-depenses.includes('rd')",
-              "infobulle": "Remboursements des subventions publiques qui ont été déduites de l'assiette du crédit d'impôt au titre d'années antérieures"
+              "tooltip": "Remboursements des subventions publiques qui ont été déduites de l'assiette du crédit d'impôt au titre d'années antérieures"
             }
           ]
         },
@@ -851,7 +856,8 @@
                 },
                 {
                   "id": "performances-superieures-aucune",
-                  "title": "Aucune des choix ci-dessus"
+                  "title": "Aucune des choix ci-dessus",
+                  "exclusive": true
                 }
               ]
             }
@@ -911,10 +917,10 @@
             {
               "id": "depenses-prototype-amortissements-brevets",
               "title": "Dotations aux amortissements, frais de prise, de maintenance et de défense des brevets et des certificats d'obtention végétale relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits",
+              "description": "Ces dépenses bénéficient d'une exception de territorialité. Indiquez le montant des dépenses exposées sans considération de la localisation des opérations.",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
-              "infobulle": "Ces dépenses bénéficient d'une exception de territorialité. Indiquez le montant des dépenses exposées sans considération de la localisation des opérations"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-amortissements-brevets-dom",
@@ -939,10 +945,10 @@
             {
               "id": "depenses-prototype-frais-depot-dessins",
               "title": "Frais de dépôt et de défense des dessins et modèles relatifs aux opérations de conception de prototypes ou installations pilotes de nouveaux produits",
+              "description": "Ces dépenses bénéficient d'une exception de territorialité. Indiquez le montant des dépenses exposées sans considération de la localisation des opérations",
               "default": 0,
               "type": "number",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')",
-              "infobulle": "Ces dépenses bénéficient d'une exception de territorialité. Indiquez le montant des dépenses exposées sans considération de la localisation des opérations"
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
               "id": "depenses-prototype-frais-depot-dessins-dom",
@@ -988,8 +994,8 @@
           ]
         },
         {
-          "id": "prototype-subventions",
-          "title": "Subventions et remboursements",
+          "id": "prototype-remboursements-page",
+          "title": "Rmboursements à rajouter à l'assiette du crédit d'impôt",
           "questions": [
             {
               "id": "depenses-prototype-remboursements-subventions",
@@ -997,7 +1003,13 @@
               "default": 0,
               "type": "number",
               "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
-            },
+            }
+          ]
+        },
+        {
+          "id": "prototype-subventions-page",
+          "title": "Détail des sommes à déduire de l'assiette du crédit d'impôt",
+          "questions": [
             {
               "id": "depenses-prototype-subventions-publiques",
               "title": "Montant des subventions publiques reçues par l'entreprise en raison des opérations de conception de prototypes ou installations pilotes de nouveaux produits",

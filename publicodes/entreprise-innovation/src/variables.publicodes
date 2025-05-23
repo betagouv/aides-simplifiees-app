@@ -62,7 +62,6 @@ capitalDetenu . aucune:
   par défaut: non
 
 
-
 chiffreAffairesN:
   titre: Chiffre d'affaires de l'année N
   par défaut: 0
@@ -153,27 +152,9 @@ depensesStables:
 
 #### Dépenses pour calcul des montant CIR, CII, CICo
 ### Dépenses R&D
-depensesRD:
-depensesRDAmortissementBiens:
-depensesRDAmortissementBiensDom:
-
-depensesRDIndemnisationAssurance:
-depensesRDIndemnisationAssuranceDom:
-
-depensesRDChercheursTechniciens:
-depensesRDChercheursTechniciensDom:
-
-depensesRDRemunerationInvention:
-depensesRDRemunerationInventionDom:
-
-depensesRDRechercheLiensDependance:
-depensesRDRechercheLiensDependanceDom:
-
-depensesRDRechercheSansLiensDependance:
-depensesRDRechercheSansLiensDependanceDom:
 
 contratOrdc:
-
+  par défaut: 0
 respecteCriteresOrdc:
   par défaut: non
 
@@ -184,15 +165,6 @@ subventionsOrdc:
   par défaut: 0
 
 remboursementsSubventionsOrdc:
-  par défaut: 0
-
-depensesRDSubventionsPubliques:
-  par défaut: 0
-
-depensesRDDepensesConseil:
-  par défaut: 0
-
-depensesRDDepensesTiersCir:
   par défaut: 0
 
 ### Dépenses Normalisation
@@ -340,6 +312,7 @@ typeImposition:
     - "'exonere'"
 
 
+
 prototypeDestination:
 produitMisMarche:
 
@@ -347,18 +320,34 @@ produitMisMarche:
 
 
 depensesRdIndemnisationAssuranceDom:
+  par défaut: 0
 depensesRdIndemnisationAssurance:
+  par défaut: 0
 depensesRdAmortissementBiensDom:
+  par défaut: 0
 depensesRdAmortissementBiens:
+  par défaut: 0
 depensesRdRemunerationInventionDom:
+  par défaut: 0
 depensesRdRemunerationInvention:
+  par défaut: 0
 depensesRdChercheursTechniciensDom:
+  par défaut: 0
 depensesRdChercheursTechniciens:
+  par défaut: 0
 depensesRdRechercheSansLiensDependanceDom:
+  par défaut: 0
 depensesRdRechercheSansLiensDependance:
+  par défaut: 0
 depensesRdRechercheLiensDependanceDom:
+  par défaut: 0
 depensesRdRechercheLiensDependance:
+  par défaut: 0
 depensesRdDepensesTiersCir:
+  par défaut: 0
 depensesRdDepensesConseil:
+  par défaut: 0
 depensesRdSubventionsPubliques:
+  par défaut: 0
 depensesNormalisationRemboursementsSubventions:
+  par défaut: 0

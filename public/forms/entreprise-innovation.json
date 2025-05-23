@@ -45,27 +45,27 @@
         "description": "Le CIR permet de financer vos activités de recherche et développement."
       },
       {
-        "id": "CII",
+        "id": "cii",
         "title": "Crédit d'Impôt Innovation (CII)",
         "description": "Le CII soutient les PME qui mènent des projets d'innovation."
       },
       {
-        "id": "CICo",
+        "id": "cico",
         "title": "Crédit d'Impôt Recherche et Innovation (CICo)",
         "description": "Le CICo permet de financer vos activités de recherche et développement."
       },
       {
-        "id": "JEI",
+        "id": "jei",
         "title": "Jeune Entreprise Innovante (JEI)",
         "description": "Le statut JEI offre des exonérations fiscales et sociales aux jeunes entreprises innovantes."
       },
       {
-        "id": "JEU",
+        "id": "jeu",
         "title": "Jeune Entreprise Universitaire (JEU)",
         "description": "Le statut JEU offre des avantages aux entreprises créées par des étudiants ou chercheurs."
       },
       {
-        "id": "JEC",
+        "id": "jec",
         "title": "Jeune Entreprise de Croissance (JEC)",
         "description": "La JEC offre des avantages fiscaux pour les entreprises en forte croissance."
       }

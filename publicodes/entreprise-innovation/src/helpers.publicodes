@@ -5,16 +5,16 @@ jeuneEntreprise:
 jeuneEntreprise . conditionAge:
   titre: l'entreprise est elle suffisamment jeune pour bénéficier des avantages du statut JEI
   valeur: ageEntreprise < age limite
-  avec:
-    age limite:
+
+jeuneEntreprise . conditionAge . age limite:
       variations:
         - si: dateDeCreation >= "2023/01/01"
           alors: 8 an
         - sinon: 11 an
-    explications:
-      applicable si: conditionAge = non
-      texte: |
-        Votre entreprise doit être créée depuis moins de {{ age limite }}.
+jeuneEntreprise . conditionAge . explications:
+  applicable si: conditionAge = non
+  texte: |
+    Votre entreprise doit être créée depuis moins de {{ age limite }}.
 
 
 
@@ -31,6 +31,11 @@ regimeFiscalEstReel:
       - regimeFiscal = 'reel-simplifie'
       - regimeFiscal = 'reel-normal'
 
+regimeFiscalEstReel . explications:
+  applicable si: regimeFiscalEstReel = non
+  texte: |
+    Votre entreprise n'est pas soumise à un régime réel d'imposition.
+
 estUnePME:
   par défaut: oui
   valeur:
@@ -44,5 +49,13 @@ estUnePME . explications:
   applicable si: estUnePME = non
   texte: |
     Votre entreprise n'est pas considérée comme une PME au sens de la réglementation européenne.
-    Pour plus d'informations, consultez le site de l'INSEE : https://www.insee.fr/fr/information/2015444
-    ou le site de l'UE : https://ec.europa.eu/growth/smes/business-friendly-environment/sme-definition_fr
+
+natureActivite . commercialeIndustrielleAgricole:
+  une de ces conditions:
+    - natureActivite = 'commerciale'
+    - natureActivite = 'industrielle'
+    - natureActivite = 'agricole'
+natureActivite . commercialeIndustrielleAgricole . explications:
+  applicable si: commercialeIndustrielleAgricole = non
+  texte: |
+    La nature de votre activité n'est pas commerciale, industrielle ou agricole.

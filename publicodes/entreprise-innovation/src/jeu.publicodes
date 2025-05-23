@@ -13,14 +13,13 @@ jeu . eligibilite:
   - activiteNouvelle
 
 jeu . eligibilite . explications:
-
+  applicable si: eligibilite = non
   texte: |
     {{estUnePME . explications}}
     {{jeuneEntreprise . conditionAge . explications}}
-    {{dirigeantsOuActionnairesUniversitaire}}
+    {{explications . dirigeantsOuActionnairesUniversitaire}}
 
-  avec:
-    dirigeantsOuActionnairesUniversitaire:
-      applicable si: dirigeantsOuActionnairesUniversitaire . aucune
-      texte: |
-        Au moins un dirigeant ou actionnaire de l'entreprise est universitaire.
+jeu . eligibilite . explications . dirigeantsOuActionnairesUniversitaire:
+  applicable si: dirigeantsOuActionnairesUniversitaire . aucune
+  texte: |
+    Au moins un dirigeant ou actionnaire de l'entreprise est universitaire.

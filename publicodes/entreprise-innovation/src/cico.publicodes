@@ -5,16 +5,10 @@ cico . eligibilite:
   titre: Eligibilité au CICo
   toutes ces conditions:
     - contratOrdc
-    - natureActivite
+    - natureActivite . commercialeIndustrielleAgricole
     - regimeFiscalEstReel
     - imposition
   avec:
-
-    natureActivite:
-      une de ces conditions:
-        - natureActivite . industrielle
-        - natureActivite . commerciale
-        - natureActivite . agricole
 
     imposition:
       variations:
@@ -38,8 +32,8 @@ cico . eligibilite . explications:
   non applicable si: eligibilite
   texte: |
     {{ contratOrdc }}
-    {{ natureActivite }}
-    {{ regimeFiscalEstReel }}
+    {{ natureActivite . commercialeIndustrielleAgricole . explications}}
+    {{ regimeFiscalEstReel . explications }}
     {{ imposition }}
 
   avec:
@@ -47,14 +41,7 @@ cico . eligibilite . explications:
       non applicable si: contratOrdc
       texte: |
         Votre entreprise n'a pas de contrat de recherche et développement collaboratif (ORDC).
-    natureActivite:
-      non applicable si: natureActivite
-      texte: |
-        La nature d'activité de votre entreprise n'est pas éligible.
-    regimeFiscalEstReel:
-      non applicable si: regimeFiscalEstReel
-      texte: |
-        Votre entreprise n'est pas soumise à un régime réel d'imposition.
+
     imposition:
       non applicable si: imposition
       texte: |

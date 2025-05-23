@@ -17,7 +17,6 @@ export interface DispositifEligibilityInfo {
   status: "eligible" | "ineligible" | "potential" | "error";
   reason?: string;
   missingInfo?: string[];
-  explanation?: string;
 }
 
 export interface EligibilityResults {
@@ -60,7 +59,7 @@ export function useEligibilityService() {
   // Export engine
   const engine = new Engine(sourceRules, {
     flag: {
-      automaticBranchDisabling: false,
+      automaticNamespaceDisabling: false,
     },
   });
 
@@ -175,6 +174,11 @@ export function useEligibilityService() {
             const reasonEval = engine
               .evaluate(`${dispositif.id} . eligibilite . explications`)
               .nodeValue?.replaceAll(/Non applicable/g, "");
+            console.log(
+              "reasonEval",
+              engine.evaluate(`${dispositif.id} . eligibilite . explications`),
+              engine.evaluate(`${dispositif.id} . eligibilite`),
+            );
 
             if (reasonEval) {
               reason = reasonEval;

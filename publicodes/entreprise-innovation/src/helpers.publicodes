@@ -51,12 +51,14 @@ estUnePME . explications:
     Votre entreprise n'est pas considérée comme une PME au sens de la réglementation européenne.
 
 natureActivite . commercialeIndustrielleAgricole:
-  une de ces conditions:
-    - natureActivite = 'commerciale'
-    - natureActivite = 'industrielle'
-    - natureActivite = 'agricole'
+  valeur:
+    une de ces conditions:
+      - natureActivite . commerciale
+      - natureActivite . industrielle
+      - natureActivite . agricole
+
 natureActivite . commercialeIndustrielleAgricole . explications:
-  applicable si: commercialeIndustrielleAgricole = non
+  applicable si: natureActivite . commercialeIndustrielleAgricole = non
   texte: |
     La nature de votre activité n'est pas commerciale, industrielle ou agricole.
 

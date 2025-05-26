@@ -89,19 +89,10 @@ function handleFormComplete(): void {
   if (schema?.engine === 'publicodes') {
     const aidesToEvaluate = schema?.dispositifs
 
-    console.log('schema', aidesToEvaluate)
+    console.log('aidesToEvaluate', aidesToEvaluate)
 
     const { calculateEligibility } = useEligibilityService()
     const eligibilityResults = calculateEligibility(simulateur.slug, simulateurVisibleAnswers, aidesToEvaluate)
-
-    /*
-    console.log("-------")
-    console.log('eligibilityResults', eligibilityResults);
-    console.log(simulateurVisibleAnswers)
-    console.log("CIR")
-    console.log(engine.evaluate('CIR . montant'))
-    console.log("-------")
-    return; */
 
     submissionStore.submitFormPublicodes(simulateur.slug, simulateurVisibleAnswers, eligibilityResults.aidesResults)
       .then((success: boolean) => {

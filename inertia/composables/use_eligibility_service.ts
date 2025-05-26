@@ -137,6 +137,7 @@ export function useEligibilityService() {
       aidesResults: {},
     };
 
+
     for (const dispositif of dispositifsToEvaluate) {
       try {
         const evaluation = engine.evaluate(`${dispositif.id} . eligibilite`);
@@ -218,6 +219,7 @@ export function useEligibilityService() {
       }
     }
 
+    console.log(engine.evaluate(`cir . eligibilite`))
     console.log("dispositifs évalués", results);
     return results;
   }

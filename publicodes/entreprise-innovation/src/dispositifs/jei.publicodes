@@ -3,15 +3,16 @@ jei:
 
 jei . eligibilite:
   titre: eligibilite au statut JEI
-  toutes ces conditions:
-    - estUnePME
-    - jeuneEntreprise . conditionAge
-    - jei . pourcentageRdCondition
-    - capitalDetenu . eligibilite . explications
-    - activiteNouvelle
+  valeur:
+    toutes ces conditions:
+      - estUnePME
+      - jeuneEntreprise . conditionAge
+      - jei . pourcentageRdCondition
+      - capitalDetenu . eligibilite
+      - activiteNouvelle
 
 jei . eligibilite . explications:
-  applicable si: eligibilite = non
+  applicable si: jei . eligibilite = non
   texte: |
     {{ estUnePME . explications }}
     {{ jeuneEntreprise . conditionAge . explications }}

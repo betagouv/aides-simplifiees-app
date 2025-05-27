@@ -1,5 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { getLatestIntegrity } from '#config/iframe_integration'
+import { getLatestIntegrity, IFRAME_SCRIPT_LATEST_VERSION } from '#config/iframe_integration'
 import SimulateurController from '#controllers/content/simulateur_controller'
 import Simulateur from '#models/simulateur'
 
@@ -20,6 +20,7 @@ export default class StaticPagesController {
   public async showIntegrerNosSimulateurs({ inertia }: HttpContext) {
     return inertia.render('static/integrer-nos-simulateurs', {
       iframeSriHash: getLatestIntegrity(),
+      iframeVersion: IFRAME_SCRIPT_LATEST_VERSION,
     })
   }
 

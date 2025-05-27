@@ -23,9 +23,10 @@ const selectedSimulateur = ref('demenagement-logement')
 const page = usePage<SharedProps>()
 const origin = page.props.publicAppUrl
 const sriHash = page.props.iframeSriHash as string
+const iframeVersion = page.props.iframeVersion as string
 
-// Inclusion du script
-const scriptPath = `/iframe-integration.js`
+// Inclusion du script avec URL versionnée
+const scriptPath = `/assets/iframe-integration@${iframeVersion}.js`
 const fullScript = computed(() => {
   let script = `<script src="${origin}${scriptPath}"`
 

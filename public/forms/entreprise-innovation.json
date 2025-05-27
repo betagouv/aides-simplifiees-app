@@ -504,7 +504,7 @@
       "pages": [
         {
           "id": "resultats-intermediaires-page",
-          "title": "Mise à jour de votre éligibilité",
+          "title": "Résultats intermédiaires",
           "type": "intermediary-results",
           "description": "Voici une évaluation actualisée de votre éligibilité aux dispositifs d'aide."
         }

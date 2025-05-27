@@ -7,7 +7,7 @@
 |
 */
 
-import { IFRAME_SCRIPT_VERSION } from '#config/iframe_integration'
+import { IFRAME_SCRIPT_LATEST_VERSION } from '#config/iframe_integration'
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
@@ -68,7 +68,7 @@ router.post('/api/store-form-data', [ApiController, 'storeFormData'])
  * Assets
  */
 router.get('/iframe-integration.js', ({ response }) => {
-  response.redirect(`/assets/iframe-integration@${IFRAME_SCRIPT_VERSION}.js`)
+  response.redirect(`/assets/iframe-integration@${IFRAME_SCRIPT_LATEST_VERSION}.js`)
 })
 
 /**

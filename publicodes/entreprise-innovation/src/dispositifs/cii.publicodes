@@ -50,7 +50,7 @@ cii . depensesBase:
 
 cii . depensesDOM:
   produit:
-    - 40%
+    - 60%
     - somme:
         - depensesPrototypeAmortissementsImmobilisationsDom
         - depensesPrototypeAmortissementsBrevetsDom

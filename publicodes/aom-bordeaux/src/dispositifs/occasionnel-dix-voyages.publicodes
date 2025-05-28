@@ -1,6 +1,7 @@
 
 occasionnel-dix-voyages:
-occasionnel-dix-voyages . eligibilite: oui
+occasionnel-dix-voyages . eligibilite:
+  valeur: oui
 
 occasionnel-dix-voyages . montant:
   variations:

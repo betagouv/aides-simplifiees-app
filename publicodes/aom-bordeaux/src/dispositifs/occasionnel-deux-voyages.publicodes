@@ -1,4 +1,6 @@
 
-occasionnel-deux-voyage:
-occasionnel-deux-voyage . eligibilite: oui
-occasionnel-deux-voyage . montant: 3.60 €
+occasionnel-deux-voyages:
+occasionnel-deux-voyages . eligibilite:
+  valeur: oui
+occasionnel-deux-voyages . montant:
+  valeur: 3.60 €

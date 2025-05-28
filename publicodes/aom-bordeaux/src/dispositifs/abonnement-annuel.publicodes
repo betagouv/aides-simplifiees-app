@@ -1,7 +1,8 @@
 abonnement-annuel:
   titre: "Abonnement annuel (engagement de 12 mois)"
 
-abonnement-annuel . eligibilite: oui
+abonnement-annuel . eligibilite:
+  valeur: oui
 
 
 # Tarifs fréquents

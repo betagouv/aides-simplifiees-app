@@ -1,7 +1,8 @@
 abonnement-mensuel:
   titre: "Abonnement mensuel (pas d'engagement)"
 
-abonnement-mensuel . eligibilite: oui
+abonnement-mensuel . eligibilite:
+  valeur: oui
 
 
 # Tarifs fréquents

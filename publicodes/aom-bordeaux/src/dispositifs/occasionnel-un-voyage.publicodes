@@ -1,4 +1,6 @@
 
 occasionnel-un-voyage:
-occasionnel-un-voyage . eligibilite: oui
-occasionnel-un-voyage . montant: 2.10 €
+occasionnel-un-voyage . eligibilite:
+  valeur: oui
+occasionnel-un-voyage . montant:
+  valeur: 2.10 €

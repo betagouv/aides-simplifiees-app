@@ -1,0 +1,12 @@
+
+# Ce fichier contient des exemples de situations (à l'image d'un jeu de réponse pour votre modèle de calcul). Elles sont utiles pour les tests notamment.
+# Pour le moment, il est uniquement utilisé par la commande "publicodes dev"
+
+salaire SMIC:
+  contexte:
+    salaire brut: SMIC mensuel
+
+salaire médian cadre:
+  contexte:
+    salaire brut: 2600 €/mois
+    cotisations salariales . taux: 25%

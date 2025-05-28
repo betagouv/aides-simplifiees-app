@@ -1,0 +1,17 @@
+etudiant:
+  par défaut: non
+familleNombreuse:
+  par défaut: non
+militaire:
+  par défaut: non
+carteCombattant:
+  par défaut: non
+serviceCivique:
+  par défaut: non
+
+age:
+quotientFamilial:
+salarieEntreprisePartenaire:
+  par défaut: non
+situationDeHandicap:
+  par défaut: 0%

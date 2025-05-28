@@ -1,0 +1,16 @@
+
+occasionnel-dix-voyages:
+occasionnel-dix-voyages . eligibilite: oui
+occasionnel-dix-voyages . tarif réduit:
+
+occasionnel-dix-voyages . montant:
+  variations:
+    - si:
+        une de ces conditions:
+          - militaire
+          - carte combattant
+          - service civique
+          - étudiant
+          - familleNombreuse
+      alors: 8.40 €
+    - sinon: 16.80 €

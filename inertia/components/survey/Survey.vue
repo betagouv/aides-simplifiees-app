@@ -82,7 +82,7 @@ function restartForm() {
 }
 
 // Gérer la soumission du formulaire
-function handleFormComplete(): void {
+async function handleFormComplete(): void {
   const simulateurVisibleAnswers = surveysStore.getAnswersForCalculation(simulateur.slug)
   const schema = surveysStore.getSchema(simulateur.slug)
   if (schema?.engine === 'publicodes') {
@@ -91,7 +91,7 @@ function handleFormComplete(): void {
     console.log('aidesToEvaluate', aidesToEvaluate)
 
     const { calculateEligibility } = useEligibilityService()
-    const eligibilityResults = calculateEligibility(simulateur.slug, simulateurVisibleAnswers, aidesToEvaluate)
+    const eligibilityResults = await calculateEligibility(simulateur.slug, simulateurVisibleAnswers, aidesToEvaluate)
 
     submissionStore.submitFormPublicodes(simulateur.slug, simulateurVisibleAnswers, eligibilityResults.aidesResults)
       .then((success: boolean) => {

@@ -1,0 +1,33 @@
+abonnement-annuel:
+  titre: "Abonnement annuel (engagement de 12 mois)"
+
+abonnement-annuel . eligibilite:
+  valeur: oui
+
+
+# Tarifs fréquents
+abonnement-annuel . montant:
+  variations:
+    - si: gratuité
+      alors: 0
+    - si:
+        toutes ces conditions:
+          - tranche solidaire = non
+          - pass = 'standard'
+          - salarieEntreprisePartenaire
+      alors: 35.50 €/mois
+    - si: pass = 'pitchoun'
+      alors: 12.20 €/mois
+    - si: pass = 'jeune'
+      alors: 20.80 €/mois
+    - si: pass = 'standard'
+      alors: 44.40 €/mois
+    - si: pass = 'senior'
+      alors: 32.00 €/mois
+
+  abattement:
+    variations:
+      - si: tranche solidaire = 'tranche 2'
+        alors: 50%
+      - si: tranche solidaire = 'tranche 3'
+        alors: 30%

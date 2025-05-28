@@ -1,0 +1,22 @@
+gratuité:
+  une de ces conditions:
+    - carteCombattant
+    - situationDeHandicap >= 50%
+    - quotientFamilial <= 555 €/part
+
+tranche solidaire:
+  variations:
+    - si: quotientFamilial <= 775
+      alors: "'tranche 2'"
+    - si: quotientFamilial <= 970
+      alors: "'tranche 3'"
+
+pass:
+  variations:
+    - si: age < 10
+      alors: "'pitchoun'"
+    - si: age < 26
+      alors: "'jeune'"
+    - si: age < 60
+      alors: "'standard'"
+    - sinon: "'senior'"

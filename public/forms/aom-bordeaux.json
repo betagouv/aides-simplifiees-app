@@ -1,0 +1,104 @@
+{
+  "version": "1.0.0",
+  "forceRefresh": false,
+  "id": "aom-bordeaux",
+  "title": "AOM Lille",
+  "description": "Répondez à ces questions pour découvrir les dispositifs d'innovation et de recherche auxquels votre entreprise pourrait être éligible (CIR, CII, CICo, JEI, JEU, JEC)",
+  "engine": "publicodes",
+  "dispositifs": [
+    {
+      "id": "occasionnel-un-voyage",
+      "title": "Occasionnel un voyage",
+      "description": ""
+    },
+    {
+      "id": "occasionnel-deux-voyages",
+      "title": "Occasionnel deux voyages",
+      "description": ""
+    },
+    {
+      "id": "occasionnel-dix-voyages",
+      "title": "Occasionnel dix voyages",
+      "description": ""
+    },
+    {
+      "id": "abonnement-mensuel",
+      "title": "Abonnement mensuel",
+      "description": "Abonnement mensuel sans engagement"
+    },
+    {
+      "id": "abonnement-annuel",
+      "title": "Abonnement annuel",
+      "description": "Abonnement annuel avec engagement de 12 mois"
+    }
+  ],
+  "steps": [
+    {
+      "id": "information-generale",
+      "title": "Informations générales sur le voyageur",
+      "pages": [
+        {
+          "id": "infos-generales",
+          "questions": [
+            {
+              "id": "etudiant",
+              "title": "Etes-vous étudiant ?",
+              "description": "",
+              "type": "boolean"
+            },
+            {
+              "id": "famille-nombreuse",
+              "title": "Avez-vous le statut de famille nombreuse ?",
+              "description": "",
+              "type": "boolean"
+            },
+            {
+              "id": "militaire",
+              "title": "Etes-vous militaire ?",
+              "description": "",
+              "type": "boolean"
+            },
+            {
+              "id": "carte-combattant",
+              "title": "Avez-vous la carte de combattant ?",
+              "description": "",
+              "type": "boolean"
+            },
+            {
+              "id": "service-civique",
+              "title": "Etes-vous en service civique ?",
+              "description": "",
+              "type": "boolean"
+            },
+            {
+              "id": "age",
+              "title": "Quel est votre âge ?",
+              "description": "",
+              "type": "number"
+            },
+            {
+              "id": "quotient-familial",
+              "title": "Quel est votre quotient familial ?",
+              "description": "",
+              "type": "number"
+            },
+            {
+              "id": "salarie-entreprise-partenaire",
+              "title": "Êtes-vous salarié d'une entreprise partenaire TBM",
+              "description": "",
+              "type": "boolean"
+            },
+            {
+              "id": "situation-de-handicap",
+              "title": "Quel est votre taux d'incapacité (handicap) ?",
+              "description": "Taux d'incapacité en pourcentage (0 si aucun handicap) ? ",
+              "type": "number",
+              "default": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tests": []
+}

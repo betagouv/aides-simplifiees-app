@@ -1,0 +1,18 @@
+
+occasionnel-dix-voyages:
+occasionnel-dix-voyages . eligibilite:
+  valeur: oui
+
+occasionnel-dix-voyages . montant:
+  variations:
+    - si: gratuité
+      alors: 0 €
+    - si:
+        une de ces conditions:
+          - militaire
+          - serviceCivique
+          - etudiant
+          - familleNombreuse
+          - est applicable: tranche solidaire
+      alors: 8.40 €
+    - sinon: 16.80 €

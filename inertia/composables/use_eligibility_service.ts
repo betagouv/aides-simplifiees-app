@@ -6,9 +6,9 @@ import { useSurveysStore } from '~/stores/surveys'
 async function getSourceRules(surveyId: string) {
   switch (surveyId) {
     case 'entreprise-innovation':
-      return (await import('~/../publicodes/aom-bordeaux/')).default
-    case 'aom-bordeaux':
       return (await import('~/../publicodes/entreprise-innovation/')).default
+    case 'aom-bordeaux':
+      return (await import('~/../publicodes/aom-bordeaux/')).default
   }
 }
 
@@ -240,7 +240,6 @@ export function useEligibilityService() {
       }
     }
 
-    console.log(engine.evaluate(`cir . eligibilite`))
     console.log('dispositifs évalués', results)
     return results
   }

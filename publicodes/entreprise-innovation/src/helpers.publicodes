@@ -51,11 +51,51 @@ estUnePME . explications:
     Votre entreprise n'est pas considérée comme une PME au sens de la réglementation européenne.
 
 natureActivite . commercialeIndustrielleAgricole:
-  une de ces conditions:
-    - natureActivite = 'commerciale'
-    - natureActivite = 'industrielle'
-    - natureActivite = 'agricole'
+  valeur:
+    une de ces conditions:
+      - natureActivite . commerciale
+      - natureActivite . industrielle
+      - natureActivite . agricole
+
 natureActivite . commercialeIndustrielleAgricole . explications:
-  applicable si: commercialeIndustrielleAgricole = non
+  applicable si: natureActivite . commercialeIndustrielleAgricole = non
   texte: |
     La nature de votre activité n'est pas commerciale, industrielle ou agricole.
+
+capitalDetenu . eligibilite:
+  capitalDetenu . aucune = non
+capitalDetenu . eligibilite . explications:
+  applicable si: capitalDetenu . eligibilite = non
+  texte: |
+    Le capital de votre entreprise n'est pas détenu à 50% ou plus par des personnes physiques ou morales qui ne sont pas des universités, des établissements d'enseignement supérieur ou de recherche, ou des organismes de recherche.
+
+regimeFiscalReelOuConditionDExoneration:
+  variations:
+    - si: typeImposition = 'exonere'
+      alors:
+        une de ces conditions:
+        - jei . eligibilite
+        - categorieExoneration . repriseEntrepriseEnDifficulte
+        - categorieExonerationZoneSpecifique = 'ZFR'
+        - categorieExonerationZoneSpecifique = 'ZFU_TE'
+        - categorieExonerationZoneSpecifique = 'BER'
+        - categorieExonerationZoneSpecifique = 'ZRD'
+        - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+        - categorieExonerationZoneSpecifique = 'ZRR'
+        - categorieExonerationZoneSpecifique = 'FRR'
+        - categorieExonerationZoneSpecifique = 'BUD'
+        - categorieExonerationZoneSpecifique = 'ZDP'
+    - sinon: regimeFiscalEstReel
+
+regimeFiscalReelOuConditionDExoneration . explications:
+  applicable si: regimeFiscalReelOuConditionDExoneration = non
+  variations:
+    - si: typeImposition = 'exonere'
+      alors:
+        texte: |
+          Votre entreprise est exonérée d'impôt.
+          NB : Les entreprises exonérées d'impôt sont éligibles au CII uniquement si :
+          - elles sont des Jeunes Entreprises Innovantes (JEI)
+          - elles sont des entreprises reprises en difficulté
+          - elles bénéficient de zones spécifiques (ZFR, ZFU_TE, BER, ZRD, ZFA_DOM, ZRR, BUD ou ZDP)
+    - sinon: regimeFiscalEstReel . explications

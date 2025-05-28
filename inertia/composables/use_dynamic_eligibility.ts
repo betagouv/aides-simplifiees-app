@@ -13,7 +13,7 @@ export function useDynamicEligibility(simulateurSlug: string) {
   const schema = computed(() => surveysStore.getSchema(simulateurSlug))
 
   // Get aides from the page configuration
-  const aidesToEvaluate = schema.value?.intermediaryResults?.dispositifs || []
+  const aidesToEvaluate = schema.value?.dispositifs || []
 
   const calculatedResults = computed<EligibilityResults>(() => {
     if (!simulateurSlug || !aidesToEvaluate.length) {

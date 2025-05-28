@@ -37,40 +37,6 @@
       "description": "La JEC offre des avantages fiscaux pour les entreprises en forte croissance."
     }
   ],
-  "intermediaryResults": {
-    "dispositifs": [
-      {
-        "id": "CIR",
-        "title": "Crédit d'Impôt Recherche (CIR)",
-        "description": "Le CIR permet de financer vos activités de recherche et développement."
-      },
-      {
-        "id": "cii",
-        "title": "Crédit d'Impôt Innovation (CII)",
-        "description": "Le CII soutient les PME qui mènent des projets d'innovation."
-      },
-      {
-        "id": "cico",
-        "title": "Crédit d'Impôt Recherche et Innovation (CICo)",
-        "description": "Le CICo permet de financer vos activités de recherche et développement."
-      },
-      {
-        "id": "jei",
-        "title": "Jeune Entreprise Innovante (JEI)",
-        "description": "Le statut JEI offre des exonérations fiscales et sociales aux jeunes entreprises innovantes."
-      },
-      {
-        "id": "jeu",
-        "title": "Jeune Entreprise Universitaire (JEU)",
-        "description": "Le statut JEU offre des avantages aux entreprises créées par des étudiants ou chercheurs."
-      },
-      {
-        "id": "jec",
-        "title": "Jeune Entreprise de Croissance (JEC)",
-        "description": "La JEC offre des avantages fiscaux pour les entreprises en forte croissance."
-      }
-    ]
-  },
   "steps": [
     {
       "id": "information-generale",
@@ -538,10 +504,9 @@
       "pages": [
         {
           "id": "resultats-intermediaires-page",
-          "title": "Mise à jour de votre éligibilité",
+          "title": "Résultats intermédiaires",
           "type": "intermediary-results",
-          "description": "Voici une évaluation actualisée de votre éligibilité aux dispositifs d'aide.",
-          "dispositifs": ["CIR", "CII", "CICo", "JEI", "JEU", "JEC"]
+          "description": "Voici une évaluation actualisée de votre éligibilité aux dispositifs d'aide."
         }
       ]
     },

@@ -22,13 +22,17 @@ const selectedSimulateur = ref('demenagement-logement')
 
 const page = usePage<SharedProps>()
 const origin = page.props.publicAppUrl
+const sriHash = page.props.iframeSriHash as string
+const iframeVersion = page.props.iframeVersion as string
 
-// Inclusion du script
-const scriptPath = `/iframe-integration.js`
+// Inclusion du script avec URL versionnée
+const scriptPath = `/assets/iframe-integration@${iframeVersion}.js`
 const fullScript = computed(() => {
   let script = `<script src="${origin}${scriptPath}"`
 
   script += ` data-simulateur="${selectedSimulateur.value}"`
+  script += ` integrity="${sriHash}"`
+  script += ` crossorigin="anonymous"`
 
   script += ` defer><\/script>`
   return script
@@ -46,6 +50,8 @@ function setIframeContainer(): void {
   const script = document.createElement('script')
   script.src = `${origin}${scriptPath}`
   script.dataset.simulateur = selectedSimulateur.value
+  script.integrity = sriHash
+  script.crossOrigin = 'anonymous'
   iframeContainer.value.appendChild(script)
 }
 
@@ -215,6 +221,20 @@ window.addEventListener('aides-simplifiees-message', function(event) {
                   </tr>
                 </tbody>
               </DsfrTable>
+
+              <h4 class="fr-mt-4w">
+                Sécurité : Subresource Integrity (SRI)
+              </h4>
+              <p>
+                Le code d'intégration inclut automatiquement la sécurité SRI (Subresource Integrity) qui garantit que le script n'a pas été modifié.
+                Cette protection vérifie l'intégrité du fichier JavaScript avant son exécution.
+              </p>
+              <p>
+                <strong>Hash SRI actuel :</strong> <code class="fr-text--sm">{{ sriHash }}</code>
+              </p>
+              <p>
+                Les attributs <code>integrity</code> et <code>crossorigin="anonymous"</code> sont automatiquement inclus dans le code d'intégration pour assurer cette sécurité.
+              </p>
 
               <h4 class="fr-mt-4w">
                 Événements JavaScript

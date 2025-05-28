@@ -22,14 +22,14 @@
       "description": ""
     },
     {
-      "id": "mensuel",
-      "title": "Mensuel",
-      "description": ""
+      "id": "abonnement-mensuel",
+      "title": "Abonnement mensuel",
+      "description": "Abonnement mensuel sans engagement"
     },
     {
-      "id": "annuel",
-      "title": "Annuel",
-      "description": ""
+      "id": "abonnement-annuel",
+      "title": "Abonnement annuel",
+      "description": "Abonnement annuel avec engagement de 12 mois"
     }
   ],
   "steps": [

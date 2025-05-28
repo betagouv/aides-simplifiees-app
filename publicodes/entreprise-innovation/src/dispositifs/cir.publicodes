@@ -32,6 +32,7 @@ cir . montant:
     somme:
       - cir . creditMetropole
       - cir . creditDom
+      - cico . montant
 
 
 cir . creditMetropole:
@@ -54,16 +55,22 @@ cir . creditDom:
 cir . depensesMetropole:
   valeur:
     somme:
-      - somme:
-          - depensesRdAmortissementBiens
-          - (-depensesRdAmortissementBiensDom)
+      - produit:
+        - 0.75
+        - somme:
+            - depensesRdAmortissementBiens
+            - (-depensesRdAmortissementBiensDom)
       - somme:
           - depensesRdIndemnisationAssurance
           - (-depensesRdIndemnisationAssuranceDom)
-      - somme:
+      - produit:
+        - 0.4
+        - somme:
           - depensesRdChercheursTechniciens
           - (-depensesRdChercheursTechniciensDom)
-      - somme:
+      - produit:
+        - 0.4
+        - somme:
           - depensesRdRemunerationInvention
           - (-depensesRdRemunerationInventionDom)
       - somme:
@@ -73,37 +80,57 @@ cir . depensesMetropole:
           - depensesPrototypeFraisDepotDessins
           - (-depensesPrototypeFraisDepotDessinsDom)
       - somme:
-          - somme:
-            - depensesRdRechercheLiensDependance
-            - (-depensesRdRechercheLiensDependanceDom)
-          - somme:
-            - depensesRdRechercheSansLiensDependance
-            - (-depensesRdRechercheSansLiensDependanceDom)
-      - somme: #TODO: Pas présent pour les DOM : à vérifier que c'est bien le baréme métropole qui s'applique / ou alors faire une seule assiete DOM ou métropole avec un seul taux et non plusieurs taux
-          - depensesOrdc
-          - (-subventionsOrdc)
-          - remboursementsSubventionsOrdc
+          - depensesRdRechercheLiensDependance . avecPlafond
+          - depensesRdRechercheSansLiensDependance . avecPlafond
       - somme:
           - 0
           - (-cir . deductions . metropole)
 
+# N'est pas modélisé pour l'instant:  "Dépenses liées à l'élaboration de nouvelles créations par les entreprises du secteur textile-habillement-cuir, y compris lorsqu'elles sont confiées à des stylistes ou bureaux de style agréés (jusqu'au 31 décembre 2027)."
 
-# TODO: "Autres dépenses de fonctionnement faites dans le cadre des opérations de recherche et développement (40 % des dépenses de personnel et 75 %des dépenses d'amortissement)"
-# TODO:  "Dépenses liées à l'élaboration de nouvelles créations par les entreprises du secteur textile-habillement-cuir, y compris lorsqu'elles sont confiées à des stylistes ou bureaux de style agréés (jusqu'au 31 décembre 2027)."
 
+depensesRdRechercheLiensDependance . avecPlafond:
+  le minimum de:
+        - 2000000
+        - somme:
+            - depensesRdRechercheLiensDependance
+            - (-depensesRdRechercheLiensDependanceDom)
+
+depensesRdRechercheSansLiensDependance . avecPlafond:
+  le minimum de:
+        - 10000000
+        - somme:
+            - depensesRdRechercheSansLiensDependance
+            - (-depensesRdRechercheSansLiensDependanceDom)
+
+depensesRdRechercheLiensDependanceDom . avecPlafond:
+  le minimum de:
+        - 2000000
+        - depensesRdRechercheLiensDependanceDom
+
+depensesRdRechercheSansLiensDependanceDom . avecPlafond:
+  le minimum de:
+        - 10000000
+        - depensesRdRechercheSansLiensDependanceDom
 
 cir . depensesDom:
   valeur:
     somme:
-      - depensesRdAmortissementBiensDom
+      - produit:
+        - 0.75
+        - depensesRdAmortissementBiensDom
       - depensesRdIndemnisationAssuranceDom
-      - depensesRdChercheursTechniciensDom
-      - depensesRdRemunerationInventionDom
+      - produit:
+        - 0.4
+        - depensesRdChercheursTechniciensDom
+      - produit:
+        - 0.4
+        - depensesRdRemunerationInventionDom
       - depensesNormalisationSalairesDom
       - depensesPrototypeFraisDepotDessinsDom
       - somme:
-          - depensesRdRechercheLiensDependanceDom
-          - depensesRdRechercheSansLiensDependanceDom
+          - depensesRdRechercheLiensDependanceDom . avecPlafond
+          - depensesRdRechercheSansLiensDependanceDom . avecPlafond
       - somme:
           - 0
           - (-cir . deductions . dom)

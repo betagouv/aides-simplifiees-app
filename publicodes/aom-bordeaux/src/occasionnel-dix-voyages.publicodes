@@ -8,9 +8,9 @@ occasionnel-dix-voyages . montant:
     - si:
         une de ces conditions:
           - militaire
-          - carte combattant
-          - service civique
-          - étudiant
+          - carteCombattant
+          - serviceCivique
+          - etudiant
           - familleNombreuse
       alors: 8.40 €
     - sinon: 16.80 €

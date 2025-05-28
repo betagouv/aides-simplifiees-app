@@ -1,20 +1,19 @@
 abonnement-annuel:
   titre: "Abonnement annuel (engagement de 12 mois)"
+abonnement-annuel . resultat:
+  texte: |
+    <h3>Abonnement annuel : {{montant}}</h3>
+    <p>Abonnement annuel, engagement de 12 mois. Validations illimitées pendant cette période. Sur carte nominative TBM</p>
 
 abonnement-annuel . eligibilite:
   valeur: oui
-
 
 # Tarifs fréquents
 abonnement-annuel . montant:
   variations:
     - si: gratuité
       alors: 0
-    - si:
-        toutes ces conditions:
-          - tranche solidaire = non
-          - pass = 'standard'
-          - salarieEntreprisePartenaire
+    - si: salarieEntreprisePartenaire
       alors: 35.50 €/mois
     - si: pass = 'pitchoun'
       alors: 12.20 €/mois
@@ -26,6 +25,10 @@ abonnement-annuel . montant:
       alors: 32.00 €/mois
 
   abattement:
+    non applicable si:
+      une de ces conditions:
+        - gratuité
+        - salarieEntreprisePartenaire
     variations:
       - si: tranche solidaire = 'tranche 2'
         alors: 50%

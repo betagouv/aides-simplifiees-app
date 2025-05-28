@@ -1,0 +1,10 @@
+resultat:
+  texte:
+    <h3> Voyageurs occasionnels </h3>
+    <ul>
+    {{occasionnel-un-voyage . resultat}}
+    {{occasionnel-deux-voyages . resultat}}
+    {{occasionnel-dix-voyages . resultat}}
+    </ul>
+    {{abonnement-mensuel . resultat}}
+    {{abonnement-annuel . resultat}}

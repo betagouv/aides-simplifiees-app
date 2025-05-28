@@ -1,17 +1,38 @@
 etudiant:
   par défaut: non
+  question: Êtes-vous étudiant ?
+
 familleNombreuse:
+  question: Avez-vous une famille nombreuse ?
   par défaut: non
+
 militaire:
+  question: Êtes-vous militaire ?
   par défaut: non
+
 carteCombattant:
+  question: Êtes-vous titulaire de la carte du combattant ?
   par défaut: non
+
 serviceCivique:
+  question: Effectuez-vous un service civique ?
   par défaut: non
 
 age:
+  question: Quel est votre âge ?
+  unité: ans
+
 quotientFamilial:
+  question: Quel est votre quotient familial ?
+  unité: €/part
+
 salarieEntreprisePartenaire:
+  applicable si: pass = 'standard'
+  question : Êtes-vous salarié dans une entreprises partenaires TBM
   par défaut: non
+
+
 situationDeHandicap:
-  par défaut: 0%
+  question: Êtes-vous en situation de handicap ?
+  description: Pour bénéficier de la gratuité, vous devez être en situation de handicap avec un taux d'invalidité supérieur à 50%.
+  par défaut: non

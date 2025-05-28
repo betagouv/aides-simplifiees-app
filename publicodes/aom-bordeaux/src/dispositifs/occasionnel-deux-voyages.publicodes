@@ -1,5 +1,7 @@
 
 occasionnel-deux-voyages:
+occasionnel-deux-voyages . resultat:
+  texte: "<li>Deux tickets : <strong>{{ montant }}</strong></li>"
 occasionnel-deux-voyages . eligibilite:
   valeur: oui
 occasionnel-deux-voyages . montant:

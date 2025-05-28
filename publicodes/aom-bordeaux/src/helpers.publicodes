@@ -1,7 +1,7 @@
 gratuité:
   une de ces conditions:
     - carteCombattant
-    - situationDeHandicap >= 50%
+    - situationDeHandicap
     - quotientFamilial <= 555 €/part
 
 tranche solidaire:

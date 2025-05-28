@@ -1,5 +1,9 @@
 abonnement-mensuel:
   titre: "Abonnement mensuel (pas d'engagement)"
+abonnement-mensuel . resultat:
+  texte: |
+    <h3>Abonnement mensuel : {{montant}}</h3>
+    <p>Abonnement mensuel, sans engagement. Validations illimitées pendant cette période. Sur carte nominative TBM</p>
 
 abonnement-mensuel . eligibilite:
   valeur: oui

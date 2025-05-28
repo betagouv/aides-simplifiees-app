@@ -105,6 +105,8 @@ declare global {
     id: string
     title: string
     description: string
+    engine?: string
+    dispositifs?: { id: string, title: string, description: string }[]
     intermediaryResults?: {
       dispositifs: { id: string, title: string, description: string }[]
     }

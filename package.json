@@ -1,7 +1,7 @@
 {
   "name": "aides-simplifiees-app",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "license": "AGPL-3.0-only",
   "scripts": {
     "start": "node bin/server.js",

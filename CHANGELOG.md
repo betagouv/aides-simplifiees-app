@@ -1,6 +1,16 @@
 # CHANGELOG
 
-# 1.0.1 [#76](https://github.com/betagouv/aides-simplifiees-app/pull/76)
+## 1.1.0 [#88](https://github.com/betagouv/aides-simplifiees-app/pull/808)
+- Ajout de fonctionnalités :
+- Détails :
+  - Intégration d'un SRI dans dans le script de réintegration d'iframe
+  - Refactorisation des règles publicodes pour les dispositifs innovation
+  - Amélioration du debug de l'éligibilité via publicodes
+
+### 1.0.2 [#78](https://github.com/betagouv/aides-simplifiees-app/pull/78)
+- Améliore les règles publicodes et les explications du formulaire innovation
+
+### 1.0.1 [#76](https://github.com/betagouv/aides-simplifiees-app/pull/76)
 
 - Évolutions mineures
 - Détail :

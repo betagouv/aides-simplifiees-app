@@ -9,7 +9,8 @@ natureActivite . artisanale:
   par défaut: non
 natureActivite . autreActivite:
   par défaut: non
-
+natureActivite . liberale:
+  par défaut: non
 
 situationGeographique:
   par défaut: "'metropole'"

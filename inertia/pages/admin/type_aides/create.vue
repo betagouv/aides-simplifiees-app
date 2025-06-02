@@ -1,46 +1,38 @@
-<script setup lang="ts">
-import type AdminAideController from '#controllers/admin/admin_aide_controller'
-import type { InferPageProps } from '@adonisjs/inertia/types'
-import { Head, router, usePage } from '@inertiajs/vue3'
-import AideForm from '~/components/admin/AideForm.vue'
+<script lang="ts" setup>
+import { Head, router } from '@inertiajs/vue3'
+import TypeAideForm from '~/components/admin/TypeAideForm.vue'
 import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
-const {
-  props: {
-    typesAide,
-  },
-} = usePage<InferPageProps<AdminAideController, 'create'>>()
-
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Administration', to: '/admin' },
-  { text: 'Aides', to: '/admin/aides' },
-  { text: 'Créer une aide', to: '/admin/aides/create' },
+  { text: 'Types d\'aides', to: '/admin/type-aides' },
+  { text: 'Créer un type d\'aide', to: '/admin/type-aides/create' },
 ])
 
-function handleSubmit(form: AideForm) {
-  form.post('/admin/aides', {
+function handleSubmit(form: any) {
+  form.post('/admin/type-aides', {
     preserveScroll: true,
   })
 }
+
 function handleCancel() {
-  router.visit('/admin/aides')
+  router.visit('/admin/type-aides')
 }
 </script>
 
 <template>
-  <Head title="Créer une aide | Admin" />
-  <AdminPageHeading title="Créer une aide" />
+  <Head title="Créer un type d'aide | Admin" />
+  <AdminPageHeading title="Créer un type d'aide" />
   <BrandBackgroundContainer
     textured
     subtle
   >
     <SectionContainer type="page-footer">
-      <AideForm
-        :types-aide="typesAide"
+      <TypeAideForm
         @submit="handleSubmit"
         @cancel="handleCancel"
       />

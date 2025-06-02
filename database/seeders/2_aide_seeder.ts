@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import Aide from '#models/aide'
+import TypeAide from '#models/type_aide'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class AideSeeder extends BaseSeeder {
@@ -13,49 +14,44 @@ export default class AideSeeder extends BaseSeeder {
       await Aide.query().delete()
     }
 
-    const rootDir = import.meta.dirname
+    const typeAideMap: Record<string, TypeAide> = {}
+    async function getTypeAide(slug: string): Promise<TypeAide | null> {
+      if (typeAideMap[slug]) {
+        return typeAideMap[slug]
+      }
+      const typeAide = await TypeAide.query().where('slug', slug).first()
+      if (typeAide) {
+        typeAideMap[slug] = typeAide
+      }
+      return typeAide
+    }
 
-    // Lecture des fichiers markdown
-    const aidePersonnaliseeLogementContent = fs.readFileSync(
-      path.join(rootDir, 'content/aides/aide-personnalisee-logement.md'),
-      'utf-8',
-    )
-
-    const garantieVisaleContent = fs.readFileSync(
-      path.join(rootDir, 'content/aides/garantie-visale.md'),
-      'utf-8',
-    )
-
-    const locapassContent = fs.readFileSync(
-      path.join(rootDir, 'content/aides/locapass.md'),
-      'utf-8',
-    )
-
-    const mobiliteMaster1Content = fs.readFileSync(
-      path.join(rootDir, 'content/aides/mobilite-master-1.md'),
-      'utf-8',
-    )
-
-    const mobiliteParcoursupContent = fs.readFileSync(
-      path.join(rootDir, 'content/aides/mobilite-parcoursup.md'),
-      'utf-8',
-    )
-
-    const fondSolidariteLogementContent = fs.readFileSync(
-      path.join(rootDir, 'content/aides/fond-solidarite-logement.md'),
-      'utf-8',
-    )
+    async function createAide({ typeAideSlug, ...options }: Record<string, any>): Promise<void> {
+      const contentPromise = fs.promises.readFile(
+        path.join(import.meta.dirname, `content/aides/${options.slug}.md`),
+        { encoding: 'utf-8' },
+      )
+      const typeAidePromise = getTypeAide(typeAideSlug)
+      await Promise.all([contentPromise, typeAidePromise])
+        .then(([content, typeAide]) => {
+          Aide.create({
+            content,
+            typeAideId: typeAide?.id,
+            ...options,
+          })
+        })
+    }
 
     // Create aides
-    await Aide.createMany([
+    const aides = [
       {
         title: 'Aide Personnalisée au Logement (APL)',
         slug: 'aide-personnalisee-logement',
-        type: 'aide-financiere',
+        typeAideSlug: 'aide-financiere',
         usage: 'loyer-logement',
+        status: 'published',
         instructeur: 'CAF ou MSA',
-        description:
-          'Aide financière pour réduire le montant du loyer ou des mensualités d\'emprunt',
+        description: 'Aide financière pour réduire le montant du loyer ou des mensualités d\'emprunt',
         textesLoi: [
           {
             label: 'Code de la construction et de l\'habitation : articles R831-1 à R831-3',
@@ -86,37 +82,35 @@ export default class AideSeeder extends BaseSeeder {
             url: 'https://www.legifrance.gouv.fr/codes/id/LEGISCTA000038878921',
           },
         ],
-        content: aidePersonnaliseeLogementContent,
       },
       {
         title: 'Garantie Visale',
         slug: 'garantie-visale',
-        type: 'garantie',
+        typeAideSlug: 'garantie',
+        status: 'published',
         usage: 'caution-logement',
         instructeur: 'Action logement',
         description: 'Caution locative gratuite qui couvre les loyers impayés',
         textesLoi: [],
-        content: garantieVisaleContent,
       },
       {
         title: 'Avance Loca-Pass',
         slug: 'locapass',
-        type: 'pret',
+        typeAideSlug: 'pret',
+        status: 'published',
         usage: 'pret-garantie-logement',
         instructeur: 'Action logement',
         description: 'Prêt à 0% pour financer votre dépôt de garantie',
         textesLoi: [],
-        content: locapassContent,
       },
       {
         title: 'Aide à la mobilité master',
         slug: 'mobilite-master-1',
-        type: 'aide-financiere',
+        typeAideSlug: 'aide-financiere',
+        status: 'published',
         usage: 'frais-installation-logement',
-        instructeur:
-          'Ministère chargé de l\'enseignement supérieur, de la recherche et de l\'innovation',
-        description:
-          'Aide financière pour les étudiants boursiers qui changent de région pour leur première année de master',
+        instructeur: 'Ministère chargé de l\'enseignement supérieur, de la recherche et de l\'innovation',
+        description: 'Aide financière pour les étudiants boursiers qui changent de région pour leur première année de master',
         textesLoi: [
           {
             label:
@@ -124,32 +118,29 @@ export default class AideSeeder extends BaseSeeder {
             url: '',
           },
         ],
-        content: mobiliteMaster1Content,
       },
       {
         title: 'Aide à la mobilité Parcoursup',
         slug: 'mobilite-parcoursup',
-        type: 'aide-financiere',
+        typeAideSlug: 'aide-financiere',
         usage: 'frais-installation-logement',
-        instructeur:
-          'Ministère chargé de l\'enseignement supérieur, de la recherche et de l\'innovation',
-        description:
-          'Aide financière pour les lycéens boursiers qui s\'inscrivent dans une formation située hors de leur académie',
+        status: 'published',
+        instructeur: 'Ministère chargé de l\'enseignement supérieur, de la recherche et de l\'innovation',
+        description: 'Aide financière pour les lycéens boursiers qui s\'inscrivent dans une formation située hors de leur académie',
         textesLoi: [],
-        content: mobiliteParcoursupContent,
       },
       {
         title: 'Fonds de Solidarité pour le Logement (FSL)',
         slug: 'fond-solidarite-logement',
-        type: 'aide-financiere',
+        status: 'published',
+        typeAideSlug: 'aide-financiere',
         usage: 'loyer-logement',
         instructeur: 'Conseil départemental',
         description: 'Aide financière pour l\'accès ou le maintien dans le logement',
         textesLoi: [],
-        content: fondSolidariteLogementContent,
       },
-    ])
+    ]
 
-    console.log('✓ Aides created from markdown files')
+    await aides.map(createAide)
   }
 }

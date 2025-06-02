@@ -11,6 +11,7 @@ import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 const {
   props: {
     aide,
+    typesAide,
   },
 } = usePage<InferPageProps<AdminAideController, 'edit'>>()
 
@@ -24,9 +25,7 @@ setBreadcrumbs([
 ])
 
 function handleSubmit(form: AideForm) {
-  form.put(`/admin/aides/${aide.id}`, {
-    preserveScroll: true,
-  })
+  form.put(`/admin/aides/${aide.id}`)
 }
 
 function handleCancel() {
@@ -46,6 +45,7 @@ function handleCancel() {
   >
     <SectionContainer type="page-footer">
       <AideForm
+        :types-aide="typesAide"
         :default-values="aide"
         @submit="handleSubmit"
         @cancel="handleCancel"

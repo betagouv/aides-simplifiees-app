@@ -30,6 +30,7 @@ const AdminPageController = () => import('#controllers/admin/admin_page_controll
 const AdminNotionController = () => import('#controllers/admin/admin_notion_controller')
 const AdminAideController = () => import('#controllers/admin/admin_aide_controller')
 const AdminSimulateurController = () => import('#controllers/admin/admin_simulateur_controller')
+const AdminTypeAideController = () => import('#controllers/admin/admin_type_aide_controller')
 
 /**
  * Public dynamic content controllers
@@ -120,6 +121,16 @@ router
     router.post('/admin/simulateurs', [AdminSimulateurController, 'store'])
     router.put('/admin/simulateurs/:id', [AdminSimulateurController, 'update'])
     router.delete('/admin/simulateurs/:id', [AdminSimulateurController, 'destroy'])
+
+    /**
+     * CRUD pour les TypeAides
+     */
+    router.get('/admin/type-aides', [AdminTypeAideController, 'index'])
+    router.get('/admin/type-aides/create', [AdminTypeAideController, 'create'])
+    router.post('/admin/type-aides', [AdminTypeAideController, 'store'])
+    router.get('/admin/type-aides/:id/edit', [AdminTypeAideController, 'edit'])
+    router.put('/admin/type-aides/:id', [AdminTypeAideController, 'update'])
+    router.delete('/admin/type-aides/:id', [AdminTypeAideController, 'destroy'])
   })
   .middleware([middleware.admin()])
 

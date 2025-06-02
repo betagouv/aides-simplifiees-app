@@ -3,17 +3,19 @@ import Aide from '#models/aide'
 import Notion from '#models/notion'
 import Page from '#models/page'
 import Simulateur from '#models/simulateur'
+import TypeAide from '#models/type_aide'
 
 export default class AdminDashboardController {
   /**
    * Dashboard de l'admin
    */
   public async dashboard({ inertia }: HttpContext) {
-    const [pagesCount, notionsCount, aidesCount, simulateursCount] = await Promise.all([
+    const [pagesCount, notionsCount, aidesCount, simulateursCount, typeAideCount] = await Promise.all([
       Page.query().count('* as total'),
       Notion.query().count('* as total'),
       Aide.query().count('* as total'),
       Simulateur.query().count('* as total'),
+      TypeAide.query().count('* as total'),
     ]
       .map(async (query) => {
         const result = await query
@@ -50,6 +52,12 @@ export default class AdminDashboardController {
         description: 'Administrer les simulateurs d\'aides financières',
         count: simulateursCount,
         route: '/admin/simulateurs',
+      },
+      {
+        name: 'Types d\'aides',
+        description: 'Administrer les types d\'aides financières',
+        count: typeAideCount,
+        route: '/admin/type-aides',
       },
     ]
 

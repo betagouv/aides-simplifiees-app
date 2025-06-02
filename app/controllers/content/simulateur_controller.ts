@@ -219,7 +219,9 @@ export default class SimulateurController {
     // Load required aides from Aide Model and convert to an object indexed by slug
     const aides = await Aide.query()
       .whereIn('slug', rawAides.map(aide => aide.id))
-    const aidesBySlug: Record<string, Aide> = {}
+      .preload('typeAide')
+
+      const aidesBySlug: Record<string, Aide> = {}
     aides.forEach((aide) => {
       aidesBySlug[aide.slug] = aide
     })
@@ -246,7 +248,7 @@ export default class SimulateurController {
           description: aideDetails.description || 'Description non disponible',
           textesLoi: aideDetails.textesLoi || [],
           instructeur: aideDetails.instructeur || 'Instructeur non disponible',
-          type: aideDetails.type || 'aide-financiere',
+          typeAide: aideDetails.typeAide,
           usage: aideDetails.usage || 'frais-installation-logement',
         }
 

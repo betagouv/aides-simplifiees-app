@@ -1,5 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import AdminTypeAideController from '#controllers/admin/admin_type_aide_controller'
 import Aide from '#models/aide'
+import TypeAideModel from '#models/type_aide'
 import string from '@adonisjs/core/helpers/string'
 
 export default class AdminAideController {
@@ -20,7 +22,7 @@ export default class AdminAideController {
         description: this.aide.description,
         metaDescription: this.aide.metaDescription,
         content: this.aide.content,
-        type: this.aide.type,
+        typeAideId: this.aide.typeAideId,
         usage: this.aide.usage,
         instructeur: this.aide.instructeur,
         textesLoi: this.aide.textesLoi,
@@ -42,8 +44,8 @@ export default class AdminAideController {
           title: aide.title,
           slug: aide.slug,
           status: aide.status,
+          typeAide: aide.typeAide ? new AdminTypeAideController.SingleDto(aide.typeAide).toJson() : null,
           description: aide.description,
-          type: aide.type,
           instructeur: aide.instructeur,
         }
       })
@@ -60,7 +62,7 @@ export default class AdminAideController {
     'description',
     'metaDescription',
     'content',
-    'type',
+    'typeAideId',
     'usage',
     'instructeur',
     'textesLoi',
@@ -70,7 +72,8 @@ export default class AdminAideController {
    * List all aides in admin dashboard
    */
   public async index({ inertia }: HttpContext) {
-    const aides = await Aide.all()
+    const aides = await Aide.query()
+      .preload('typeAide')
 
     return inertia.render('admin/aides/index', {
       aides: new AdminAideController.ListDto(aides).toJson(),
@@ -81,21 +84,37 @@ export default class AdminAideController {
    * Show create aide form
    */
   public async create({ inertia }: HttpContext) {
-    return inertia.render('admin/aides/create')
+    const typesAide = await TypeAideModel.all()
+
+    return inertia.render('admin/aides/create', {
+      typesAide: typesAide.map(type => ({
+        id: type.id,
+        label: type.label,
+      })),
+    })
   }
 
   /**
    * Show edit aide form
    */
+
   public async edit({ params, inertia, response }: HttpContext) {
-    const aide = await Aide.find(params.id)
+    const aide = await Aide.query()
+      .where('id', params.id)
+      .first()
 
     if (!aide) {
       return response.status(404).send('Aide non trouvée')
     }
 
+    const typesAide = await TypeAideModel.all()
+
     return inertia.render('admin/aides/edit', {
       aide: new AdminAideController.SingleDto(aide).toJson(),
+      typesAide: typesAide.map(type => ({
+        id: type.id,
+        label: type.label,
+      })),
     })
   }
 

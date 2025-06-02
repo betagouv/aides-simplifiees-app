@@ -13,7 +13,6 @@ const {
     aides,
   },
 } = usePage<InferPageProps<AideController, 'index'>>()
-
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
   { text: 'Accueil', to: '/' },
@@ -43,7 +42,7 @@ setBreadcrumbs([
               :description="aide.description || ''"
               :link="`/aides/${aide.slug}`"
               :instructeur="aide.instructeur"
-              :type-aide="aide.type"
+              :type-aide="aide.typeAide"
               :usage="aide.usage"
             />
           </div>

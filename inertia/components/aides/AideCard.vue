@@ -9,13 +9,15 @@ type AideCardProps = {
   link: string
   title: string
   description: string
-  typeAide: TypeAide
+  typeAide: {
+    label: string
+    iconName: string
+  }
   montant?: number
   instructeur: string
 } & Pick<DsfrCardProps, 'horizontal' | 'size' | 'titleTag'>
 
 const props = defineProps<AideCardProps>()
-
 const periode = props.title?.match('APL') ? '/mois' : undefined
 </script>
 
@@ -25,6 +27,7 @@ const periode = props.title?.match('APL') ? '/mois' : undefined
     :title="title"
     no-arrow
     :link="link"
+    :title-link-attrs="{ }"
     :description="description"
     :detail="instructeur"
     :detail-icon="{ name: 'ri:government-line', ssr: true }"
@@ -46,12 +49,15 @@ const periode = props.title?.match('APL') ? '/mois' : undefined
     }"
   >
     <template #start-details>
-      <div class="brand-aide-card__details">
+      <div
+        v-if="typeAide"
+        class="brand-aide-card__details"
+      >
         <div class="brand-aide-card__details-left">
           <ul class="fr-tags-group">
             <TypeAideTag
-              :size="size"
-              :type="typeAide"
+              :label="typeAide?.label"
+              :icon-name="typeAide?.iconName"
             />
           </ul>
         </div>

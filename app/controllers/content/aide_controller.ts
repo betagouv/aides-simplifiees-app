@@ -3,12 +3,11 @@ import SimulateurController from '#controllers/content/simulateur_controller'
 import Aide from '#models/aide'
 import Simulateur from '#models/simulateur'
 import { marked } from 'marked'
-
 export default class AideController {
-/**
- * Class to serialize a single aide data for sharing types with Inertia in the show view.
- * @see https://docs.adonisjs.com/guides/views-and-templates/inertia#model-serialization
- */
+  /**
+   * Class to serialize a single aide data for sharing types with Inertia in the show view.
+   * @see https://docs.adonisjs.com/guides/views-and-templates/inertia#model-serialization
+   */
   public static SingleDto = class {
     constructor(private aide: Aide) { }
     toJson() {
@@ -17,6 +16,14 @@ export default class AideController {
         updatedAt: this.aide.updatedAt,
         title: this.aide.title,
         slug: this.aide.slug,
+        typeAide: this.aide.typeAide
+          ? {
+              id: this.aide.typeAide.id,
+              slug: this.aide.typeAide.slug,
+              label: this.aide.typeAide.label,
+              iconName: this.aide.typeAide.iconName,
+            }
+          : null,
         description: this.aide.description,
         metaDescription: this.aide.metaDescription,
       }
@@ -36,7 +43,14 @@ export default class AideController {
           slug: aide.slug,
           description: aide.description,
           instructeur: aide.instructeur,
-          type: aide.type,
+          typeAide: aide.typeAide
+            ? {
+                id: aide.typeAide.id,
+                slug: aide.typeAide.slug,
+                label: aide.typeAide.label,
+                iconName: aide.typeAide.iconName,
+              }
+            : null,
           usage: aide.usage,
         }
       })
@@ -49,6 +63,7 @@ export default class AideController {
   public async index({ inertia }: HttpContext) {
     const aides = await Aide.query()
       .where('status', 'published')
+      .preload('typeAide')
 
     return inertia.render('content/aides/aides', {
       aides: new AideController.ListDto(aides).toJson(),
@@ -63,6 +78,7 @@ export default class AideController {
     const aide = await Aide.query()
       .where('slug', params.aide_slug)
       .whereIn('status', ['published', 'unlisted'])
+      .preload('typeAide')
       .first()
 
     if (!aide) {
@@ -88,6 +104,7 @@ export default class AideController {
     const aide = await Aide.query()
       .where('slug', params.aide_slug)
       .whereIn('status', ['published', 'unlisted'])
+      .preload('typeAide')
       .first()
 
     if (!aide) {

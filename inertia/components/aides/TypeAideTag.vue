@@ -1,38 +1,17 @@
 <script lang="ts" setup>
-import type { DsfrTagProps } from '@gouvminint/vue-dsfr'
 import { DsfrTag } from '@gouvminint/vue-dsfr'
 
-const props = withDefaults(defineProps<
-  Omit<DsfrTagProps, 'icon'> & {
-    type?: TypeAide
-  }
->(), {
-  type: 'pret',
-})
-interface TypeAideTag {
-  type: TypeAide
-  iconName: string
+defineProps<{
   label: string
-}
-const typeAideTags: TypeAideTag[] = [
-  { type: 'aide-financiere', label: 'Aide financière', iconName: 'ri:money-euro-circle-line' },
-  { type: 'pret', label: 'Prêt', iconName: 'ri:arrow-left-right-line' },
-  { type: 'garantie', label: 'Garantie', iconName: 'ri:chat-check-line' },
-  { type: 'statut-fiscal', label: 'Statut Fiscal', iconName: 'ri:chat-check-line' },
-  { type: 'credit-impot', label: 'Crédit d\'impôt', iconName: 'ri:money-euro-circle-line' },
-]
-const typeAide = typeAideTags.find((tag) => {
-  return tag.type === props.type
-})
+  iconName: string
+}>()
 </script>
 
 <template>
   <DsfrTag
-    v-if="typeAide"
     class="brand-type-aide-tag"
-    v-bind="$props"
-    :icon="{ name: typeAide.iconName, ssr: true }"
-    :label="typeAide.label"
+    :icon="{ name: iconName, ssr: true }"
+    :label="label"
   />
 </template>
 

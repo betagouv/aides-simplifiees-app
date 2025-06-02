@@ -8,7 +8,6 @@ type AidesListProps = {
   aides: RichAide[]
   itemsPerPage?: number
 } & Pick<DsfrCardProps, 'horizontal' | 'size' | 'titleTag'>
-
 const props = withDefaults(defineProps<AidesListProps>(), {
   itemsPerPage: 6,
 })
@@ -48,7 +47,7 @@ const currentPageAides = computed(() => {
         :title="aide.title"
         :description="aide.description"
         :instructeur="aide.instructeur"
-        :type-aide="aide.type"
+        :type-aide="aide.typeAide"
         :montant="aide.montant"
         v-bind="{
           horizontal,

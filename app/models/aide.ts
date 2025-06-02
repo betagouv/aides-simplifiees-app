@@ -1,6 +1,8 @@
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 // app/models/aide.ts
 import type { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import TypeAideModel from './type_aide.js'
 
 export default class Aide extends BaseModel {
   @column({ isPrimary: true })
@@ -31,7 +33,10 @@ export default class Aide extends BaseModel {
   declare content: string | null
 
   @column()
-  declare type: TypeAide | null
+  declare typeAideId: number | null
+
+  @belongsTo(() => TypeAideModel)
+  declare typeAide: BelongsTo<typeof TypeAideModel>
 
   @column()
   declare usage: UsageAide | null

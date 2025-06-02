@@ -6,9 +6,11 @@ import { useForm } from '@inertiajs/vue3'
 import AdminForm from '~/components/admin/AdminItemFormContainer.vue'
 import DsfrSlugInput from '~/components/admin/DsfrSlugInput.vue'
 import RichTextEditor from '~/components/admin/RichTextEditor.vue'
+import DsfrSelectPatch from '~/components/DsfrSelectPatch.vue'
 
 const props = defineProps<{
   defaultValues?: InferPageProps<AdminAideController, 'edit'>['aide']
+  typesAide: Array<{ id: number, label: string }>
 }>()
 
 defineEmits<{
@@ -24,12 +26,11 @@ const form = useForm({
   description: props.defaultValues?.description || '',
   metaDescription: props.defaultValues?.metaDescription || '',
   content: props.defaultValues?.content || '',
-  type: props.defaultValues?.type || '',
+  typeAideId: props.defaultValues?.typeAideId,
   usage: props.defaultValues?.usage || '',
   instructeur: props.defaultValues?.instructeur || '',
   textesLoi: props.defaultValues?.textesLoi || [],
 })
-
 // Gérer les textes de loi (tableau d'objets)
 function addTexteLoi() {
   form.textesLoi.push({ label: '', url: '' })
@@ -109,25 +110,26 @@ function removeTexteLoi(index: number) {
     </div>
 
     <div class="fr-grid-row fr-grid-row--gutters fr-mt-4w">
-      <div class="fr-col-12 fr-col-md-4">
-        <DsfrInputGroup
-          v-model="form.type"
+      <div class="fr-col-12 fr-col-md-6">
+        <DsfrSelectPatch
+          v-model="form.typeAideId"
           label="Type"
+          :options="typesAide?.map(type => ({ value: type.id, text: type.label })) || []"
           label-visible
           hint="Type d'aide"
-          :error="form.errors.type"
+          :error="form.errors.typeAideId"
         />
       </div>
-      <div class="fr-col-12 fr-col-md-4">
-        <DsfrInputGroup
-          v-model="form.usage"
-          label="Usage"
-          label-visible
-          hint="Usage de l'aide"
-          :error="form.errors.usage"
-        />
-      </div>
-      <div class="fr-col-12 fr-col-md-4">
+      <!-- <div class="fr-col-12 fr-col-md-4">
+      <DsfrInputGroup
+        v-model="form.usage"
+        label="Usage"
+        label-visible
+        hint="Usage de l'aide"
+        :error="form.errors.usage"
+      />
+    </div> -->
+      <div class="fr-col-12 fr-col-md-6">
         <DsfrInputGroup
           v-model="form.instructeur"
           label="Instructeur"

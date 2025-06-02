@@ -1,5 +1,6 @@
+import type TypeAide from '#models/type_aide'
+
 declare global {
-  type TypeAide = 'pret' | 'garantie' | 'aide-financiere'
 
   type UsageAide =
     | 'loyer-logement'
@@ -24,7 +25,7 @@ declare global {
     instructeur: string
     montant: number
     usage: UsageAide
-    type: TypeAide
+    typeAide: TypeAide
     textesLoi: TexteLoi[]
     description: string
   }
@@ -33,13 +34,6 @@ declare global {
     usageAide: UsageAide
     montant: number
     periode?: string
-  }
-
-  interface RichEcheance {
-    type: TypeAide
-    montant: number
-    dateStart: Date
-    dateEnd: Date
   }
 
   interface RichSimulationResults {

@@ -28,5 +28,5 @@ export default class Page extends BaseModel {
   declare metaDescription: string | null
 
   @column({ columnName: 'content' })
-  declare content: string
+  declare content: string | null
 }

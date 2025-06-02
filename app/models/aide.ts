@@ -28,16 +28,16 @@ export default class Aide extends BaseModel {
   declare metaDescription: string | null
 
   @column({ columnName: 'content' })
-  declare content: string
+  declare content: string | null
 
   @column()
-  declare type: TypeAide
+  declare type: TypeAide | null
 
   @column()
-  declare usage: UsageAide
+  declare usage: UsageAide | null
 
   @column()
-  declare instructeur: string
+  declare instructeur: string | null
 
   @column({
     columnName: 'textes_loi',

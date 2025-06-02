@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { DsfrButton } from '@gouvminint/vue-dsfr'
+import { DsfrButton, DsfrTooltip } from '@gouvminint/vue-dsfr'
 import { router } from '@inertiajs/vue3'
 import { computed, customRef } from 'vue'
 import BooleanQuestion from '~/components/survey/BooleanQuestion.vue'
@@ -74,9 +74,12 @@ const autocompleteConfig = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div
+    class="brand-survey-question"
+  >
     <hgroup
       :id="`question-${question.id}`"
+      class="brand-survey-question-header"
       :class="[{
         'fr-mb-3w': size === 'md',
         'fr-mb-1w': size === 'sm',
@@ -111,9 +114,24 @@ const autocompleteConfig = computed(() => {
       icon-right
       class="fr-mb-2w"
       @click="() => {
-        router.visit(`/simulateurs/${simulateurSlug}/notions/${question.notion.id}`, { preserveState: true, preserveScroll: true })
+        router.visit(`/simulateurs/${simulateurSlug}/notions/${question.notion?.id}`, { preserveState: true, preserveScroll: true })
       }"
     />
+    <DsfrTooltip
+      v-else-if="question?.tooltip"
+      class="brand-survey-question-tooltip"
+      :content="(question.tooltip.content as string)"
+      :label="question.tooltip.buttonLabel"
+      :secondary="true"
+    >
+      <DsfrButton
+        type="button"
+        :label="question.tooltip.buttonLabel"
+        :icon="{ name: 'ri:information-line', ssr: true }"
+        secondary
+        icon-right
+      />
+    </DsfrTooltip>
     <component
       :is="questionComponent"
       :key="question.id"
@@ -124,3 +142,21 @@ const autocompleteConfig = computed(() => {
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+.brand-survey-question-header:deep(.fr-hint-text) {
+  /* Ensure the hint text wraps properly and takes \n (new lines) into account */
+  white-space: pre-wrap;
+}
+
+.brand-survey-question:deep(.fr-btn--tooltip) {
+  padding: 0 !important;
+  margin-bottom: 1rem;
+  &:before {
+    display: none !important;
+  }
+  /* Ensure the tooltip text wraps properly and takes \n (new lines) into account */
+  max-width: none !important;
+  max-height: none !important;
+}
+</style>

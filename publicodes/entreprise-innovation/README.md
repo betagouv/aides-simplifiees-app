@@ -11,15 +11,15 @@ npm install entreprise-innovation publicodes
 ## Usage
 
 ```typescript
-import { Engine } from "publicodes";
-import rules from "entreprise-innovation";
+import rules from 'entreprise-innovation'
+import { Engine } from 'publicodes'
 
 const engine = new Engine(rules, {
   // Important : this package must be used with the flag "automaticNamespaceDisabling" set to false
   flags: {
     automaticNamespaceDisabling: false,
   },
-});
+})
 ```
 
 ## Development

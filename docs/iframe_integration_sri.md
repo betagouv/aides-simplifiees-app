@@ -9,8 +9,8 @@ SRI (Subresource Integrity) est un mécanisme de sécurité qui permet aux navig
 Quand vous intégrez notre script iframe avec SRI :
 
 ```html
-<script 
-  src="https://votre-domaine.fr/iframe-integration.js" 
+<script
+  src="https://votre-domaine.fr/iframe-integration.js"
   data-simulateur="demenagement-logement"
   integrity="sha384-pWsCxETqtG8zVICx8IOmSGr/KVRL55v3OGmLHPe6M9SaaJTwHgBqkLyqL3JF0lg2"
   crossorigin="anonymous"
@@ -72,12 +72,12 @@ export const IFRAME_SCRIPT_LATEST_VERSION = '1.0.2'
 
 export const IFRAME_SCRIPT_INTEGRITY_LIST = [
   {
-    'version': '1.0.1',
-    'integrity': 'sha384-pWsCxETqtG8zVICx8IOmSGr/KVRL55v3OGmLHPe6M9SaaJTwHgBqkLyqL3JF0lg2'
+    version: '1.0.1',
+    integrity: 'sha384-pWsCxETqtG8zVICx8IOmSGr/KVRL55v3OGmLHPe6M9SaaJTwHgBqkLyqL3JF0lg2'
   },
   {
-    'version': '1.0.2',
-    'integrity': 'sha384-newHashForVersion1.0.2...'
+    version: '1.0.2',
+    integrity: 'sha384-newHashForVersion1.0.2...'
   }
 ]
 ```

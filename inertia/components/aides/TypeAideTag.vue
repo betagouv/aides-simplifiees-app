@@ -24,11 +24,6 @@ const typeAideTags: TypeAideTag[] = [
 const typeAide = typeAideTags.find((tag) => {
   return tag.type === props.type
 })
-
-/**
- * The warning in template will be fixed in a future release of @gouvminint/vue-dsfr
- * @see https://github.com/dnum-mi/vue-dsfr/pull/1044
- */
 </script>
 
 <template>

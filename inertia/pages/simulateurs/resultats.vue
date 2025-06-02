@@ -210,7 +210,6 @@ const simulationDateTime = formatDateTime(createdAt)
                               {{ texteItem }}
                             </template>
                             <template v-else-if="texteItem && texteItem.url && texteItem.label">
-                              <span v-if="texteItem.prefix"> {{ texteItem.prefix }} : </span>
                               <DsfrLink
                                 :to="texteItem.url"
                                 :icon="{ name: 'ri:external-link-line', ssr: true }"

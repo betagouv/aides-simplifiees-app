@@ -10,7 +10,7 @@ export default antfu(
   },
   globalIgnores([
     'public/assets/**',
-    'publicodes-build/**',
+    '**/publicodes-build/**',
   ]),
   {
     rules: {

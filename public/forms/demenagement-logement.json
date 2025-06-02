@@ -40,7 +40,7 @@
         },
         {
           "id": "situation-professionnelle",
-          "title": "Quelle est votre situation professionnelle ?",
+          "title": "Précisez votre statut professionnel en tant qu'étudiant",
           "type": "radio",
           "visibleWhen": "statut-professionnel=etudiant",
           "choices": [
@@ -75,9 +75,9 @@
         },
         {
           "id": "handicap",
-          "notion": {
-            "id": "handicap",
-            "buttonLabel": "En savoir plus"
+          "tooltip": {
+            "buttonLabel": "En savoir plus",
+            "content": "Vous disposez d'une reconnaissance administrative de votre situation de handicap lorsque vous avez déposé un dossier à la MDPH (Maison Départementale des personnes handicapées) et que celle-ci vous a attribué un taux d'incapacité lié à votre handicap."
           },
           "title": "Avez-vous une reconnaissance administrative d'une situation de handicap ?",
           "type": "boolean"
@@ -221,7 +221,11 @@
             { "id": "revenus-bourses", "title": "Bourses" },
             { "id": "revenus-entreprise", "title": "Revenus professionnels non salariés" },
             { "id": "revenus-parents", "title": "Ressources des parents" },
-            { "id": "aucun-autres-revenus", "title": "Aucun autre revenu à déclarer" }
+            {
+              "id": "aucun-revenus",
+              "title": "Aucun revenu à déclarer",
+              "exclusive": true
+            }
           ]
         },
         {
@@ -325,7 +329,7 @@
         "loyer-montant-mensuel": 700,
         "loyer-montant-charges": 100,
         "type-revenus": [
-          "aucun-autres-revenus"
+          "aucun-revenus"
         ],
         "confirmation-end": [
           "confirmation-end-oui"

@@ -2,7 +2,8 @@
 
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
-import { resolve, dirname } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -40,7 +41,7 @@ function buildIframeIntegration() {
     console.log('🏗️  Building with Vite...')
     execSync('vite build --config vite.iframe-integration.config.ts', {
       stdio: 'inherit',
-      cwd: projectRoot
+      cwd: projectRoot,
     })
     console.log('')
 
@@ -48,7 +49,7 @@ function buildIframeIntegration() {
     console.log('🔐 Generating SRI hash...')
     execSync(`node bin/generate-sri-hash.js ${targetVersion}`, {
       stdio: 'inherit',
-      cwd: projectRoot
+      cwd: projectRoot,
     })
     console.log('')
 
@@ -59,8 +60,8 @@ function buildIframeIntegration() {
     console.log('🎯 Next steps:')
     console.log('   - Commit the changes to git')
     console.log('   - The version is ready for integration')
-
-  } catch (error) {
+  }
+  catch (error) {
     console.error('❌ Build failed:', error.message)
     process.exit(1)
   }

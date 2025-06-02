@@ -1,6 +1,15 @@
 # CHANGELOG
 
-## 1.1.0 [#88](https://github.com/betagouv/aides-simplifiees-app/pull/808)
+## 1.1.1 [#94](https://github.com/betagouv/aides-simplifiees-app/pull/94)
+- Ajout de fonctionnalités :
+- Détails :
+  - Améliorations du calcul du formulaire innovation
+  - Permet de sauter des lignes dans les infobulles et descriptions des questions
+  - Améliore la gestion des textes de lois depuis l'admin
+  - Harmonise la nullabilité des champs des différents modèles
+  - Permet de spécifier des choix exclusifs dans les questions
+
+## 1.1.0 [#88](https://github.com/betagouv/aides-simplifiees-app/pull/88)
 - Ajout de fonctionnalités :
 - Détails :
   - Intégration d'un SRI dans dans le script de réintegration d'iframe

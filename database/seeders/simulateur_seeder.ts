@@ -164,7 +164,7 @@ export default class SimulateurSeeder extends BaseSeeder {
         tooltip: 'Revenus d\'activité indépendante, micro-entreprise, profession libérale, etc.',
       },
       { slug: 'revenus-parents', title: 'Ressources des parents' },
-      { slug: 'aucun-autres-revenus', title: 'Aucun autre revenu à déclarer' },
+      { slug: 'aucun-revenus', title: 'Aucun revenu à déclarer' },
     ])
 
     // Générer le builtJson

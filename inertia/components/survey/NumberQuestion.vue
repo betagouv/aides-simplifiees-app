@@ -9,7 +9,7 @@ const props = defineProps<{
 /**
  * We expose a number model up to the parent component
  */
-const numberModel = defineModel<number | undefined>()
+const numberModel = defineModel<number | undefined | null>()
 
 /**
  * If the question has a default value and the model is undefined,
@@ -17,7 +17,10 @@ const numberModel = defineModel<number | undefined>()
  */
 if (
   props.question.default !== undefined
-  && numberModel.value === undefined
+  && (
+    numberModel.value === undefined
+    || numberModel.value === null
+  )
 ) {
   numberModel.value = Number(props.question.default)
 }

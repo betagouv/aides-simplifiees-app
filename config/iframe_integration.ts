@@ -7,9 +7,9 @@ export const IFRAME_SCRIPT_LATEST_VERSION = '1.0.1'
 
 export const IFRAME_SCRIPT_INTEGRITY_LIST = [
   {
-    'version': '1.0.1',
-    'integrity': 'sha384-pWsCxETqtG8zVICx8IOmSGr/KVRL55v3OGmLHPe6M9SaaJTwHgBqkLyqL3JF0lg2'
-  }
+    version: '1.0.1',
+    integrity: 'sha384-pWsCxETqtG8zVICx8IOmSGr/KVRL55v3OGmLHPe6M9SaaJTwHgBqkLyqL3JF0lg2',
+  },
 ]
 
 /**

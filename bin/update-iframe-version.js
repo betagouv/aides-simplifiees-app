@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { readFileSync, writeFileSync } from 'node:fs'
-import { resolve, dirname } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -20,14 +21,16 @@ function getIframeConfig() {
   }
 
   // Extract existing integrity list
-  const integrityListMatch = configContent.match(/IFRAME_SCRIPT_INTEGRITY_LIST = (\[[\s\S]*?\])/m)
+  const integrityListMatch = configContent.match(/IFRAME_SCRIPT_INTEGRITY_LIST = (\[[\s\S]*?\])/)
   let existingList = []
   if (integrityListMatch) {
     try {
       // Simple parsing - replace single quotes with double quotes for JSON parsing
       const listStr = integrityListMatch[1].replace(/'/g, '"')
       existingList = JSON.parse(listStr)
-    } catch (error) {
+    }
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    catch (error) {
       console.warn('Could not parse existing integrity list, starting fresh')
       existingList = []
     }
@@ -35,7 +38,7 @@ function getIframeConfig() {
 
   return {
     latestVersion: latestVersionMatch[1],
-    existingList
+    existingList,
   }
 }
 
@@ -73,7 +76,7 @@ function updateIframeVersion(newVersion) {
 
 export const IFRAME_SCRIPT_LATEST_VERSION = '${newVersion}'
 
-export const IFRAME_SCRIPT_INTEGRITY_LIST = ${JSON.stringify(existingList, null, 2).replace(/"/g, "'")}
+export const IFRAME_SCRIPT_INTEGRITY_LIST = ${JSON.stringify(existingList, null, 2).replace(/"/g, '\'')}
 
 /**
  * Get integrity hash for a specific version

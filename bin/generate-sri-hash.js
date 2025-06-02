@@ -2,7 +2,8 @@
 
 import { createHash } from 'node:crypto'
 import { readFileSync, writeFileSync } from 'node:fs'
-import { resolve, dirname } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -21,14 +22,16 @@ function getIframeConfig() {
   }
 
   // Extract existing integrity list
-  const integrityListMatch = configContent.match(/IFRAME_SCRIPT_INTEGRITY_LIST = (\[[\s\S]*?\])/m)
+  const integrityListMatch = configContent.match(/IFRAME_SCRIPT_INTEGRITY_LIST = (\[[\s\S]*?\])/)
   let existingList = []
   if (integrityListMatch) {
     try {
       // Simple parsing - replace single quotes with double quotes for JSON parsing
       const listStr = integrityListMatch[1].replace(/'/g, '"')
       existingList = JSON.parse(listStr)
-    } catch (error) {
+    }
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    catch (error) {
       console.warn('Could not parse existing integrity list, starting fresh')
       existingList = []
     }
@@ -36,7 +39,7 @@ function getIframeConfig() {
 
   return {
     latestVersion: latestVersionMatch[1],
-    existingList
+    existingList,
   }
 }
 
@@ -59,7 +62,8 @@ function generateSriHash(version) {
     console.log(sriHash)
 
     return sriHash
-  } catch (error) {
+  }
+  catch (error) {
     console.error(`Error generating SRI hash for version ${version}:`, error)
     throw error
   }
@@ -88,7 +92,8 @@ function updateConfigWithIntegrity(version, integrity, force = false) {
       console.error('- Or revert your changes if they were unintentional')
       console.error('- Or use --force flag if you really need to update this version (NOT RECOMMENDED)')
       process.exit(1)
-    } else {
+    }
+    else {
       console.warn(`⚠️  WARNING: Forcing update of existing version ${version} with new integrity hash!`)
       console.warn(`   Old hash: ${existingEntry.integrity}`)
       console.warn(`   New hash: ${integrity}`)
@@ -109,9 +114,9 @@ function updateConfigWithIntegrity(version, integrity, force = false) {
   const newList = [
     ...filteredList,
     {
-      version: version,
-      integrity: integrity
-    }
+      version,
+      integrity,
+    },
   ]
 
   // Sort by version (simple string sort should work for semver)
@@ -128,7 +133,7 @@ function updateConfigWithIntegrity(version, integrity, force = false) {
 
 export const IFRAME_SCRIPT_LATEST_VERSION = '${latestVersion}'
 
-export const IFRAME_SCRIPT_INTEGRITY_LIST = ${JSON.stringify(newList, null, 2).replace(/"/g, "'")}
+export const IFRAME_SCRIPT_INTEGRITY_LIST = ${JSON.stringify(newList, null, 2).replace(/"/g, '\'')}
 
 /**
  * Get integrity hash for a specific version
@@ -167,7 +172,8 @@ function main() {
     console.log(`No version specified, using latest version: ${latestVersion}`)
     const integrity = generateSriHash(latestVersion)
     updateConfigWithIntegrity(latestVersion, integrity, force)
-  } else {
+  }
+  else {
     const integrity = generateSriHash(version)
     updateConfigWithIntegrity(version, integrity, force)
   }

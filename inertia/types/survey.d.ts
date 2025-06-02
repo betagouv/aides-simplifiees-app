@@ -36,19 +36,19 @@ declare global {
     default?: string | number | boolean
   } & (
     | {
-        notion?: {
-          id: string
-          buttonLabel: string
-        }
-        tooltip: never
+      notion?: {
+        id: string
+        buttonLabel: string
       }
+      tooltip: never
+    }
     | {
-        notion: never
-        tooltip?: {
-          buttonLabel?: string
-          content: string
-        }
+      notion: never
+      tooltip?: {
+        buttonLabel?: string
+        content: string
       }
+    }
   )
 
   interface QuestionGroup {

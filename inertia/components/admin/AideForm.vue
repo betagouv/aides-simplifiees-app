@@ -32,7 +32,7 @@ const form = useForm({
 
 // Gérer les textes de loi (tableau d'objets)
 function addTexteLoi() {
-  form.textesLoi.push({ prefix: '', label: '', url: '' })
+  form.textesLoi.push({ label: '', url: '' })
 }
 
 function removeTexteLoi(index: number) {
@@ -145,38 +145,42 @@ function removeTexteLoi(index: number) {
           secondary
           label="Ajouter un texte de loi"
           :icon="{ name: 'ri:add-line', ssr: true }"
+          type="button"
           @click="addTexteLoi"
         />
       </div>
-      <div
+      <template
         v-for="(texteLoi, index) in form.textesLoi"
         :key="index"
       >
-        <DsfrInputGroup
-          v-model="texteLoi.prefix"
-          label="Préfixe"
-          label-visible
-          placeholder="Art."
-        />
-        <DsfrInputGroup
-          v-model="texteLoi.label"
-          label="Référence"
-          label-visible
-          placeholder="L. 123-45 du Code de l'action sociale"
-        />
-        <DsfrInputGroup
-          v-model="texteLoi.url"
-          label="URL"
-          label-visible
-          placeholder="https://www.legifrance.gouv.fr/..."
-        />
-        <DsfrButton
-          secondary
-          label="Supprimer le texte de loi"
-          :icon="{ name: 'ri:delete-bin-2-line', ssr: true }"
-          @click="removeTexteLoi(index)"
-        />
-      </div>
+        <div
+          v-if="texteLoi"
+          class="fr-col-12 fr-col-md-6 fr-mb-2w"
+        >
+          <div class="fr-card fr-p-2w">
+            <DsfrInputGroup
+              v-model="texteLoi.label"
+              label="Label"
+              label-visible
+              placeholder="Ex: L. 123-45 du Code de l'action sociale"
+            />
+            <DsfrInputGroup
+              v-model="texteLoi.url"
+              label="URL"
+              label-visible
+              placeholder="Ex: https://www.legifrance.gouv.fr/..."
+            />
+            <DsfrButton
+              label="Supprimer le texte de loi"
+              :icon="{ name: 'ri:delete-bin-2-line', ssr: true }"
+              type="button"
+              tertiary
+              no-outline
+              @click="removeTexteLoi(index)"
+            />
+          </div>
+        </div>
+      </template>
     </div>
 
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--bottom fr-mt-4w">

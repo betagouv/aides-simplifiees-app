@@ -58,37 +58,30 @@ export default class AideSeeder extends BaseSeeder {
           'Aide financière pour réduire le montant du loyer ou des mensualités d\'emprunt',
         textesLoi: [
           {
-            prefix: 'Conditions générales d\'attribution',
             label: 'Code de la construction et de l\'habitation : articles R831-1 à R831-3',
             url: 'https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074096/LEGISCTA000038850380/#LEGISCTA000038878778',
           },
           {
-            prefix: 'Foyer',
             label: 'Code de la construction et de l\'habitation : articles R832-23 à D832-28',
             url: 'https://www.legifrance.gouv.fr/codes/id/LEGISCTA000038878716',
           },
           {
-            prefix: 'Conditions de ressources',
             label: 'Code de la construction et de l\'habitation : articles R822-3 à R822-17',
             url: 'https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074096/LEGISCTA000038850156/#LEGISCTA000038879003',
           },
           {
-            prefix: 'Versement en tiers payant',
             label: 'Code de la construction et de l\'habitation : articles D832-1 à D832-4',
             url: 'https://www.legifrance.gouv.fr/codes/id/LEGISCTA000038878768',
           },
           {
-            prefix: 'Conditions liées au logement',
             label: 'Code de la construction et de l\'habitation : articles R822-23 à R822-25',
             url: 'https://www.legifrance.gouv.fr/codes/id/LEGISCTA000038878951/',
           },
           {
-            prefix: 'Calcul et versement des aides',
             label: 'Code de la construction et de l\'habitation : articles R823-1 à D823-9',
             url: 'https://www.legifrance.gouv.fr/codes/id/LEGISCTA000038878941',
           },
           {
-            prefix: 'Ouverture et extinction des droits',
             label: 'Code de la construction et de l\'habitation : articles R823-10 à D823-15',
             url: 'https://www.legifrance.gouv.fr/codes/id/LEGISCTA000038878921',
           },
@@ -126,7 +119,6 @@ export default class AideSeeder extends BaseSeeder {
           'Aide financière pour les étudiants boursiers qui changent de région pour leur première année de master',
         textesLoi: [
           {
-            prefix: '',
             label:
               'Décret n° 2017-969 du 10 mai 2017 relatif à l\'aide à la mobilité accordée aux étudiants inscrits en première année du diplôme national de master',
             url: '',

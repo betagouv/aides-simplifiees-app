@@ -105,11 +105,6 @@ export default class AdminAideController {
   public async store({ request, response }: HttpContext) {
     const data = request.only(AdminAideController.allowedFields)
 
-    // Convertir textesLoi en JSON si présent
-    if (data.textesLoi) {
-      data.textesLoi = JSON.stringify(data.textesLoi)
-    }
-
     if (!data.slug) {
       // Générer un slug à partir du titre
       data.slug = string.slug(data.title)
@@ -130,11 +125,6 @@ export default class AdminAideController {
     }
 
     const data = request.only(AdminAideController.allowedFields)
-
-    // Convertir textesLoi en JSON si présent
-    if (data.textesLoi) {
-      data.textesLoi = JSON.stringify(data.textesLoi)
-    }
 
     aide.merge(data)
     await aide.save()

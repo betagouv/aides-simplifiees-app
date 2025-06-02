@@ -25,3 +25,5 @@ yarn-error.log
 .DS_Store
 legacy
 legacy/*
+
+icon-usage-report-*.md

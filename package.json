@@ -12,7 +12,8 @@
     "test": "node ace test",
     "lint": "eslint .",
     "format": "eslint --fix .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "detect-icons": "node scripts/detect-icons.js"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",

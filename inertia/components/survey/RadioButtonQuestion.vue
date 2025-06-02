@@ -59,6 +59,10 @@ function moveTooltips() {
 </template>
 
 <style scoped lang="scss">
+/* Ensure the tooltip text wraps properly and takes \n (new lines) into account */
+.custom-rich-radio-button:deep(.fr-tooltip) {
+  white-space: pre-wrap;
+}
 .custom-rich-radio-button:deep(.fr-fieldset__element) {
   display: flex;
   align-items: center;

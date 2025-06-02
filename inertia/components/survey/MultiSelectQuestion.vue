@@ -31,7 +31,8 @@ function handleSelectionChange(selection: string[]) {
     if (clickedExclusiveChoice) {
       // If clicked on an exclusive choice, only keep that choice
       newValue = [clickedExclusiveChoice]
-    } else {
+    }
+    else {
       // If clicked on a normal choice, remove all exclusive choices
       newValue = selection.filter(id => !exclusiveChoices.includes(id))
     }
@@ -43,7 +44,8 @@ function handleSelectionChange(selection: string[]) {
   // Update parent model with standard rule
   if (newValue.length === 0) {
     model.value = undefined
-  } else {
+  }
+  else {
     model.value = newValue
   }
 }
@@ -82,11 +84,11 @@ function moveTooltips() {
   <DsfrCheckboxSet
     ref="checkboxSet"
     :model-value="internalModel"
-    @update:model-value="handleSelectionChange"
     :title-id="`question-${question.id}`"
     class="custom-rich-checkbox"
     :name="question.id"
     :options="options"
+    @update:model-value="handleSelectionChange"
   />
   <div
     v-for="choice in (question.choices?.filter(choice => Boolean(choice.tooltip)) as (SurveyChoice)[])"
@@ -101,6 +103,10 @@ function moveTooltips() {
 </template>
 
 <style scoped lang="scss">
+/* Ensure the tooltip text wraps properly and takes \n (new lines) into account */
+.custom-rich-checkbox:deep(.fr-tooltip) {
+  white-space: pre-wrap;
+}
 // Custom styling for DsfrCheckboxSet, based on dsfr rich radio button
 .custom-rich-checkbox:deep(.fr-fieldset__element) {
   display: flex;
@@ -143,4 +149,3 @@ function moveTooltips() {
   }
 }
 </style>
-

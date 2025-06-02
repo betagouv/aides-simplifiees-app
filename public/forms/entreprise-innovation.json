@@ -79,7 +79,7 @@
                   "id": "artisanale",
                   "title": "Artisanale (indispensable CIR)",
                   "description": "(indispensable pour le CIR)",
-                  "tooltip": "Pour être artisan, vous devez répondre aux 3 critères suivants : - Votre activité doit faire partie de la liste officielle des métiers de l'artisanat ou de la liste officielle des métiers d'artisanat d'art - Votre entreprise doit compter moins de 11 salariés à sa création - Vous devez détenir un savoir-faire spécifique et le prouver par un diplôme (CAP, BEP, etc.) ou une qualification professionnelle. Exemples d'activités artisanales : taxi et VTC, coiffeur, esthéticienne, toiletteur pour chiens, métiers de bouche (fromager, chocolatier, pâtissier, glacier, etc.), métiers techniques manuels (plombier, vitrier, ramoneur, prothésiste-dentaire, réparateur de matériel agricole, réparateur de vélos, cordonnier, déménageur), ambulancier, contrôleur technique automobile."
+                  "tooltip": "Pour être artisan, vous devez répondre aux 3 critères suivants :\n- Votre activité doit faire partie de la liste officielle des métiers de l'artisanat ou de la liste officielle des métiers d'artisanat d'art\n- Votre entreprise doit compter moins de 11 salariés à sa création\n- Vous devez détenir un savoir-faire spécifique et le prouver par un diplôme (CAP, BEP, etc.) ou une qualification professionnelle. Exemples d'activités artisanales : taxi et VTC, coiffeur, esthéticienne, toiletteur pour chiens, métiers de bouche (fromager, chocolatier, pâtissier, glacier, etc.), métiers techniques manuels (plombier, vitrier, ramoneur, prothésiste-dentaire, réparateur de matériel agricole, réparateur de vélos, cordonnier, déménageur), ambulancier, contrôleur technique automobile."
                 },
                 {
                   "id": "liberale",
@@ -264,7 +264,7 @@
             {
               "id": "activite-nouvelle",
               "title": "Votre entreprise exerce-t-elle une activité nouvelle ?",
-              "description": "(indispensable JEI, JEU, JEC) Une entreprise n'est pas considérée comme nouvelle si elle reprend une activité existante avec des liens évidents avec une autre entreprise, comme la continuité des contrats, des moyens (locaux, personnel, matériel) ou de la clientèle. De même, si une entreprise récemment créée est simplement une extension d'une activité déjà en place sans réelle autonomie, elle ne sera pas reconnue comme nouvelle. Enfin, dans le cas de restructurations (fusion, scission, apport partiel d'actif), si l'activité, les liens ou les ressources sont en partie transférés, l'entreprise ne peut pas non plus être qualifiée de nouvelle.",
+              "description": "(indispensable JEI, JEU, JEC)\nUne entreprise n'est pas considérée comme nouvelle si elle reprend une activité existante avec des liens évidents avec une autre entreprise, comme la continuité des contrats, des moyens (locaux, personnel, matériel) ou de la clientèle. De même, si une entreprise récemment créée est simplement une extension d'une activité déjà en place sans réelle autonomie, elle ne sera pas reconnue comme nouvelle. Enfin, dans le cas de restructurations (fusion, scission, apport partiel d'actif), si l'activité, les liens ou les ressources sont en partie transférés, l'entreprise ne peut pas non plus être qualifiée de nouvelle.",
               "type": "boolean"
             },
             {
@@ -492,7 +492,7 @@
           ]
         },
         {
-          "id":"page-pourcentage-rd",
+          "id": "page-pourcentage-rd",
           "questions": [
             {
               "id": "pourcentage-rd",

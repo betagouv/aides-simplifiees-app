@@ -77,6 +77,7 @@ const autocompleteConfig = computed(() => {
   <div>
     <hgroup
       :id="`question-${question.id}`"
+      class="brand-survey-question-header"
       :class="[{
         'fr-mb-3w': size === 'md',
         'fr-mb-1w': size === 'sm',
@@ -124,3 +125,10 @@ const autocompleteConfig = computed(() => {
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+.brand-survey-question-header:deep(.fr-hint-text) {
+  /* Ensure the hint text wraps properly and takes \n (new lines) into account */
+  white-space: pre-wrap;
+}
+</style>

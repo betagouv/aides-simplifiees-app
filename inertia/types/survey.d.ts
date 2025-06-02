@@ -20,17 +20,13 @@ declare global {
     resetButtonLabel?: string
   }
 
-  interface SurveyQuestion {
+  type SurveyQuestion = {
     id: string
     title: string
     description?: string
     placeholder?: string
     type: 'radio' | 'checkbox' | 'number' | 'date' | 'combobox' | 'boolean'
     visibleWhen?: string
-    notion: {
-      id: string
-      buttonLabel: string
-    }
     autocompleteFunction?: string
     autocompleteConfig?: SurveyQuestionAutocompleteConfig
     choices?: SurveyChoice[]
@@ -38,7 +34,22 @@ declare global {
     max?: number
     step?: number
     default?: string | number | boolean
-  }
+  } & (
+    | {
+        notion?: {
+          id: string
+          buttonLabel: string
+        }
+        tooltip: never
+      }
+    | {
+        notion: never
+        tooltip?: {
+          buttonLabel?: string
+          content: string
+        }
+      }
+  )
 
   interface QuestionGroup {
     title: string

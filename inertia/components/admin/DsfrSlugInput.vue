@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DsfrButton, DsfrInputGroup } from '@gouvminint/vue-dsfr'
 import slugify from 'slugify'
 import { watch } from 'vue'
 
@@ -11,7 +12,7 @@ const props = withDefaults(defineProps<{
 
 const model = defineModel<string>()
 
-// Function to generate slug from another
+// Function to generate slug from another field
 function generateSlug() {
   if (props.slugifyFrom) {
     model.value = slugify(props.slugifyFrom, {

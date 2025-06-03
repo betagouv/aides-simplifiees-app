@@ -8,6 +8,7 @@ import Survey from "~/components/survey/Survey.vue";
 import { useIframeDisplay } from "~/composables/use_is_iframe";
 import { useBreadcrumbStore } from "~/stores/breadcrumbs";
 import AOMBordeauxRules from "~/../publicodes/aom-bordeaux/";
+import AOMRennesRules from "~/../publicodes/aom-rennes/";
 import { RawPublicodes } from "publicodes";
 
 const {
@@ -46,6 +47,11 @@ onMounted(() => {
       title="Simulateur tarif transport de Bordeaux"
     />
   </div>
-
+  <div v-if="simulateur.slug === 'aom-rennes'">
+    <PublicodesSurvey
+      :rules="AOMRennesRules"
+      title="Simulateur tarif transport de Rennes"
+    />
+  </div>
   <Survey v-else />
 </template>

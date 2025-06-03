@@ -1,3 +1,4 @@
+
 etudiant:
   par défaut: non
   question: Êtes-vous étudiant ?
@@ -30,7 +31,6 @@ salarieEntreprisePartenaire:
   applicable si: pass = 'standard'
   question : Êtes-vous salarié dans une entreprises partenaires TBM
   par défaut: non
-
 
 situationDeHandicap:
   question: Êtes-vous en situation de handicap ?

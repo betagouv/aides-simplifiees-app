@@ -62,7 +62,6 @@ export function usePublicodesForm(config: PublicodesFormConfig) {
       return formBuilder
         .evaluate(formState.value, "resultat")
         .nodeValue.replaceAll("Non applicable", "");
-      return result;
     } catch (e) {
       console.error("Error evaluating result:", e);
       return null;

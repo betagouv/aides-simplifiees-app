@@ -1,0 +1,13 @@
+pass-qualite-air:
+  titre: "PASS Qualité Air"
+  description: "Valable 1 jour lors des journées d'alerte à la pollution"
+
+pass-qualite-air . resultat:
+  texte: |
+    <h4>PASS Qualité Air : {{montant}}</h4>
+    <p>Pass spécial valable 1 jour lors des journées d'alerte à la pollution. Tarif préférentiel pour encourager l'utilisation des transports en commun.</p>
+
+pass-qualite-air . eligibilite:
+  valeur: journeeAlertePollution
+
+pass-qualite-air . montant: 1.70 €

@@ -44,8 +44,20 @@ export default class SimulateurSeeder extends BaseSeeder {
         title: 'Inscrit(e) comme demandeur d\'emploi',
         tooltip: 'Vous devez être inscrit à Pôle Emploi pour accéder à certaines aides spécifiques',
       },
-      { slug: 'retraite', title: 'Retraité(e)' },
-      { slug: 'inactif', title: 'Autre' },
+      {
+        slug: 'comprehensive-test',
+        title: 'Simulateur simple pour test',
+        description: 'Ceci est un simulateur de test pour vérifier le fonctionnement des simulateurs',
+        pictogramPath: '/artworks/custom-pictograms/demenagement.svg',
+        status: 'unlisted',
+      },
+      {
+        slug: 'simple-test',
+        title: 'Simulateur simple pour test',
+        description: 'Ceci est un simulateur de test pour vérifier le fonctionnement des simulateurs',
+        pictogramPath: '/artworks/custom-pictograms/demenagement.svg',
+        status: 'unlisted',
+      },
     ])
 
     // Ajouter la question âge

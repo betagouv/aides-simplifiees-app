@@ -3,7 +3,6 @@ import UserSimulationLayoutfrom from '~/layouts/user-simulation.vue'
 
 export function getLayout(uri: string) {
   let layout = DefaultLayout
-  console.log('uri :', uri)
   if (
     uri !== '/simulateurs/index'
     && uri !== '/admin/simulateurs/index'

@@ -1,0 +1,62 @@
+{
+  "version": "1.2.0",
+  "forceRefresh": false,
+  "id": "simple-test",
+  "title": "Test Simple",
+  "description": "Formulaire de test simplifié pour les tests automatisés",
+  "engine": "openfisca",
+  "steps": [
+    {
+      "id": "profil",
+      "title": "Votre profil",
+      "questions": [
+        {
+          "id": "statut-professionnel",
+          "title": "Êtes-vous :",
+          "description": "Sélectionnez votre situation actuelle",
+          "type": "radio",
+          "choices": [
+            {
+              "title": "En études ou en alternance",
+              "tooltip": "Cette option concerne les personnes inscrites dans un établissement d'enseignement"
+            },
+            {
+              "title": "Salarié(e) ou Indépendant(e)"
+            },
+            {
+              "title": "Demandeur d'emploi"
+            }
+          ]
+        },
+        {
+          "id": "age",
+          "title": "Quel âge avez-vous ?",
+          "type": "number",
+          "description": "Indiquez votre âge en années"
+        }
+      ]
+    },
+    {
+      "id": "logement",
+      "title": "Votre logement",
+      "questions": [
+        {
+          "id": "situation-logement",
+          "title": "Vous êtes :",
+          "type": "radio",
+          "choices": [
+            {
+              "title": "Locataire"
+            },
+            {
+              "title": "Propriétaire"
+            },
+            {
+              "title": "Hébergé gratuitement"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

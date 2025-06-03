@@ -143,6 +143,7 @@ const showFinishBtn = computed(() => isLastPage.value && areAllRequiredQuestions
     <div
       ref="pageContainer"
       tabindex="-1"
+      data-testid="survey-page-container"
     >
       <SurveyPage />
     </div>

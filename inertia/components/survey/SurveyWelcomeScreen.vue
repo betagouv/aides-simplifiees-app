@@ -4,7 +4,9 @@ import MatomoOptOut from '~/components/MatomoOptOut.vue'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
 
 defineProps<{
-  simulateur: string
+  simulateur: {
+    slug: string
+  }
 }>()
 
 const { isIframe } = useIframeDisplay()
@@ -15,6 +17,7 @@ const { isIframe } = useIframeDisplay()
     <div class="fr-card fr-p-4w">
       <h2
         class="fr-h4"
+        data-testid="survey-welcome-title"
       >
         Un simulateur en cours d'amélioration
       </h2>

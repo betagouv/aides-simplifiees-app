@@ -54,7 +54,10 @@ setBreadcrumbs([
       />
     </hgroup>
     <div class="fr-card fr-p-3w">
-      <DsfrAccordionsGroup v-model="activeAccordion">
+      <DsfrAccordionsGroup
+        v-model="activeAccordion"
+        data-testid="recapitulatif-accordions-group"
+      >
         <template
           v-for="(group, i) in groupedQuestions"
           :key="group.title"
@@ -81,7 +84,7 @@ setBreadcrumbs([
                 />
                 <p
                   v-if="surveysStore.hasAnswer(simulateur.slug, question.id)"
-                  class="fr-hint-text fr-text--sm"
+                  class="user-answer fr-hint-text fr-text--sm"
                 >
                   "{{ surveysStore.formatAnswer(simulateur.slug, question.id, question.answer) }}"
                 </p>

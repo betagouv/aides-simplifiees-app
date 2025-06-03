@@ -63,10 +63,10 @@ export default defineConfig({
     suites: [
       {
         files: [
-          'tests/e2e/**/*.spec(.ts|.js)',
+          'tests/browser/**/*.spec(.ts|.js)',
         ],
-        name: 'e2e',
-        timeout: 300000,
+        name: 'browser',
+        timeout: 30000,
       },
 
       // {

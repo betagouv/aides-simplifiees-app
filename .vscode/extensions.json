@@ -13,6 +13,7 @@
     "stormier.vue-dsfr-snippets",
     // AdonisJS
     "jripouteau.adonis-vscode-extension",
+    "jripouteau.japa-vscode",
     // Edge template engine
     "luongnd.edge",
     // PostgreSQL

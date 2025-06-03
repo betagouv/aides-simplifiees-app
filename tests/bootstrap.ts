@@ -18,7 +18,7 @@ export const plugins: Config['plugins'] = [
   expect(),
   pluginAdonisJS(app),
   browserClient({
-    runInSuites: ['e2e'],
+    runInSuites: ['browser'],
   }),
 ]
 

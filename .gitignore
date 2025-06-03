@@ -27,3 +27,4 @@ legacy
 legacy/*
 
 icon-usage-report-*.md
+/tests/browser/screenshots/

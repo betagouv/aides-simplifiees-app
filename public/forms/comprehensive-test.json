@@ -1,0 +1,246 @@
+{
+  "version": "1.2.0",
+  "forceRefresh": false,
+  "id": "comprehensive-test",
+  "title": "Test Complet des Fonctionnalités",
+  "description": "Formulaire complet pour tester toutes les fonctionnalités du simulateur : récapitulatif, navigation, tooltips, notion, validations",
+  "engine": "openfisca",
+  "steps": [
+    {
+      "id": "step-basic",
+      "title": "Questions de base",
+      "questions": [
+        {
+          "id": "radio-with-tooltip",
+          "title": "Question radio avec tooltip",
+          "description": "Cette question teste les tooltips et les liens notion",
+          "type": "radio",
+          "tooltip": "Ceci est un tooltip d'aide pour expliquer les choix disponibles",
+          "notion": {
+            "id": "handicap",
+            "buttonLabel": "En savoir plus sur le handicap"
+          },
+          "choices": [
+            {
+              "id": "choice-1",
+              "title": "Premier choix",
+              "tooltip": "Tooltip spécifique au premier choix"
+            },
+            {
+              "id": "choice-2",
+              "title": "Deuxième choix",
+              "tooltip": "Tooltip spécifique au deuxième choix"
+            },
+            {
+              "id": "choice-3",
+              "title": "Troisième choix"
+            }
+          ]
+        },
+        {
+          "id": "checkbox-question",
+          "title": "Question à cases à cocher",
+          "description": "Sélectionnez tous les éléments qui s'appliquent",
+          "type": "checkbox",
+          "tooltip": "Vous pouvez sélectionner plusieurs options",
+          "notion": {
+            "id": "aide-logement",
+            "buttonLabel": "Comprendre les critères"
+          },
+          "choices": [
+            {
+              "id": "option-a",
+              "title": "Option A"
+            },
+            {
+              "id": "option-b",
+              "title": "Option B"
+            },
+            {
+              "id": "option-c",
+              "title": "Option C"
+            }
+          ]
+        },
+        {
+          "id": "required-field",
+          "title": "Champ obligatoire",
+          "description": "Cette question est obligatoire pour continuer",
+          "type": "radio",
+          "required": true,
+          "tooltip": "Cette information est nécessaire pour calculer vos droits",
+          "choices": [
+            {
+              "id": "yes",
+              "title": "Oui"
+            },
+            {
+              "id": "no",
+              "title": "Non"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "step-advanced",
+      "title": "Questions avancées",
+      "questions": [
+        {
+          "id": "date-question",
+          "title": "Date de naissance",
+          "description": "Entrez votre date de naissance",
+          "type": "date",
+          "tooltip": "Format: JJ/MM/AAAA",
+          "notion": {
+            "id": "calcul-age",
+            "buttonLabel": "Pourquoi cette information ?"
+          }
+        },
+        {
+          "id": "combobox-question",
+          "title": "Sélection dans une liste",
+          "description": "Choisissez votre département",
+          "type": "combobox",
+          "tooltip": "Tapez les premières lettres pour filtrer",
+          "autocompleteFunction": "getInseeNumber"
+        },
+        {
+          "id": "boolean-question",
+          "title": "Question oui/non",
+          "description": "Avez-vous des enfants à charge ?",
+          "type": "boolean",
+          "tooltip": "Enfants de moins de 18 ans ou étudiants de moins de 25 ans"
+        },
+        {
+          "id": "conditional-question",
+          "title": "Question conditionnelle",
+          "description": "Cette question n'apparaît que si vous avez répondu 'Oui' à la question précédente",
+          "type": "radio",
+          "visibleWhen": "boolean-question=true",
+          "tooltip": "Nombre d'enfants à votre charge",
+          "choices": [
+            {
+              "id": "1",
+              "title": "1 enfant"
+            },
+            {
+              "id": "2",
+              "title": "2 enfants"
+            },
+            {
+              "id": "3-plus",
+              "title": "3 enfants ou plus"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "step-validation",
+      "title": "Tests de validation",
+      "questions": [
+        {
+          "id": "numeric-field",
+          "title": "Montant en euros",
+          "description": "Entrez un montant (nombre entier uniquement)",
+          "type": "number",
+          "tooltip": "Entrez uniquement des chiffres",
+          "validation": {
+            "min": 0,
+            "max": 999999,
+            "required": true
+          }
+        },
+        {
+          "id": "text-field",
+          "title": "Champ texte",
+          "description": "Entrez votre nom",
+          "type": "text",
+          "tooltip": "Votre nom tel qu'il apparaît sur vos documents officiels",
+          "validation": {
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50
+          }
+        },
+        {
+          "id": "multi-notion-question",
+          "title": "Question avec plusieurs liens notion",
+          "description": "Cette question a plusieurs ressources d'aide",
+          "type": "radio",
+          "tooltip": "Consultez les liens d'aide pour mieux comprendre",
+          "notion": {
+            "id": "aide-principale",
+            "buttonLabel": "Aide principale"
+          },
+          "additionalNotions": [
+            {
+              "id": "aide-secondaire",
+              "buttonLabel": "Aide complémentaire"
+            },
+            {
+              "id": "exemples",
+              "buttonLabel": "Voir des exemples"
+            }
+          ],
+          "choices": [
+            {
+              "id": "situation-a",
+              "title": "Situation A",
+              "tooltip": "Tooltip pour la situation A"
+            },
+            {
+              "id": "situation-b",
+              "title": "Situation B",
+              "tooltip": "Tooltip pour la situation B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "step-final",
+      "title": "Finalisation",
+      "questions": [
+        {
+          "id": "confirmation",
+          "title": "Confirmer les informations",
+          "description": "Confirmez que toutes vos réponses sont correctes",
+          "type": "boolean",
+          "tooltip": "Vous pourrez modifier vos réponses depuis le récapitulatif",
+          "required": true
+        },
+        {
+          "id": "newsletter",
+          "title": "Inscription newsletter",
+          "description": "Souhaitez-vous recevoir nos actualités ?",
+          "type": "boolean",
+          "tooltip": "Optionnel - vous pouvez vous désinscrire à tout moment"
+        }
+      ]
+    }
+  ],
+  "resultAides": [
+    {
+      "id": "aide-test-1",
+      "title": "Aide Test 1",
+      "description": "Description de l'aide de test 1",
+      "montant": 150,
+      "notion": {
+        "id": "aide-test-details",
+        "buttonLabel": "Détails de l'aide"
+      }
+    },
+    {
+      "id": "aide-test-2",
+      "title": "Aide Test 2",
+      "description": "Description de l'aide de test 2",
+      "montant": 300,
+      "notion": {
+        "id": "aide-test-2-details",
+        "buttonLabel": "Comment en bénéficier"
+      }
+    }
+  ]
+}

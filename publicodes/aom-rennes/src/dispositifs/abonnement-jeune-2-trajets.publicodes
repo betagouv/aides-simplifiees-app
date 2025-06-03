@@ -1,0 +1,16 @@
+abonnement-jeune-2-trajets:
+  titre: "Abonnement Jeune 2 trajets"
+  description: "Aller-retour quotidien les jours scolaires"
+
+abonnement-jeune-2-trajets . resultat:
+  texte: |
+    <h4>Abonnement Jeune 2 trajets : {{montant}}</h4>
+    <p>Abonnement spécial jeunes pour un aller-retour quotidien les jours scolaires. Prélèvement mensuel de {{prelevement-mensuel}}.</p>
+
+abonnement-jeune-2-trajets . eligibilite:
+  scolaire
+
+abonnement-jeune-2-trajets . montant: 120 €/an
+
+abonnement-jeune-2-trajets . prelevement-mensuel:
+  valeur: 12 €/mois

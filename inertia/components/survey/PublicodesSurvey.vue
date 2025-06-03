@@ -49,16 +49,10 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const emit = defineEmits<{
-  submit: [answers: Record<string, any>];
-  change: [answers: Record<string, any>];
-}>();
-
 // Form state
 const {
   currentPage,
   pagination,
-  situation,
   handleInputChange,
   goToNextPage,
   goToPreviousPage,
@@ -90,8 +84,8 @@ const mapToSurveyQuestion = (field: any): SurveyQuestion => {
     type = "boolean";
   } else if (field.element === "RadioGroup") {
     type = "radio";
-    choices = field.options.map(({ label, description }) => ({
-      id: label,
+    choices = field.options.map(({ label, value, description }) => ({
+      id: value,
       title: label,
       tooltip: description,
     }));
@@ -111,13 +105,6 @@ const mapToSurveyQuestion = (field: any): SurveyQuestion => {
     max: field.max,
     step: field.step,
   } as SurveyQuestion;
-};
-
-// Handle answer changes
-const handleChange = (fieldId: string, value: any) => {
-  console.log("Field changed:", fieldId, value);
-  handleInputChange(fieldId, value);
-  emit("change", situation.value);
 };
 
 // Step titles

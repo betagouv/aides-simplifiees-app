@@ -1,0 +1,31 @@
+abonnement-mensuel:
+  titre: "Abonnement 1 mois"
+  description: "Voyages illimités du 1er au dernier jour du mois"
+
+abonnement-mensuel . resultat:
+  texte: |
+    <h4>Abonnement 1 mois : {{montant}}</h4>
+    <p>Abonnement mensuel sans engagement. Voyages illimités du 1er au dernier jour du mois sur tout le réseau STAR.</p>
+
+abonnement-mensuel . eligibilite:
+  valeur: oui
+
+abonnement-mensuel . montant:
+  variations:
+    - si: gratuité
+      alors: 0 €/mois
+    - si: salariePDM
+      alors: 17 €/mois
+    - si: type pass = '12-17'
+      alors: 22.30 €/mois
+    - si: type pass = '18-26'
+      alors: 25.20 €/mois
+    - si: type pass = '27-64'
+      alors: 53.00 €/mois
+    - si: type pass = '65-74'
+      alors: 31.60 €/mois
+    - si: type pass = '75+'
+      alors: 30.30 €/mois
+
+  abattement:
+    valeur: réduction solidaire

@@ -1,0 +1,104 @@
+gratuité:
+  une de ces conditions:
+    - age < 5
+    - carteInvalidite
+    - accompagnateurCMI
+    - bourseEchelon >= 5
+    - ressourcesFoyer <= seuil gratuité
+
+tarif réduit: réduction solidaire >= 50%
+
+type pass:
+  variations:
+    - si: age < 12
+      alors: "'enfant'"
+    - si: age < 18
+      alors: "'12-17'"
+    - si: age < 27
+      alors: "'18-26'"
+    - si: age < 65
+      alors: "'27-64'"
+    - si: age < 75
+      alors: "'65-74'"
+    - sinon: "'75+'"
+
+réduction solidaire:
+  variations:
+    - si: bourseEchelon >= 5
+      alors: 100%
+    - si: bourseEchelon >= 3
+      alors: 85%
+    - si: bourseEchelon = 2
+      alors: 50%
+    - si: ressourcesFoyer <= seuil réduction 85
+      alors: 85%
+    - si: ressourcesFoyer <= seuil réduction 50
+      alors: 50%
+
+
+seuil gratuité:
+  variations:
+    - si: situationFamiliale = 'personne seule'
+      alors: 900 €/mois
+    - si: situationFamiliale = 'couple sans enfants'
+      alors: 1350 €/mois
+    - si: situationFamiliale = 'avec enfants'
+      alors:
+        variations:
+          - si: nombreEnfants = 1
+            alors: 1620 €/mois
+          - si: nombreEnfants = 2
+            alors: 1890 €/mois
+          - si: nombreEnfants = 3
+            alors: 2160 €/mois
+          - si: nombreEnfants = 4
+            alors: 2430 €/mois
+          - si: nombreEnfants = 5
+            alors: 2700 €/mois
+          - si: nombreEnfants > 5
+            alors: 2700 €/mois + (nombreEnfants - 5) * 270 €/mois
+
+
+seuil réduction 85:
+  variations:
+    - si: situationFamiliale = 'personne seule'
+      alors: 1140 €/mois
+    - si: situationFamiliale = 'couple sans enfants'
+      alors: 1710 €/mois
+    - si: situationFamiliale = 'avec enfants'
+      alors:
+        variations:
+          - si: nombreEnfants = 1
+            alors: 2052 €/mois
+          - si: nombreEnfants = 2
+            alors: 2394 €/mois
+          - si: nombreEnfants = 3
+            alors: 2736 €/mois
+          - si: nombreEnfants = 4
+            alors: 3078 €/mois
+          - si: nombreEnfants = 5
+            alors: 3420 €/mois
+          - si: nombreEnfants > 5
+            alors: 3420 €/mois + (nombreEnfants - 5) * 342 €/mois
+
+seuil réduction 50:
+  variations:
+    - si: situationFamiliale = 'personne seule'
+      alors: 1250 €/mois
+    - si: situationFamiliale = 'couple sans enfants'
+      alors: 1875 €/mois
+    - si: situationFamiliale = 'avec enfants'
+      alors:
+        variations:
+          - si: nombreEnfants = 1
+            alors: 2250 €/mois
+          - si: nombreEnfants = 2
+            alors: 2625 €/mois
+          - si: nombreEnfants = 3
+            alors: 3000 €/mois
+          - si: nombreEnfants = 4
+            alors: 3375 €/mois
+          - si: nombreEnfants = 5
+            alors: 3750 €/mois
+          - si: nombreEnfants > 5
+            alors: 3750 €/mois + (nombreEnfants - 5) * 375 €/mois

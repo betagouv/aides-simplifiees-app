@@ -1,0 +1,24 @@
+abonnement-annuel:
+  titre: "Abonnement 12 mois"
+  description: "Valable 12 mois consécutifs"
+
+abonnement-annuel . resultat:
+  texte: |
+    <h4>Abonnement 12 mois : {{montant}}</h4>
+    <p>Abonnement annuel, valable 12 mois consécutifs. Voyages illimités sur tout le réseau STAR pendant cette période.</p>
+
+abonnement-annuel . eligibilite:
+  valeur: oui
+
+abonnement-annuel . montant:
+  variations:
+    - si: type pass = '12-17'
+      alors: 200.00 €/an
+    - si: type pass = '18-26'
+      alors: 227.04 €/an
+    - si: type pass = '27-64'
+      alors: 477.12 €/an
+    - si: type pass = '65-74'
+      alors: 284.40 €/an
+    - si: type pass = '75+'
+      alors: 272.70 €/an

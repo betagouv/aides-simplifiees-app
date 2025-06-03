@@ -1,0 +1,16 @@
+resultat:
+  texte: |
+    <h3>Voyageurs occasionnels</h3>
+    {{occasionnel-un-voyage . resultat}}
+    {{pass-qualite-air . resultat}}
+
+    <h3>Formules multi-voyages</h3>
+    {{formule-10-voyages . resultat}}
+    {{formule-30-voyages . resultat}}
+    {{formule-50-voyages . resultat}}
+    {{formule-80-voyages . resultat}}
+
+    <h3>Abonnements</h3>
+    {{abonnement-mensuel . resultat}}
+    {{abonnement-annuel . resultat}}
+    {{abonnement-jeune-2-trajets . resultat}}

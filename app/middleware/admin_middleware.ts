@@ -27,7 +27,7 @@ export default class AdminMiddleware {
     const isAdmin = user.isAdmin === true
 
     if (!isAdmin) {
-      return ctx.response.status(403).send('Accès non autorisé')
+      return ctx.response.redirect(this.redirectTo)
     }
 
     return next()

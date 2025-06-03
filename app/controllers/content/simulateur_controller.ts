@@ -85,41 +85,11 @@ export default class SimulateurController {
     })
   }
 
-  public async showResultats({ params, inertia, request, response }: HttpContext) {
-    // Fetch the simulateur by ID or slug
+  public async showResultats({ params, inertia, response }: HttpContext) {
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
     if (!simulateur) {
       return response.status(404).send('Simulateur non trouvé')
-    }
-
-    /**
-     * Mock calculation response for testing purposes.
-     */
-    const isMock = request.qs().mock === 'true' || params.hash === 'mock-hash'
-    if (isMock) {
-      const mockCalculationResponse = {
-        'aide-personnalisee-logement': 42.23,
-        'aide-personnalisee-logement-eligibilite': true,
-        'garantie-visale': 1000,
-        'garantie-visale-eligibilite': true,
-        'locapass': 800,
-        'locapass-eligibilite': true,
-        'mobilite-master-1': 1000,
-        'mobilite-master-1-eligibilite': false,
-        'mobilite-parcoursup': 500,
-        'mobilite-parcoursup-eligibilite': true,
-      }
-
-      return inertia.render('simulateurs/resultats', {
-        simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
-        createdAt: new Date(),
-        results: await this.transformSimulationResults(mockCalculationResponse, {
-          simulateur_slug: params.simulateur_slug,
-          hash: 'mock-hash',
-        }),
-        secureHash: 'mock-hash',
-      })
     }
 
     /**
@@ -141,12 +111,41 @@ export default class SimulateurController {
       return response.status(404).send('Résultats non trouvés')
     }
 
-    // Render the results page with the form submission data if available
     return inertia.render('simulateurs/resultats', {
       simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
       createdAt: formSubmission.createdAt,
       results: await this.transformSimulationResults(formSubmission.results, params),
       secureHash: params.hash as string,
+    })
+  }
+
+  public async showMockResultats({ params, inertia, response }: HttpContext) {
+    const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
+    if (!simulateur) {
+      return response.status(404).send('Simulateur non trouvé')
+    }
+
+    const mockCalculationResponse = {
+      'aide-personnalisee-logement': 42.23,
+      'aide-personnalisee-logement-eligibilite': true,
+      'garantie-visale': 1000,
+      'garantie-visale-eligibilite': true,
+      'locapass': 800,
+      'locapass-eligibilite': true,
+      'mobilite-master-1': 1000,
+      'mobilite-master-1-eligibilite': false,
+      'mobilite-parcoursup': 500,
+      'mobilite-parcoursup-eligibilite': true,
+    }
+
+    return inertia.render('simulateurs/resultats', {
+      simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
+      createdAt: new Date(),
+      results: await this.transformSimulationResults(mockCalculationResponse, {
+        simulateur_slug: params.simulateur_slug,
+        hash: 'mock-hash',
+      }),
+      secureHash: 'mock-hash',
     })
   }
 

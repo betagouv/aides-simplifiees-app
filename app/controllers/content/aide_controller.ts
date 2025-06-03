@@ -86,7 +86,9 @@ export default class AideController {
       return response.status(404).send('Aide non trouvée')
     }
 
-    const html = await marked(aide.content)
+    const html = aide.content
+      ? marked(aide.content)
+      : ''
 
     return inertia.render('content/aides/aide', {
       aide: new AideController.SingleDto(aide).toJson(),
@@ -116,7 +118,9 @@ export default class AideController {
       return response.status(404).send('Simulateur non trouvé')
     }
 
-    const html = await marked(aide.content)
+    const html = aide.content
+      ? marked(aide.content)
+      : ''
 
     return inertia.render('content/aides/resultats-aide', {
       aide: new AideController.SingleDto(aide).toJson(),

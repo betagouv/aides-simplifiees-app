@@ -97,7 +97,7 @@ export default class AdminPageController {
 
     if (!data.slug) {
       // Generate a slug from the title if not provided
-      data.slug = string.slug(data.title)
+      data.slug = string.slug(data.title, { strict: true, lower: true })
     }
     await Page.create(data)
 

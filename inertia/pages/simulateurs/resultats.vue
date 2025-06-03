@@ -19,7 +19,7 @@ const {
     results,
     createdAt,
   },
-} = usePage<InferPageProps<SimulateurController, 'showResultats'>>()
+} = usePage<InferPageProps<SimulateurController, 'showResultats' | 'showMockResultats'>>()
 
 const hasAides = results.aides?.length > 0
 const hasMontants = results.montants?.length > 0

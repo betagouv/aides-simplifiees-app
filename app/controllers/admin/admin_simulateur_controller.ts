@@ -98,7 +98,7 @@ export default class AdminSimulateurController {
 
     if (!data.slug) {
       // Générer un slug à partir du titre
-      data.slug = string.slug(data.title)
+      data.slug = string.slug(data.title, { strict: true, lower: true })
     }
 
     await Simulateur.create({
@@ -106,7 +106,7 @@ export default class AdminSimulateurController {
       builtJson: JSON.stringify({}),
     })
 
-    return response.redirect().toRoute('/admin/simulateurs')
+    return response.redirect('/admin/simulateurs')
   }
 
   /**
@@ -124,7 +124,7 @@ export default class AdminSimulateurController {
     simulateur.merge(data)
     await simulateur.save()
 
-    return response.redirect().toRoute('/admin/simulateurs')
+    return response.redirect('/admin/simulateurs')
   }
 
   /**
@@ -139,6 +139,6 @@ export default class AdminSimulateurController {
 
     await simulateur.delete()
 
-    return response.redirect().toRoute('/admin/simulateurs')
+    return response.redirect('/admin/simulateurs')
   }
 }

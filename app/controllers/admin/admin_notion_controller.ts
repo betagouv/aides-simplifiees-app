@@ -97,7 +97,7 @@ export default class AdminNotionController {
 
     if (!data.slug) {
       // Générer un slug à partir du titre
-      data.slug = string.slug(data.title)
+      data.slug = string.slug(data.title, { strict: true, lower: true })
     }
     await Notion.create(data)
 

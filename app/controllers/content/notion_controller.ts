@@ -66,7 +66,9 @@ export default class NotionController {
       return response.status(404).send('Notion non trouvée')
     }
 
-    const html = await marked(notion.content)
+    const html = notion.content
+      ? marked(notion.content)
+      : ''
 
     return inertia.render('content/notions/notion', {
       notion: new NotionController.SingleDto(notion).toJson(),
@@ -95,7 +97,10 @@ export default class NotionController {
       return response.status(404).send('Simulateur non trouvé')
     }
 
-    const html = await marked(notion.content)
+    const html = notion.content
+      ? marked(notion.content)
+      : ''
+
     return inertia.render('content/notions/simulateur-notion', {
       notion: new NotionController.SingleDto(notion).toJson(),
       simulateur: new SimulateurController.SingleDto(simulateur).toJson(),

@@ -12,10 +12,17 @@ import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
 /**
- * Global controllers
+ * Auth controllers
  */
-const ApiController = () => import('#controllers/api/api_controller')
 const AuthController = () => import('#controllers/auth_controller')
+
+/**
+ * API controllers
+ */
+const StatisticsController = () => import('#controllers/api/statistics_controller')
+const GeoApiController = () => import('#controllers/api/geo_api_controller')
+const OpenFiscaController = () => import('#controllers/api/openfisca_controller')
+const FormSubmissionController = () => import('#controllers/api/form_submission_controller')
 
 /**
  * Static pages controllers
@@ -60,10 +67,11 @@ router.get('/cookies', [StaticPagesController, 'showCookies'])
 /**
  * API Routes
  */
-router.get('/api/statistics', [ApiController, 'statistics'])
-router.get('/api/autocomplete/communes', [ApiController, 'autocompleteCommunes'])
-router.post('/api/calculate', [ApiController, 'openFiscaCalculate'])
-router.post('/api/store-form-data', [ApiController, 'storeFormData'])
+router.get('/api/statistics', [StatisticsController, 'getStatistics'])
+router.get('/api/autocomplete/communes', [GeoApiController, 'autocompleteCommunes'])
+router.post('/api/calculate', [OpenFiscaController, 'calculate'])
+router.post('/api/form-submissions', [FormSubmissionController, 'store'])
+router.get('/api/form-submissions/:hash', [FormSubmissionController, 'show'])
 
 /**
  * Assets
@@ -155,9 +163,8 @@ router
         middleware.resumeQuery(),
       ])
     router.get('/simulateurs/:simulateur_slug/recapitulatif', [SimulateurController, 'showRecapitulatif'])
-    router.get('/simulateurs/:simulateur_slug/resultats', [SimulateurController, 'showResultats'])
+    router.get('/simulateurs/:simulateur_slug/resultats/mock-hash', [SimulateurController, 'showMockResultats'])
     router.get('/simulateurs/:simulateur_slug/resultats/:hash', [SimulateurController, 'showResultats'])
-    router.get('/simulateurs/:simulateur_slug/resultats/mock-hash', [SimulateurController, 'showResultats'])
     router.get('/simulateurs/:simulateur_slug/resultats/:hash/aides/:aide_slug', [AideController, 'showWithResults'])
     router.get('/simulateurs/:simulateur_slug/notions/:notion_slug', [NotionController, 'showWithSimulateur'])
   })

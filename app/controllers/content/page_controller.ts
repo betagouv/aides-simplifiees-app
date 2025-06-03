@@ -35,7 +35,9 @@ export default class PageController {
       return response.status(404).send('Page non trouvée')
     }
 
-    const html = await marked(page.content)
+    const html = page.content
+      ? marked(page.content)
+      : ''
 
     return inertia.render('content/pages/page', {
       page: new PageController.SingleDto(page).toJson(),

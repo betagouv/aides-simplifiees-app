@@ -10,7 +10,6 @@ export default class AideSeeder extends BaseSeeder {
     const aidesCount = await Aide.query().count('* as total')
 
     if (aidesCount[0].$extras.total > 0) {
-      console.log('✓ Aides exist, deleting them before reseeding')
       await Aide.query().delete()
     }
 

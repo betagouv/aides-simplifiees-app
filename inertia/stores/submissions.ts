@@ -66,7 +66,7 @@ export const useSubmissionStore = defineStore(
           // Store form data and results
           try {
             const storeResponse = await axios.post(
-              '/api/store-form-data',
+              '/api/form-submissions',
               {
                 simulateurId,
                 answers,
@@ -150,7 +150,7 @@ export const useSubmissionStore = defineStore(
           // Store form data and results
           try {
             const storeResponse = await axios.post(
-              '/api/store-form-data',
+              '/api/form-submissions',
               {
                 simulateurId,
                 answers,

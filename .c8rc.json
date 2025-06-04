@@ -1,0 +1,37 @@
+{
+  "reporter": ["text", "html", "lcov", "text-summary"],
+  "reports-dir": "coverage",
+  "temp-directory": ".nyc_output",
+  "exclude": [
+    "build/**",
+    "coverage/**",
+    "node_modules/**",
+    "tests/**",
+    "bin/**",
+    "config/**",
+    "database/migrations/**",
+    "database/seeders/**",
+    "start/**",
+    "providers/**",
+    "ace-manifest.json",
+    "**/*.d.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "vite.config.ts",
+    "tailwind.config.js",
+    "postcss.config.js",
+    "inertia/**",
+    "publicodes/**"
+  ],
+  "include": [
+    "app/**/*.ts"
+  ],
+  "all": true,
+  "check-coverage": false,
+  "lines": 70,
+  "functions": 70,
+  "branches": 60,
+  "statements": 70,
+  "skip-full": false,
+  "clean": true
+}

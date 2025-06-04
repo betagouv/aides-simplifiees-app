@@ -28,3 +28,8 @@ legacy/*
 
 icon-usage-report-*.md
 /tests/browser/screenshots/
+
+# Coverage reports
+coverage
+.nyc_output
+*.lcov

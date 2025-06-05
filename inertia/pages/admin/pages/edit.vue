@@ -24,9 +24,7 @@ setBreadcrumbs([
 ])
 
 function handleSubmit(form: PageForm) {
-  form.put(`/admin/pages/${page.id}`, {
-    preserveScroll: true,
-  })
+  form.put(`/admin/pages/${page.id}`)
 }
 function handleCancel() {
   router.visit('/admin/pages')

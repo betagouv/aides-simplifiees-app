@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DsfrAlert, DsfrBadge, DsfrButton, DsfrCard, DsfrDataTable, DsfrModal } from '@gouvminint/vue-dsfr'
+import { DsfrAlert, DsfrBadge, DsfrButton, DsfrButtonGroup, DsfrCard, DsfrDataTable, DsfrModal } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
 import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'

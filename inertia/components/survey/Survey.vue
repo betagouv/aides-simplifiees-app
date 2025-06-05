@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type SimulateurController from '#controllers/simulateur_controller'
+import type SimulateurController from '#controllers/content/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrAlert, DsfrBadge } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
@@ -22,7 +22,7 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<SimulateurController, 'renderSimulateur'>>()
+} = usePage<InferPageProps<SimulateurController, 'show'>>()
 
 // Form schema loading and state management
 const surveysStore = useSurveysStore()

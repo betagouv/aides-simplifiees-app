@@ -166,6 +166,7 @@ export function useEligibilityService() {
           )
           results.aidesResults[dispositif.id] = montantEvaluation.nodeValue
         }
+        // eslint-disable-next-line unused-imports/no-unused-vars
         catch (e) {
           // If montant doesn't exist, set it to 0
           results.aidesResults[dispositif.id] = 0
@@ -193,8 +194,8 @@ export function useEligibilityService() {
               reason = reasonEval
             }
           }
+          // eslint-disable-next-line unused-imports/no-unused-vars
           catch (e) {
-
             /* ignore */
           }
           results.ineligibleDispositifs.push({

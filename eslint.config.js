@@ -11,6 +11,8 @@ export default antfu(
   globalIgnores([
     'public/assets/**',
     '**/publicodes-build/**',
+    '**/publicodes-build/**',
+    '**/publicodes/**/README.md',
   ]),
   {
     rules: {

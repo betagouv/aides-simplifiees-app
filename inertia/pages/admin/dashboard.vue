@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type AdminController from '#controllers/admin_controller'
+import type AdminController from '#controllers/admin/admin_dashboard_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrCard } from '@gouvminint/vue-dsfr'
 import { Head, usePage } from '@inertiajs/vue3'
@@ -35,6 +35,7 @@ setBreadcrumbs([
           class="fr-col-12 fr-col-md-4"
         >
           <DsfrCard
+            :title-link-attrs="{}"
             :title="item.name"
             :description="item.description"
             :link="item.route"

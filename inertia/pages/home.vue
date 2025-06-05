@@ -77,6 +77,7 @@ if (simulationTiles.length < 2) {
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-md-6">
           <DsfrCard
+            :title-link-attrs="{}"
             horizontal
             title="1jeune1solution.gouv.fr"
             description="Simulateur tout public avec de nombreuses aides pour les moins de 30 ans. Évaluez vos droits à plus de 1000 aides."
@@ -86,6 +87,7 @@ if (simulationTiles.length < 2) {
         </div>
         <div class="fr-col-12 fr-col-md-6">
           <DsfrCard
+            :title-link-attrs="{}"
             horizontal
             title="mesdroitsociaux.gouv.fr"
             description="Simulateur tout public. Évaluez vos droits à près de 60 aides."

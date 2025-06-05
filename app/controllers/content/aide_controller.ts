@@ -3,6 +3,7 @@ import SimulateurController from '#controllers/content/simulateur_controller'
 import Aide from '#models/aide'
 import Simulateur from '#models/simulateur'
 import { marked } from 'marked'
+
 export default class AideController {
   /**
    * Class to serialize a single aide data for sharing types with Inertia in the show view.

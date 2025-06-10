@@ -1,5 +1,5 @@
 {
-  "version": "2.0.1",
+  "version": "2.0.2",
   "forceRefresh": false,
   "id": "demenagement-logement",
   "title": "Déménagement et logement",
@@ -73,9 +73,9 @@
           "description": "Renseignez le jour, le mois et l'année sous le format jj/mm/aaaa (exemple : 15/08/1995)",
           "type": "date"
         },
-         {
+        {
           "title": "Avez-vous une reconnaissance administrative d'une situation de handicap ?",
-          "description": "Vous disposez d'une reconnaissance administrative de votre situation de handicap lorsque vous avez déposé un dossier à la MDPH (Maison Départementale des personnes handicapées) et que celle-ci vous a attribué un taux d'incapacité lié à votre handicap."
+          "description": "Vous disposez d'une reconnaissance administrative de votre situation de handicap lorsque vous avez déposé un dossier à la MDPH (Maison Départementale des personnes handicapées) et que celle-ci vous a attribué un taux d'incapacité lié à votre handicap.",
           "type": "boolean"
         },
         {

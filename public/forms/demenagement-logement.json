@@ -40,7 +40,7 @@
         },
         {
           "id": "situation-professionnelle",
-          "title": "Précisez votre statut professionnel en tant qu'étudiant",
+          "title": "Précisez votre situation professionnel en tant qu'étudiant",
           "type": "radio",
           "visibleWhen": "statut-professionnel=etudiant",
           "choices": [

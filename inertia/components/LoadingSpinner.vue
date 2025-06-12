@@ -4,6 +4,7 @@ import { VIcon } from '@gouvminint/vue-dsfr'
 withDefaults(defineProps<{
   text?: string
   size?: 'sm' | 'md' | 'lg'
+  testId?: string
 }>(), {
   text: 'Chargement...',
   size: 'md',
@@ -15,6 +16,7 @@ withDefaults(defineProps<{
     class="status-panel"
     aria-busy="true"
     aria-live="polite"
+    :data-testid="testId"
   >
     <p
       class="loading-indicator"

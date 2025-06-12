@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type SimulateurController from '#controllers/simulateur_controller'
+import type SimulateurController from '#controllers/content/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrAlert, DsfrCallout } from '@gouvminint/vue-dsfr'
 import { usePage } from '@inertiajs/vue3'
@@ -10,7 +10,7 @@ const {
   props: {
     simulateur,
   },
-} = usePage<InferPageProps<SimulateurController, 'showSimulateur'>>()
+} = usePage<InferPageProps<SimulateurController, 'show'>>()
 
 // Track view in Matomo
 useMatomo().trackEvent('Simulateur', 'IntermediaryResults', simulateur.slug)

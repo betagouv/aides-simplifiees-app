@@ -1,5 +1,5 @@
 {
-  "version": "2.0.1",
+  "version": "2.0.2",
   "forceRefresh": false,
   "id": "demenagement-logement",
   "title": "Déménagement et logement",
@@ -40,7 +40,7 @@
         },
         {
           "id": "situation-professionnelle",
-          "title": "Précisez votre statut professionnel en tant qu'étudiant",
+          "title": "Précisez votre situation professionnelle en tant qu'étudiant",
           "type": "radio",
           "visibleWhen": "statut-professionnel=etudiant",
           "choices": [
@@ -74,12 +74,8 @@
           "type": "date"
         },
         {
-          "id": "handicap",
-          "tooltip": {
-            "buttonLabel": "En savoir plus",
-            "content": "Vous disposez d'une reconnaissance administrative de votre situation de handicap lorsque vous avez déposé un dossier à la MDPH (Maison Départementale des personnes handicapées) et que celle-ci vous a attribué un taux d'incapacité lié à votre handicap."
-          },
           "title": "Avez-vous une reconnaissance administrative d'une situation de handicap ?",
+          "description": "Vous disposez d'une reconnaissance administrative de votre situation de handicap lorsque vous avez déposé un dossier à la MDPH (Maison Départementale des personnes handicapées) et que celle-ci vous a attribué un taux d'incapacité lié à votre handicap.",
           "type": "boolean"
         },
         {

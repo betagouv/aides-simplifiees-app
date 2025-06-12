@@ -19,7 +19,7 @@ const {
     results,
     createdAt,
   },
-} = usePage<InferPageProps<SimulateurController, 'showResultats'>>()
+} = usePage<InferPageProps<SimulateurController, 'showResultats' | 'showMockResultats'>>()
 
 const hasAides = results.aides?.length > 0
 const hasMontants = results.montants?.length > 0
@@ -91,9 +91,7 @@ const simulationDateTime = formatDateTime(createdAt)
     <div class="results__content fr-mt-4w">
       <template v-if="hasAides">
         <template v-if="showResume">
-          <div
-            class="results__content-resume"
-          >
+          <div class="results__content-resume">
             <hgroup>
               <h3>1. En résumé</h3>
               <p class="fr-text--lg">
@@ -137,7 +135,7 @@ const simulationDateTime = formatDateTime(createdAt)
 
           <AidesList
             v-if="results?.aides"
-            :aides="results.aides"
+            :aides="(results.aides as RichSimulationResults['aides'])"
           />
         </div>
         <template v-if="hasAidesNonEligibles || hasTextesDeLoi || showMethodology">
@@ -183,7 +181,7 @@ const simulationDateTime = formatDateTime(createdAt)
                       <template #default>
                         <AidesList
                           v-if="results?.aidesNonEligibles"
-                          :aides="results.aidesNonEligibles"
+                          :aides="(results.aidesNonEligibles as RichSimulationResults['aidesNonEligibles'])"
                         />
                       </template>
                     </DsfrAccordion>
@@ -250,7 +248,10 @@ const simulationDateTime = formatDateTime(createdAt)
               </span>
             </template>
             <template #default>
-              <AidesList :aides="results.aidesNonEligibles" />
+              <AidesList
+                v-if="results?.aidesNonEligibles"
+                :aides="(results.aidesNonEligibles as RichSimulationResults['aidesNonEligibles'])"
+              />
             </template>
           </DsfrAccordion>
         </div>

@@ -1,6 +1,6 @@
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import type { DateTime } from 'luxon'
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, column, hasMany } from '@adonisjs/lucid/orm'
 import Step from './step.js'
 
 export default class Simulateur extends BaseModel {
@@ -33,6 +33,18 @@ export default class Simulateur extends BaseModel {
 
   @column({ columnName: 'built_json' })
   declare builtJson: string
+
+  /**
+   * The database default specified in migrations (defaultTo('draft'))
+   * only applies when inserting directly via SQL, not through the ORM.
+   * For testing purposes, we the default in the model.
+   */
+  @beforeCreate()
+  static assignDefaultStatus(simulateur: Simulateur) {
+    if (!simulateur.status) {
+      simulateur.status = 'draft'
+    }
+  }
 
   @hasMany(() => Step)
   declare steps: HasMany<typeof Step>

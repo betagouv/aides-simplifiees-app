@@ -44,6 +44,7 @@ export default class PageSeeder extends BaseSeeder {
         slug: 'accessibilite',
         content: accessibiliteContent,
         metaDescription: 'Informations sur l\'accessibilité de la plateforme Aides Simplifiées',
+        status: 'published',
       },
       {
         title: 'Politique de confidentialité et données personnelles',
@@ -51,6 +52,7 @@ export default class PageSeeder extends BaseSeeder {
         content: donneesPersonnellesContent,
         metaDescription:
           'Notre politique de confidentialité et le traitement des données personnelles',
+        status: 'published',
       },
       {
         title: 'Conditions Générales d\'Utilisation',
@@ -58,37 +60,29 @@ export default class PageSeeder extends BaseSeeder {
         content: cguContent,
         metaDescription:
           'Les conditions générales d\'utilisation de la plateforme Aides Simplifiées',
+        status: 'published',
       },
       {
         title: 'Mentions légales',
         slug: 'mentions-legales',
         content: mentionsLegalesContent,
         metaDescription: 'Mentions légales de la plateforme Aides Simplifiées',
+        status: 'published',
       },
       {
         title: 'À propos',
         slug: 'a-propos',
         content: aproposContent,
         metaDescription: 'En savoir plus sur la plateforme Aides Simplifiées',
+        status: 'published',
       },
       {
         title: 'Cookies',
         slug: 'cookies',
         content: cookiesContent,
         metaDescription: 'Notre politique concernant les cookies',
-      },
-      {
-        title: 'Accueil',
-        slug: 'accueil',
-        content: `
-# Bienvenue sur Aides Simplifiées
-
-Découvrez notre plateforme dédiée à la simplification des aides publiques.
-        `,
-        metaDescription: 'Plateforme de simplification des aides publiques',
+        status: 'published',
       },
     ])
-
-    console.log('✓ Pages created from markdown files')
   }
 }

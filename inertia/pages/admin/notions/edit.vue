@@ -24,9 +24,7 @@ setBreadcrumbs([
 ])
 
 function handleSubmit(form: NotionForm) {
-  form.put(`/admin/notions/${notion.id}`, {
-    preserveScroll: true,
-  })
+  form.put(`/admin/notions/${notion.id}`)
 }
 function handleCancel() {
   router.visit('/admin/notions')

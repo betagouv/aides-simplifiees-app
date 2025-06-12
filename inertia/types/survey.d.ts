@@ -34,6 +34,7 @@ declare global {
     max?: number
     step?: number
     default?: string | number | boolean
+    required?: boolean
   } & (
     | {
       notion?: {

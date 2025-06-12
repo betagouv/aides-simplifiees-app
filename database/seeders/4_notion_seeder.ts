@@ -9,7 +9,6 @@ export default class NotionSeeder extends BaseSeeder {
     const notionsCount = await Notion.query().count('* as total')
 
     if (notionsCount[0].$extras.total > 0) {
-      console.log('✓ Notions exist, deleting them before reseeding')
       await Notion.query().delete()
     }
 
@@ -53,24 +52,28 @@ export default class NotionSeeder extends BaseSeeder {
         description:
           'Pour bénéficier de certaines aides financières, il est nécessaire de disposer d\'une reconnaissance administrative de votre situation de handicap.',
         content: handicapContent,
+        status: 'published',
       },
       {
         title: 'En savoir plus sur le chiffre d\'affaires généré via une micro-entreprise',
         slug: 'montant-ca-micro-entreprise',
         description: 'Connaître les règles de calcul applicables',
         content: montantCaMicroEntrepriseContent,
+        status: 'published',
       },
       {
         title: 'En savoir plus sur les allocations chômage perçues au cours des 12 derniers mois',
         slug: 'montant-chomage',
         description: 'Connaître les règles de calcul applicables',
         content: montantChomageContent,
+        status: 'published',
       },
       {
         title: 'En savoir plus sur les ressources des parents au cours des 12 derniers mois',
         slug: 'montant-parents',
         description: 'Connaître les règles de calcul applicables',
         content: montantParentsContent,
+        status: 'published',
       },
       {
         title:
@@ -94,7 +97,5 @@ export default class NotionSeeder extends BaseSeeder {
         content: salaireImposableContent,
       },
     ])
-
-    console.log('✓ Notions created from markdown files')
   }
 }

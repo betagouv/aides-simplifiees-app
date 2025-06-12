@@ -1,15 +1,12 @@
 import { test } from '@japa/runner'
 
 test.group('Application UI tests', () => {
-  /**
-   * Scénario 1 : Page d'accueil accessible avec lien vers "Déménagement & logement"
-   */
   test('homepage loads successfully with link to housing simulator', async ({ visit, expect }) => {
     // Open new page and navigate to homepage
     const page = await visit('/', { waitUntil: 'networkidle' })
 
-    // Check that there's a clickable link to "Déménagement & logement" simulator
-    const demenagementLink = page.getByRole('link', { name: 'Déménagement & logement' })
+    // Check that there's a clickable link to the "Déménagement & logement" simulator
+    const demenagementLink = page.getByRole('link', { name: /déménagement/i, exact: false }).first()
     expect(await demenagementLink.isVisible()).toBe(true)
     expect(await demenagementLink.isEnabled()).toBe(true)
 
@@ -18,9 +15,6 @@ test.group('Application UI tests', () => {
     expect(href).toContain('/simulateurs/demenagement-logement')
   })
 
-  /**
-   * Scénario 2 : Vérification du menu, footer et liens vers pages statiques
-   */
   test('homepage displays menu, footer and links to static pages', async ({ visit, expect }) => {
     const page = await visit('/', { waitUntil: 'networkidle' })
 
@@ -76,20 +70,17 @@ test.group('Application UI tests', () => {
 
       // Wait for menu to be visible and animation to complete
       await navMenu.waitFor({ state: 'visible' })
-      // await page.screenshot({ path: 'tests/e2e/screenshots/menu-should-be-open.png' })
+      // await page.screenshot({ path: 'tests/browser/screenshots/menu-should-be-open.png' })
 
       const navCloseBtn = page.locator('[data-testid="close-modal-btn"]')
       await navCloseBtn.click()
 
       // Wait for menu to be hidden and animation to complete
-      // await page.screenshot({ path: 'tests/e2e/screenshots/menu-should-be-closed.png' })
+      // await page.screenshot({ path: 'tests/browser/screenshots/menu-should-be-closed.png' })
       await navMenu.waitFor({ state: 'hidden' })
     }
   })
 
-  /**
-   * Scénario 3 : Accessibilité des pages /notions, /aides et leurs sous-pages
-   */
   test('notions and aides pages are accessible and navigable', async ({ visit, expect }) => {
     // Test /notions page
     let page = await visit('/notions')

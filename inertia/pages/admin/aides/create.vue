@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { Head, router } from '@inertiajs/vue3'
+import type AdminAideController from '#controllers/admin/admin_aide_controller'
+import type { InferPageProps } from '@adonisjs/inertia/types'
+import { Head, router, usePage } from '@inertiajs/vue3'
 import AideForm from '~/components/admin/AideForm.vue'
 import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
+
+const {
+  props: {
+    typesAide,
+  },
+} = usePage<InferPageProps<AdminAideController, 'create'>>()
 
 const { setBreadcrumbs } = useBreadcrumbStore()
 setBreadcrumbs([
@@ -32,6 +40,7 @@ function handleCancel() {
   >
     <SectionContainer type="page-footer">
       <AideForm
+        :types-aide="typesAide"
         @submit="handleSubmit"
         @cancel="handleCancel"
       />

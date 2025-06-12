@@ -1,6 +1,11 @@
 import type { Config } from '@japa/runner/types'
+import { authApiClient } from '@adonisjs/auth/plugins/api_client'
 import app from '@adonisjs/core/services/app'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { inertiaApiClient } from '@adonisjs/inertia/plugins/api_client'
+import { sessionApiClient } from '@adonisjs/session/plugins/api_client'
+import { shieldApiClient } from '@adonisjs/shield/plugins/api_client'
+import { apiClient } from '@japa/api-client'
 import { assert } from '@japa/assert'
 import { browserClient } from '@japa/browser-client'
 import { expect } from '@japa/expect'
@@ -17,9 +22,16 @@ export const plugins: Config['plugins'] = [
   assert(),
   expect(),
   pluginAdonisJS(app),
-  browserClient({
-    runInSuites: ['e2e'],
+  apiClient({
+    baseURL: 'http://localhost:3333',
   }),
+  browserClient({
+    runInSuites: ['browser'],
+  }),
+  sessionApiClient(app),
+  shieldApiClient(),
+  authApiClient(app),
+  inertiaApiClient(app),
 ]
 
 /**
@@ -30,7 +42,9 @@ export const plugins: Config['plugins'] = [
  * The teardown functions are executed after all the tests
  */
 export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
-  setup: [],
+  setup: [
+    () => testUtils.db().migrate(),
+  ],
   teardown: [],
 }
 
@@ -39,7 +53,17 @@ export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
  * Learn more - https://japa.dev/docs/test-suites#lifecycle-hooks
  */
 export const configureSuite: Config['configureSuite'] = (suite) => {
-  if (['browser', 'functional', 'e2e'].includes(suite.name)) {
-    return suite.setup(() => testUtils.httpServer().start())
+  if (suite.name === 'functional') {
+    return [
+      suite.setup(() => testUtils.httpServer().start()),
+      suite.setup(() => testUtils.db().truncate()),
+    ]
+  }
+  if (suite.name === 'browser') {
+    return [
+      suite.setup(() => testUtils.httpServer().start()),
+      suite.setup(() => testUtils.db().truncate()),
+      suite.setup(() => testUtils.db().seed()),
+    ]
   }
 }

@@ -24,9 +24,7 @@ setBreadcrumbs([
 ])
 
 function handleSubmit(form: SimulateurForm) {
-  form.put(`/admin/simulateurs/${simulateur.id}`, {
-    preserveScroll: true,
-  })
+  form.put(`/admin/simulateurs/${simulateur.id}`)
 }
 
 function handleCancel() {

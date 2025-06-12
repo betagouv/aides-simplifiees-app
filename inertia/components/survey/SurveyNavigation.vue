@@ -3,7 +3,7 @@ import type { DsfrButtonProps } from '@gouvminint/vue-dsfr'
 import { DsfrButton } from '@gouvminint/vue-dsfr'
 
 defineProps<{
-  buttons: DsfrButtonProps[]
+  buttons: Array<DsfrButtonProps & { 'data-testid'?: string }> // Allow data-testid for testing purposes
 }>()
 </script>
 

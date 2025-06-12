@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DsfrAlert, DsfrBadge, DsfrButton, DsfrCard, DsfrModal } from '@gouvminint/vue-dsfr'
+import { DsfrAlert, DsfrBadge, DsfrButton, DsfrButtonGroup, DsfrCard, DsfrDataTable, DsfrModal } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
 import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
@@ -17,6 +17,7 @@ interface ListItem {
 
 const props = withDefaults(defineProps<{
   title: string
+  layout?: 'cards' | 'table'
   items: ListItem[]
   inertiaPropsName: string
   entityName: string
@@ -28,6 +29,7 @@ const props = withDefaults(defineProps<{
   deletePathPrefix: string
   emptyMessage?: string
 }>(), {
+  layout: 'cards',
   emptyMessage: 'Aucun élément n\'a encore été créé',
 })
 
@@ -105,7 +107,6 @@ function deleteItem() {
           @click="() => router.visit(createPath)"
         />
       </div>
-      <h2>Liste des {{ entityNamePlural }}</h2>
       <DsfrAlert
         v-if="items.length === 0"
         :title="emptyMessage"
@@ -114,53 +115,148 @@ function deleteItem() {
         v-else
         class="fr-grid-row fr-grid-row--gutters"
       >
-        <div
-          v-for="item in items"
-          :key="item.id"
-          class="fr-col-12 fr-col-md-6"
-        >
-          <DsfrCard
-            :title="item.title"
-            :description="item.description || 'Aucune description'"
-            :detail="(() => {
-              const formatted = formatDate(item.updatedAt)
-              if (!formatted) {
-                return undefined
-              }
-              return `Modifié${entityName.endsWith('e') ? 'e' : ''} le ${formatted}`
-            })()"
-            no-arrow
-            :buttons="[
-              {
-                label: 'Éditer',
-                icon: { name: 'ri:edit-line', ssr: true },
-                onClick: () => router.visit(`${props.editPathPrefix}/${item.id}/edit`),
-              },
-              {
-                label: 'Consulter',
-                icon: { name: 'ri:eye-line', ssr: true },
-                onClick: () => router.visit(`${props.viewPathPrefix}/${item.slug}`),
-                secondary: true,
-              },
-              {
-                label: 'Supprimer',
-                icon: { name: 'ri:delete-bin-2-line', ssr: true },
-                secondary: true,
-                onClick: () => askConfirmDelete(item.id),
-              },
-            ]"
+        <template v-if="layout === 'cards'">
+          <h2 class="fr-col-12">
+            Liste des {{ entityNamePlural }}
+          </h2>
+          <div
+            v-for="item in items"
+            :key="item.id"
+            class="fr-col-12 fr-col-md-6"
           >
-            <template
-              #start-details
+            <DsfrCard
+              :title="item.title"
+              :title-link-attrs="{}"
+              :description="item.description || 'Aucune description'"
+              :detail="(() => {
+                const formatted = formatDate(item.updatedAt)
+                if (!formatted) {
+                  return undefined
+                }
+                return `Modifié${entityName.endsWith('e') ? 'e' : ''} le ${formatted}`
+              })()"
+              no-arrow
+              :buttons="[
+                {
+                  label: 'Éditer',
+                  icon: { name: 'ri:edit-line', ssr: true },
+                  onClick: () => router.visit(`${props.editPathPrefix}/${item.id}/edit`),
+                },
+                {
+                  label: 'Consulter',
+                  icon: { name: 'ri:eye-line', ssr: true },
+                  onClick: () => router.visit(`${props.viewPathPrefix}/${item.slug}`),
+                  secondary: true,
+                },
+                {
+                  label: 'Supprimer',
+                  icon: { name: 'ri:delete-bin-2-line', ssr: true },
+                  secondary: true,
+                  onClick: () => askConfirmDelete(item.id),
+                },
+              ]"
             >
-              <DsfrBadge
-                class="fr-mb-1w"
-                :label="formatStatus(item.status)"
-                small
-              />
-            </template>
-          </DsfrCard>
-        </div>
+              <template
+                #start-details
+              >
+                <DsfrBadge
+                  class="fr-mb-1w"
+                  :label="formatStatus(item.status)"
+                  small
+                />
+              </template>
+            </DsfrCard>
+          </div>
+        </template>
+        <template v-else-if="layout === 'table'">
+          <div class="fr-col-12">
+            <DsfrDataTable
+              :title="`Liste des ${entityNamePlural}`"
+              :headers-row="[
+                { key: 'title', label: 'Titre' },
+                { key: 'slug', label: 'Slug' },
+                { key: 'status', label: 'Statut' },
+                { key: 'updatedAt', label: 'Dernière modification' },
+                { key: 'actions', label: 'Actions' },
+              ]"
+              :rows="items.map((item) => ({
+                title: item.title,
+                slug: item.slug,
+                status: formatStatus(item.status),
+                updatedAt: formatDate(item.updatedAt) || '',
+                actions: item.id,
+                id: item.id,
+              }))"
+              row-key="id"
+            >
+              <template #cell="{ colKey, cell }">
+                <template v-if="colKey === 'actions'">
+                  <div class="actions-wrapper">
+                    <!-- <DsfrButton
+                      label="Éditer"
+                      secondary
+                      size="sm"
+                      icon="ri:edit-line"
+                      @click="router.visit(`${editPathPrefix}/${cell}/edit`)"
+                    />
+                    <DsfrButton
+                      label="Consulter"
+                      secondary
+                      size="sm"
+                      icon="ri:eye-line"
+                      @click="() => {
+                        const item = items.find(i => i.id === Number(cell))
+                        if (item) {
+                          router.visit(`${viewPathPrefix}/${item.slug}`)
+                        }
+                      }"
+                    />
+                    <DsfrButton
+                      label="Supprimer"
+                      secondary
+                      size="sm"
+                      icon="ri:delete-bin-2-line"
+                      @click="askConfirmDelete(Number(cell))"
+                    /> -->
+                    <DsfrButtonGroup
+                      inline-layout-when="always"
+                      equisized
+                      size="sm"
+                      class="fr-mb-0w"
+                      :buttons="[
+                        {
+                          label: 'Éditer',
+                          icon: { name: 'ri:edit-line', ssr: true },
+                          onClick: () => router.visit(`${props.editPathPrefix}/${cell}/edit`),
+                        },
+                        {
+                          label: 'Consulter',
+                          icon: { name: 'ri:eye-line', ssr: true },
+                          onClick: () => {
+                            const item = items.find(i => i.id === Number(cell))
+                            if (item) {
+                              router.visit(`${props.viewPathPrefix}/${item.slug}`)
+                            }
+                          },
+                          secondary: true,
+                        },
+                        {
+                          label: 'Supprimer',
+                          icon: { name: 'ri:delete-bin-2-line', ssr: true },
+                          secondary: true,
+                          onClick: () => askConfirmDelete(Number(cell)),
+                        },
+                      ]"
+                    />
+                  </div>
+                </template>
+                <template v-else>
+                  {{ cell }}
+                </template>
+              </template>
+            </DsfrDataTable>
+          </div>
+        </template>
       </div>
     </SectionContainer>
   </BrandBackgroundContainer>

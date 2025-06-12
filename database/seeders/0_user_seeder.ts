@@ -19,18 +19,12 @@ export default class UserSeeder extends BaseSeeder {
         password: adminPassword, // Sera automatiquement hashé par le mixin AuthFinder
         isAdmin: true,
       })
-
-      console.log('✓ Admin user created')
     }
     else {
       // Mise à jour de l'utilisateur existant si nécessaire
       if (!existingAdmin.isAdmin) {
         existingAdmin.isAdmin = true
         await existingAdmin.save()
-        console.log('✓ Admin user updated with isAdmin')
-      }
-      else {
-        console.log('✓ Admin user already exists')
       }
     }
   }

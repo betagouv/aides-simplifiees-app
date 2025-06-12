@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type SimulateurController from '#controllers/content/simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
+import { DsfrTiles } from '@gouvminint/vue-dsfr'
 import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'

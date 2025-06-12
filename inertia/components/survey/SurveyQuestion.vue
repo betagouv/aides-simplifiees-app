@@ -76,6 +76,8 @@ const autocompleteConfig = computed(() => {
 <template>
   <div
     class="brand-survey-question"
+    data-testid="survey-question"
+    :data-question-id="question.id"
   >
     <hgroup
       :id="`question-${question.id}`"
@@ -109,6 +111,7 @@ const autocompleteConfig = computed(() => {
     <DsfrButton
       v-if="question?.notion"
       :label="question.notion.buttonLabel"
+      data-testid="survey-question-notion-button"
       icon="ri:information-line"
       secondary
       icon-right
@@ -120,6 +123,7 @@ const autocompleteConfig = computed(() => {
     <DsfrTooltip
       v-else-if="question?.tooltip"
       class="brand-survey-question-tooltip"
+      data-testid="survey-question-tooltip"
       :content="(question.tooltip.content as string)"
       :label="question.tooltip.buttonLabel"
       :secondary="true"

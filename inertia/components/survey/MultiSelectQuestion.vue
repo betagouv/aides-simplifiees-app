@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { DsfrCheckboxSetProps } from '@gouvminint/vue-dsfr'
-import { DsfrCheckboxSet } from '@gouvminint/vue-dsfr'
+import { DsfrCheckboxSet, DsfrTooltip } from '@gouvminint/vue-dsfr'
 import { onMounted, ref, useTemplateRef } from 'vue'
 
 const props = defineProps<{
@@ -97,6 +97,7 @@ function moveTooltips() {
     ref="tooltips"
   >
     <DsfrTooltip
+      data-testid="survey-choice-tooltip"
       :content="(choice.tooltip as string)"
     />
   </div>

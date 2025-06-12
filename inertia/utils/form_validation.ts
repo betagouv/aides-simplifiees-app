@@ -3,6 +3,14 @@ export function isAnswerValid(question: SurveyQuestion, answer: any): boolean {
     return false
   }
 
+  // Check if the question is required (default to true if not specified)
+  const isRequired = question.required !== false
+
+  // If question is not required and has no answer, it's valid
+  if (!isRequired && (answer === undefined || answer === null || answer === '')) {
+    return true
+  }
+
   // Different validation based on question type
   switch (question.type) {
     case 'radio':

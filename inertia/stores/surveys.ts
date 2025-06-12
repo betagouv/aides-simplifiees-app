@@ -463,6 +463,10 @@ export const useSurveysStore = defineStore(
     function areAllRequiredQuestionsAnswered(simulateurId: string): boolean {
       const visibleQuestions = getVisibleQuestions(simulateurId)
       const areAllAnswered = visibleQuestions
+        .filter((question) => {
+          // Only consider questions that are explicitly required (default to true if not specified)
+          return question.required !== false
+        })
         .every((question) => {
           return hasAnswer(simulateurId, question.id)
         })

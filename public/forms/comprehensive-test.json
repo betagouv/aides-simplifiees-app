@@ -79,6 +79,28 @@
               "title": "Non"
             }
           ]
+        },
+        {
+          "id": "optional-field",
+          "title": "Champ optionnel",
+          "description": "Cette question est optionnelle, vous pouvez passer à la suivante",
+          "type": "radio",
+          "required": false,
+          "tooltip": "Cette information peut nous aider à affiner les résultats, mais n'est pas obligatoire",
+          "choices": [
+            {
+              "id": "option-1",
+              "title": "Option 1"
+            },
+            {
+              "id": "option-2",
+              "title": "Option 2"
+            },
+            {
+              "id": "pas-de-reponse",
+              "title": "Je préfère ne pas répondre"
+            }
+          ]
         }
       ]
     },

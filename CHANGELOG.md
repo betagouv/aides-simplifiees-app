@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 1.2.0 [#96](https://github.com/betagouv/aides-simplifiees-app/pull/96)
+- Ajout de fonctionnalités :
+- Détails :
+  - Ajoute un script de détection d'icônes dans le dossier /inertia
+  - Permet d'administrer les types d'aide depuis l'admin
+  - Améliore et étend la suite de test browser
+  - Implémente des tests pour les modèles et controleurs
+  - Configure le test coverage
+  - Améliore la gestion des erreurs
+  - Ajoute une propriété optionnelle "required" aux questions
+
 ## 1.1.1 [#94](https://github.com/betagouv/aides-simplifiees-app/pull/94)
 - Ajout de fonctionnalités :
 - Détails :

@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import SimulateurController from '#controllers/content/simulateur_controller'
 import Notion from '#models/notion'
 import Simulateur from '#models/simulateur'
+import { Exception } from '@adonisjs/core/exceptions'
 import { marked } from 'marked'
 
 export default class NotionController {
@@ -56,14 +57,14 @@ export default class NotionController {
   /**
    * Affichage d'une notion dont le contenu est géré depuis l'admin
    */
-  public async show({ params, inertia, response }: HttpContext) {
+  public async show({ params, inertia }: HttpContext) {
     const notion = await Notion.query()
       .where('slug', params.notion_slug)
       .whereIn('status', ['published', 'unlisted'])
       .first()
 
     if (!notion) {
-      return response.status(404).send('Notion non trouvée')
+      throw new Exception('Notion non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     const html = notion.content
@@ -79,7 +80,7 @@ export default class NotionController {
   /**
    * Affichage d'une notion contextualisée à un simulateur
    */
-  public async showWithSimulateur({ params, inertia, response }: HttpContext) {
+  public async showWithSimulateur({ params, inertia }: HttpContext) {
     const notion = await Notion.query()
       .where('slug', params.notion_slug)
       .whereIn('status', ['published', 'unlisted'])
@@ -90,11 +91,11 @@ export default class NotionController {
       .first()
 
     if (!notion) {
-      return response.status(404).send('Notion non trouvée')
+      throw new Exception('Notion non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     if (!simulateur) {
-      return response.status(404).send('Simulateur non trouvé')
+      throw new Exception('Simulateur non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     const html = notion.content

@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import SimulateurController from '#controllers/content/simulateur_controller'
 import Aide from '#models/aide'
 import Simulateur from '#models/simulateur'
+import { Exception } from '@adonisjs/core/exceptions'
 import { marked } from 'marked'
 
 export default class AideController {
@@ -74,7 +75,7 @@ export default class AideController {
   /**
    * Affichage d'une aide dont le contenu est géré depuis l'admin
    */
-  public async show({ params, inertia, response }: HttpContext) {
+  public async show({ params, inertia }: HttpContext) {
     // make sure aide is published or unlisted
     const aide = await Aide.query()
       .where('slug', params.aide_slug)
@@ -83,7 +84,7 @@ export default class AideController {
       .first()
 
     if (!aide) {
-      return response.status(404).send('Aide non trouvée')
+      throw new Exception('Aide non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     const html = aide.content
@@ -99,7 +100,7 @@ export default class AideController {
   /**
    * Affichage d'une aide contextualisée à un résultat de simulation
    */
-  public async showWithResults({ params, inertia, response }: HttpContext) {
+  public async showWithResults({ params, inertia }: HttpContext) {
     const simulateur = await Simulateur.query()
       .where('slug', params.simulateur_slug)
       .whereIn('status', ['published', 'unlisted'])
@@ -111,11 +112,11 @@ export default class AideController {
       .first()
 
     if (!aide) {
-      return response.status(404).send('Aide non trouvée')
+      throw new Exception('Aide non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     if (!simulateur) {
-      return response.status(404).send('Simulateur non trouvé')
+      throw new Exception('Simulateur non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     const html = aide.content

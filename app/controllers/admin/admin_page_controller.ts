@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Page from '#models/page'
+import { Exception } from '@adonisjs/core/exceptions'
 import string from '@adonisjs/core/helpers/string'
 
 export default class AdminPageController {
@@ -77,11 +78,11 @@ export default class AdminPageController {
   /**
    * Show edit page form
    */
-  public async edit({ params, inertia, response }: HttpContext) {
+  public async edit({ params, inertia }: HttpContext) {
     const page = await Page.find(params.id)
 
     if (!page) {
-      return response.status(404).send('Page non trouvée')
+      throw new Exception('Page non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     return inertia.render('admin/pages/edit', {
@@ -111,7 +112,7 @@ export default class AdminPageController {
     const page = await Page.find(params.id)
 
     if (!page) {
-      return response.status(404).send('Page non trouvée')
+      throw new Exception('Page non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     const data = request.only(AdminPageController.allowedFields)
@@ -129,7 +130,7 @@ export default class AdminPageController {
     const page = await Page.find(params.id)
 
     if (!page) {
-      return response.status(404).send('Page non trouvée')
+      throw new Exception('Page non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     await page.delete()

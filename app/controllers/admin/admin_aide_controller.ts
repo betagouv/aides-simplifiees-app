@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import AdminTypeAideController from '#controllers/admin/admin_type_aide_controller'
 import Aide from '#models/aide'
 import TypeAideModel from '#models/type_aide'
+import { Exception } from '@adonisjs/core/exceptions'
 import string from '@adonisjs/core/helpers/string'
 
 export default class AdminAideController {
@@ -98,13 +99,13 @@ export default class AdminAideController {
    * Show edit aide form
    */
 
-  public async edit({ params, inertia, response }: HttpContext) {
+  public async edit({ params, inertia }: HttpContext) {
     const aide = await Aide.query()
       .where('id', params.id)
       .first()
 
     if (!aide) {
-      return response.status(404).send('Aide non trouvée')
+      throw new Exception('Aide non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     const typesAide = await TypeAideModel.all()
@@ -140,7 +141,7 @@ export default class AdminAideController {
     const aide = await Aide.find(params.id)
 
     if (!aide) {
-      return response.status(404).send('Aide non trouvée')
+      throw new Exception('Aide non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     const data = request.only(AdminAideController.allowedFields)
@@ -158,7 +159,7 @@ export default class AdminAideController {
     const aide = await Aide.find(params.id)
 
     if (!aide) {
-      return response.status(404).send('Aide non trouvée')
+      throw new Exception('Aide non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     await aide.delete()

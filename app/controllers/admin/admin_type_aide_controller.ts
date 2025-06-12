@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import TypeAide from '#models/type_aide'
+import { Exception } from '@adonisjs/core/exceptions'
 import string from '@adonisjs/core/helpers/string'
 
 export default class AdminTypeAideController {
@@ -69,11 +70,11 @@ export default class AdminTypeAideController {
   /**
    * Show edit type aide form
    */
-  public async edit({ params, inertia, response }: HttpContext) {
+  public async edit({ params, inertia }: HttpContext) {
     const typeAide = await TypeAide.find(params.id)
 
     if (!typeAide) {
-      return response.status(404).send('Type d\'aide non trouvé')
+      throw new Exception('Type d\'aide non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     return inertia.render('admin/type_aides/edit', {
@@ -103,7 +104,7 @@ export default class AdminTypeAideController {
     const typeAide = await TypeAide.find(params.id)
 
     if (!typeAide) {
-      return response.status(404).send('Type d\'aide non trouvé')
+      throw new Exception('Type d\'aide non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     const data = request.only(AdminTypeAideController.allowedFields)
@@ -121,7 +122,7 @@ export default class AdminTypeAideController {
     const typeAide = await TypeAide.find(params.id)
 
     if (!typeAide) {
-      return response.status(404).send('Type d\'aide non trouvé')
+      throw new Exception('Type d\'aide non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     await typeAide.delete()

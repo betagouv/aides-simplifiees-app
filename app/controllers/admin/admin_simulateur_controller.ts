@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Simulateur from '#models/simulateur'
+import { Exception } from '@adonisjs/core/exceptions'
 import string from '@adonisjs/core/helpers/string'
 
 export default class AdminSimulateurController {
@@ -78,11 +79,11 @@ export default class AdminSimulateurController {
   /**
    * Show edit simulateur form
    */
-  public async edit({ params, inertia, response }: HttpContext) {
+  public async edit({ params, inertia }: HttpContext) {
     const simulateur = await Simulateur.find(params.id)
 
     if (!simulateur) {
-      return response.status(404).send('Simulateur non trouvé')
+      throw new Exception('Simulateur non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     return inertia.render('admin/simulateurs/edit', {
@@ -116,7 +117,7 @@ export default class AdminSimulateurController {
     const simulateur = await Simulateur.find(params.id)
 
     if (!simulateur) {
-      return response.status(404).send('Simulateur non trouvé')
+      throw new Exception('Simulateur non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     const data = request.only(AdminSimulateurController.allowedFields)
@@ -134,7 +135,7 @@ export default class AdminSimulateurController {
     const simulateur = await Simulateur.find(params.id)
 
     if (!simulateur) {
-      return response.status(404).send('Simulateur non trouvé')
+      throw new Exception('Simulateur non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     await simulateur.delete()

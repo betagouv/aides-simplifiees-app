@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Notion from '#models/notion'
+import { Exception } from '@adonisjs/core/exceptions'
 import string from '@adonisjs/core/helpers/string'
 
 export default class AdminNotionController {
@@ -77,11 +78,11 @@ export default class AdminNotionController {
   /**
    * Show edit notion form
    */
-  public async edit({ params, inertia, response }: HttpContext) {
+  public async edit({ params, inertia }: HttpContext) {
     const notion = await Notion.find(params.id)
 
     if (!notion) {
-      return response.status(404).send('Notion non trouvée')
+      throw new Exception('Notion non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     return inertia.render('admin/notions/edit', {
@@ -111,7 +112,7 @@ export default class AdminNotionController {
     const notion = await Notion.find(params.id)
 
     if (!notion) {
-      return response.status(404).send('Notion non trouvée')
+      throw new Exception('Notion non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     const data = request.only(AdminNotionController.allowedFields)
@@ -129,7 +130,7 @@ export default class AdminNotionController {
     const notion = await Notion.find(params.id)
 
     if (!notion) {
-      return response.status(404).send('Notion non trouvée')
+      throw new Exception('Notion non trouvée', { status: 404, code: 'NOT_FOUND' })
     }
 
     await notion.delete()

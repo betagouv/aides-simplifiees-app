@@ -4,6 +4,7 @@ import Aide from '#models/aide'
 import FormSubmission from '#models/form_submission'
 import Simulateur from '#models/simulateur'
 import SimulateurService from '#services/simulateur_service'
+import { Exception } from '@adonisjs/core/exceptions'
 
 export default class SimulateurController {
   /**
@@ -57,14 +58,14 @@ export default class SimulateurController {
   /**
    * Render a single simulateur page
    */
-  public async show({ params, inertia, response }: HttpContext) {
+  public async show({ params, inertia }: HttpContext) {
     const simulateur = await Simulateur.query()
       .where('slug', params.simulateur_slug)
       .whereIn('status', ['published', 'unlisted'])
       .first()
 
     if (!simulateur) {
-      return response.status(404).send('Simulateur non trouvé')
+      throw new Exception('Simulateur non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     return inertia.render('simulateurs/simulateur', {
@@ -75,10 +76,10 @@ export default class SimulateurController {
   /**
    * Render the recapitulatif page for a simulateur
    */
-  public async showRecapitulatif({ params, inertia, response }: HttpContext) {
+  public async showRecapitulatif({ params, inertia }: HttpContext) {
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
     if (!simulateur) {
-      return response.status(404).send('Simulateur non trouvé')
+      throw new Exception('Simulateur non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
     return inertia.render('simulateurs/recapitulatif', {
       simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
@@ -89,7 +90,7 @@ export default class SimulateurController {
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
 
     if (!simulateur) {
-      return response.status(404).send('Simulateur non trouvé')
+      throw new Exception('Simulateur non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     /**
@@ -108,7 +109,7 @@ export default class SimulateurController {
     }
 
     if (!formSubmission) {
-      return response.status(404).send('Résultats non trouvés')
+      throw new Exception('Résultats non trouvés', { status: 404, code: 'NOT_FOUND' })
     }
 
     return inertia.render('simulateurs/resultats', {
@@ -119,10 +120,10 @@ export default class SimulateurController {
     })
   }
 
-  public async showMockResultats({ params, inertia, response }: HttpContext) {
+  public async showMockResultats({ params, inertia }: HttpContext) {
     const simulateur = await Simulateur.findBy('slug', params.simulateur_slug)
     if (!simulateur) {
-      return response.status(404).send('Simulateur non trouvé')
+      throw new Exception('Simulateur non trouvé', { status: 404, code: 'NOT_FOUND' })
     }
 
     const mockCalculationResponse = {

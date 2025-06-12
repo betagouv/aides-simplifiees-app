@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { StatusPageRange, StatusPageRenderer } from '@adonisjs/core/types/http'
+import process from 'node:process'
 import { ExceptionHandler } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 
@@ -15,42 +16,31 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * codes. You might want to enable them in production only, but feel
    * free to enable them in development as well.
    */
-  protected renderStatusPages = app.inProduction
+  protected renderStatusPages = app.inProduction || process.env.NODE_ENV === 'test'
 
   /**
    * Status pages is a collection of error code range and a callback
    * to return the HTML contents to send as a response.
    */
   protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
-    '404': (_, { view }) => view.render('errors/not-found'),
-    '500..599': (_, { view }) => view.render('errors/server-error'),
-  }
-
-  protected statusPagesOld: Record<StatusPageRange, StatusPageRenderer> = {
     '404': (error, { inertia, response }) => {
       response.status(404)
-
-      return inertia.render('errors/not_found', {
-        error: {
-          statusCode: 404,
-          message: app.inProduction
-            ? '404 Page not found'
-            : (error instanceof Error ? error.message : String(error)),
-        },
+      return inertia.render('error', {
+        statusCode: 404,
+        message: app.inProduction
+          ? 'Page non trouvée'
+          : error.message,
       })
     },
     '500..599': (error, { inertia, response }) => {
       // Use 500 status code for all server errors
       const statusCode = 500
       response.status(statusCode)
-
-      return inertia.render('errors/not_found', {
-        error: {
-          statusCode,
-          message: app.inProduction
-            ? 'An unexpected error occurred'
-            : (error instanceof Error ? error.message : String(error)),
-        },
+      return inertia.render('error', {
+        statusCode,
+        message: app.inProduction
+          ? 'Une erreur est survenue, veuillez réessayer plus tard.'
+          : error.message,
       })
     },
   }
@@ -70,6 +60,10 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * @note You should not attempt to send a response from this method.
    */
   async report(error: unknown, ctx: HttpContext) {
+    if (process.env.NODE_ENV === 'test') {
+      return
+    }
+
     return super.report(error, ctx)
   }
 }

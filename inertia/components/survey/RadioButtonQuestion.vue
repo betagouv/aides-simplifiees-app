@@ -13,7 +13,7 @@ const options = props.question.choices
     id: `${props.question.id}-${choice.id}`,
     label: choice.title,
     value: choice.id,
-    svgPath: true as unknown as string, // Trick to render a rich radio button
+    rich: true,
   })) || []
 
 const radioButtonSet = useTemplateRef('radioButtonSet')
@@ -39,6 +39,7 @@ function moveTooltips() {
 
 <template>
   <DsfrRadioButtonSet
+    v-bind="$attrs"
     ref="radioButtonSet"
     v-model="model"
     :title-id="`question-${question.id}`"

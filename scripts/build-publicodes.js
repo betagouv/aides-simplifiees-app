@@ -6,8 +6,8 @@ import path from 'node:path'
 import process from 'node:process'
 
 const publicodesPackages = [
-  // 'aom-bordeaux',
-  // 'aom-rennes',
+  'aom-bordeaux',
+  'aom-rennes',
   'entreprise-innovation',
 ]
 

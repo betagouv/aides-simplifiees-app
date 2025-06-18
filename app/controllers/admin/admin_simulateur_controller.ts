@@ -21,6 +21,7 @@ export default class AdminSimulateurController {
         description: this.simulateur.description,
         metaDescription: this.simulateur.metaDescription,
         pictogramPath: this.simulateur.pictogramPath,
+        usesPublicodesForms: this.simulateur.usesPublicodesForms,
       }
     }
   }
@@ -56,6 +57,7 @@ export default class AdminSimulateurController {
     'description',
     'metaDescription',
     'pictogramPath',
+    'usesPublicodesForms',
   ]
 
   /**

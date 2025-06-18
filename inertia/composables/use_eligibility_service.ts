@@ -1,16 +1,6 @@
-import type { SimulationResultsAides } from '~/types/aides'
 import Engine from 'publicodes'
 import { useSurveysStore } from '~/stores/surveys'
-
-// Select the appropriate rules based on the survey ID
-async function getSourceRules(surveyId: string) {
-  switch (surveyId) {
-    case 'entreprise-innovation':
-      return (await import('~/../publicodes/entreprise-innovation/')).default
-    case 'aom-bordeaux':
-      return (await import('~/../publicodes/aom-bordeaux/')).default
-  }
-}
+import { getPublicodesRules } from '~/utils/get_publicodes_rules'
 
 export interface DispositifDetail {
   id: string
@@ -72,7 +62,7 @@ export function useEligibilityService() {
     answers: Record<string, any>,
     dispositifsToEvaluate: DispositifDetail[],
   ): Promise<EligibilityResults> {
-    const sourceRules = await getSourceRules(surveyId)
+    const sourceRules = await getPublicodesRules(surveyId)
     // Export engine
     const engine = new Engine(sourceRules, {
       flag: {
@@ -94,6 +84,7 @@ export function useEligibilityService() {
         engine.getRule(key as any)
         validMappedAnswers[key] = mappedAnswers[key]
       }
+      // eslint-disable-next-line unused-imports/no-unused-vars
       catch (e) {
         missingKeys.push(key)
       }

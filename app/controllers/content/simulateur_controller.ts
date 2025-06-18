@@ -221,7 +221,7 @@ export default class SimulateurController {
       .whereIn('slug', rawAides.map(aide => aide.id))
       .preload('typeAide')
 
-      const aidesBySlug: Record<string, Aide> = {}
+    const aidesBySlug: Record<string, Aide> = {}
     aides.forEach((aide) => {
       aidesBySlug[aide.slug] = aide
     })

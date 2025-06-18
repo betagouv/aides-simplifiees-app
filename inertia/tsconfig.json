@@ -6,7 +6,8 @@
     "baseUrl": ".",
     "module": "ESNext",
     "paths": {
-      "~/*": ["./*"]
+      "~/*": ["./*"],
+      "~publicodes/*": ["../publicodes/*"]
     }
   },
   "include": ["./**/*.ts", "./**/*.vue", "../shared/**/*.ts", "../shared/**/*.vue"]

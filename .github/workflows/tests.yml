@@ -1,0 +1,74 @@
+name: CI Tests
+
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Publicodes
+        uses: ./.github/actions/setup-publicodes
+      - name: Setup Playwright
+        uses: ./.github/actions/setup-playwright
+      # - name: Lint
+      #   run: pnpm lint
+      # - name: Typecheck
+      #   run: pnpm typecheck
+      - name: Test
+        run: pnpm test
+        env:
+          TZ: UTC
+          PORT: 3333
+          HOST: localhost
+          LOG_LEVEL: info
+          APP_KEY: yYCr74ySJZRnN1U5VVN6Q4Q77pfFa4x
+          NODE_ENV: testing
+          SESSION_DRIVER: memory
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_DATABASE: postgres
+          APP_NAME: Aides simplifiées
+          PUBLIC_APP_URL: http://localhost:3333
+          ADMIN_PASSWORD: change-me
+          ADMIN_LOGIN: change-me@example.com
+          MATOMO_URL: https://stats.beta.gouv.fr/
+          MATOMO_TOKEN: your-matomo-token
+          MATOMO_SITE_ID: 1
+          OPENFISCA_URL: https://openfisca.aides.beta.numerique.gouv.fr/calculate
+          LEXIMPACT_URL: https://leximpact.aides.beta.numerique.gouv.fr
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: screenshots
+          path: screenshots
+          retention-days: 30

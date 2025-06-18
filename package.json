@@ -1,13 +1,14 @@
 {
   "name": "aides-simplifiees-app",
   "type": "module",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "license": "AGPL-3.0-only",
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build --ignore-ts-errors && pnpm build:iframe-integration",
     "build:iframe-integration": "node bin/build-iframe-integration.js",
     "build:icons": "vue-dsfr-icons -s bin/icons.js -t inertia/icon_collections.ts",
+    "build:publicodes": "node scripts/build-publicodes.js",
     "dev": "node ace serve --hmr",
     "lint": "eslint .",
     "format": "eslint --fix .",

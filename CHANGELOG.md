@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.2.1 [#97](https://github.com/betagouv/aides-simplifiees-app/pull/97)
+- Ajout de fonctionnalités :
+  - Créé un workflow github pour les tests CI
+
 ## 1.2.0 [#96](https://github.com/betagouv/aides-simplifiees-app/pull/96)
 - Ajout de fonctionnalités :
 - Détails :

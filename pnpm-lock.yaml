@@ -56,6 +56,9 @@ importers:
       '@inertiajs/vue3':
         specifier: ^2.0.6
         version: 2.0.8(vue@3.5.13(typescript@5.7.3))
+      '@publicodes/forms':
+        specifier: ^0.5.1
+        version: 0.5.1(publicodes@1.9.0)
       '@publicodes/tools':
         specifier: ^1.7.2
         version: 1.7.2(jiti@2.4.2)(lightningcss@1.30.1)(sass-embedded@1.86.3)
@@ -1119,6 +1122,12 @@ packages:
 
   '@poppinss/validator-lite@2.1.0':
     resolution: {integrity: sha512-CfT8EPeB7jKxjCb5+KP32iu/0BB7cKlRRqMBcCwzky0WgFACsFlRtvHsy+CkOszHmNyOdoH3WoyMyoxVCu9qEw==}
+
+  '@publicodes/forms@0.5.1':
+    resolution: {integrity: sha512-0tmDWIN9MFR/1cibof45PRAbGS96vFJvBtDB6HEY5BdfCh49qkefFbrcSmmL3HQsfl6PQQif5aOIRMUcf1Uq+w==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      publicodes: ^1.7.0
 
   '@publicodes/react-ui@1.7.1':
     resolution: {integrity: sha512-DVU/LXlL9IN+dKk8QK7a/+J3qlbeDvLrKQvIzkM3zkL4xXuEigmXl6E+r2t0Js8Zs05BUTeEvAgmOIkokfvkXw==}
@@ -6086,6 +6095,10 @@ snapshots:
       secure-json-parse: 3.0.2
 
   '@poppinss/validator-lite@2.1.0': {}
+
+  '@publicodes/forms@0.5.1(publicodes@1.9.0)':
+    dependencies:
+      publicodes: 1.9.0
 
   '@publicodes/react-ui@1.7.1(publicodes@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:

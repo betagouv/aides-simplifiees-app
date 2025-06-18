@@ -1,10 +1,10 @@
 {
   "name": "aom-rennes",
-  "description": "Modèle de tarification de l'AOM de Bordeaux",
+  "type": "module",
   "version": "0.1.0",
+  "description": "Modèle de tarification de l'AOM de Bordeaux",
   "author": "",
   "license": "MIT",
-  "type": "module",
   "main": "publicodes-build/index.js",
   "types": "publicodes-build/index.d.ts",
   "files": [

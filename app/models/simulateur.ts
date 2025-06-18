@@ -34,6 +34,9 @@ export default class Simulateur extends BaseModel {
   @column({ columnName: 'built_json' })
   declare builtJson: string
 
+  @column()
+  declare usesPublicodesForms: boolean
+
   /**
    * The database default specified in migrations (defaultTo('draft'))
    * only applies when inserting directly via SQL, not through the ORM.

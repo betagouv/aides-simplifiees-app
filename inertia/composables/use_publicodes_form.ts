@@ -1,11 +1,12 @@
-import type { Ref, ComputedRef } from "vue";
-import { ref, computed } from "vue";
-import Engine, { type RawPublicodes } from "publicodes";
-import { FormBuilder, type FormState } from "@publicodes/forms";
+import type { FormState } from '@publicodes/forms'
+import type { RawPublicodes } from 'publicodes'
+import { FormBuilder } from '@publicodes/forms'
+import Engine from 'publicodes'
+import { computed, ref } from 'vue'
 
 export interface PublicodesFormConfig {
-  rules: RawPublicodes<string>;
-  initialSituation?: Record<string, any>;
+  rules: RawPublicodes<string>
+  initialSituation?: Record<string, any>
 }
 
 export function usePublicodesForm(config: PublicodesFormConfig) {
@@ -15,58 +16,64 @@ export function usePublicodesForm(config: PublicodesFormConfig) {
       filterNotApplicablePossibilities: true,
       automaticNamespaceDisabling: false,
     },
-  });
-  const formBuilder = new FormBuilder({ engine });
+  })
+  const formBuilder = new FormBuilder({ engine })
 
   // Reactive state
-  const formState = ref<FormState<string>>(FormBuilder.newState());
+  const formState = ref<FormState<string>>(FormBuilder.newState())
   try {
-    formState.value = formBuilder.start(formState.value, "resultat");
-  } catch (e) {
-    console.error("Error starting form:", e);
+    formState.value = formBuilder.start(formState.value, 'resultat')
+  }
+  catch (e) {
+    console.error('Error starting form:', e)
   }
 
   // Computed properties
   const currentPage = computed(() => {
     try {
-      return formBuilder.currentPage(formState.value);
-    } catch (e) {
-      console.error("Error getting current page:", e);
-      return [];
+      return formBuilder.currentPage(formState.value)
     }
-  });
+    catch (e) {
+      console.error('Error getting current page:', e)
+      return []
+    }
+  })
 
   const pagination = computed(() => {
-    return formBuilder.pagination(formState.value);
-  });
+    return formBuilder.pagination(formState.value)
+  })
 
   const situation = computed(() => {
-    return formState.value?.situation || {};
-  });
+    return formState.value?.situation || {}
+  })
 
   const result = computed(() => {
     // If there are next pages, don't show result yet
     if (formState.value.nextPages && formState.value.nextPages.length > 0) {
-      return false;
+      return false
     }
 
     // Check if all required elements are answered or hidden
     if (
       !currentPage.value.every(
-        (element) => !element.required || element.answered || element.hidden,
+        element => !element.required || element.answered || element.hidden,
       )
     ) {
-      return false;
+      return false
     }
     try {
-      return formBuilder
-        .evaluate(formState.value, "resultat")
-        .nodeValue.replaceAll("Non applicable", "");
-    } catch (e) {
-      console.error("Error evaluating result:", e);
-      return null;
+      return (
+        formBuilder
+          .evaluate(formState.value, 'resultat')
+          .nodeValue as string
+      )
+        .replaceAll('Non applicable', '')
     }
-  });
+    catch (e) {
+      console.error('Error evaluating result:', e)
+      return null
+    }
+  })
 
   const handleInputChange = (
     id: string,
@@ -77,38 +84,41 @@ export function usePublicodesForm(config: PublicodesFormConfig) {
         formState.value,
         id,
         value,
-      );
-    } catch (e) {
-      console.error("Error handling input change:", e);
+      )
     }
-  };
+    catch (e) {
+      console.error('Error handling input change:', e)
+    }
+  }
 
   const goToNextPage = (): void => {
-    formState.value = formBuilder.goToNextPage(formState.value);
-  };
+    formState.value = formBuilder.goToNextPage(formState.value)
+  }
 
   const goToPreviousPage = (): void => {
-    formState.value = formBuilder.goToPreviousPage(formState.value);
-  };
+    formState.value = formBuilder.goToPreviousPage(formState.value)
+  }
 
   const evaluate = (ruleName: string): any => {
     try {
-      return formBuilder.evaluate(formState.value, ruleName);
-    } catch (e) {
-      console.error(`Error evaluating rule ${ruleName}:`, e);
-      return null;
+      return formBuilder.evaluate(formState.value, ruleName)
     }
-  };
+    catch (e) {
+      console.error(`Error evaluating rule ${ruleName}:`, e)
+      return null
+    }
+  }
 
   const reset = (): void => {
     try {
-      let newState = FormBuilder.newState();
-      newState = formBuilder.start(newState, "resultat");
-      formState.value = newState;
-    } catch (e) {
-      console.error("Error resetting form:", e);
+      let newState = FormBuilder.newState()
+      newState = formBuilder.start(newState, 'resultat')
+      formState.value = newState
     }
-  };
+    catch (e) {
+      console.error('Error resetting form:', e)
+    }
+  }
 
   return {
     // State
@@ -126,5 +136,5 @@ export function usePublicodesForm(config: PublicodesFormConfig) {
     goToPreviousPage,
     evaluate,
     reset,
-  };
+  }
 }

@@ -19,6 +19,7 @@ const props = withDefaults(
   defineProps<{
     question: SurveyQuestion
     simulateurSlug: string
+    defaultValue?: any
     size?: 'sm' | 'md'
     required?: boolean
   }>(),
@@ -28,34 +29,42 @@ const props = withDefaults(
   },
 )
 
-const surveysStore = useSurveysStore()
-const model = defineModel()
+const emit = defineEmits<{
+  (e: 'update:model-value', value: any): void
+}>()
+
 /**
  * Create a reactive model for each question
  */
-const questionModel = props.useSurveyStore
-  ? customRef((track, trigger) => {
-      return {
-        get() {
-          track()
-          return surveysStore.getAnswer(
-            props.simulateurSlug,
-            props.question.id,
-          )
-        },
-        set(value) {
-          // If modelValue prop is provided, emit update, otherwise use surveys store
-          surveysStore.setAnswer(
-            props.simulateurSlug,
-            props.question.id,
-            value,
-          )
+const surveysStore = useSurveysStore()
 
-          trigger()
-        },
+const model = customRef((track, trigger) => {
+  return {
+    get() {
+      track()
+      const storeAnswer = surveysStore.getAnswer(
+        props.simulateurSlug,
+        props.question.id,
+      )
+      if (storeAnswer !== undefined) {
+        return storeAnswer
       }
-    })
-  : model
+      if (props.defaultValue !== undefined) {
+        return props.defaultValue
+      }
+      return undefined
+    },
+    set(value) {
+      surveysStore.setAnswer(
+        props.simulateurSlug,
+        props.question.id,
+        value,
+      )
+      emit('update:model-value', value)
+      trigger()
+    },
+  }
+})
 
 // Get the question component based on question type
 const questionComponent = computed(() => {
@@ -177,7 +186,7 @@ onMounted(() => {
       @click="
         () => {
           router.visit(
-            `/simulateurs/${simulateurSlug}/notions/${question.notion.id}`,
+            `/simulateurs/${simulateurSlug}/notions/${question.notion!.id}`,
             { preserveState: true, preserveScroll: true },
           );
         }
@@ -199,7 +208,7 @@ onMounted(() => {
     <component
       :is="questionComponent"
       :key="question.id"
-      v-model="questionModel"
+      v-model="model"
       :question="question"
       :autocomplete-config="autocompleteConfig"
       :autocomplete-fn="autocompleteFn"

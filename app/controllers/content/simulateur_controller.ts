@@ -20,6 +20,7 @@ export default class SimulateurController {
         pictogramPath: this.simulateur.pictogramPath,
         description: this.simulateur.description,
         metaDescription: this.simulateur.metaDescription,
+        usesPublicodesForms: this.simulateur.usesPublicodesForms,
       }
     }
   }

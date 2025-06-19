@@ -1,7 +1,18 @@
 # CHANGELOG
 
-## 1.2.1 [#97](https://github.com/betagouv/aides-simplifiees-app/pull/97)
+### 1.2.2 [#97](https://github.com/betagouv/aides-simplifiees-app/pull/97)
 - Ajout de fonctionnalités :
+  - Ajoute un marqueur pour les questions obligatoires
+  - Améliore l'affichage de l'éligibilité et des montants
+- Réparations :
+  - Répare une regression sur l'affichage des tooltips
+- Refactorisation :
+  - Modifie la configuration typescript
+  - Améliore le champ combobox
+
+### 1.2.1 [#97](https://github.com/betagouv/aides-simplifiees-app/pull/97)
+- Ajout de fonctionnalités :
+- Détails :
   - Créé un workflow github pour les tests CI
 
 ## 1.2.0 [#96](https://github.com/betagouv/aides-simplifiees-app/pull/96)

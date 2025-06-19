@@ -103,7 +103,10 @@ onMounted(() => {
         }]"
         :aria-describedby="question?.description ? `question-description-${question.id}` : undefined"
       >
-        {{ question.title }}
+        {{ question.title }} <span
+          v-if="question.required !== false"
+          class="brand-required-question-marker"
+        >*</span>
       </h3>
       <p
         v-if="question?.description"
@@ -163,5 +166,11 @@ onMounted(() => {
   margin-bottom: 1rem;
   max-width: none !important;
   max-height: none !important;
+}
+
+.brand-required-question-marker {
+  color: var(--artwork-minor-red-marianne);
+  font-weight: bold;
+  margin-left: 0.25rem;
 }
 </style>

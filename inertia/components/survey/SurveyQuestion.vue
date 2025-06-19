@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { DsfrButton, DsfrTooltip } from '@gouvminint/vue-dsfr'
 import { router } from '@inertiajs/vue3'
-import { computed, customRef } from 'vue'
+import { computed, customRef, onMounted } from 'vue'
 import BooleanQuestion from '~/components/survey/BooleanQuestion.vue'
 import ComboboxQuestion from '~/components/survey/ComboboxQuestion.vue'
 import DateQuestion from '~/components/survey/DateQuestion.vue'
@@ -71,6 +71,15 @@ const autocompleteConfig = computed(() => {
   }
   return undefined
 })
+onMounted(() => {
+  document.querySelectorAll('.brand-survey-question-tooltip').forEach((el) => {
+    // Ensure the tooltip is initialized with the correct content
+    const tooltip = el as HTMLElement
+    if (tooltip.hasAttribute('label')) {
+      tooltip.textContent = tooltip.getAttribute('label') || ''
+    }
+  })
+})
 </script>
 
 <template>
@@ -110,7 +119,7 @@ const autocompleteConfig = computed(() => {
     </hgroup>
     <DsfrButton
       v-if="question?.notion"
-      :label="question.notion.buttonLabel"
+      :label="question.notion.buttonLabel ?? 'En savoir plus'"
       data-testid="survey-question-notion-button"
       icon="ri:information-line"
       secondary
@@ -120,22 +129,19 @@ const autocompleteConfig = computed(() => {
         router.visit(`/simulateurs/${simulateurSlug}/notions/${question.notion?.id}`, { preserveState: true, preserveScroll: true })
       }"
     />
-    <DsfrTooltip
+
+    <div
       v-else-if="question?.tooltip"
-      class="brand-survey-question-tooltip"
-      data-testid="survey-question-tooltip"
-      :content="(question.tooltip.content as string)"
-      :label="question.tooltip.buttonLabel"
-      :secondary="true"
+      class="brand-survey-question-tooltip-container"
     >
-      <DsfrButton
-        type="button"
-        :label="question.tooltip.buttonLabel"
-        :icon="{ name: 'ri:information-line', ssr: true }"
-        secondary
-        icon-right
+      <DsfrTooltip
+        class="brand-survey-question-tooltip fr-btn--secondary"
+        data-testid="survey-question-tooltip"
+        :content="typeof question.tooltip === 'string' ? question.tooltip : question.tooltip.content"
+        :label="(question.tooltip as any)?.buttonLabel ?? 'En savoir plus'"
+        :secondary="true"
       />
-    </DsfrTooltip>
+    </div>
     <component
       :is="questionComponent"
       :key="question.id"
@@ -153,13 +159,8 @@ const autocompleteConfig = computed(() => {
   white-space: pre-wrap;
 }
 
-.brand-survey-question:deep(.fr-btn--tooltip) {
-  padding: 0 !important;
+.brand-survey-question-tooltip-container:deep(.fr-btn--tooltip) {
   margin-bottom: 1rem;
-  &:before {
-    display: none !important;
-  }
-  /* Ensure the tooltip text wraps properly and takes \n (new lines) into account */
   max-width: none !important;
   max-height: none !important;
 }

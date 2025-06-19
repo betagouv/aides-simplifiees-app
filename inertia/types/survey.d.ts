@@ -45,7 +45,7 @@ declare global {
     }
     | {
       notion: never
-      tooltip?: {
+      tooltip?: string | {
         buttonLabel?: string
         content: string
       }

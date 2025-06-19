@@ -13,6 +13,7 @@ type AideCardProps = {
     label: string
     iconName: string
   }
+  eligibilite?: boolean
   montant?: number
   instructeur?: string
 } & Pick<DsfrCardProps, 'horizontal' | 'size' | 'titleTag'>
@@ -50,12 +51,15 @@ const periode = props.title?.match('APL') ? '/mois' : undefined
   >
     <template #start-details>
       <div
-        v-if="typeAide"
+        v-if="typeAide || montant || eligibilite"
         class="brand-aide-card__details"
       >
-        <div class="brand-aide-card__details-left">
+        <div
+          class="brand-aide-card__details-left"
+        >
           <ul class="fr-tags-group">
             <TypeAideTag
+              v-if="typeAide"
               :label="typeAide?.label"
               :icon-name="typeAide?.iconName"
             />
@@ -75,6 +79,14 @@ const periode = props.title?.match('APL') ? '/mois' : undefined
             class="brand-montant-periode fr-mb-n1v fr-text--bold fr-text--alt"
           >
             {{ periode }}
+          </p>
+        </div>
+        <div
+          v-else-if="eligibilite === true"
+          class="brand-aide-card__details-right"
+        >
+          <p class="brand-eligibilite fr-text--xl fr-text--bold fr-text--alt">
+            Éligible
           </p>
         </div>
       </div>
@@ -102,5 +114,20 @@ const periode = props.title?.match('APL') ? '/mois' : undefined
 }
 .brand-aide-card:deep(.fr-btns-group) {
   justify-content: flex-end;
+}
+
+.brand-eligibilite {
+  position: relative;
+  z-index: 1;
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    right: 0.15em;
+    left: -0.15em;
+    bottom: 0;
+    background: var(--blue-france-950-100);
+  }
 }
 </style>

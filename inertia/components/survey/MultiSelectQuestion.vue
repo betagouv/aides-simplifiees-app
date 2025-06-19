@@ -82,6 +82,7 @@ function moveTooltips() {
 
 <template>
   <DsfrCheckboxSet
+    v-bind="$attrs"
     ref="checkboxSet"
     :model-value="internalModel"
     :title-id="`question-${question.id}`"

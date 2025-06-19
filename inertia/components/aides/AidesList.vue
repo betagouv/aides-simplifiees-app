@@ -49,6 +49,7 @@ const currentPageAides = computed(() => {
         :instructeur="aide.instructeur"
         :type-aide="aide.typeAide"
         :montant="aide.montant"
+        :eligibilite="aide.eligibilite"
         v-bind="{
           horizontal,
           size,

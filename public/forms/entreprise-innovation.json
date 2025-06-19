@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "forceRefresh": false,
   "id": "entreprise-innovation",
   "title": "Dispositifs d'innovation et de recherche",
@@ -558,7 +558,10 @@
               "default": 0,
               "type": "number",
               "visibleWhen": "type-depenses.includes('rd')",
-              "tooltip": "Ils doivent être utilisés dans la réalisation d'opérations de recherche scientifique et technique. Ils peuvent également être utilisés dans la réalisation d'opérations de conception de prototypes ou d'installations pilotes"
+              "tooltip": {
+                "buttonLabel": "En savoir plus",
+                "content": "Ils doivent être utilisés dans la réalisation d'opérations de recherche scientifique et technique. Ils peuvent également être utilisés dans la réalisation d'opérations de conception de prototypes ou d'installations pilotes"
+              }
             },
             {
               "id": "depenses-rd-amortissement-biens-dom",

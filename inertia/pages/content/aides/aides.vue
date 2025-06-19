@@ -41,8 +41,8 @@ setBreadcrumbs([
               :title="aide.title"
               :description="aide.description || ''"
               :link="`/aides/${aide.slug}`"
-              :instructeur="aide.instructeur"
-              :type-aide="aide.typeAide"
+              :instructeur="aide.instructeur ?? undefined"
+              :type-aide="aide.typeAide ?? undefined"
               :usage="aide.usage"
             />
           </div>

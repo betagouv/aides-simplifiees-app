@@ -8,6 +8,16 @@ withDefaults(
     size: 'md',
   },
 )
+
+function formatMontant(montant: number): string {
+  return montant
+    .toLocaleString('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+}
 </script>
 
 <template>
@@ -16,7 +26,7 @@ withDefaults(
     :class="[`brand-montant--${size}`]"
   >
     <p class="brand-montant__label fr-m-0">
-      {{ montant.toFixed(0) }}€
+      {{ formatMontant(montant) }}
     </p>
   </div>
 </template>
@@ -46,6 +56,7 @@ withDefaults(
     z-index: 1;
     font-size: inherit;
   }
+
   &::after {
     content: '';
     position: absolute;

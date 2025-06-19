@@ -9,15 +9,11 @@ declare global {
 
   interface SurveyQuestionAutocompleteConfig {
     placeholder?: string
-    buttonText?: string
     loadingText?: string
-    selectLabel?: string
-    selectHint?: string | ((query: string) => string)
     noResultsText?: string
     errorTitle?: string
     errorDescription?: string
-    defaultUnselectedText?: string
-    resetButtonLabel?: string
+    minSearchLength?: number
   }
 
   type SurveyQuestion = {
@@ -45,7 +41,7 @@ declare global {
     }
     | {
       notion: never
-      tooltip?: {
+      tooltip?: string | {
         buttonLabel?: string
         content: string
       }

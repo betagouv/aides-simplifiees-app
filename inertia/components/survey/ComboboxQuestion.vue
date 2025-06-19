@@ -1,10 +1,8 @@
-<script lang="ts" setup generic="T, U">
-import type { ComponentPublicInstance } from 'vue'
+<script lang="ts" setup>
 import type { AutocompleteFn } from '~/utils/autocomplete_functions'
-import { DsfrAlert, DsfrButton, DsfrInput, DsfrSearchBar, DsfrSelect } from '@gouvminint/vue-dsfr'
-import { useAsyncState } from '@vueuse/core'
-import { computed, customRef, nextTick, ref, watch } from 'vue'
-import LoadingSpinner from '~/components/LoadingSpinner.vue'
+import { DsfrAlert, DsfrButton, DsfrInput } from '@gouvminint/vue-dsfr'
+import { useAsyncState, useDebounceFn } from '@vueuse/core'
+import { nextTick, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{
   question: SurveyQuestion
@@ -15,307 +13,258 @@ const props = withDefaults(defineProps<{
 })
 
 const defaultConfig = {
-  placeholder: 'Rechercher',
-  buttonText: 'Rechercher',
+  placeholder: 'Rechercher et sélectionner une option',
   loadingText: 'Chargement des suggestions...',
-  selectLabel: 'Sélectionner une option dans la liste ci-dessous',
-  selectHint: (query: string) => `Il s'agit des options proches de votre recherche : « ${query} »`,
   noResultsText: 'Aucun résultat trouvé pour votre recherche',
   errorTitle: 'Erreur lors de la recherche',
   errorDescription: 'Veuillez réessayer plus tard.',
-  defaultUnselectedText: 'Sélectionner une option',
-  resetButtonLabel: 'Réinitialiser',
+  minSearchLength: 2,
 }
 
 const config = {
   ...defaultConfig,
-  ...props.autocompleteConfig,
+  ...(props.autocompleteConfig || {}),
 }
 
 const model = defineModel<string | undefined>()
-const query = ref<string>('') // state for the input field
-const lastSentQuery = ref<string>('') // state for the last sent query
-const searchResultsId = `search-results-${props.question.id}`
-const searchInputId = `search-input-${props.question.id}`
-const selectId = `options-${props.question.id}`
+const inputValue = ref<string>('') // The visible input value
+const lastQuery = ref<string>('') // Last query sent to API
+const datalistId = `datalist-${props.question.id}`
+const inputId = `input-${props.question.id}`
+const isInitializing = ref<boolean>(true) // Flag to prevent API calls during initialization
 
-// Reference to elements for focus management
-const selectElement = ref<HTMLElement | null>(null)
-const searchInput = ref<ComponentPublicInstance | null>(null)
-const noResultsAlert = ref<HTMLElement | null>(null)
+// Reference to the input element
+const searchElement = ref<HTMLElement | null>(null)
 
-// Add a new ref for tracking the active option in the dropdown
-const activeDescendant = ref<string | null>(null)
-const optionsContainerId = `options-list-${props.question.id}`
-const comboboxId = `combobox-${props.question.id}`
-
-const { state: selectOptions, isLoading, isReady, error, execute: refresh } = useAsyncState(
-  () => props.autocompleteFn(query.value),
+const { state: selectOptions, isLoading, error, execute: searchOptions } = useAsyncState(
+  () => props.autocompleteFn(lastQuery.value),
   [], // initial state
   { immediate: false },
 )
 
-const status = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
-watch([isLoading, isReady, error], () => {
-  if (isLoading.value) {
-    status.value = 'pending'
-  }
-  else if (isReady.value) {
-    if (error.value) {
-      status.value = 'error'
-    }
-    else {
-      status.value = 'success'
-    }
-  }
-})
-
-const debounceStatus = ref<'idle' | 'pending' | 'success' | 'error'>('idle')
 const statusMessage = ref<string>('')
 
-watch(status, (newStatus) => {
-  if (newStatus === 'success') {
-    setTimeout(() => {
-      debounceStatus.value = 'success' // Set to success after a delay to allow for UI updates
-      if (selectOptions.value.length > 0) {
-        statusMessage.value = `${selectOptions.value.length} options trouvées pour votre recherche "${lastSentQuery.value}"`
-        // Move focus to the select element when results appear
-        nextTick(() => {
-          if (selectElement.value) {
-            selectElement.value.focus()
-          }
-        })
-      }
-      else {
-        statusMessage.value = config.noResultsText
-      }
-    }, 400)
+// Debounced search function
+const debouncedSearch = useDebounceFn((query: string) => {
+  if (
+    query.trim().length >= config.minSearchLength
+  ) {
+    lastQuery.value = query.trim()
+    searchOptions()
   }
-  else if (newStatus === 'error') {
-    debounceStatus.value = newStatus
-    statusMessage.value = `${config.errorTitle}. ${config.errorDescription}`
-  }
-  else {
-    debounceStatus.value = newStatus
-    if (newStatus === 'pending') {
-      statusMessage.value = config.loadingText
+}, 300)
+
+// Watch input changes and trigger debounced search
+watch(inputValue, (newValue) => {
+  // Don't trigger API calls during initialization
+  if (isInitializing.value) return
+
+  if (newValue.trim().length >= config.minSearchLength) {
+    // Check if the new value matches any existing option to avoid redundant API calls
+    const isExistingOption = selectOptions.value.some((opt) => {
+      if (!opt) return false
+
+      // Handle simple string/number options
+      if (typeof opt === 'string' || typeof opt === 'number') {
+        return opt.toString() === newValue.trim()
+      }
+
+      // Handle object options with value and text properties
+      if (typeof opt === 'object' && 'value' in opt && 'text' in opt) {
+        return opt.text === newValue.trim() || opt.value?.toString() === newValue.trim()
+      }
+
+      return false
+    })
+
+    // Only search if it's not an existing option
+    if (!isExistingOption) {
+      debouncedSearch(newValue)
     }
+  } else if (newValue.trim().length === 0) {
+    // Clear results when input is empty
+    lastQuery.value = ''
+    selectOptions.value = []
   }
 })
 
-function handleSearch() {
-  if (query.value.trim()) {
-    refresh()
-    lastSentQuery.value = query.value
+// Handle selection from datalist
+function handleInput(event: Event) {
+  const target = event.target as HTMLInputElement
+  const value = target.value
+
+  // Check if the value matches one of the options exactly
+  const matchedOption = selectOptions.value.find((opt) => {
+    if (!opt) {
+      return false
+    }
+
+    // Handle simple string/number options
+    if (typeof opt === 'string' || typeof opt === 'number') {
+      return opt.toString() === value
+    }
+
+    // Handle object options with value and text properties
+    if (typeof opt === 'object' && 'value' in opt && 'text' in opt) {
+      return opt.text === value || opt.value?.toString() === value
+    }
+
+    return false
+  })
+
+  if (matchedOption) {
+    // User selected an option from the datalist
+    model.value = JSON.stringify(matchedOption)
+    const displayText = typeof matchedOption === 'object' && 'text' in matchedOption
+      ? matchedOption.text
+      : matchedOption?.toString()
+    statusMessage.value = `Option "${displayText}" sélectionnée`
+  } else {
+    // User is typing or selected something not in the list
     model.value = undefined
   }
 }
 
-function clearInput() {
-  query.value = ''
-  model.value = undefined
-  statusMessage.value = 'Recherche réinitialisée'
-  // Return focus to search input after clearing
-  nextTick(() => {
-    searchInput.value?.$el?.querySelector?.('input')?.focus()
-  })
+function handleSearchClick() {
+  if (inputValue.value.trim().length >= config.minSearchLength) {
+    lastQuery.value = inputValue.value.trim()
+    searchOptions()
+
+    // Force the input to show the datalist by triggering focus and input events
+    nextTick(() => {
+      const input = searchElement.value?.querySelector?.('input')
+      if (input) {
+        input.focus()
+        // Trigger the datalist to show by simulating user interaction
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+        input.dispatchEvent(new Event('click', { bubbles: true }))
+      }
+    })
+  }
 }
 
-// Enhanced focus management for autocomplete list
-function handleOptionFocus(optionId: string) {
-  activeDescendant.value = optionId
-}
-
-/**
- * We pass a value only model down to the select component
- */
-const valueModel = customRef((track, trigger) => {
-  return {
-    get() {
-      return model.value ? JSON.parse(model.value)?.value : undefined
-    },
-    set(value: string | undefined) {
-      track()
-      const option = selectOptions.value.find((opt) => {
-        return (opt as { value: string, text: string }).value === value
-      }) as { value: string, text: string }
-      if (option) {
-        statusMessage.value = `Option "${value}" sélectionnée`
-        model.value = JSON.stringify(option)
+// Watch for changes in loading/error states
+watch([isLoading, error], () => {
+  if (isLoading.value) {
+    statusMessage.value = config.loadingText
+  } else if (error.value) {
+    statusMessage.value = `${config.errorTitle}. ${config.errorDescription}`
+  } else if (selectOptions.value.length > 0) {
+    statusMessage.value = `${selectOptions.value.length} options trouvées`
+    // Try to show the datalist when options are loaded
+    nextTick(() => {
+      const input = searchElement.value?.querySelector?.('input')
+      if (input && document.activeElement === input) {
+        // Only trigger if the input is focused
+        input.dispatchEvent(new Event('input', { bubbles: true }))
       }
-      else {
-        statusMessage.value = 'Aucune option sélectionnée'
-        model.value = undefined
-      }
-      trigger()
-    },
+    })
+  } else if (lastQuery.value && selectOptions.value.length === 0) {
+    statusMessage.value = config.noResultsText
   }
 })
 
-/**
- * We pass a text only model down to the input component
- */
-const textModel = computed(() => {
-  return model.value ? JSON.parse(model.value)?.text : undefined
+// Initialize input value if model already has a value
+watch(model, (newValue) => {
+  if (newValue && !inputValue.value) {
+    try {
+      const parsed = JSON.parse(newValue)
+      inputValue.value = parsed.text || parsed.value
+    } catch {
+      // Handle invalid JSON
+    }
+  }
+}, { immediate: true })
+
+// Set initialization flag to false after component is mounted
+nextTick(() => {
+  isInitializing.value = false
 })
 </script>
 
 <template>
+  <div class="combobox-wrapper">
+    <!-- Main input with native datalist -->
   <div
-    :id="comboboxId"
-    role="combobox"
-    data-testid="combobox"
-    :aria-expanded="debounceStatus === 'success' && selectOptions.length > 0"
-    :aria-owns="optionsContainerId"
-    aria-haspopup="listbox"
-    aria-autocomplete="list"
+    class="fr-search-bar"
+    :class="{ 'fr-search-bar--lg': true }"
+    role="search"
+    ref="searchElement"
   >
-    <DsfrSearchBar
-      :id="searchInputId"
-      ref="searchInput"
-      v-model="query"
-      large
+    <DsfrInput
+      ref="inputElement"
+      v-model="inputValue"
       :label="question.title"
       :placeholder="config.placeholder"
-      :button-text="config.buttonText"
-      :aria-label="`${config.buttonText} pour ${question.title}`"
-      :aria-controls="searchResultsId"
-      :aria-activedescendant="activeDescendant"
-      role="searchbox"
+      :list="datalistId"
       autocomplete="off"
-      @search="handleSearch"
+      role="combobox"
+      aria-autocomplete="list"
+      :aria-expanded="selectOptions.length > 0"
+      :aria-describedby="`${inputId}-status`"
+      @input="handleInput"
+      @keydown.enter="handleSearchClick"
     />
+    <DsfrButton
+      title="Rechercher"
+      :aria-label="`Rechercher pour ${question.title}`"
+      @click="handleSearchClick"
+    >
+        Rechercher
+    </DsfrButton>
+  </div>
+
+    <!-- Native datalist for suggestions -->
+    <datalist :id="datalistId">
+      <option
+        v-for="(option, index) in selectOptions"
+        :key="typeof option === 'object' && option && 'value' in option ? option.value?.toString() || index : option?.toString() || index"
+        :value="typeof option === 'object' && option && 'text' in option ? option.text : option?.toString() || ''"
+        :label="typeof option === 'object' && option && 'text' in option ? option.text : option?.toString() || ''"
+      />
+    </datalist>
 
     <!-- Status announcer for screen readers -->
     <div
+      :id="`${inputId}-status`"
       aria-live="polite"
-      class="sr-only"
+      class="fr-sr-only"
       role="status"
     >
       {{ statusMessage }}
     </div>
 
-    <!-- Results region -->
+    <!-- Error state -->
     <div
-      :id="searchResultsId"
-      aria-atomic="true"
+      v-if="error"
+      class="fr-mt-3w"
+      aria-live="assertive"
     >
-      <div
-        v-if="debounceStatus === 'pending'"
-        class="fr-mt-6w fr-mb-2w"
-      >
-        <LoadingSpinner :text="config.loadingText" />
-      </div>
+      <DsfrAlert
+        :id="`error-${question.id}`"
+        type="error"
+        :title="config.errorTitle"
+        :description="config.errorDescription"
+      />
+    </div>
 
-      <div
-        v-else-if="debounceStatus === 'error'"
-        class="fr-mt-3w"
-        aria-live="assertive"
-      >
-        <DsfrAlert
-          :id="`error-${question.id}`"
-          type="error"
-          :title="config.errorTitle"
-          :description="config.errorDescription"
-        />
-      </div>
-
-      <div
-        v-else-if="debounceStatus === 'success' && selectOptions.length > 0"
-        :id="optionsContainerId"
-        ref="selectElement"
-        class="fr-mt-3w"
-        role="listbox"
-        tabindex="-1"
-      >
-        <DsfrSelect
-          :id="selectId"
-          v-model="valueModel"
-          :options="selectOptions"
-          :label="config.selectLabel"
-          :hint="typeof config.selectHint === 'function' ? config.selectHint(lastSentQuery) : config.selectHint"
-          :default-unselected-text="config.defaultUnselectedText"
-          aria-required="false"
-          @focus-option="handleOptionFocus"
-        />
-      </div>
-
-      <div
-        v-else-if="debounceStatus === 'success' && selectOptions.length === 0 && lastSentQuery"
-        ref="noResultsAlert"
-        class="fr-mt-3w"
-        aria-live="polite"
-      >
-        <DsfrAlert
-          :id="`no-results-${question.id}`"
-          type="info"
-          :description="config.noResultsText"
-        />
-      </div>
-      <template
-        v-if="debounceStatus === 'idle' && model"
-      >
-        <div
-          class="fr-mt-3w"
-        >
-          <DsfrInput
-            aria-hidden
-            type="text"
-            label="Sélection actuelle"
-            label-visible
-            :model-value="textModel"
-            disabled
-          />
-        </div>
-      </template>
-      <div
-        v-if="(
-          debounceStatus === 'error'
-          || (debounceStatus === 'idle' && model)
-          || (debounceStatus === 'success' && model && lastSentQuery)
-        )"
-      >
-        <DsfrButton
-          :label="config.resetButtonLabel"
-          class="fr-mt-2w"
-          size="sm"
-          secondary
-          icon="fr-icon-close-line"
-          icon-right
-          :aria-label="`${config.resetButtonLabel} la recherche`"
-          @click="clearInput"
-        />
-      </div>
+    <!-- No results message -->
+    <div
+      v-else-if="lastQuery && selectOptions.length === 0 && !isLoading"
+      class="fr-mt-3w"
+      aria-live="polite"
+    >
+      <DsfrAlert
+        :id="`no-results-${question.id}`"
+        type="info"
+        :description="config.noResultsText"
+      />
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.fr-spin-anim {
-  display: inline-block;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.sr-only,
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.combobox-wrapper {
+  position: relative;
 }
 </style>

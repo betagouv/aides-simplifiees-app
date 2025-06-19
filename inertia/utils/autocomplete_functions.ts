@@ -24,16 +24,11 @@ interface Commune {
 export const autocompleteConfigs: Record<string, SurveyQuestionAutocompleteConfig> = {
   getInseeNumber: {
     placeholder: 'Rechercher une commune',
-    buttonText: 'Rechercher',
     loadingText: 'Chargement des suggestions de communes...',
-    selectLabel: 'Sélectionner une commune dans la liste ci-dessous',
-    selectHint: (query: string) =>
-      `Il s'agit des communes proches de votre recherche : « ${query} »`,
     noResultsText: 'Aucune commune trouvée pour votre recherche',
     errorTitle: 'Erreur lors de la recherche de communes',
     errorDescription: 'Veuillez réessayer plus tard.',
-    defaultUnselectedText: 'Sélectionner une commune',
-    resetButtonLabel: 'Réinitialiser',
+    minSearchLength: 2,
   },
 }
 

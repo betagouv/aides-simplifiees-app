@@ -1,12 +1,12 @@
 <script lang="ts" setup>
+import { DsfrAccordion, DsfrAccordionsGroup } from '@gouvfr/dsfr-vue/accordions'
 import { Head } from '@inertiajs/vue3'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-
 // State for statistics
 const statistics = ref<{
   statistics: Record<
@@ -32,18 +32,25 @@ const statistics = ref<{
 }>()
 
 // Hardcoded integrators with their logos
-const integrators = [
-  {
+const integrators = {
+  'demenagement-logement': [{
     name: 'Mon Logement Etudiant',
     logo: '/integrators/mon-logement-etudiant.png',
     description: 'Site d\'information sur les aides au logement pour les étudiants boursiers',
-  },
-  {
+  }, {
     name: 'service-public.fr',
     logo: '/integrators/service-public.png',
     description: 'Portail officiel des démarches et services de l\'Administration française',
-  },
-]
+  }],
+  'entreprise-innovation':
+    [
+      {
+        name: 'entreprendre.service-public.fr',
+        logo: '/integrators/service-public.png',
+        description: 'Portail officiel des démarches et services de l\'Administration française',
+      },
+    ],
+}
 
 // Loading state
 const isLoading = ref(true)
@@ -85,13 +92,13 @@ function getChartData(stats: any) {
   }
 }
 
-// Add computed property for chart attributes
-const getChartAttributes = computed(() => {
-  if (!statistics.value?.statistics) {
+// Add function to get chart attributes for a specific simulator
+function getChartAttributesForSimulator(simulatorId: string) {
+  if (!statistics.value?.statistics?.[simulatorId]) {
     return {}
   }
 
-  const stats = Object.values(statistics.value.statistics)[0]
+  const stats = statistics.value.statistics[simulatorId]
   const data = getChartData(stats)
 
   return {
@@ -103,9 +110,10 @@ const getChartAttributes = computed(() => {
     'unit-tooltip': 'simulations',
     'aspect-ratio': '2',
   }
-})
+}
 
 onMounted(() => {
+  isClient.value = true
   import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.js') as any
   import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.css')
   fetchStatistics()
@@ -147,10 +155,9 @@ setBreadcrumbs([
           Veuillez cliquer ci-dessous pour choisir votre simulateur et consulter ses statistiques
           d'utilisation.
         </p>
-        <DsfrAccordionGroup :expanded-id="activeAccordion">
+        <DsfrAccordionsGroup v-model="activeAccordion">
           <DsfrAccordion
             v-for="(stats, simulatorId) in statistics?.statistics"
-            :id="`accordion-${simulatorId}`"
             :key="simulatorId"
             :title="stats.title"
           >
@@ -194,9 +201,10 @@ setBreadcrumbs([
                     dimanche). Les dates indiquées correspondent au dernier jour de chaque semaine
                     (dimanche). La semaine en cours n'est pas comptabilisée.</i>
                 </p>
-                <ClientOnly>
-                  <line-chart v-bind="getChartAttributes" />
-                </ClientOnly>
+                <line-chart
+                  v-if="isClient"
+                  v-bind="getChartAttributesForSimulator(simulatorId)"
+                />
               </div>
 
               <!-- Intégrateurs -->
@@ -204,7 +212,7 @@ setBreadcrumbs([
                 <h3>Intégrateurs</h3>
                 <div class="fr-grid-row fr-grid-row--gutters">
                   <div
-                    v-for="integrator in integrators"
+                    v-for="integrator in integrators[simulatorId]"
                     :key="integrator.name"
                     class="fr-col-12 fr-col-md-4"
                   >
@@ -268,7 +276,7 @@ setBreadcrumbs([
               </div>
             </div>
           </DsfrAccordion>
-        </DsfrAccordionGroup>
+        </DsfrAccordionsGroup>
       </div>
     </SectionContainer>
   </BrandBackgroundContainer>

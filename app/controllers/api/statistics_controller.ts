@@ -91,6 +91,7 @@ export default class StatisticsController {
 
           if (!actionsResponse || actionsResponse.status !== 200) {
             console.error('Matomo API error:', actionsResponse?.status)
+            console.error('Matomo API error:', actionsResponse)
             continue
           }
 

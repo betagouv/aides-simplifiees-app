@@ -969,7 +969,7 @@
         },
         {
           "id": "prototype-remboursements-page",
-          "title": "Rmboursements à rajouter à l'assiette du crédit d'impôt",
+          "title": "Remboursements à rajouter à l'assiette du crédit d'impôt",
           "questions": [
             {
               "id": "depenses-prototype-remboursements-subventions",

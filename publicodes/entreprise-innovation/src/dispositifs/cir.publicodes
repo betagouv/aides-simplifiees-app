@@ -83,8 +83,14 @@ cir . depensesMetropole:
           - depensesRdRechercheLiensDependance . avecPlafond
           - depensesRdRechercheSansLiensDependance . avecPlafond
       - somme:
+          - depensesNormalisationDirigeant
+          - (-depensesNormalisationDirigeantDom)
+      - somme:
           - 0
           - (-cir . deductions . metropole)
+      - depensesNormalisationRemboursementsSubventions
+      - depensesNormalisationSubventions
+      - depensesNormalisationConseil
 
 # N'est pas modélisé pour l'instant:  "Dépenses liées à l'élaboration de nouvelles créations par les entreprises du secteur textile-habillement-cuir, y compris lorsqu'elles sont confiées à des stylistes ou bureaux de style agréés (jusqu'au 31 décembre 2027)."
 
@@ -128,6 +134,7 @@ cir . depensesDom:
         - depensesRdRemunerationInventionDom
       - depensesNormalisationSalairesDom
       - depensesPrototypeFraisDepotDessinsDom
+      - depensesNormalisationDirigeantDom
       - somme:
           - depensesRdRechercheLiensDependanceDom . avecPlafond
           - depensesRdRechercheSansLiensDependanceDom . avecPlafond

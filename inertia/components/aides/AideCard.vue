@@ -9,12 +9,12 @@ type AideCardProps = {
   link: string
   title: string
   description: string
-  typeAide: {
+  typeAide?: {
     label: string
     iconName: string
   }
   montant?: number
-  instructeur: string
+  instructeur?: string
 } & Pick<DsfrCardProps, 'horizontal' | 'size' | 'titleTag'>
 
 const props = defineProps<AideCardProps>()

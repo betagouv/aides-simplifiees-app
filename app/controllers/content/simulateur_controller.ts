@@ -245,9 +245,9 @@ export default class SimulateurController {
           eligibilite: rawAide.eligibilite,
           // Data from database content source
           title: aideDetails.title || `Aide ${rawAide.id}`,
-          description: aideDetails.description || 'Description non disponible',
+          description: aideDetails.description || '',
           textesLoi: aideDetails.textesLoi || [],
-          instructeur: aideDetails.instructeur || 'Instructeur non disponible',
+          instructeur: aideDetails.instructeur || '',
           typeAide: aideDetails.typeAide,
           usage: aideDetails.usage || 'frais-installation-logement',
         }

@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3'
 import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
+import PartenairesSection from '~/components/PartenairesSection.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const { setBreadcrumbs } = useBreadcrumbStore()
@@ -20,7 +21,7 @@ setBreadcrumbs([
     highlighted-title="Vous êtes une administration&nbsp;:"
     title="le parcours d'accès aux aides"
   />
-  <SectionContainer type="page-footer">
+  <SectionContainer type="page-block">
     <div>
       <p class="fr-text--lg">
         Les administrations et organismes publics jouent un rôle clé dans l'accès aux aides. En
@@ -48,5 +49,8 @@ setBreadcrumbs([
         <a href="mailto:aides.simplifiees@numerique.gouv.fr">aides.simplifiees@numerique.gouv.fr</a>.
       </p>
     </div>
+  </SectionContainer>
+  <SectionContainer type="page-footer">
+    <PartenairesSection />
   </SectionContainer>
 </template>

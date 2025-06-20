@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { DsfrAccordion, DsfrAccordionsGroup, DsfrCard } from '@gouvminint/vue-dsfr'
 import { Head } from '@inertiajs/vue3'
 import { computed, onMounted, ref } from 'vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
@@ -6,7 +7,6 @@ import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionCon
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-
 // State for statistics
 const statistics = ref<{
   statistics: Record<
@@ -30,17 +30,17 @@ const statistics = ref<{
     no: number
   }
 }>()
-
+const isClient = Boolean(import.meta.client)
 // Hardcoded integrators with their logos
 const integrators = [
   {
     name: 'Mon Logement Etudiant',
-    logo: '/integrators/mon-logement-etudiant.png',
+    logo: '/logos/mon-logement-etudiant.png',
     description: 'Site d\'information sur les aides au logement pour les étudiants boursiers',
   },
   {
     name: 'service-public.fr',
-    logo: '/integrators/service-public.png',
+    logo: '/logos/service-public.png',
     description: 'Portail officiel des démarches et services de l\'Administration française',
   },
 ]
@@ -147,7 +147,7 @@ setBreadcrumbs([
           Veuillez cliquer ci-dessous pour choisir votre simulateur et consulter ses statistiques
           d'utilisation.
         </p>
-        <DsfrAccordionGroup :expanded-id="activeAccordion">
+        <DsfrAccordionsGroup :expanded-id="activeAccordion">
           <DsfrAccordion
             v-for="(stats, simulatorId) in statistics?.statistics"
             :id="`accordion-${simulatorId}`"
@@ -194,9 +194,10 @@ setBreadcrumbs([
                     dimanche). Les dates indiquées correspondent au dernier jour de chaque semaine
                     (dimanche). La semaine en cours n'est pas comptabilisée.</i>
                 </p>
-                <ClientOnly>
-                  <line-chart v-bind="getChartAttributes" />
-                </ClientOnly>
+                <line-chart
+                  v-if="isClient"
+                  v-bind="getChartAttributes"
+                />
               </div>
 
               <!-- Intégrateurs -->
@@ -268,7 +269,7 @@ setBreadcrumbs([
               </div>
             </div>
           </DsfrAccordion>
-        </DsfrAccordionGroup>
+        </DsfrAccordionsGroup>
       </div>
     </SectionContainer>
   </BrandBackgroundContainer>

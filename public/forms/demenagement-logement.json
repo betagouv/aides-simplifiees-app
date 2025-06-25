@@ -109,7 +109,7 @@
         {
           "id": "situation-logement",
           "title": "Quelle sera votre situation dans votre futur logement ?",
-          "description": "Choisissez si vous serez locataire, propriétaire, hébergé(e) gratuitement, etc., dans le logement concerné par cette simulation",
+          "description": "Choisissez si vous serez locataire, propriétaire, hébergé(e) gratuitement, etc., dans le logement concerné par cette simulation.",
           "type": "radio",
           "choices": [
             {
@@ -118,7 +118,8 @@
             },
             {
               "id": "proprietaire",
-              "title": "Propriétaire ou en location-accession"
+              "title": "Propriétaire ou en location-accession",
+              "tooltip": "La location-accession est un dispositif qui permet de devenir propriétaire d'un logement après une période de location. Il s'agit d'un contrat spécifique qui facilite l'accès à la propriété."
             },
             {
               "id": "heberge",

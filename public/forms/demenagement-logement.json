@@ -139,7 +139,7 @@
           "choices": [
             { "id": "logement-non-meuble", "title": "Logement non meublé" },
             { "id": "logement-meuble", "title": "Logement meublé" },
-            { "id": "logement-foyer", "title": "Foyer (résidence CROUS, etc.) ou logement conventionné" },
+            { "id": "logement-foyer", "title": "Foyer (résidence CROUS, etc.)" },
             { "id": "logement-chambre", "title": "Chambre chez un particulier" }
           ]
         },

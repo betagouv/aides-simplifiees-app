@@ -14,6 +14,7 @@ export default defineConfig({
         iframeIntegration: resolve(dir, 'src/assets/iframe-integration.js'),
       },
       output: {
+        format: 'iife',
         entryFileNames: `iframe-integration@${IFRAME_SCRIPT_LATEST_VERSION}.js`,
         chunkFileNames: `iframe-integration@${IFRAME_SCRIPT_LATEST_VERSION}.js`,
         assetFileNames: `iframe-integration@${IFRAME_SCRIPT_LATEST_VERSION}.js`,

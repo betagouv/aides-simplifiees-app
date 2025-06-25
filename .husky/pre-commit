@@ -55,7 +55,7 @@ echo "${BLUE}🏗️  Iframe files detected in commit, rebuilding...${NC}"
 
 # Run the iframe integration build
 echo "${BLUE}📦 Building iframe integration...${NC}"
-if ! pnpm build:iframe-integration; then
+if ! pnpm run build:iframe-integration; then
     echo "${RED}❌ Iframe build failed!${NC}"
     exit 1
 fi

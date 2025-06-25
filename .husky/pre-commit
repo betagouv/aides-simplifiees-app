@@ -1,0 +1,138 @@
+#!/bin/sh
+
+# Exit on any error
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo "${BLUE}🔍 Pre-commit hook: Checking iframe integration files...${NC}"
+
+# Define the files we need to track
+IFRAME_SOURCE="src/assets/iframe-integration.js"
+IFRAME_CONFIG="config/iframe_integration.ts"
+IFRAME_VITE_CONFIG="vite.iframe-integration.config.ts"
+IFRAME_BUILD_PATTERN="public/assets/iframe-integration@*.js"
+
+# Check if any iframe-related files are staged
+iframe_files_staged=false
+
+# Check if iframe source is staged
+if git diff --cached --name-only | grep -q "^${IFRAME_SOURCE}$"; then
+    echo "${YELLOW}📝 Iframe source file is staged: ${IFRAME_SOURCE}${NC}"
+    iframe_files_staged=true
+fi
+
+# Check if iframe config is staged
+if git diff --cached --name-only | grep -q "^${IFRAME_CONFIG}$"; then
+    echo "${YELLOW}📝 Iframe config file is staged: ${IFRAME_CONFIG}${NC}"
+    iframe_files_staged=true
+fi
+
+# Check if iframe vite config is staged
+if git diff --cached --name-only | grep -q "^${IFRAME_VITE_CONFIG}$"; then
+    echo "${YELLOW}📝 Iframe vite config file is staged: ${IFRAME_VITE_CONFIG}${NC}"
+    iframe_files_staged=true
+fi
+
+# Check if any iframe build files are staged
+if git diff --cached --name-only | grep -q "^public/assets/iframe-integration@.*\.js$"; then
+    echo "${YELLOW}📝 Iframe build files are staged${NC}"
+    iframe_files_staged=true
+fi
+
+# If no iframe files are staged, exit early
+if [ "$iframe_files_staged" = false ]; then
+    echo "${GREEN}✅ No iframe files staged, skipping iframe build check${NC}"
+    exit 0
+fi
+
+echo "${BLUE}🏗️  Iframe files detected in commit, rebuilding...${NC}"
+
+# Run the iframe integration build
+echo "${BLUE}📦 Building iframe integration...${NC}"
+if ! pnpm build:iframe-integration; then
+    echo "${RED}❌ Iframe build failed!${NC}"
+    exit 1
+fi
+
+# Check if there are any changes after the build
+echo "${BLUE}🔍 Checking for changes after build...${NC}"
+
+# Get list of all files that might have changed or been created
+changed_files=""
+
+# Check iframe config for modifications
+if [ -f "${IFRAME_CONFIG}" ]; then
+    if ! git diff --quiet "${IFRAME_CONFIG}" 2>/dev/null; then
+        changed_files="${changed_files} ${IFRAME_CONFIG}"
+    fi
+fi
+
+# Check for new or modified iframe build files using git status
+# This captures both untracked and modified files
+git_status_output=$(git status --porcelain)
+while IFS= read -r line; do
+    if [ -n "$line" ]; then
+        # Extract filename from git status output (remove status indicators)
+        filename=$(echo "$line" | sed 's/^...//')
+        # Check if it matches our iframe build pattern
+        if echo "$filename" | grep -q "^public/assets/iframe-integration@.*\.js$"; then
+            changed_files="${changed_files} $filename"
+        fi
+    fi
+done <<< "$git_status_output"
+
+# If there are changes, stage them
+if [ -n "$changed_files" ]; then
+    echo "${YELLOW}📝 Staging updated/new files:${changed_files}${NC}"
+    for file in $changed_files; do
+        if [ -f "$file" ]; then
+            git add "$file"
+            echo "${GREEN}   ✅ Staged: $file${NC}"
+        fi
+    done
+
+    # Verify no unstaged/untracked iframe files remain
+    unstaged_iframe_changes=""
+
+    # Check git status for any remaining iframe-related files that are not staged
+    remaining_git_status=$(git status --porcelain)
+    while IFS= read -r line; do
+        if [ -n "$line" ]; then
+            # Get the status indicators (first 2 characters)
+            status_indicators=$(echo "$line" | cut -c1-2)
+            filename=$(echo "$line" | sed 's/^...//')
+
+            # Skip if file is staged (first character is not space and not ?)
+            if [ "${status_indicators:0:1}" != " " ] && [ "${status_indicators:0:1}" != "?" ]; then
+                continue
+            fi
+
+            # Check if it's an iframe-related file with unstaged changes
+            if [ "$filename" = "${IFRAME_SOURCE}" ] || [ "$filename" = "${IFRAME_CONFIG}" ] || [ "$filename" = "${IFRAME_VITE_CONFIG}" ]; then
+                unstaged_iframe_changes="${unstaged_iframe_changes} $filename"
+            elif echo "$filename" | grep -q "^public/assets/iframe-integration@.*\.js$"; then
+                unstaged_iframe_changes="${unstaged_iframe_changes} $filename"
+            fi
+        fi
+    done <<< "$remaining_git_status"
+
+    if [ -n "$unstaged_iframe_changes" ]; then
+        echo "${RED}❌ Error: There are still unstaged/untracked iframe files after build:${NC}"
+        echo "${RED}   ${unstaged_iframe_changes}${NC}"
+        echo "${RED}   This indicates a problem with the build process or manual modifications.${NC}"
+        echo "${RED}   Please stage these changes manually or reset them.${NC}"
+        exit 1
+    fi
+
+    echo "${GREEN}✅ All iframe files are now properly staged and synchronized${NC}"
+else
+    echo "${GREEN}✅ No changes detected after iframe build - files are already synchronized${NC}"
+fi
+
+echo "${GREEN}🎉 Pre-commit hook completed successfully!${NC}"

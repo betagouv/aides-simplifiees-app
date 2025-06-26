@@ -109,7 +109,7 @@
         {
           "id": "situation-logement",
           "title": "Quelle sera votre situation dans votre futur logement ?",
-          "description": "Choisissez si vous serez locataire, propriétaire, hébergé(e) gratuitement, etc., dans le logement concerné par cette simulation",
+          "description": "Choisissez si vous serez locataire, propriétaire, hébergé(e) gratuitement, etc., dans le logement concerné par cette simulation.",
           "type": "radio",
           "choices": [
             {
@@ -118,7 +118,8 @@
             },
             {
               "id": "proprietaire",
-              "title": "Propriétaire ou en location-accession"
+              "title": "Propriétaire ou en location-accession",
+              "tooltip": "La location-accession est un dispositif qui permet de devenir propriétaire d'un logement après une période de location. Il s'agit d'un contrat spécifique qui facilite l'accès à la propriété."
             },
             {
               "id": "heberge",
@@ -138,7 +139,7 @@
           "choices": [
             { "id": "logement-non-meuble", "title": "Logement non meublé" },
             { "id": "logement-meuble", "title": "Logement meublé" },
-            { "id": "logement-foyer", "title": "Foyer (résidence CROUS, etc.) ou logement conventionné" },
+            { "id": "logement-foyer", "title": "Foyer (résidence CROUS, etc.)" },
             { "id": "logement-chambre", "title": "Chambre chez un particulier" }
           ]
         },
@@ -177,21 +178,17 @@
         {
           "id": "loyer-montant-mensuel",
           "title": "Quel sera le montant de votre part du loyer (hors charges) dans votre futur logement ?",
-          "description": "Indiquez le montant en euros par mois, sans déduire vos aides au logement si vous en recevez.",
+          "description": "Indiquez le montant en euros par mois, sans déduire vos aides au logement si vous en recevez. Exemple : pour un studio à Paris, le loyer mensuel peut varier entre 400€ et 900€.",
           "type": "number",
-          "placeholder": "Montant en euros",
+          "placeholder": "Ex : 600€",
           "visibleWhen": "situation-logement=locataire"
         },
         {
           "id": "loyer-montant-charges",
-          "notion": {
-            "id": "loyer-montant-charges",
-            "buttonLabel": "En savoir plus"
-          },
           "title": "Quel est le montant des charges locatives ?",
-          "description": "Indiquez le montant en euros par mois. Cela peut inclure l'eau froide, le chauffage collectif, l'entretien des parties communes.",
+          "description": "Indiquez le montant en euros par mois. Cela peut inclure l'eau froide, le chauffage collectif, l'entretien des parties communes. À titre indicatif, elles varient souvent entre 30€ et 150€ par mois selon le logement.",
           "type": "number",
-          "placeholder": "Montant en euros",
+          "placeholder": "Ex : 100€",
           "visibleWhen": "situation-logement=locataire"
         },
         {

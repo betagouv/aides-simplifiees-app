@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 1.3.0 [#121](https://github.com/betagouv/aides-simplifiees-app/pull/121)
+- Ajout de fonctionnalités :
+  - Création de formulaires publicodes pour les aom de Bordeaux et de Rennes
+  - Permet d'utiliser @publicodes/forms pour générer des formulaires dynamiques
+  - Implémentation de l'automatisation du build de l'iframe
+- Améliorations :
+  - Modifications de wording du simulateur Déménagement
+  - Amélioration du modèle publicodes innovation/entreprise
+  - Évolutions statiques du frontend
+- Réparations :
+  - Wrappe le script d'intégration de l'iframe dans une iife pour éviter la pollution des variables globales importées
+
 ### 1.2.2 [#97](https://github.com/betagouv/aides-simplifiees-app/pull/97)
 - Ajout de fonctionnalités :
   - Ajoute un marqueur pour les questions obligatoires

@@ -2,7 +2,9 @@ name: CI Tests
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, preprod]
+  push:
+    branches: [main, preprod]
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -72,3 +74,60 @@ jobs:
           name: screenshots
           path: screenshots
           retention-days: 30
+
+      - name: 📊 Upload des rapports d'accessibilité
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-reports-${{ github.run_number }}
+          path: |
+            reports/accessibility/
+          retention-days: 30
+
+      - name: 📝 Résumé des violations dans la PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { execSync } = require('child_process');
+
+            try {
+              // Exécuter le script de rapport d'accessibilité
+              const reportOutput = execSync('node scripts/accessibility-report.cjs reports/accessibility markdown', {
+                encoding: 'utf8',
+                maxBuffer: 1024 * 1024 // 1MB buffer pour les gros rapports
+              });
+
+              // Créer le commentaire sur la PR
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: reportOutput
+              });
+
+            } catch (error) {
+              console.log('Aucun rapport d\'accessibilité généré ou erreur:', error.message);
+
+              // Commentaire par défaut si pas de rapport
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '## 🦮 Tests d\'accessibilité\n\n✅ Aucun test d\'accessibilité exécuté ou aucun rapport généré.'
+              });
+            }
+
+      - name: ❌ Échec si violations critiques
+        run: |
+          if [ -d "reports/accessibility" ]; then
+            cd reports/accessibility
+            critical_count=$(grep -r '"impact":"critical"' *.json 2>/dev/null | wc -l || echo "0")
+            echo "Violations critiques trouvées: $critical_count"
+            if [ "$critical_count" -gt "0" ]; then
+              echo "❌ Des violations critiques d'accessibilité ont été détectées"
+              echo "Consultez les rapports pour plus de détails"
+              exit 1
+            fi
+          fi
+          echo "✅ Aucune violation critique d'accessibilité"

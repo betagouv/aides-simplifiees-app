@@ -33,3 +33,6 @@ icon-usage-report-*.md
 coverage
 .nyc_output
 *.lcov
+
+# accessibility reports
+/reports/accessibility

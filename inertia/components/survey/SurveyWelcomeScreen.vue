@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { SharedProps } from '@adonisjs/inertia/types'
+import { usePage } from '@inertiajs/vue3'
 import DsfrLink from '~/components/DsfrLink.vue'
 import MatomoOptOut from '~/components/MatomoOptOut.vue'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
@@ -10,7 +12,8 @@ defineProps<{
 }>()
 
 const { isIframe } = useIframeDisplay()
-const isPreprod = import.meta.url.includes('https://aides.beta.gouv.fr')
+const page = usePage<SharedProps>()
+const isPreprod = page.props.isPreprod
 </script>
 
 <template>

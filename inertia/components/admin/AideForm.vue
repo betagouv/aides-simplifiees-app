@@ -14,7 +14,7 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'submit', form: AideForm): void
+  (e: 'submit', form: AideFormType): void
   (e: 'cancel'): void
 }>()
 

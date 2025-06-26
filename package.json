@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build --ignore-ts-errors",
-    "build:iframe-integration": "node bin/build-iframe-integration.js",
+    "build:iframe-integration": "node scripts/build-iframe-integration.js",
     "prepare": "husky",
-    "build:icons": "vue-dsfr-icons -s bin/icons.js -t inertia/icon_collections.ts",
+    "build:icons": "vue-dsfr-icons -s scripts/icons.js -t inertia/icon_collections.ts",
     "build:publicodes": "node scripts/build-publicodes.js",
     "dev": "node ace serve --hmr",
     "lint": "eslint .",

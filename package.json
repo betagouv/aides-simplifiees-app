@@ -13,7 +13,7 @@
     "dev": "node ace serve --hmr",
     "lint": "eslint .",
     "format": "eslint --fix .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "pnpm run typecheck:backend && pnpm run typecheck:frontend && pnpm run typecheck:browser-tests",
     "typecheck:backend": "tsc --noEmit",
     "typecheck:frontend": "tsc --noEmit -p inertia/tsconfig.json",
     "typecheck:browser-tests": "tsc --noEmit -p tests/browser/tsconfig.json",

@@ -60,6 +60,7 @@
     "@iframe-resizer/child": "^5.4.5",
     "@iframe-resizer/parent": "^5.4.5",
     "@inertiajs/vue3": "^2.0.6",
+    "@publicodes/forms": "^0.5.1",
     "@publicodes/tools": "^1.7.2",
     "@vinejs/vine": "^3.0.0",
     "@vue/server-renderer": "^3.5.13",

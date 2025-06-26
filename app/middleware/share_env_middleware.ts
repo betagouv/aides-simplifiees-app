@@ -10,6 +10,7 @@ export default class ShareEnvMiddleware {
     // Only share specific environment variables that are needed on the client
     ctx.inertia.share(filterObject({
       appName: env.get('APP_NAME'),
+      isPreprod: env.get('IS_PREPROD', 'false') === 'true',
       publicAppUrl: env.get('PUBLIC_APP_URL'),
       matomoUrl: env.get('MATOMO_URL'),
       matomoSiteId: env.get('MATOMO_SITE_ID'),

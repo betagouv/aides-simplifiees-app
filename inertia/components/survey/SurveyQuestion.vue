@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { DsfrButton, DsfrTooltip } from '@gouvminint/vue-dsfr'
+import { DsfrButton } from '@gouvminint/vue-dsfr'
 import { router } from '@inertiajs/vue3'
 import { computed, customRef, onMounted } from 'vue'
 import BooleanQuestion from '~/components/survey/BooleanQuestion.vue'
@@ -10,29 +10,57 @@ import NumberQuestion from '~/components/survey/NumberQuestion.vue'
 import RadioButtonQuestion from '~/components/survey/RadioButtonQuestion.vue'
 import UnkownQuestionType from '~/components/survey/UnkownQuestionType.vue'
 import { useSurveysStore } from '~/stores/surveys'
-import { autocompleteConfigs, autocompleteFunctions } from '~/utils/autocomplete_functions'
+import {
+  autocompleteConfigs,
+  autocompleteFunctions,
+} from '~/utils/autocomplete_functions'
 
-const props = withDefaults(defineProps<{
-  question: SurveyQuestion
-  simulateurSlug: string
-  size?: 'sm' | 'md'
-}>(), {
-  size: 'md',
-})
+const props = withDefaults(
+  defineProps<{
+    question: SurveyQuestion
+    simulateurSlug: string
+    defaultValue?: any
+    size?: 'sm' | 'md'
+    required?: boolean
+  }>(),
+  {
+    size: 'md',
+    required: false,
+  },
+)
 
-const surveysStore = useSurveysStore()
+const emit = defineEmits<{
+  (e: 'update:model-value', value: any): void
+}>()
 
 /**
  * Create a reactive model for each question
  */
-const questionModel = customRef((track, trigger) => {
+const surveysStore = useSurveysStore()
+
+const model = customRef((track, trigger) => {
   return {
     get() {
       track()
-      return surveysStore.getAnswer(props.simulateurSlug, props.question.id)
+      const storeAnswer = surveysStore.getAnswer(
+        props.simulateurSlug,
+        props.question.id,
+      )
+      if (storeAnswer !== undefined) {
+        return storeAnswer
+      }
+      if (props.defaultValue !== undefined) {
+        return props.defaultValue
+      }
+      return undefined
     },
     set(value) {
-      surveysStore.setAnswer(props.simulateurSlug, props.question.id, value)
+      surveysStore.setAnswer(
+        props.simulateurSlug,
+        props.question.id,
+        value,
+      )
+      emit('update:model-value', value)
       trigger()
     },
   }
@@ -41,15 +69,17 @@ const questionModel = customRef((track, trigger) => {
 // Get the question component based on question type
 const questionComponent = computed(() => {
   const type = props.question.type
-  return {
-    radio: RadioButtonQuestion,
-    boolean: BooleanQuestion,
-    checkbox: MultiSelectQuestion,
-    number: NumberQuestion,
-    date: DateQuestion,
-    combobox: ComboboxQuestion,
-    text: ComboboxQuestion,
-  }[type] || UnkownQuestionType
+  return (
+    {
+      radio: RadioButtonQuestion,
+      boolean: BooleanQuestion,
+      checkbox: MultiSelectQuestion,
+      number: NumberQuestion,
+      date: DateQuestion,
+      combobox: ComboboxQuestion,
+      text: ComboboxQuestion,
+    }[type] || UnkownQuestionType
+  )
 })
 
 // Get eventual autocomplete function for a text question
@@ -66,7 +96,7 @@ const autocompleteConfig = computed(() => {
     // Merge default config with any custom config from question
     return {
       ...autocompleteConfigs[props.question.autocompleteFunction],
-      ...props.question.autocompleteConfig || {},
+      ...(props.question.autocompleteConfig || {}),
     }
   }
   return undefined
@@ -90,32 +120,57 @@ onMounted(() => {
   >
     <hgroup
       :id="`question-${question.id}`"
-      class="brand-survey-question-header"
-      :class="[{
-        'fr-mb-3w': size === 'md',
-        'fr-mb-1w': size === 'sm',
-      }]"
+      :class="[
+        {
+          'fr-mb-3w': size === 'md',
+          'fr-mb-1w': size === 'sm',
+        },
+      ]"
     >
       <h3
-        :class="[{
-          'fr-h5 fr-mb-1w': size === 'md',
-          'fr-text--md fr-mb-1v': size === 'sm',
-        }]"
-        :aria-describedby="question?.description ? `question-description-${question.id}` : undefined"
+        :class="[
+          {
+            'fr-h5 fr-mb-1w': size === 'md',
+            'fr-text--md fr-mb-1v': size === 'sm',
+          },
+        ]"
+        :aria-describedby="
+          question?.description
+            ? `question-description-${question.id}`
+            : undefined
+        "
       >
         {{ question.title }} <span
-          v-if="question.required !== false"
+          v-if="question.required !== false || required"
           class="brand-required-question-marker"
         >*</span>
       </h3>
       <p
+        v-if="required"
+        class="fr-hint-text fr-text--error fr-mb-1v"
+        :class="[
+          {
+            'fr-text--xs': size === 'md',
+            'fr-text--xxs': size === 'sm',
+          },
+        ]"
+      >
+        <span
+          class="fr-icon-information-line"
+          aria-hidden="true"
+        />
+        Requis
+      </p>
+      <p
         v-if="question?.description"
         :id="`question-description-${question.id}`"
         class="fr-hint-text fr-mb-0"
-        :class="[{
-          'fr-text--sm': size === 'md',
-          'fr-text--xs': size === 'sm',
-        }]"
+        :class="[
+          {
+            'fr-text--sm': size === 'md',
+            'fr-text--xs': size === 'sm',
+          },
+        ]"
       >
         {{ question.description }}
       </p>
@@ -128,9 +183,14 @@ onMounted(() => {
       secondary
       icon-right
       class="fr-mb-2w"
-      @click="() => {
-        router.visit(`/simulateurs/${simulateurSlug}/notions/${question.notion?.id}`, { preserveState: true, preserveScroll: true })
-      }"
+      @click="
+        () => {
+          router.visit(
+            `/simulateurs/${simulateurSlug}/notions/${question.notion!.id}`,
+            { preserveState: true, preserveScroll: true },
+          );
+        }
+      "
     />
 
     <div
@@ -148,7 +208,7 @@ onMounted(() => {
     <component
       :is="questionComponent"
       :key="question.id"
-      v-model="questionModel"
+      v-model="model"
       :question="question"
       :autocomplete-config="autocompleteConfig"
       :autocomplete-fn="autocompleteFn"

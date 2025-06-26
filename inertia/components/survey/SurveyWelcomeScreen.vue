@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { SharedProps } from '@adonisjs/inertia/types'
+import { usePage } from '@inertiajs/vue3'
 import DsfrLink from '~/components/DsfrLink.vue'
 import MatomoOptOut from '~/components/MatomoOptOut.vue'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
@@ -10,6 +12,8 @@ defineProps<{
 }>()
 
 const { isIframe } = useIframeDisplay()
+const page = usePage<SharedProps>()
+const isPreprod = page.props.isPreprod
 </script>
 
 <template>
@@ -19,14 +23,19 @@ const { isIframe } = useIframeDisplay()
         class="fr-h4"
         data-testid="survey-welcome-title"
       >
-        Un simulateur en cours d'amélioration
+        Un simulateur en cours d'amélioration <span
+          v-if="isPreprod"
+          class="fr-text--bold"
+          style="color: red;"
+        > ⚠️ (environnement de préproduction)</span>
       </h2>
 
       <!-- Content for both iframe and regular site -->
       <p v-if="simulateur?.slug === 'entreprise-innovation'">
         <span class="fr-text--bold">Bienvenue !</span>
         Ce simulateur vous permet d'estimer 6 aides financières pour <strong>favoriser l'innovation de votre entreprise</strong>.
-        <br>Ce service est en construction : vos retours sont les bienvenus pour l'améliorer.
+        <br>Ce service est en construction : vos retours sont les bienvenus pour l'améliorer. <br>
+        Pour ce faire, n'hésitez pas à cliquer sur la <b><u>bulle d'aide bleu à droite de l'écran</u></b> pour nous faire part de vos retours.
       </p>
       <p v-else>
         <span class="fr-text--bold">Bienvenue !</span>

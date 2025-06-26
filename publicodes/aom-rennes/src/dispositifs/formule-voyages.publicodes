@@ -1,0 +1,55 @@
+formule-10-voyages:
+  titre: "Formule 10 voyages (dont 1 offert)"
+
+formule-10-voyages . resultat:
+  texte: |
+    <h4>Formule 10 voyages : {{montant}}</h4>
+    <p>Carnet de 10 voyages dont 1 offert. Valable sur tout le réseau STAR.</p>
+
+formule-10-voyages . eligibilite:
+  valeur: oui
+
+formule-10-voyages . montant:
+  variations:
+    - si: tarif réduit
+      alors: 7.65 €
+    - sinon: 15.30 €
+
+formule-30-voyages:
+  titre: "Formule 30 voyages (dont 5 offerts)"
+
+formule-30-voyages . resultat:
+  texte: |
+    <h4>Formule 30 voyages : {{montant}}</h4>
+    <p>Carnet de 30 voyages dont 5 offerts. Valable sur tout le réseau STAR.</p>
+
+formule-30-voyages . eligibilite:
+  valeur: oui
+
+formule-30-voyages . montant: 42.50 €
+
+formule-50-voyages:
+  titre: "Formule 50 voyages (dont 10 offerts)"
+
+formule-50-voyages . resultat:
+  texte: |
+    <h4>Formule 50 voyages : {{montant}}</h4>
+    <p>Carnet de 50 voyages dont 10 offerts. Valable sur tout le réseau STAR.</p>
+
+formule-50-voyages . eligibilite:
+  valeur: oui
+
+formule-50-voyages . montant: 68.00 €
+
+formule-80-voyages:
+  titre: "Formule 80 voyages (dont 20 offerts)"
+
+formule-80-voyages . resultat:
+  texte: |
+    <h4>Formule 80 voyages : {{montant}}</h4>
+    <p>Carnet de 80 voyages dont 20 offerts. Valable sur tout le réseau STAR.</p>
+
+formule-80-voyages . eligibilite:
+  valeur: oui
+
+formule-80-voyages . montant: 102.00 €

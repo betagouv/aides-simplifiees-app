@@ -1,7 +1,6 @@
-import type { SimulationResultsAides } from '~/types/aides'
-import sourceRules from '#publicodes/entreprise-innovation'
 import Engine from 'publicodes'
 import { useSurveysStore } from '~/stores/surveys'
+import { getPublicodesRules } from '~/utils/get_publicodes_rules'
 
 export interface DispositifDetail {
   id: string
@@ -58,18 +57,19 @@ function autoMapAnswersToPublicodesVariables(
 }
 
 export function useEligibilityService() {
-  // Export engine
-  const engine = new Engine(sourceRules, {
-    flag: {
-      automaticNamespaceDisabling: false,
-    },
-  })
-
-  function calculateEligibility(
+  async function calculateEligibility(
     surveyId: string,
     answers: Record<string, any>,
     dispositifsToEvaluate: DispositifDetail[],
-  ): EligibilityResults {
+  ): Promise<EligibilityResults> {
+    const sourceRules = await getPublicodesRules(surveyId)
+    // Export engine
+    const engine = new Engine(sourceRules, {
+      flag: {
+        automaticNamespaceDisabling: false,
+      },
+    })
+
     const surveysStore = useSurveysStore()
 
     const mappedAnswers = autoMapAnswersToPublicodesVariables(answers)
@@ -231,13 +231,11 @@ export function useEligibilityService() {
       }
     }
 
-    console.log(engine.evaluate(`cir . eligibilite`))
     console.log('dispositifs évalués', results)
     return results
   }
 
   return {
     calculateEligibility,
-    engine,
   }
 }

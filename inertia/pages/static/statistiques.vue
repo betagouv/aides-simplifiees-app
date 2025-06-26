@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { DsfrAccordion, DsfrAccordionsGroup, DsfrCard } from '@gouvminint/vue-dsfr'
 import { Head } from '@inertiajs/vue3'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
@@ -30,20 +30,32 @@ const statistics = ref<{
     no: number
   }
 }>()
-const isClient = Boolean(import.meta.client)
+
 // Hardcoded integrators with their logos
-const integrators = [
-  {
-    name: 'Mon Logement Etudiant',
-    logo: '/logos/mon-logement-etudiant.png',
-    description: 'Site d\'information sur les aides au logement pour les étudiants boursiers',
-  },
-  {
-    name: 'service-public.fr',
-    logo: '/logos/service-public.png',
-    description: 'Portail officiel des démarches et services de l\'Administration française',
-  },
-]
+const integrators: Record<string, Array<{ name: string, url?: string, logo: string, description: string }>> = {
+  'demenagement-logement': [
+    {
+      name: 'Mon Logement Etudiant',
+      url: 'https://monlogementetudiant.beta.gouv.fr/',
+      logo: '/logos/logo-mon-logement-etudiant.png',
+      description: 'Site d\'information sur les aides au logement pour les étudiants boursiers',
+    },
+    {
+      name: 'service-public.fr',
+      url: 'https://www.service-public.fr/',
+      logo: '/logos/logo-service-public.png',
+      description: 'Portail officiel des démarches et services de l\'Administration française',
+    },
+  ],
+  'entreprise-innovation': [
+    {
+      name: 'entreprendre.service-public.fr',
+      url: 'https://entreprendre.service-public.fr/',
+      logo: '/logos/logo-service-public.png',
+      description: 'Portail officiel des démarches et services de l\'Administration française',
+    },
+  ],
+}
 
 // Loading state
 const isLoading = ref(true)
@@ -85,13 +97,13 @@ function getChartData(stats: any) {
   }
 }
 
-// Add computed property for chart attributes
-const getChartAttributes = computed(() => {
-  if (!statistics.value?.statistics) {
+// Add function to get chart attributes for a specific simulator
+function getChartAttributesForSimulator(simulatorId: string) {
+  if (!statistics.value?.statistics?.[simulatorId]) {
     return {}
   }
 
-  const stats = Object.values(statistics.value.statistics)[0]
+  const stats = statistics.value.statistics[simulatorId]
   const data = getChartData(stats)
 
   return {
@@ -103,9 +115,11 @@ const getChartAttributes = computed(() => {
     'unit-tooltip': 'simulations',
     'aspect-ratio': '2',
   }
-})
+}
 
-onMounted(() => {
+const isClient = ref(false)
+onMounted(async () => {
+  isClient.value = true
   import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.js') as any
   import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.css')
   fetchStatistics()
@@ -147,10 +161,9 @@ setBreadcrumbs([
           Veuillez cliquer ci-dessous pour choisir votre simulateur et consulter ses statistiques
           d'utilisation.
         </p>
-        <DsfrAccordionsGroup :expanded-id="activeAccordion">
+        <DsfrAccordionsGroup v-model="activeAccordion">
           <DsfrAccordion
             v-for="(stats, simulatorId) in statistics?.statistics"
-            :id="`accordion-${simulatorId}`"
             :key="simulatorId"
             :title="stats.title"
           >
@@ -161,6 +174,7 @@ setBreadcrumbs([
                 <div class="fr-grid-row fr-grid-row--gutters">
                   <div class="fr-col-4">
                     <DsfrCard
+                      :title-link-attrs="{}"
                       horizontal
                       title="Simulations commencées"
                       :description="String(stats.starts)"
@@ -169,6 +183,7 @@ setBreadcrumbs([
                   </div>
                   <div class="fr-col-4">
                     <DsfrCard
+                      :title-link-attrs="{}"
                       horizontal
                       title="Simulations terminées"
                       :description="String(stats.completions)"
@@ -177,6 +192,7 @@ setBreadcrumbs([
                   </div>
                   <div class="fr-col-4">
                     <DsfrCard
+                      :title-link-attrs="{}"
                       horizontal
                       title="Avec éligibilité"
                       :description="String(stats.eligibilities)"
@@ -196,7 +212,7 @@ setBreadcrumbs([
                 </p>
                 <line-chart
                   v-if="isClient"
-                  v-bind="getChartAttributes"
+                  v-bind="getChartAttributesForSimulator(simulatorId)"
                 />
               </div>
 
@@ -205,31 +221,19 @@ setBreadcrumbs([
                 <h3>Intégrateurs</h3>
                 <div class="fr-grid-row fr-grid-row--gutters">
                   <div
-                    v-for="integrator in integrators"
+                    v-for="integrator in integrators[simulatorId]"
                     :key="integrator.name"
                     class="fr-col-12 fr-col-md-4"
                   >
-                    <div class="fr-card fr-card--sm">
-                      <div class="fr-card__body">
-                        <div class="fr-card__content">
-                          <h4 class="fr-card__title">
-                            {{ integrator.name }}
-                          </h4>
-                          <p class="fr-card__desc">
-                            {{ integrator.description }}
-                          </p>
-                        </div>
-                      </div>
-                      <div class="fr-card__header">
-                        <div class="fr-card__img">
-                          <img
-                            class="fr-responsive-img fr-responsive-img--contain"
-                            :src="integrator.logo"
-                            :alt="`Logo ${integrator.name}`"
-                          >
-                        </div>
-                      </div>
-                    </div>
+                    <DsfrCard
+                      :title-link-attrs="{ target: '_blank', rel: 'noopener noreferrer' }"
+                      :title="integrator.name"
+                      :description="integrator.description"
+                      :img-src="integrator.logo"
+                      :link="integrator.url"
+                      :img-alt="`Logo de ${integrator.name}`"
+                      title-tag="h4"
+                    />
                   </div>
                 </div>
               </div>
@@ -243,6 +247,7 @@ setBreadcrumbs([
                 <div class="fr-grid-row fr-grid-row--gutters">
                   <div class="fr-col-4">
                     <DsfrCard
+                      :title-link-attrs="{}"
                       horizontal
                       title="Oui"
                       :description="`${statistics?.satisfaction.yes}%`"
@@ -251,6 +256,7 @@ setBreadcrumbs([
                   </div>
                   <div class="fr-col-4">
                     <DsfrCard
+                      :title-link-attrs="{}"
                       horizontal
                       title="En partie"
                       :description="`${statistics?.satisfaction.partial}%`"
@@ -259,6 +265,7 @@ setBreadcrumbs([
                   </div>
                   <div class="fr-col-4">
                     <DsfrCard
+                      :title-link-attrs="{}"
                       horizontal
                       title="Non"
                       :description="`${statistics?.satisfaction.no}%`"
@@ -276,43 +283,7 @@ setBreadcrumbs([
 </template>
 
 <style scoped lang="scss">
-.state-panel {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  min-height: 10em;
-}
-
-.loading-indicator {
-  color: var(--text-mention-grey);
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.loading-indicator .fr-icon {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.fr-card__img img {
-  max-width: 70% !important;
-  object-fit: contain !important;
-  display: block !important;
-  margin: 0 auto !important;
+:deep(.fr-responsive-img) {
+  object-fit: contain;
 }
 </style>

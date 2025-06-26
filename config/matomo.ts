@@ -8,6 +8,7 @@ const matomoConfig = {
   // Mapping des IDs de simulateurs vers leurs titres
   simulatorTitles: {
     'demenagement-logement': 'Déménagement & Logement',
+    'entreprise-innovation': 'Aide à l’innovation pour les entreprises',
   },
 }
 

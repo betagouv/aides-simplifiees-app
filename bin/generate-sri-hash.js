@@ -26,14 +26,36 @@ function getIframeConfig() {
   let existingList = []
   if (integrityListMatch) {
     try {
-      // Simple parsing - replace single quotes with double quotes for JSON parsing
-      const listStr = integrityListMatch[1].replace(/'/g, '"')
+      // More robust parsing to handle TypeScript object syntax
+      let listStr = integrityListMatch[1]
+
+      // Replace single quotes with double quotes (for quoted keys/values)
+      listStr = listStr.replace(/'/g, '"')
+
+      // Quote unquoted object keys
+      listStr = listStr.replace(/(\s*)(\w+)(\s*):/g, '$1"$2"$3:')
+
+      // Remove trailing commas before closing braces/brackets (common in TypeScript)
+      listStr = listStr.replace(/,(\s*[}\]])/g, '$1')
+
       existingList = JSON.parse(listStr)
     }
-    // eslint-disable-next-line unused-imports/no-unused-vars
     catch (error) {
-      console.warn('Could not parse existing integrity list, starting fresh')
-      existingList = []
+      console.error('❌ CRITICAL ERROR: Could not parse existing integrity list!')
+      console.error('Parse error:', error.message)
+      console.error('')
+      console.error('This is a critical security issue - the build cannot continue without')
+      console.error('being able to verify existing version hashes.')
+      console.error('')
+      console.error('The config file format may be corrupted. Please check:')
+      console.error('- config/iframe_integration.ts syntax')
+      console.error('- IFRAME_SCRIPT_INTEGRITY_LIST array format')
+      console.error('')
+      console.error('Extracted content that failed to parse:')
+      console.error(integrityListMatch[1])
+      console.error('')
+      console.error('Build aborted to prevent overwriting existing version hashes.')
+      process.exit(1)
     }
   }
 

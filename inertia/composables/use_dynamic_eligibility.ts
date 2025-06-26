@@ -1,5 +1,5 @@
 import type { EligibilityResults } from '~/composables/use_eligibility_service'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useEligibilityService } from '~/composables/use_eligibility_service'
 import { useSurveysStore } from '~/stores/surveys'
 
@@ -15,22 +15,43 @@ export function useDynamicEligibility(simulateurSlug: string) {
   // Get aides from the page configuration
   const aidesToEvaluate = schema.value?.dispositifs || []
 
-  const calculatedResults = computed<EligibilityResults>(() => {
+  // Use reactive ref for async computed results
+  const calculatedResults = ref<EligibilityResults>({
+    eligibleDispositifs: [],
+    potentialDispositifs: [],
+    ineligibleDispositifs: [],
+    aidesResults: {},
+  })
+
+  // Watch for changes and recalculate
+  watch([surveyAnswers, schema], async () => {
     if (!simulateurSlug || !aidesToEvaluate.length) {
-      return {
+      calculatedResults.value = {
         eligibleDispositifs: [],
         potentialDispositifs: [],
         ineligibleDispositifs: [],
+        aidesResults: {},
+      }
+      return
+    }
+
+    try {
+      calculatedResults.value = await calculateEligibility(
+        simulateurSlug,
+        surveyAnswers.value,
+        aidesToEvaluate,
+      )
+    }
+    catch (error) {
+      console.error('Error calculating eligibility:', error)
+      calculatedResults.value = {
+        eligibleDispositifs: [],
+        potentialDispositifs: [],
+        ineligibleDispositifs: [],
+        aidesResults: {},
       }
     }
-    return calculateEligibility(
-      simulateurSlug,
-      surveyAnswers.value,
-      aidesToEvaluate,
-    )
-  })
-  // calculatedResults.value.eligibleDispositifs = calculatedResults.value.ineligibleDispositifs
-  // calculatedResults.value.potentialDispositifs = calculatedResults.value.eligibleDispositifs
+  }, { immediate: true })
 
   const hasEligibleAides = computed(() => calculatedResults.value.eligibleDispositifs.length > 0)
   const hasPotentialAides = computed(() => calculatedResults.value.potentialDispositifs.length > 0)

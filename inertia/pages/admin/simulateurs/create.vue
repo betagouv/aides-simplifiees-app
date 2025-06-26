@@ -13,7 +13,7 @@ setBreadcrumbs([
   { text: `Créer un simulateur`, to: '/admin/simulateurs/create' },
 ])
 
-function handleSubmit(form: SimulateurForm) {
+function handleSubmit(form: SimulateurFormType) {
   form.post('/admin/simulateurs', {
     preserveScroll: true,
   })

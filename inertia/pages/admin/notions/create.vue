@@ -13,7 +13,7 @@ setBreadcrumbs([
   { text: 'Créer une notion', to: '/admin/notions/create' },
 ])
 
-function handleSubmit(form: NotionForm) {
+function handleSubmit(form: NotionFormType) {
   form.post('/admin/notions', {
     preserveScroll: true,
   })

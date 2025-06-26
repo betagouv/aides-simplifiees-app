@@ -12,8 +12,8 @@ export const IFRAME_SCRIPT_INTEGRITY_LIST = [
   },
   {
     version: '1.1.0',
-    integrity: 'sha384-UH5OXyOxEP14jklD+0Cfy0rXm9vo+zVqdFFq7c3poGl1X0ytowUUlDVuHbfqTQMP'
-  }
+    integrity: 'sha384-UH5OXyOxEP14jklD+0Cfy0rXm9vo+zVqdFFq7c3poGl1X0ytowUUlDVuHbfqTQMP',
+  },
 ]
 
 /**

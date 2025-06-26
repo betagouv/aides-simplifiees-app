@@ -12,7 +12,7 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'submit', form: NotionForm): void
+  (e: 'submit', form: NotionFormType): void
   (e: 'cancel'): void
 }>()
 

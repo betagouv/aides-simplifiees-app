@@ -23,7 +23,7 @@ setBreadcrumbs([
   { text: pageTitle, to: `/admin/pages/${page.id}/edit` },
 ])
 
-function handleSubmit(form: PageForm) {
+function handleSubmit(form: PageFormType) {
   form.put(`/admin/pages/${page.id}`)
 }
 function handleCancel() {

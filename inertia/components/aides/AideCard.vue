@@ -58,11 +58,13 @@ const periode = props.title?.match('APL') ? '/mois' : undefined
           class="brand-aide-card__details-left"
         >
           <ul class="fr-tags-group">
-            <TypeAideTag
-              v-if="typeAide"
-              :label="typeAide?.label"
-              :icon-name="typeAide?.iconName"
-            />
+            <li>
+              <TypeAideTag
+                v-if="typeAide"
+                :label="typeAide?.label"
+                :icon-name="typeAide?.iconName"
+              />
+            </li>
           </ul>
         </div>
         <div

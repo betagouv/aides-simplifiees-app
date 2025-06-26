@@ -7,6 +7,7 @@ import { DsfrCard, DsfrTile, DsfrTiles } from '@gouvminint/vue-dsfr'
 import { Head, usePage } from '@inertiajs/vue3'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
+import PartenairesSection from '~/components/PartenairesSection.vue'
 
 const {
   props: {
@@ -19,6 +20,7 @@ const baselineSubtitle = 'Un service simple et rapide pour savoir à quelles aid
 const simulationTiles: DsfrTileProps[] = simulateurs
   .map(simulateur => ({
     title: simulateur.title,
+    titleTag: 'h2',
     to: `/simulateurs/${simulateur.slug}`,
     svgPath: simulateur.pictogramPath,
   }))
@@ -53,9 +55,7 @@ if (simulationTiles.length < 2) {
             {{ baselineSubtitle }}
           </p>
         </div>
-        <div
-          class="brand-home-banner__column fr-col-12 fr-col-lg-6 fr-col-offset-xl-1 fr-col-xl-5"
-        >
+        <div class="brand-home-banner__column fr-col-12 fr-col-lg-6 fr-col-offset-xl-1 fr-col-xl-5">
           <DsfrTiles
             :tiles="simulationTiles"
             horizontal
@@ -70,7 +70,10 @@ if (simulationTiles.length < 2) {
     textured
     subtle
   >
-    <SectionContainer>
+    <SectionContainer type="page-block">
+      <PartenairesSection />
+    </SectionContainer>
+    <SectionContainer type="page-footer">
       <h2 class="fr-title">
         Pour aller plus loin, utilisez ces simulateurs pour évaluer tous vos droits
       </h2>

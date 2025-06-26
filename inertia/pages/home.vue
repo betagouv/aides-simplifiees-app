@@ -20,6 +20,7 @@ const baselineSubtitle = 'Un service simple et rapide pour savoir à quelles aid
 const simulationTiles: DsfrTileProps[] = simulateurs
   .map(simulateur => ({
     title: simulateur.title,
+    titleTag: 'h2',
     to: `/simulateurs/${simulateur.slug}`,
     svgPath: simulateur.pictogramPath,
   }))

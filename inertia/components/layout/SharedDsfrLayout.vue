@@ -22,6 +22,8 @@ const isAuthenticated = computed(() => {
 const schemeStore = useSchemeStore()
 
 const noticeMessage = 'Ce site est en cours de développement. Certaines fonctionnalités peuvent ne pas être disponibles ou ne pas fonctionner correctement.'
+const preprodMessage = 'Ce site est un environnement de test. Les données affichées ne sont pas à jour.'
+const isPreprod = import.meta.url.includes('https://aides.beta.gouv.fr')
 
 const skipLinks = [
   {
@@ -115,8 +117,13 @@ const quickLinks = computed(() => {
     </template>
   </DsfrHeader>
   <DsfrNotice
-    v-if="noticeMessage"
+    v-if="noticeMessage && !isPreprod"
     :title="noticeMessage"
+  />
+  <DsfrNotice
+    v-if="isPreprod"
+    :title="preprodMessage"
+    type="alert"
   />
   <main
     id="content"

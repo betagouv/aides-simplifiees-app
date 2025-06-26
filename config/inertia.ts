@@ -31,5 +31,14 @@ const inertiaConfig = defineConfig({
 export default inertiaConfig
 
 declare module '@adonisjs/inertia/types' {
-  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {}
+  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {
+    // Additional props shared via ShareEnvMiddleware
+    appName?: string
+    isPreprod?: boolean
+    publicAppUrl?: string
+    matomoUrl?: string
+    matomoSiteId?: string
+    // Add index signature to satisfy PageProps constraint
+    [key: string]: unknown
+  }
 }

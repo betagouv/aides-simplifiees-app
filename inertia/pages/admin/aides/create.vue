@@ -21,7 +21,7 @@ setBreadcrumbs([
   { text: 'Créer une aide', to: '/admin/aides/create' },
 ])
 
-function handleSubmit(form: AideForm) {
+function handleSubmit(form: AideFormType) {
   form.post('/admin/aides', {
     preserveScroll: true,
   })

@@ -12,7 +12,7 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'submit', form: PageForm): void
+  (e: 'submit', form: PageFormType): void
   (e: 'cancel'): void
 }>()
 

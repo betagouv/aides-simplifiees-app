@@ -47,25 +47,39 @@ export function extractAidesResults(
     try {
       if (questionKey in individusQuestionsVariables) {
         questionMapping = individusQuestionsVariables[questionKey]
-        period = getPeriod(questionMapping.period)
-        results[questionKey] = apiResponse[Entites.Individus][INDIVIDU_ID][questionMapping.openfiscaVariableName][period]
+        if ('openfiscaVariableName' in questionMapping) {
+          period = getPeriod(questionMapping.period)
+          const response = apiResponse as OpenFiscaCalculationRequest
+          const value = (response[Entites.Individus][INDIVIDU_ID][questionMapping.openfiscaVariableName] as VariableValueOnPeriod)[period]
+          results[questionKey] = value as boolean | number
+        }
       }
       else if (questionKey in menagesQuestionsVariables) {
         questionMapping = menagesQuestionsVariables[questionKey]
-        period = getPeriod(questionMapping.period)
-        results[questionKey] = apiResponse[Entites.Menages][MENAGE_ID][questionMapping.openfiscaVariableName][period]
+        if ('openfiscaVariableName' in questionMapping) {
+          period = getPeriod(questionMapping.period)
+          const response = apiResponse as OpenFiscaCalculationRequest
+          const value = (response[Entites.Menages][MENAGE_ID][questionMapping.openfiscaVariableName] as VariableValueOnPeriod)[period]
+          results[questionKey] = value as boolean | number
+        }
       }
       else if (questionKey in famillesQuestionsVariables) {
         questionMapping = famillesQuestionsVariables[questionKey]
-        period = getPeriod(questionMapping.period)
-        results[questionKey] = apiResponse[Entites.Familles][FAMILLE_ID][questionMapping.openfiscaVariableName][period]
+        if ('openfiscaVariableName' in questionMapping) {
+          period = getPeriod(questionMapping.period)
+          const response = apiResponse as OpenFiscaCalculationRequest
+          const value = (response[Entites.Familles][FAMILLE_ID][questionMapping.openfiscaVariableName] as VariableValueOnPeriod)[period]
+          results[questionKey] = value as boolean | number
+        }
       }
       else if (questionKey in foyersFiscauxQuestionsVariables) {
         questionMapping = foyersFiscauxQuestionsVariables[questionKey]
-        period = getPeriod(questionMapping.period)
-        results[questionKey] = apiResponse[Entites.FoyerFiscaux][FOYER_FISCAL_ID][questionMapping.openfiscaVariableName][
-          period
-        ]
+        if ('openfiscaVariableName' in questionMapping) {
+          period = getPeriod(questionMapping.period)
+          const response = apiResponse as OpenFiscaCalculationRequest
+          const value = (response[Entites.FoyerFiscaux][FOYER_FISCAL_ID][questionMapping.openfiscaVariableName] as VariableValueOnPeriod)[period]
+          results[questionKey] = value as boolean | number
+        }
       }
       else {
         console.error(`Variable de réponse à question du simulateur inconnue : ${questionKey}`)

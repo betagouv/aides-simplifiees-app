@@ -157,14 +157,14 @@ export function useEligibilityService() {
         }
 
         // Add to aidesResults
-        results.aidesResults[`${dispositif.id}-eligibilite`] = value
+        results.aidesResults[`${dispositif.id}-eligibilite`] = (value ?? false) as boolean | number
 
         // Try to evaluate montant if it exists
         try {
           const montantEvaluation = engine.evaluate(
             `${dispositif.id} . montant`,
           )
-          results.aidesResults[dispositif.id] = montantEvaluation.nodeValue
+          results.aidesResults[dispositif.id] = (montantEvaluation.nodeValue ?? 0) as boolean | number
         }
         // eslint-disable-next-line unused-imports/no-unused-vars
         catch (e) {
@@ -183,15 +183,15 @@ export function useEligibilityService() {
             const reasonEval = engine
               .evaluate(`${dispositif.id} . eligibilite . explications`)
               .nodeValue
-              ?.replaceAll(/Non applicable/g, '')
+            const reasonString = String(reasonEval || '').replaceAll(/Non applicable/g, '')
             console.log(
               'reasonEval',
               engine.evaluate(`${dispositif.id} . eligibilite . explications`),
               engine.evaluate(`${dispositif.id} . eligibilite`),
             )
 
-            if (reasonEval) {
-              reason = reasonEval
+            if (reasonString && reasonString.trim()) {
+              reason = reasonString
             }
           }
           // eslint-disable-next-line unused-imports/no-unused-vars

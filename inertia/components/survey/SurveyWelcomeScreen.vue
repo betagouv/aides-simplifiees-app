@@ -10,7 +10,7 @@ defineProps<{
 }>()
 
 const { isIframe } = useIframeDisplay()
-const isPreprod = import.meta.url.includes('https://aides.beta.gouv.fr')
+const isPreprod = new URL(import.meta.url).host === 'aides.beta.gouv.fr'
 </script>
 
 <template>

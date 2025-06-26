@@ -57,12 +57,16 @@ const debouncedSearch = useDebounceFn((query: string) => {
 // Watch input changes and trigger debounced search
 watch(inputValue, (newValue) => {
   // Don't trigger API calls during initialization
-  if (isInitializing.value) return
+  if (isInitializing.value) {
+    return
+  }
 
   if (newValue.trim().length >= config.minSearchLength) {
     // Check if the new value matches any existing option to avoid redundant API calls
     const isExistingOption = selectOptions.value.some((opt) => {
-      if (!opt) return false
+      if (!opt) {
+        return false
+      }
 
       // Handle simple string/number options
       if (typeof opt === 'string' || typeof opt === 'number') {
@@ -81,7 +85,8 @@ watch(inputValue, (newValue) => {
     if (!isExistingOption) {
       debouncedSearch(newValue)
     }
-  } else if (newValue.trim().length === 0) {
+  }
+  else if (newValue.trim().length === 0) {
     // Clear results when input is empty
     lastQuery.value = ''
     selectOptions.value = []
@@ -119,7 +124,8 @@ function handleInput(event: Event) {
       ? matchedOption.text
       : matchedOption?.toString()
     statusMessage.value = `Option "${displayText}" sélectionnée`
-  } else {
+  }
+  else {
     // User is typing or selected something not in the list
     model.value = undefined
   }
@@ -147,9 +153,11 @@ function handleSearchClick() {
 watch([isLoading, error], () => {
   if (isLoading.value) {
     statusMessage.value = config.loadingText
-  } else if (error.value) {
+  }
+  else if (error.value) {
     statusMessage.value = `${config.errorTitle}. ${config.errorDescription}`
-  } else if (selectOptions.value.length > 0) {
+  }
+  else if (selectOptions.value.length > 0) {
     statusMessage.value = `${selectOptions.value.length} options trouvées`
     // Try to show the datalist when options are loaded
     nextTick(() => {
@@ -159,7 +167,8 @@ watch([isLoading, error], () => {
         input.dispatchEvent(new Event('input', { bubbles: true }))
       }
     })
-  } else if (lastQuery.value && selectOptions.value.length === 0) {
+  }
+  else if (lastQuery.value && selectOptions.value.length === 0) {
     statusMessage.value = config.noResultsText
   }
 })
@@ -170,7 +179,8 @@ watch(model, (newValue) => {
     try {
       const parsed = JSON.parse(newValue)
       inputValue.value = parsed.text || parsed.value
-    } catch {
+    }
+    catch {
       // Handle invalid JSON
     }
   }
@@ -185,34 +195,33 @@ nextTick(() => {
 <template>
   <div class="combobox-wrapper">
     <!-- Main input with native datalist -->
-  <div
-    class="fr-search-bar"
-    :class="{ 'fr-search-bar--lg': true }"
-    role="search"
-    ref="searchElement"
-  >
-    <DsfrInput
-      ref="inputElement"
-      v-model="inputValue"
-      :label="question.title"
-      :placeholder="config.placeholder"
-      :list="datalistId"
-      autocomplete="off"
-      role="combobox"
-      aria-autocomplete="list"
-      :aria-expanded="selectOptions.length > 0"
-      :aria-describedby="`${inputId}-status`"
-      @input="handleInput"
-      @keydown.enter="handleSearchClick"
-    />
-    <DsfrButton
-      title="Rechercher"
-      :aria-label="`Rechercher pour ${question.title}`"
-      @click="handleSearchClick"
+    <div
+      ref="searchElement"
+
+      class="fr-search-bar fr-search-bar--lg"
+      role="search"
     >
+      <DsfrInput
+        v-model="inputValue"
+        :label="question.title"
+        :placeholder="config.placeholder"
+        :list="datalistId"
+        autocomplete="off"
+        role="combobox"
+        aria-autocomplete="list"
+        :aria-expanded="selectOptions.length > 0"
+        :aria-describedby="`${inputId}-status`"
+        @input="handleInput"
+        @keydown.enter="handleSearchClick"
+      />
+      <DsfrButton
+        title="Rechercher"
+        :aria-label="`Rechercher pour ${question.title}`"
+        @click="handleSearchClick"
+      >
         Rechercher
-    </DsfrButton>
-  </div>
+      </DsfrButton>
+    </div>
 
     <!-- Native datalist for suggestions -->
     <datalist :id="datalistId">

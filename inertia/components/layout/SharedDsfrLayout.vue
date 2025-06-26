@@ -115,20 +115,20 @@ const quickLinks = computed(() => {
       />
     </template>
   </DsfrHeader>
-  <DsfrNotice
-    v-if="noticeMessage && !isPreprod"
-    :title="noticeMessage"
-  />
-  <DsfrNotice
-    v-if="isPreprod"
-    :title="preprodMessage"
-    type="alert"
-  />
   <main
     id="content"
     role="main"
     tabindex="-1"
   >
+    <DsfrNotice
+      v-if="isPreprod"
+      :title="preprodMessage"
+      type="alert"
+    />
+    <DsfrNotice
+      v-else-if="noticeMessage"
+      :title="noticeMessage"
+    />
     <slot />
   </main>
 

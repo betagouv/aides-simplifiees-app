@@ -40,9 +40,9 @@ setBreadcrumbs([
         >
           <DsfrTiles
             horizontal
-            title-tag="h2"
             :tiles="[
               {
+                titleTag: 'h2',
                 title: simulateur.title,
                 to: `/simulateurs/${simulateur.slug}`,
                 svgPath: simulateur.pictogramPath,

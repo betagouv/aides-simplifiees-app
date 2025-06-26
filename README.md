@@ -21,6 +21,7 @@ Pour exécuter ce projet, vous aurez besoin des éléments suivants :
 
 - `app/` : Contient les modèles, contrôleurs et services.
 - `inertia/` : Composants Vue.js et pages Inertia.
+- `tests/browser/` : Tests E2E avec Playwright, incluant les tests d'accessibilité.
 - `database/` : Seeders et migrations pour la base de données.
 - `config/` : Fichiers de configuration pour AdonisJS.
 
@@ -92,6 +93,27 @@ Lancer tous les tests :
 pnpm test
 ```
 
+### Tests d'accessibilité
+
+Tests spécifiques aux parcours critiques d'accessibilité (RGAA 4.1) :
+```bash
+pnpm test:a11y:critical
+```
+
+Tous les tests d'accessibilité :
+```bash
+pnpm test:accessibility
+# ou
+pnpm test:a11y
+```
+
+Consulter les rapports d'accessibilité :
+```bash
+pnpm a11y:report
+```
+
+> 📊 Les tests d'accessibilité génèrent automatiquement des rapports détaillés dans `reports/accessibility/` et sont intégrés à la CI/CD pour valider la conformité RGAA sur chaque pull request.
+
 ### Lint et formatage
 
 Linting du code :
@@ -125,6 +147,20 @@ Générer les fichiers publicodes :
 ```bash
 pnpm build:publicodes
 ```
+
+## Accessibilité
+
+Ce projet respecte les standards d'accessibilité RGAA 4.1. Les tests d'accessibilité automatisés couvrent :
+
+- ✅ **RGAA 1.1** : Images avec attribut `alt` approprié
+- ✅ **RGAA 3.2** : Contraste des couleurs suffisant (≥ 4.5:1)
+- ✅ **RGAA 8.9** : Étiquetage des champs de formulaire
+- ✅ **RGAA 9.1** : Titres de page informatifs
+- ✅ **RGAA 10.4** : Gestion du focus et visibilité
+- ✅ **RGAA 11.1-11.13** : Formulaires accessibles
+- ✅ **RGAA 12.6** : Landmarks et régions
+
+Pour plus de détails, consultez le [guide des tests d'accessibilité](accessibility_tests.md).
 
 ## Contribution
 

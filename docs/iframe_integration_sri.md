@@ -26,34 +26,54 @@ Le navigateur :
 
 ## Workflow de développement
 
-### 1. Modifier le code
-Éditez `src/assets/iframe-integration.js` avec vos modifications.
-
-### 2. Choisir la version
-Modifiez `IFRAME_SCRIPT_LATEST_VERSION` dans `config/iframe_integration.ts` :
-
-```typescript
-export const IFRAME_SCRIPT_LATEST_VERSION = '1.0.4' // Votre nouvelle version
-```
-
-### 3. Build automatique
-Lancez le script de build :
-
+Les git hooks sont configurés automatiquement avec Husky lors de l'installation :
 ```bash
-pnpm build:iframe-integration
+pnpm install  # Installe les dépendances et configure Husky
 ```
 
-Ce script :
-- Utilise la version définie dans `IFRAME_SCRIPT_LATEST_VERSION`
-- Construit le fichier JavaScript avec cette version
-- Génère le hash SRI
-- Met à jour (ou ajoute) l'entrée dans `IFRAME_SCRIPT_INTEGRITY_LIST`
-- Remplace le fichier existant si la version existe déjà
+### 1. Modifier le code source
+   Éditez `src/assets/iframe-integration.js` avec vos modifications.
 
-### 4. Commit
-Commitez les changements (fichier JS + config).
+### 2 Choisir la version
+   Modifiez `IFRAME_SCRIPT_LATEST_VERSION` dans `config/iframe_integration.ts` :
+   ```typescript
+   export const IFRAME_SCRIPT_LATEST_VERSION = '2.0.0' // Votre nouvelle version
+   ```
 
-## Gestion des versions
+3. **Commit automatique**
+   ```bash
+   git add src/assets/iframe-integration.js
+   git commit -m "feat: amélioration du script iframe"
+   ```
+
+   Le pre-commit hook va automatiquement :
+   - ✅ Détecter les changements dans les fichiers iframe
+   - 🔨 Lancer `pnpm build:iframe-integration`
+   - 📦 Générer le fichier JavaScript avec la version appropriée
+   - 🔐 Calculer et mettre à jour le hash SRI
+   - 📁 Ajouter automatiquement les fichiers générés au commit
+   - ❌ Échouer si des fichiers iframe ne sont pas synchronisés
+
+### ⚙️ Fonctionnement du pre-commit hook (Husky)
+
+Le hook vérifie automatiquement :
+- `src/assets/iframe-integration.js` (source)
+- `config/iframe_integration.ts` (configuration)
+- `vite.iframe-integration.config.ts` (configuration de build)
+- `public/assets/iframe-integration@*.js` (fichiers générés)
+
+Si un de ces fichiers est dans le commit, le hook :
+1. Lance le build iframe
+2. Stage automatiquement les fichiers générés/modifiés
+3. Vérifie qu'il n'y a pas de changements non-stagés restants
+4. Échoue si la synchronisation n'est pas parfaite
+
+## Scripts disponibles
+
+- `pnpm build:iframe-integration` : Build du script iframe
+- `bin/generate-sri-hash.js` : Génère le hash SRI pour une version spécifique
+
+## Gestion des versions et builds
 
 ### Structure de versioning
 
@@ -82,77 +102,52 @@ export const IFRAME_SCRIPT_INTEGRITY_LIST = [
 ]
 ```
 
-### Remplacement de versions
+### Remplacement vs nouvelles versions
 
 - **Nouvelle version** : Ajoute une nouvelle entrée dans la liste
 - **Version existante** : Remplace le fichier et met à jour le hash SRI
 - **Compatibilité** : Toutes les versions restent disponibles
 
-## Scripts disponibles
+### Protection contre les erreurs
 
-- `bin/build-iframe-integration.js` : Script principal de build (utilise la version du config)
-- `bin/generate-sri-hash.js` : Génère le hash SRI pour une version spécifique
-- `bin/update-iframe-version.js` : Met à jour la version dans la config
+Le système inclut des protections automatiques :
 
-## Commandes manuelles (si nécessaire)
+#### ✅ Pre-commit hook
+- Détecte automatiquement les changements iframe
+- Lance le build automatiquement
+- Stage les fichiers générés
+- Empêche les commits partiels/incohérents
 
-```bash
-# Générer le hash pour une version spécifique
-node bin/generate-sri-hash.js 1.0.5
+#### ⚠️ Protection contre modifications accidentelles
+Si vous modifiez le script mais gardez la même version, le build peut détecter l'incohérence.
 
-# Mettre à jour manuellement la version
-node bin/update-iframe-version.js 1.0.5
+### Débogage
 
-# Forcer la mise à jour d'une version existante (DANGER - non recommandé)
-node bin/generate-sri-hash.js 1.0.5 --force
-```
+Si le pre-commit hook échoue :
 
-## Protection contre les modifications accidentelles
+1. **Vérifiez les fichiers non-stagés** :
+   ```bash
+   git status
+   ```
 
-Le système inclut une protection pour éviter les erreurs courantes :
+2. **Lancez le build manuellement** :
+   ```bash
+   pnpm build:iframe-integration
+   ```
 
-### ❌ Erreur détectée automatiquement
+3. **Stagez les fichiers générés** :
+   ```bash
+   git add config/iframe_integration.ts public/assets/iframe-integration@*.js
+   ```
 
-Si vous modifiez le script mais gardez la même version, le build échouera :
+4. **Relancez le commit** :
+   ```bash
+   git commit
+   ```
 
-```
-❌ Error: Version 1.0.2 already exists with a different integrity hash!
-   Existing hash: sha384-oldHash...
-   New hash:      sha384-newHash...
-
-This could indicate that:
-1. The script content has changed but you kept the same version
-2. You should increment the version number instead
-
-To fix this:
-- Change IFRAME_SCRIPT_LATEST_VERSION to a new version (e.g., increment from 1.0.2)
-- Or revert your changes if they were unintentional
-```
-
-### ✅ Solutions recommandées
-
-1. **Incrémenter la version** : Changez `IFRAME_SCRIPT_LATEST_VERSION` vers `1.0.3`
-2. **Annuler les modifications** : Revertez vos changements si c'était une erreur
-
-### ⚠️ Option de force (urgence uniquement)
-
-En cas d'urgence absolue, vous pouvez forcer la mise à jour :
-
-```bash
-node bin/generate-sri-hash.js 1.0.2 --force
-```
-
-**⚠️ ATTENTION** : Ceci peut casser les intégrations existantes utilisant cette version !
-
-## Avantages de cette approche
-
-1. **Contrôle total** : Vous choisissez la version (patch, minor, major)
-2. **Protection** : Empêche les modifications accidentelles de versions publiées
-3. **Historique complet** : Toutes les versions sont conservées
-4. **Compatibilité** : Les anciens intégrateurs continuent de fonctionner
-5. **Sécurité** : Chaque version a son hash SRI vérifié
-6. **Flexibilité** : Option de force pour les cas d'urgence
-7. **Versioning Git** : Tous les builds sont versionnés dans le repo
+Si la vérification CI échoue :
+- Un build local doit être effectué et committé
+- Le repo n'est pas synchronisé avec les sources
 
 ## Compatibilité navigateurs
 

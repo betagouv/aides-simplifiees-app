@@ -14,7 +14,7 @@ declare global {
     | {
       dispatch: (
         answerKey: string,
-        answerValue: boolean,
+        answerValue: string | number | boolean,
         periodType: 'ETERNITY' | 'YEAR' | 'YEAR_ROLLING' | 'MONTH'
       ) => unknown
       period: 'ETERNITY' | 'YEAR' | 'YEAR_ROLLING' | 'MONTH'

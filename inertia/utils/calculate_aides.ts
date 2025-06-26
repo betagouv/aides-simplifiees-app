@@ -310,7 +310,7 @@ function addSurveyAnswerToRequest(
     let formattedAnswer: { [openfiscaKey: string]: VariableValueOnPeriod } | undefined
     if ('dispatch' in mapping) {
       // dispatch and manage period in dispatch
-      formattedAnswer = mapping.dispatch(answerKey, answerValue, mapping.period) as {
+      formattedAnswer = mapping.dispatch(answerKey, answerValue as string | number | boolean, mapping.period) as {
         [openfiscaKey: string]: VariableValueOnPeriod
       }
     }
@@ -333,7 +333,7 @@ function addSurveyAnswerToRequest(
       // MANAGING VERY SPECIFIC CASE 🙀
       // a value already exists in the request for formattedVariableName
       // we expect it to be at the same period as, for now, we set each variable once (for one period only)
-      const existingValue = request[entity][entityId][formattedVariableName][period]
+      const existingValue = (request[entity][entityId][formattedVariableName] as VariableValueOnPeriod)[period]
       if (
         formattedVariableName === 'statut_occupation_logement'
         && existingValue === 'locataire_vide'
@@ -388,6 +388,11 @@ function addSurveyQuestionToRequest(
   entity: Entites,
   request: OpenFiscaCalculationRequest,
 ): OpenFiscaCalculationRequest {
+  if (!('openfiscaVariableName' in mapping)) {
+    console.error(`Variable '${questionKey}' does not have openfiscaVariableName`)
+    throw new Error(`Invalid mapping for ${questionKey}`)
+  }
+
   const openfiscaVariableName = mapping.openfiscaVariableName
   const period = getPeriod(mapping.period)
   const formattedQuestion = formatSurveyQuestionToRequest(openfiscaVariableName, period)

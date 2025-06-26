@@ -1,0 +1,13 @@
+occasionnel-un-voyage:
+  titre: "Billet 1 voyage"
+  description: "Valable 1 heure sur toutes les lignes du réseau STAR"
+
+occasionnel-un-voyage . resultat:
+  texte: |
+    <h4>Billet 1 voyage : {{montant}}</h4>
+    <p>Billet individuel valable 1 heure sur toutes les lignes du réseau STAR.</p>
+
+occasionnel-un-voyage . eligibilite:
+  valeur: oui
+
+occasionnel-un-voyage . montant: 1.70 €

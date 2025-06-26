@@ -1,0 +1,8 @@
+
+occasionnel-un-voyage:
+occasionnel-un-voyage . resultat:
+  texte: "<li>Un ticket : <strong>{{ montant }}</strong></li>"
+occasionnel-un-voyage . eligibilite:
+  valeur: oui
+occasionnel-un-voyage . montant:
+  valeur: 2.10 €

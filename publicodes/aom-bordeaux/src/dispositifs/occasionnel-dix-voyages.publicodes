@@ -1,0 +1,19 @@
+
+occasionnel-dix-voyages:
+occasionnel-dix-voyages . eligibilite: oui
+occasionnel-dix-voyages . resultat:
+  texte: "<li>Carnet de dix tickets : <strong>{{ montant }}</strong></li>"
+
+occasionnel-dix-voyages . montant:
+  variations:
+    - si: gratuité
+      alors: 0 €
+    - si:
+        une de ces conditions:
+          - tranche solidaire
+          - militaire
+          - serviceCivique
+          - etudiant
+          - familleNombreuse
+      alors: 8.40 €
+    - sinon: 16.80 €

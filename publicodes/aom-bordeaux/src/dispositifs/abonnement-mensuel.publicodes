@@ -1,0 +1,30 @@
+abonnement-mensuel:
+  titre: "Abonnement mensuel (pas d'engagement)"
+abonnement-mensuel . resultat:
+  texte: |
+    <h3>Abonnement mensuel : {{montant}}</h3>
+    <p>Abonnement mensuel, sans engagement. Validations illimitées pendant cette période. Sur carte nominative TBM</p>
+
+abonnement-mensuel . eligibilite:
+  valeur: oui
+
+
+# Tarifs fréquents
+abonnement-mensuel . montant:
+  variations:
+    - si: gratuité
+      alors: 0 €/mois
+    - si: pass = 'pitchoun'
+      alors: 17.80 €/mois
+    - si: pass = 'jeune'
+      alors: 35.10 €/mois
+    - si: pass = 'standard'
+      alors: 52.80 €/mois
+    - si: pass = 'senior'
+      alors: 40.10 €/mois
+  abattement:
+    variations:
+      - si: tranche solidaire = 'tranche 2'
+        alors: 50%
+      - si: tranche solidaire = 'tranche 3'
+        alors: 30%

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type AdminSimulateurController from '#controllers/admin/admin_simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
-import { DsfrInputGroup, DsfrSelect } from '@gouvminint/vue-dsfr'
+import { DsfrInputGroup, DsfrSelect, DsfrToggleSwitch } from '@gouvminint/vue-dsfr'
 import { useForm } from '@inertiajs/vue3'
 import AdminForm from '~/components/admin/AdminItemFormContainer.vue'
 import DsfrSlugInput from '~/components/admin/DsfrSlugInput.vue'
@@ -23,6 +23,7 @@ const form = useForm({
   description: props.defaultValues?.description || '',
   metaDescription: props.defaultValues?.metaDescription || '',
   pictogramPath: props.defaultValues?.pictogramPath || '',
+  usesPublicodesForms: props.defaultValues?.usesPublicodesForms || false,
 })
 </script>
 
@@ -99,6 +100,17 @@ const form = useForm({
           label-visible
           hint="Chemin relatif vers le pictogramme (ex: /img/pictograms/logement.svg)"
           :error="form.errors.pictogramPath"
+        />
+      </div>
+    </div>
+    <div class="fr-grid-row fr-grid-row--gutters fr-mt-4w">
+      <div class="fr-col-12 fr-col-md-4">
+        <DsfrToggleSwitch
+          v-model="form.usesPublicodesForms"
+          label="Utiliser Publicodes/form"
+          label-visible
+          hint="Activez cette option pour utiliser le formulaire Publicodes pour ce simulateur"
+          :error="form.errors.usesPublicodesForms"
         />
       </div>
     </div>

@@ -1,0 +1,84 @@
+age:
+  question: Quel est votre âge ?
+  unité: ans
+
+quotientFamilial:
+  question: Quel est votre quotient familial ?
+  unité: €/part
+
+
+etudiantBoursier:
+  par défaut: non
+  question: Êtes-vous étudiant boursier ?
+
+bourseEchelon:
+  question: Quel est votre échelon de bourse ?
+  applicable si: etudiantBoursier
+  form:
+    saisie: RadioButton
+  une possibilité:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+
+carteInvalidite:
+  question: Êtes-vous détenteur d'une carte invalidité ?
+  description: Carte MDPH ou carte Mobilité Inclusion (CMI) Invalidité, avec mention "besoin d'accompagnement" ou "besoin d'accompagnement cécité" (carte délivrée par la Maison Départementale des Personnes Handicapées ou par le Conseil Départemental). Ou Carte d'invalidité délivrée par l'Office National des Anciens Combattants et Victimes de Guerre (Taux d'invalidité de 75%).
+  par défaut: non
+
+accompagnateurCMI:
+  non applicable si: carteInvalidite
+  par défaut: non
+  question: Accompagnez-vous un voyageur détenteur d’une carte mobilité inclusion (CMI) ?
+  description: Les voyageurs détenteurs d’une carte mobilité inclusion (CMI) ont la possibilité de voyager avec un accompagnateur de leur choix sur le réseau STAR. Celui-ci voyage gratuitement.
+
+
+
+invalidite80Pourcent:
+  applicable si:
+    toutes ces conditions:
+      - carteInvalidite = non
+      - accompagnateurCMI = non
+  question: Êtes-vous invalide à 80% ou plus ?
+  par défaut: non
+  description: Les personnes invalides à 80% ou plus, déficients visuels et auditifs, qui n’entrent pas dans les conditions de délivrance de la gratuité d’invalidité, ont le droit à un tarif réduit.
+
+salariePDM:
+  par défaut: non
+  question: Êtes-vous salarié d'une entreprise labellisée PDM ?
+
+ressourcesFoyer:
+  question: Quel sont les revenus mensuels de votre foyer ?
+  unité: €/mois
+
+nombreEnfants:
+  applicable si:
+    valeur: situationFamiliale = 'avec enfants'
+    par défaut: non
+  question: Avec combien d'enfants vivez-vous ?
+  unité: enfants
+  plancher: 1
+  par défaut: 1
+
+situationFamiliale:
+  question: Quel est votre situation familiale ?
+  une possibilité:
+    - personne seule:
+        titre: personne seule sans enfants
+    - couple sans enfants:
+        titre: couple sans enfant
+    - avec enfants:
+        titre: personne vivant avec un ou plusieurs enfants
+
+journeeAlertePollution:
+  par défaut: non
+  question: Voyagez-vous à l'occasion d'une journée d'alerte pollution ?
+
+scolaire:
+  question: Êtes-vous un élève (écolier, collégiens, lycéens, élèves de BEP, CAP (hors classes prépa, BTS)) ?
+  par défaut: non
+  description: Vous devez être domiciliés et scolarisés dans l’une des 43 communes de Rennes Métropole.

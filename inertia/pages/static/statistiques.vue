@@ -1,128 +1,22 @@
 <script lang="ts" setup>
-import { DsfrAccordion, DsfrAccordionsGroup, DsfrCard } from '@gouvminint/vue-dsfr'
+import type StatisticsController from '#controllers/api/statistics_controller'
 import { Head } from '@inertiajs/vue3'
-import { onMounted, ref } from 'vue'
+import { useAsyncState } from '@vueuse/core'
+import * as d3 from 'd3'
+import { computed, nextTick, onMounted, watch } from 'vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import BreadcrumbSectionContainer from '~/components/layout/BreadcrumbSectionContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-// State for statistics
-const statistics = ref<{
-  statistics: Record<
-    string,
-    {
-      title: string
-      starts: number
-      completions: number
-      eligibilities: number
-      weeklyStats: Array<{
-        week: string
-        completions: number
-        eligibilities: number
-      }>
-      integrators: string[]
-    }
-  >
-  satisfaction: {
-    yes: number
-    partial: number
-    no: number
-  }
-}>()
+import { frLocale } from '~/utils/date_time'
 
-// Hardcoded integrators with their logos
-const integrators: Record<string, Array<{ name: string, url?: string, logo: string, description: string }>> = {
-  'demenagement-logement': [
-    {
-      name: 'Mon Logement Etudiant',
-      url: 'https://monlogementetudiant.beta.gouv.fr/',
-      logo: '/logos/logo-mon-logement-etudiant.png',
-      description: 'Site d\'information sur les aides au logement pour les étudiants boursiers',
-    },
-    {
-      name: 'service-public.fr',
-      url: 'https://www.service-public.fr/',
-      logo: '/logos/logo-service-public.png',
-      description: 'Portail officiel des démarches et services de l\'Administration française',
-    },
-  ],
-  'entreprise-innovation': [
-    {
-      name: 'entreprendre.service-public.fr',
-      url: 'https://entreprendre.service-public.fr/',
-      logo: '/logos/logo-service-public.png',
-      description: 'Portail officiel des démarches et services de l\'Administration française',
-    },
-  ],
-}
-
-// Loading state
-const isLoading = ref(true)
-
-// Fetch statistics from the API
-async function fetchStatistics() {
-  try {
-    const response = await fetch('/api/statistics')
-    statistics.value = await response.json()
-  }
-  catch (error) {
-    console.error('Error fetching statistics:', error)
-  }
-  finally {
-    isLoading.value = false
-  }
-}
-
-const activeAccordion = ref<number>()
-
-// Add computed property for chart data
-function getChartData(stats: any) {
-  if (!stats?.weeklyStats) {
-    return { x: '[[]]', y: '[[]]', name: '[""]' }
-  }
-
-  const weeks = stats.weeklyStats.map((stat: { week: string }) => stat.week)
-  const completions = stats.weeklyStats.map((stat: { completions: number }) => stat.completions)
-  const eligibilities = stats.weeklyStats.map(
-    (stat: { eligibilities: number }) => stat.eligibilities,
-  )
-  const names = ['Simulations terminées', 'Avec éligibilité']
-
-  // Format as array literals in strings
-  return {
-    x: `[["${weeks.join('","')}"]]`,
-    y: `[[${completions.join(',')}],[${eligibilities.join(',')}]]`,
-    name: `["${names.join('","')}"]`,
-  }
-}
-
-// Add function to get chart attributes for a specific simulator
-function getChartAttributesForSimulator(simulatorId: string) {
-  if (!statistics.value?.statistics?.[simulatorId]) {
-    return {}
-  }
-
-  const stats = statistics.value.statistics[simulatorId]
-  const data = getChartData(stats)
-
-  return {
-    'x': data.x,
-    'y': data.y,
-    'name': data.name,
-    'databox-source': 'statistiques',
-    'selected-palette': 'categorical',
-    'unit-tooltip': 'simulations',
-    'aspect-ratio': '2',
-  }
-}
-
-const isClient = ref(false)
 onMounted(async () => {
-  isClient.value = true
-  import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.js') as any
-  import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.css')
-  fetchStatistics()
+  // Import DSFR Chart components
+  await Promise.all([
+    import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.js'),
+    import('@gouvfr/dsfr-chart/dist/DSFRChart/DSFRChart.css'),
+  ])
 })
 
 const { setBreadcrumbs } = useBreadcrumbStore()
@@ -130,6 +24,148 @@ setBreadcrumbs([
   { text: 'Accueil', to: '/' },
   { text: 'Statistiques', to: '/statistiques' },
 ])
+
+type StatisticsData = Awaited<ReturnType<StatisticsController['getStatistics']>>
+type TidyDataEntry = Exclude<StatisticsData, void>['data'][number]
+
+const { state: statistics, isLoading } = useAsyncState<StatisticsData>(
+  async () => {
+    const response = await fetch('/api/statistics')
+    if (!response.ok) {
+      throw new Error(`Failed to fetch statistics: ${response.statusText}`)
+    }
+    return response.json()
+  },
+  {} as StatisticsData,
+  {
+    resetOnExecute: false,
+  },
+)
+
+// Helper function to get simulator title
+function getSimulatorTitle(simulateurSlug: string): string {
+  if (simulateurSlug === 'total') {
+    return 'Tous les simulateurs'
+  }
+  return statistics.value?.simulatorTitles?.[simulateurSlug] || simulateurSlug
+}
+/**
+ * Update the text content of options in the select element
+ * with the titles of the simulators after statistics are loaded.
+ */
+watch(statistics, (newStatistics) => {
+  nextTick(() => {
+    if (newStatistics?.data) {
+      document.querySelectorAll<HTMLOptionElement>('select#select-statistiques option')
+        ?.forEach((option) => {
+          const simulateurSlug = option.value
+          const title = getSimulatorTitle(simulateurSlug)
+          option.textContent = title
+        })
+    }
+  })
+}, { immediate: false })
+
+function formatAction(action: string): string {
+  return {
+    Start: 'Simulation commencée',
+    Submit: 'Simulation terminée',
+    Eligibility: 'Avec éligibilité',
+    IntermediaryResults: 'Éligibilité intermédiaires',
+  }[action] || action
+}
+
+interface ChartData { z: string, points: { x: string, y: number }[] }
+
+const groupedData = computed<null | Array<{ simulateurSlug: string, data: ChartData[] }>>(() => {
+  if (!statistics.value?.data) {
+    return null
+  }
+  const getSimulateur = (d: TidyDataEntry) => d.simulateurSlug
+  const getAction = (d: TidyDataEntry) => d.action
+  const sortPoints = (points: { x: string, y: number }[]) => {
+    return points.sort((a, b) => d3.ascending(a.x, b.x))
+  }
+  const getLineObject = ([z, points]: [string, { x: string, y: number }[]]) => ({ z, points: sortPoints(points) })
+  const getPointObject = (d: TidyDataEntry) => ({ x: d.periodKey, y: d.count })
+  const getPointObjectReducer = (values: TidyDataEntry[]) => values.map(getPointObject)
+  const getDataReducer = (values: TidyDataEntry[]) => {
+    return d3
+      .flatRollup(values, getPointObjectReducer, getAction)
+      .map(getLineObject)
+  }
+
+  const getSimulateurStatsObject = ([simulateurSlug, data]: [string, ChartData[]]) => ({ simulateurSlug, data })
+
+  const data = d3
+    .flatRollup(statistics.value.data, getDataReducer, getSimulateur)
+    .map(getSimulateurStatsObject)
+
+  const sumPoints = (points: { x: string, y: number }[]) => {
+    return d3
+      .flatRollup(points, values => d3.sum(values, d => d.y), d => d.x)
+      .map(([x, y]) => ({ x, y }))
+  }
+
+  const totalData: {
+    simulateurSlug: string
+    data: ChartData[]
+  } = {
+    simulateurSlug: 'total',
+    data: d3
+      .flatRollup(statistics.value.data, getPointObjectReducer, getAction)
+      .map(([z, points]) => ({ z, points: sortPoints(sumPoints(points)) })),
+  }
+  data.unshift(totalData)
+  return data
+})
+
+function formatPeriod(
+  periodKey: string, // YYYY-MM-DD,YYYY-MM-DD format
+  longFormat: boolean = false,
+): string {
+  const [start, end] = periodKey.split(',')
+  const startDate = d3.timeParse('%Y-%m-%d')(start)
+  const endDate = d3.timeParse('%Y-%m-%d')(end)
+
+  if (!startDate || !endDate) {
+    return periodKey // Return original if parsing fails
+  }
+
+  const formatStr = longFormat ? '%A %d %B %Y' : '%a %d %b %Y'
+  const format = frLocale.format(formatStr)
+  return longFormat
+    ? `du ${format(startDate)} au ${format(endDate)}`
+    : `${format(startDate)} - ${format(endDate)}`
+}
+
+function getChartData(data: ChartData[]): { x: string, y: string, name: string } {
+  try {
+    return {
+      x: JSON.stringify(data.map(d => d.points.map(point => formatPeriod(point.x)))),
+      y: JSON.stringify(data.map(d => d.points.map(point => point.y))),
+      name: JSON.stringify(data.map(d => formatAction(d.z))),
+    }
+  }
+  catch (error) {
+    console.error('Error processing chart data:', error)
+    return { x: '[[]]', y: '[[]]', name: '[""]' } // Return empty data in case of error
+  }
+}
+
+function getTableData(data: ChartData[]): { x: string, y: string, name: string } {
+  try {
+    return {
+      x: JSON.stringify(data[0].points.map(point => formatPeriod(point.x, true))),
+      y: JSON.stringify(data.map(d => d.points.map(point => point.y))),
+      name: JSON.stringify(data.map(d => formatAction(d.z))),
+    }
+  }
+  catch (error) {
+    console.error('Error processing table data:', error)
+    return { x: '[[]]', y: '[[]]', name: '[""]' } // Return empty data in case of error
+  }
+}
 </script>
 
 <template>
@@ -139,151 +175,63 @@ setBreadcrumbs([
   />
   <BrandBackgroundContainer
     textured
-    contrast
+    subtle
   >
-    <BreadcrumbSectionContainer contrast />
+    <BreadcrumbSectionContainer />
     <SectionContainer type="page-header">
-      <h1 class="brand-contrast-text">
+      <h1>
         Statistiques des simulateurs
       </h1>
     </SectionContainer>
-  </BrandBackgroundContainer>
-  <BrandBackgroundContainer
-    textured
-    subtle
-  >
     <SectionContainer type="page-footer">
       <div v-if="isLoading">
         <LoadingSpinner />
       </div>
       <div v-else>
-        <p class="fr-text--lg fr-mb-3w">
-          Veuillez cliquer ci-dessous pour choisir votre simulateur et consulter ses statistiques
-          d'utilisation.
-        </p>
-        <DsfrAccordionsGroup v-model="activeAccordion">
-          <DsfrAccordion
-            v-for="(stats, simulatorId) in statistics?.statistics"
-            :key="simulatorId"
-            :title="stats.title"
-          >
-            <div class="fr-grid-row fr-grid-row--gutters">
-              <!-- Statistiques sur 30 jours -->
-              <div class="fr-col-12">
-                <h3>Sur les 4 dernières semaines</h3>
-                <div class="fr-grid-row fr-grid-row--gutters">
-                  <div class="fr-col-4">
-                    <DsfrCard
-                      :title-link-attrs="{}"
-                      horizontal
-                      title="Simulations commencées"
-                      :description="String(stats.starts)"
-                      title-tag="h4"
-                    />
-                  </div>
-                  <div class="fr-col-4">
-                    <DsfrCard
-                      :title-link-attrs="{}"
-                      horizontal
-                      title="Simulations terminées"
-                      :description="String(stats.completions)"
-                      title-tag="h4"
-                    />
-                  </div>
-                  <div class="fr-col-4">
-                    <DsfrCard
-                      :title-link-attrs="{}"
-                      horizontal
-                      title="Avec éligibilité"
-                      :description="String(stats.eligibilities)"
-                      title-tag="h4"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Graphique sur 6 semaines -->
-              <div class="fr-col-12">
-                <h3>Évolution hebdomadaire</h3>
-                <p class="fr-text--sm fr-mb-2w">
-                  <i>Note: Les données sont agrégées par semaine calendaire complète (du lundi au
-                    dimanche). Les dates indiquées correspondent au dernier jour de chaque semaine
-                    (dimanche). La semaine en cours n'est pas comptabilisée.</i>
-                </p>
-                <line-chart
-                  v-if="isClient"
-                  v-bind="getChartAttributesForSimulator(simulatorId)"
-                />
-              </div>
-
-              <!-- Intégrateurs -->
-              <div class="fr-col-12">
-                <h3>Intégrateurs</h3>
-                <div class="fr-grid-row fr-grid-row--gutters">
-                  <div
-                    v-for="integrator in integrators[simulatorId]"
-                    :key="integrator.name"
-                    class="fr-col-12 fr-col-md-4"
-                  >
-                    <DsfrCard
-                      :title-link-attrs="{ target: '_blank', rel: 'noopener noreferrer' }"
-                      :title="integrator.name"
-                      :description="integrator.description"
-                      :img-src="integrator.logo"
-                      :link="integrator.url"
-                      :img-alt="`Logo de ${integrator.name}`"
-                      title-tag="h4"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Satisfaction -->
-              <div
-                v-if="false"
-                class="fr-col-12"
-              >
-                <h3>Satisfaction des utilisateurs</h3>
-                <div class="fr-grid-row fr-grid-row--gutters">
-                  <div class="fr-col-4">
-                    <DsfrCard
-                      :title-link-attrs="{}"
-                      horizontal
-                      title="Oui"
-                      :description="`${statistics?.satisfaction.yes}%`"
-                      title-tag="h4"
-                    />
-                  </div>
-                  <div class="fr-col-4">
-                    <DsfrCard
-                      :title-link-attrs="{}"
-                      horizontal
-                      title="En partie"
-                      :description="`${statistics?.satisfaction.partial}%`"
-                      title-tag="h4"
-                    />
-                  </div>
-                  <div class="fr-col-4">
-                    <DsfrCard
-                      :title-link-attrs="{}"
-                      horizontal
-                      title="Non"
-                      :description="`${statistics?.satisfaction.no}%`"
-                      title-tag="h4"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </DsfrAccordion>
-        </DsfrAccordionsGroup>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12 fr-col-md-8 fr-col-offset-md-2 brand-table-chart">
+            <data-box
+              id="statistiques"
+              title="Simulations commencées, terminées et avec éligibilité"
+              :source="groupedData?.map(d => d.simulateurSlug).join(', ')"
+              :default-source="groupedData?.map(d => d.simulateurSlug)[0]"
+            />
+            <template
+              v-for="({ simulateurSlug, data }) in groupedData"
+              :key="simulateurSlug"
+            >
+              <scatter-chart
+                :databox-source="simulateurSlug"
+                databox-id="statistiques"
+                databox-type="chart"
+                show-line="true"
+                selected-palette="categorical"
+                unit-tooltip="simulations"
+                v-bind="getChartData(data)"
+              />
+              <table-chart
+                databox-id="statistiques"
+                :databox-source="simulateurSlug"
+                databox-type="table"
+                v-bind="getTableData(data)"
+              />
+            </template>
+          </div>
+        </div>
       </div>
     </SectionContainer>
   </BrandBackgroundContainer>
 </template>
 
 <style scoped lang="scss">
-:deep(.fr-responsive-img) {
-  object-fit: contain;
+.brand-table-chart {
+
+  &:deep(.databox__footer p) {
+    visibility: hidden; // Hide the footer text
+  }
+
+  &:deep(.fr-btn--tooltip) {
+    display: none; // Hide the tooltip button
+  }
 }
 </style>

@@ -1,3 +1,4 @@
+import * as d3 from 'd3'
 import { DateTime } from 'luxon'
 
 export function formatDateTime(
@@ -39,3 +40,14 @@ export function formatDateTime(
   }
   return null
 }
+
+export const frLocale = d3.timeFormatDefaultLocale({
+  dateTime: '%A %e %B %Y à %X',
+  date: '%d/%m/%Y',
+  time: '%H:%M:%S',
+  periods: ['AM', 'PM'],
+  days: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
+  shortDays: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
+  months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+  shortMonths: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
+})

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useMatomo } from '~/composables/use_matomo'
+import { useMatomoTracking } from '~/composables/use_matomo_tracking'
 import { useSurveyDebugStore } from '~/stores/survey_debug'
 import { extractAidesResults } from '~/utils/beautify_results'
 import { buildRequest, fetchOpenFiscaFranceCalculation } from '~/utils/calculate_aides'
@@ -60,7 +60,7 @@ export const useSubmissionStore = defineStore(
           setSubmissionStatus(simulateurId, 'success')
 
           // Track form submission in Matomo
-          const matomo = useMatomo()
+          const matomo = useMatomoTracking()
           matomo.trackSurveySubmit(simulateurId)
 
           // Store form data and results
@@ -144,7 +144,7 @@ export const useSubmissionStore = defineStore(
           setSubmissionStatus(simulateurId, 'success')
 
           // Track form submission in Matomo
-          const matomo = useMatomo()
+          const matomo = useMatomoTracking()
           matomo.trackSurveySubmit(simulateurId)
 
           // Store form data and results

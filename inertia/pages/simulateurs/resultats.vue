@@ -7,7 +7,7 @@ import { ref } from 'vue'
 import AidesList from '~/components/aides/AidesList.vue'
 import DsfrLink from '~/components/DsfrLink.vue'
 import SectionSeparator from '~/components/layout/SectionSeparator.vue'
-import { useMatomo } from '~/composables/use_matomo'
+import { useMatomoTracking } from '~/composables/use_matomo_tracking'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 import { formatDateTime } from '~/utils/date_time'
 
@@ -26,7 +26,7 @@ const hasTextesDeLoi = results.textesLoi?.length > 0
 
 // Track eligibility in Matomo if we have results and aides
 if (hasAides && results) {
-  useMatomo().trackEligibility(simulateur.slug, results.aides?.length || 0)
+  useMatomoTracking().trackEligibility(simulateur.slug, results.aides?.length || 0)
 }
 
 const { setBreadcrumbs } = useBreadcrumbStore()

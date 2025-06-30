@@ -1,7 +1,7 @@
 /**
  * Composable for tracking user interactions with Matomo
  */
-export function useMatomo() {
+export function useMatomoTracking() {
   /**
    * Track an event in Matomo
    */

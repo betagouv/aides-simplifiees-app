@@ -108,8 +108,8 @@ function generateMarkdownReport(sortedIcons, iconUsage) {
   // Code snippets for including in project
   markdown += `\n## Integration Code\n\n`
 
-  // For bin/icons.js
-  markdown += `### For bin/icons.js\n\n`
+  // For scripts/icons.js
+  markdown += `### For scripts/icons.js\n\n`
   markdown += '```javascript\n'
   markdown += `const riIconNames = [\n`
   markdown += `  '${sortedIcons.join('\',\n  \'')}',\n`
@@ -172,8 +172,8 @@ async function detectIcons() {
       // console.log(`  Files: ${usage.join(', ')}`);
     }
 
-    // Format for bin/icons.js
-    console.log(`\nList for bin/icons.js:`)
+    // Format for scripts/icons.js
+    console.log(`\nList for scripts/icons.js:`)
     console.log('=======================')
     console.log(`const riIconNames = [`)
     console.log(`  '${sortedIcons.join('\',\n  \'')}',`)

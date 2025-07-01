@@ -13,7 +13,7 @@ setBreadcrumbs([
   { text: 'Créer une page', to: '/admin/pages/create' },
 ])
 
-function handleSubmit(form: PageForm) {
+function handleSubmit(form: PageFormType) {
   form.post('/admin/pages', {
     preserveScroll: true,
   })

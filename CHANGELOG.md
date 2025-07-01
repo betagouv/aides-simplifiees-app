@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 1.3.1 [#123](https://github.com/betagouv/aides-simplifiees-app/pull/123)
+- Ajout de fonctionnalités :
+  - Configure et implémente des tests d'a11y
+- Améliorations :
+  - Optimise les appels à l'API reporting de Matomo
+  - Améliore l'affichage des statistiques
+  - Améliore le typage
+- Corrections :
+  - Corrige la détection du SSR dans le composant Crisp
+  - Répare l'affichage de l'éligibilité dynamique avec publicodes
+
 ## 1.3.0 [#121](https://github.com/betagouv/aides-simplifiees-app/pull/121)
 - Ajout de fonctionnalités :
   - Création de formulaires publicodes pour les aom de Bordeaux et de Rennes
@@ -9,14 +20,14 @@
   - Modifications de wording du simulateur Déménagement
   - Amélioration du modèle publicodes innovation/entreprise
   - Évolutions statiques du frontend
-- Réparations :
+- Corrections :
   - Wrappe le script d'intégration de l'iframe dans une iife pour éviter la pollution des variables globales importées
 
 ### 1.2.2 [#97](https://github.com/betagouv/aides-simplifiees-app/pull/97)
 - Ajout de fonctionnalités :
   - Ajoute un marqueur pour les questions obligatoires
   - Améliore l'affichage de l'éligibilité et des montants
-- Réparations :
+- Corrections :
   - Répare une regression sur l'affichage des tooltips
 - Refactorisation :
   - Modifie la configuration typescript

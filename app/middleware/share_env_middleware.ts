@@ -3,18 +3,29 @@ import type { NextFn } from '@adonisjs/core/types/http'
 import env from '#start/env'
 
 /**
+ * Shared environment variables configuration
+ * This object defines what environment variables are shared with the client
+ */
+export const sharedEnvConfig = {
+  appName: env.get('APP_NAME'),
+  isPreprod: env.get('IS_PREPROD', 'false') === 'true',
+  publicAppUrl: env.get('PUBLIC_APP_URL'),
+  matomoUrl: env.get('MATOMO_URL'),
+  matomoSiteId: env.get('MATOMO_SITE_ID'),
+} as const
+
+/**
+ * Type representing the shared environment variables
+ */
+export type SharedEnvProps = typeof sharedEnvConfig
+
+/**
  * Middleware to share environment variables with the Inertia client
  */
 export default class ShareEnvMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     // Only share specific environment variables that are needed on the client
-    ctx.inertia.share(filterObject({
-      appName: env.get('APP_NAME'),
-      isPreprod: env.get('IS_PREPROD', 'false') === 'true',
-      publicAppUrl: env.get('PUBLIC_APP_URL'),
-      matomoUrl: env.get('MATOMO_URL'),
-      matomoSiteId: env.get('MATOMO_SITE_ID'),
-    }))
+    ctx.inertia.share(filterObject(sharedEnvConfig))
 
     await next()
   }

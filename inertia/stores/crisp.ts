@@ -9,7 +9,7 @@ export const useCrispStore = defineStore('crisp', () => {
     autoload: false,
   })
 
-  const isChatOpen = ref(import.meta.client && Crisp.chat.isChatOpened())
+  const isChatOpen = ref(!import.meta.env.SSR && Crisp.chat.isChatOpened())
 
   function toggleChat() {
     if (isChatOpen.value) {

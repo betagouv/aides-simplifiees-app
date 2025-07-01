@@ -24,7 +24,7 @@ setBreadcrumbs([
   { text: pageTitle, to: `/admin/aides/${aide.id}/edit` },
 ])
 
-function handleSubmit(form: AideForm) {
+function handleSubmit(form: AideFormType) {
   form.put(`/admin/aides/${aide.id}`)
 }
 

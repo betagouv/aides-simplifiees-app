@@ -1,3 +1,4 @@
+import type { SharedEnvProps } from '#middleware/share_env_middleware'
 import type { InferSharedProps } from '@adonisjs/inertia/types'
 
 import { defineConfig } from '@adonisjs/inertia'
@@ -31,5 +32,5 @@ const inertiaConfig = defineConfig({
 export default inertiaConfig
 
 declare module '@adonisjs/inertia/types' {
-  export interface SharedProps extends InferSharedProps<typeof inertiaConfig> {}
+  export interface SharedProps extends InferSharedProps<typeof inertiaConfig>, Partial<SharedEnvProps> {}
 }

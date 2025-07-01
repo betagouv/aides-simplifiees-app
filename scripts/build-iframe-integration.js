@@ -47,7 +47,7 @@ function buildIframeIntegration() {
 
     // Step 3: Generate SRI hash
     console.log('🔐 Generating SRI hash...')
-    execSync(`node bin/generate-sri-hash.js ${targetVersion}`, {
+    execSync(`node scripts/generate-sri-hash.js ${targetVersion}`, {
       stdio: 'inherit',
       cwd: projectRoot,
     })

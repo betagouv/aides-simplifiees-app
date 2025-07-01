@@ -23,7 +23,7 @@ setBreadcrumbs([
   { text: pageTitle, to: `/admin/simulateurs/${simulateur.id}/edit` },
 ])
 
-function handleSubmit(form: SimulateurForm) {
+function handleSubmit(form: SimulateurFormType) {
   form.put(`/admin/simulateurs/${simulateur.id}`)
 }
 

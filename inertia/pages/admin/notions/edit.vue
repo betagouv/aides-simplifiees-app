@@ -23,7 +23,7 @@ setBreadcrumbs([
   { text: pageTitle, to: `/admin/notions/${notion.id}/edit` },
 ])
 
-function handleSubmit(form: NotionForm) {
+function handleSubmit(form: NotionFormType) {
   form.put(`/admin/notions/${notion.id}`)
 }
 function handleCancel() {

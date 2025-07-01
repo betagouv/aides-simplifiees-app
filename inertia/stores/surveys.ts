@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useMatomo } from '~/composables/use_matomo'
+import { useMatomoTracking } from '~/composables/use_matomo_tracking'
 import { useSurveySchemaManager } from '~/composables/use_survey_schema_manager'
 import { useSurveyDebugStore } from '~/stores/survey_debug'
 import { evaluateCondition } from '~/utils/evaluate_conditions'
@@ -18,7 +18,7 @@ export const useSurveysStore = defineStore(
     /**
      * Composables
      */
-    const matomo = useMatomo()
+    const matomo = useMatomoTracking()
     const { debug } = useSurveyDebugStore()
 
     const {

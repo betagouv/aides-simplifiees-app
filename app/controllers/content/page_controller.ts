@@ -14,7 +14,7 @@ export default class PageController {
     toJson() {
       return {
         id: this.page.id,
-        updatedAt: this.page.updatedAt || this.page.createdAt,
+        updatedAt: this.page.updatedAt.toString(), // Convert DateTime to string for JSON serialization
         title: this.page.title,
         slug: this.page.slug,
         description: this.page.description,

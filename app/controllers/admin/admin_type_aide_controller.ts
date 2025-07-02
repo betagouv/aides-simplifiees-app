@@ -16,7 +16,7 @@ export default class AdminTypeAideController {
         slug: this.typeAide.slug,
         label: this.typeAide.label,
         iconName: this.typeAide.iconName,
-        updatedAt: this.typeAide.updatedAt,
+        updatedAt: this.typeAide.updatedAt.toString(), // Convert DateTime to string for JSON serialization
       }
     }
   }
@@ -34,7 +34,7 @@ export default class AdminTypeAideController {
           slug: typeAide.slug,
           label: typeAide.label,
           iconName: typeAide.iconName,
-          updatedAt: typeAide.updatedAt,
+          updatedAt: typeAide.updatedAt.toString(), // Convert DateTime to string for JSON serialization
         }
       })
     }

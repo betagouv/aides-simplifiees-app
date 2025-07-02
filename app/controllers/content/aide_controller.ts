@@ -15,7 +15,7 @@ export default class AideController {
     toJson() {
       return {
         id: this.aide.id,
-        updatedAt: this.aide.updatedAt,
+        updatedAt: this.aide.updatedAt.toString(), // Convert DateTime to string for JSON serialization
         title: this.aide.title,
         slug: this.aide.slug,
         typeAide: this.aide.typeAide

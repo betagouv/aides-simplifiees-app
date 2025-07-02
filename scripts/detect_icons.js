@@ -5,7 +5,7 @@
  * This script scans Vue, TypeScript, and JavaScript files for references to Remix icons
  * and generates a report of unique icons used.
  *
- * Usage: node scripts/detect-icons.js
+ * Usage: node scripts/detect_icons.js
  */
 
 import fs from 'node:fs'
@@ -108,8 +108,8 @@ function generateMarkdownReport(sortedIcons, iconUsage) {
   // Code snippets for including in project
   markdown += `\n## Integration Code\n\n`
 
-  // For scripts/icons.js
-  markdown += `### For scripts/icons.js\n\n`
+  // For scripts/build_icons_collections.js
+  markdown += `### For scripts/build_icons_collections.js\n\n`
   markdown += '```javascript\n'
   markdown += `const riIconNames = [\n`
   markdown += `  '${sortedIcons.join('\',\n  \'')}',\n`
@@ -172,8 +172,8 @@ async function detectIcons() {
       // console.log(`  Files: ${usage.join(', ')}`);
     }
 
-    // Format for scripts/icons.js
-    console.log(`\nList for scripts/icons.js:`)
+    // Format for scripts/build_icons_collections.js
+    console.log(`\nList for scripts/build_icons_collections.js:`)
     console.log('=======================')
     console.log(`const riIconNames = [`)
     console.log(`  '${sortedIcons.join('\',\n  \'')}',`)

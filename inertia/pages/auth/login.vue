@@ -9,11 +9,22 @@ import { computed, ref } from 'vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 
-const page = usePage<InferPageProps<AuthController, 'showLogin'>>()
+interface PageProps {
+  flash: {
+    errors?: {
+      form?: string
+      email?: string
+      password?: string
+      [key: string]: string | undefined
+    }
+  }
+}
+
+const page = usePage<InferPageProps<AuthController, 'showLogin'> & PageProps>()
 
 // Accéder aux messages flash depuis les données partagées
 const errors = computed(() => {
-  return page.props.flash.errors
+  return page.props.flash?.errors || {}
 })
 
 const form = useForm({

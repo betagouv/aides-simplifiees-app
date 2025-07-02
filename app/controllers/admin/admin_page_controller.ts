@@ -14,7 +14,7 @@ export default class AdminPageController {
     toJson() {
       return {
         id: this.page.id,
-        updatedAt: this.page.updatedAt,
+        updatedAt: this.page.updatedAt.toString(), // Convert DateTime to string for JSON serialization
         title: this.page.title,
         slug: this.page.slug,
         status: this.page.status,
@@ -35,7 +35,7 @@ export default class AdminPageController {
       return this.pages.map((page) => {
         return {
           id: page.id,
-          updatedAt: page.updatedAt,
+          updatedAt: page.updatedAt.toString(), // Convert DateTime to string for JSON serialization
           title: page.title,
           slug: page.slug,
           status: page.status,

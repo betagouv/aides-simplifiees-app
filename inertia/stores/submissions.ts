@@ -47,7 +47,7 @@ export const useSubmissionStore = defineStore(
       secureHashes.value[simulateurId] = hash
     }
 
-    const submitFormPublicodes = async (simulateurId: string, answers: any, aidesResults: SimulationResultsAides) => {
+    const submitFormPublicodes = async (simulateurId: string, answers: any, aidesResults: SimulationResultsAides): Promise<boolean> => {
       debug.log('[Submission Store] submitForm', simulateurId, answers)
 
       // Sending the data to a web API to calculate a set of 'aides'
@@ -55,63 +55,55 @@ export const useSubmissionStore = defineStore(
       try {
         setSubmissionStatus(simulateurId, 'pending')
 
-        if (aidesResults) {
-          setResults(simulateurId, aidesResults)
-          setSubmissionStatus(simulateurId, 'success')
+        // Track form submission in Matomo
+        const matomo = useMatomoTracking()
+        matomo.trackSurveySubmit(simulateurId)
 
-          // Track form submission in Matomo
-          const matomo = useMatomoTracking()
-          matomo.trackSurveySubmit(simulateurId)
-
-          // Store form data and results
-          try {
-            const storeResponse = await axios.post(
-              '/api/form-submissions',
-              {
-                simulateurId,
-                answers,
-                results: aidesResults,
+        // Store form data and results
+        try {
+          const storeResponse = await axios.post(
+            '/api/form-submissions',
+            {
+              simulateurId,
+              answers,
+              results: aidesResults,
+            },
+            {
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
               },
-              {
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-                  'X-Requested-With': 'XMLHttpRequest',
-                },
-              },
-            )
+            },
+          )
 
-            if (storeResponse.data.success) {
-              debug.log('[Submission Store] Form data stored successfully:', storeResponse.data)
+          if (storeResponse.data.success) {
+            debug.log('[Submission Store] Form data stored successfully:', storeResponse.data)
 
-              // Store the secure hash for potential future use
-              if (storeResponse.data.secureHash) {
-                setSecureHash(simulateurId, storeResponse.data.secureHash)
-              }
-
-              return true
+            // Store the secure hash for potential future use
+            if (storeResponse.data.secureHash) {
+              setSecureHash(simulateurId, storeResponse.data.secureHash)
             }
-            else {
-              setSubmissionStatus(simulateurId, 'error')
-              console.error('[Submission Store] Failed to store form data:', storeResponse.data)
-            }
+
+            setResults(simulateurId, aidesResults)
+            setSubmissionStatus(simulateurId, 'success')
+            return true
           }
-          catch (storageError) {
+          else {
             setSubmissionStatus(simulateurId, 'error')
-            console.error('[Submission Store] Error storing form data:', storageError)
+            console.error('[Submission Store] Failed to store form data:', storeResponse.data)
           }
-
-          return true
+        }
+        catch (storageError) {
+          setSubmissionStatus(simulateurId, 'error')
+          console.error('[Submission Store] Error storing form data:', storageError)
         }
       }
       catch (error) {
         setSubmissionStatus(simulateurId, 'error')
         console.error('[Submission Store] Error during form submission:', error)
-        return false
       }
-
-      setResults(simulateurId, aidesResults)
-      setSubmissionStatus(simulateurId, 'success')
+      return false
     }
 
     const submitForm = async (simulateurId: string, answers: any) => {
@@ -140,9 +132,6 @@ export const useSubmissionStore = defineStore(
         )
 
         if (aidesResults) {
-          setResults(simulateurId, aidesResults)
-          setSubmissionStatus(simulateurId, 'success')
-
           // Track form submission in Matomo
           const matomo = useMatomoTracking()
           matomo.trackSurveySubmit(simulateurId)
@@ -173,6 +162,8 @@ export const useSubmissionStore = defineStore(
                 setSecureHash(simulateurId, storeResponse.data.secureHash)
               }
 
+              setResults(simulateurId, aidesResults)
+              setSubmissionStatus(simulateurId, 'success')
               return true
             }
             else {
@@ -184,19 +175,15 @@ export const useSubmissionStore = defineStore(
             setSubmissionStatus(simulateurId, 'error')
             console.error('[Submission Store] Error storing form data:', storageError)
           }
-
-          return true
         }
-
         setSubmissionStatus(simulateurId, 'error')
         console.error('[Submission Store] No results found in OpenFisca response')
-        return false
       }
       catch (error) {
         setSubmissionStatus(simulateurId, 'error')
         console.error('[Submission Store] Error during form submission:', error)
-        return false
       }
+      return false
     }
 
     return {

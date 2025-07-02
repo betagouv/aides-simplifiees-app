@@ -71,7 +71,7 @@ Si un de ces fichiers est dans le commit, le hook :
 ## Scripts disponibles
 
 - `pnpm build:iframe-integration` : Build du script iframe
-- `scripts/generate-sri-hash.js` : Génère le hash SRI pour une version spécifique
+- `scripts/generate_sri_hash.js` : Génère le hash SRI pour une version spécifique
 
 ## Gestion des versions et builds
 

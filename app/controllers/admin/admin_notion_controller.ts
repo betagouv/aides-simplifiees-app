@@ -14,7 +14,7 @@ export default class AdminNotionController {
     toJson() {
       return {
         id: this.notion.id,
-        updatedAt: this.notion.updatedAt,
+        updatedAt: this.notion.updatedAt.toString(), // Convert DateTime to string for JSON serialization
         title: this.notion.title,
         slug: this.notion.slug,
         status: this.notion.status,
@@ -35,7 +35,7 @@ export default class AdminNotionController {
       return this.notions.map((notion) => {
         return {
           id: notion.id,
-          updatedAt: notion.updatedAt,
+          updatedAt: notion.updatedAt.toString(), // Convert DateTime to string for JSON serialization
           title: notion.title,
           slug: notion.slug,
           status: notion.status,

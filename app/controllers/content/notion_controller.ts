@@ -16,7 +16,7 @@ export default class NotionController {
     toJson() {
       return {
         id: this.notion.id,
-        updatedAt: this.notion.updatedAt,
+        updatedAt: this.notion.updatedAt.toString(), // Convert DateTime to string for JSON serialization
         title: this.notion.title,
         slug: this.notion.slug,
         description: this.notion.description,
@@ -68,7 +68,7 @@ export default class NotionController {
     }
 
     const html = notion.content
-      ? marked(notion.content)
+      ? await marked(notion.content)
       : ''
 
     return inertia.render('content/notions/notion', {
@@ -99,7 +99,7 @@ export default class NotionController {
     }
 
     const html = notion.content
-      ? marked(notion.content)
+      ? await marked(notion.content)
       : ''
 
     return inertia.render('content/notions/simulateur-notion', {

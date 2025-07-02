@@ -10,6 +10,29 @@ const path = require('node:path')
 const process = require('node:process')
 
 /**
+ * Trouve le répertoire de run le plus récent
+ * @param {string} baseDir - Répertoire de base contenant les runs
+ * @returns {string|null} Chemin vers le répertoire de run le plus récent
+ */
+function findLatestRunDirectory(baseDir) {
+  if (!fs.existsSync(baseDir)) {
+    return null
+  }
+
+  const entries = fs.readdirSync(baseDir, { withFileTypes: true })
+  const runDirs = entries
+    .filter(entry => entry.isDirectory() && entry.name.startsWith('run_'))
+    .map(entry => ({
+      name: entry.name,
+      path: path.join(baseDir, entry.name),
+      stat: fs.statSync(path.join(baseDir, entry.name)),
+    }))
+    .sort((a, b) => b.stat.mtime.getTime() - a.stat.mtime.getTime())
+
+  return runDirs.length > 0 ? runDirs[0].path : null
+}
+
+/**
  * Génère un résumé des violations d'accessibilité
  * @param {string} reportsDir - Répertoire contenant les rapports JSON
  * @returns {object} Objet contenant le résumé et les statistiques
@@ -20,23 +43,33 @@ function generateAccessibilityReport(reportsDir = 'reports/accessibility') {
     return null
   }
 
-  const reportFiles = fs.readdirSync(reportsDir).filter(f => f.endsWith('.json'))
+  // Find the latest run directory
+  const latestRunDir = findLatestRunDirectory(reportsDir)
 
-  if (reportFiles.length === 0) {
-    console.log('Aucun fichier de rapport trouvé dans', reportsDir)
+  if (!latestRunDir) {
+    console.log('Aucun répertoire de run trouvé dans', reportsDir)
     return null
   }
+
+  const reportFiles = fs.readdirSync(latestRunDir).filter(f => f.endsWith('.json'))
+
+  if (reportFiles.length === 0) {
+    console.log('Aucun fichier de rapport trouvé dans', latestRunDir)
+    return null
+  }
+
+  console.log(`Analyse des rapports dans: ${path.relative(process.cwd(), latestRunDir)}`)
 
   let totalViolations = 0
   let criticalViolations = 0
   let seriousViolations = 0
-  let reportSummary = '## 🦮 Rapport d\'accessibilité\n\n'
+  let reportSummary = '## Rapport d\'accessibilité\n\n'
 
   const testResults = []
 
   for (const file of reportFiles) {
     try {
-      const filePath = path.join(reportsDir, file)
+      const filePath = path.join(latestRunDir, file)
       const report = JSON.parse(fs.readFileSync(filePath, 'utf8'))
       const violations = report.violations || []
 
@@ -63,32 +96,32 @@ function generateAccessibilityReport(reportsDir = 'reports/accessibility') {
       })
 
       // Ajout au résumé
-      reportSummary += `### 📄 ${testName}\n`
+      reportSummary += `### ${testName}\n`
       if (critical > 0)
-        reportSummary += `- 🚨 **Critiques**: ${critical}\n`
+        reportSummary += `- **CRITIQUES**: ${critical}\n`
       if (serious > 0)
-        reportSummary += `- ⚠️  **Importantes**: ${serious}\n`
+        reportSummary += `- **IMPORTANTES**: ${serious}\n`
       if (moderate > 0)
-        reportSummary += `- 🔶 **Modérées**: ${moderate}\n`
+        reportSummary += `- **MODÉRÉES**: ${moderate}\n`
       if (minor > 0)
-        reportSummary += `- 🔹 **Mineures**: ${minor}\n`
-      reportSummary += `- 📊 **Total**: ${violations.length}\n\n`
+        reportSummary += `- **MINEURES**: ${minor}\n`
+      reportSummary += `- **TOTAL**: ${violations.length}\n\n`
 
       // Détail des violations critiques
       if (critical > 0) {
-        reportSummary += '**🚨 Violations critiques à corriger :**\n'
+        reportSummary += '**VIOLATIONS CRITIQUES à corriger :**\n'
         violations
           .filter(v => v.impact === 'critical')
           .forEach((v) => {
             reportSummary += `- **${v.id}**: ${v.description}\n`
-            reportSummary += `  - [📖 Documentation](${v.helpUrl})\n`
+            reportSummary += `  - [Documentation](${v.helpUrl})\n`
           })
         reportSummary += '\n'
       }
 
       // Détail des violations importantes
       if (serious > 0 && critical === 0) { // N'afficher que si pas de critiques
-        reportSummary += '**⚠️ Violations importantes à examiner :**\n'
+        reportSummary += '**VIOLATIONS IMPORTANTES à examiner :**\n'
         violations
           .filter(v => v.impact === 'serious')
           .slice(0, 3) // Limiter à 3 pour éviter un commentaire trop long
@@ -103,9 +136,9 @@ function generateAccessibilityReport(reportsDir = 'reports/accessibility') {
 
       // Détail des violations modérées et mineures
       if (moderate > 0 || minor > 0) {
-        reportSummary += '**🔶 Violations modérées et mineures :**\n'
+        reportSummary += '**VIOLATIONS MODÉRÉES ET MINEURES :**\n'
         if (moderate > 0) {
-          reportSummary += `- 🔶 **Modérées**: ${moderate}\n`
+          reportSummary += `- **MODÉRÉES**: ${moderate}\n`
           violations
             .filter(v => v.impact === 'moderate')
             .forEach((v) => {
@@ -113,7 +146,7 @@ function generateAccessibilityReport(reportsDir = 'reports/accessibility') {
             })
         }
         if (minor > 0) {
-          reportSummary += `- 🔹 **Mineures**: ${minor}\n`
+          reportSummary += `- **MINEURES**: ${minor}\n`
           violations
             .filter(v => v.impact === 'minor')
             .forEach((v) => {
@@ -125,7 +158,7 @@ function generateAccessibilityReport(reportsDir = 'reports/accessibility') {
     }
     catch (e) {
       console.error(`Erreur lors de la lecture de ${file}:`, e)
-      reportSummary += `### ❌ Erreur de lecture : ${file}\n`
+      reportSummary += `### ERREUR DE LECTURE : ${file}\n`
       reportSummary += `Impossible de parser le fichier de rapport.\n\n`
     }
   }
@@ -134,25 +167,25 @@ function generateAccessibilityReport(reportsDir = 'reports/accessibility') {
   reportSummary += '---\n\n'
 
   if (criticalViolations > 0) {
-    reportSummary += `## ❌ ${criticalViolations} violation${criticalViolations > 1 ? 's' : ''} critique${criticalViolations > 1 ? 's' : ''} détectée${criticalViolations > 1 ? 's' : ''}\n\n`
-    reportSummary += '🚫 **Les violations critiques doivent être corrigées avant le merge.**\n\n'
+    reportSummary += `## ERREUR: ${criticalViolations} violation${criticalViolations > 1 ? 's' : ''} critique${criticalViolations > 1 ? 's' : ''} détectée${criticalViolations > 1 ? 's' : ''}\n\n`
+    reportSummary += 'Les violations critiques doivent être corrigées avant le merge.\n\n'
   }
   else if (seriousViolations > 0) {
-    reportSummary += `## ⚠️ ${seriousViolations} violation${seriousViolations > 1 ? 's' : ''} importante${seriousViolations > 1 ? 's' : ''} détectée${seriousViolations > 1 ? 's' : ''}\n\n`
-    reportSummary += '📋 Violations importantes à examiner, mais pas bloquantes pour le merge.\n\n'
+    reportSummary += `## ATTENTION: ${seriousViolations} violation${seriousViolations > 1 ? 's' : ''} importante${seriousViolations > 1 ? 's' : ''} détectée${seriousViolations > 1 ? 's' : ''}\n\n`
+    reportSummary += 'Violations importantes à examiner, mais pas bloquantes pour le merge.\n\n'
   }
   else {
-    reportSummary += '## ✅ Aucune violation critique ou importante détectée\n\n'
-    reportSummary += '🎉 Excellent travail ! L\'accessibilité est respectée sur les parcours testés.\n\n'
+    reportSummary += '## SUCCÈS: Aucune violation critique ou importante détectée\n\n'
+    reportSummary += 'Excellent travail ! L\'accessibilité est respectée sur les parcours testés.\n\n'
   }
 
-  reportSummary += `📈 **Résumé global**: ${totalViolations} violation${totalViolations > 1 ? 's' : ''} sur ${reportFiles.length} test${reportFiles.length > 1 ? 's' : ''}\n\n`
+  reportSummary += `**Résumé global**: ${totalViolations} violation${totalViolations > 1 ? 's' : ''} sur ${reportFiles.length} test${reportFiles.length > 1 ? 's' : ''}\n\n`
 
   // Liens utiles
-  reportSummary += '### 📚 Ressources\n'
-  reportSummary += '- 📖 [RGAA 4.1 - Guide d\'accessibilité](https://accessibilite.numerique.gouv.fr/)\n'
-  reportSummary += '- 🔧 [Axe DevTools](https://www.deque.com/axe/devtools/) pour tester manuellement\n'
-  reportSummary += '- 🎯 [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/) pour les contrastes\n'
+  reportSummary += '### Ressources\n'
+  reportSummary += '- [RGAA 4.1 - Guide d\'accessibilité](https://accessibilite.numerique.gouv.fr/)\n'
+  reportSummary += '- [Axe DevTools](https://www.deque.com/axe/devtools/) pour tester manuellement\n'
+  reportSummary += '- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/) pour les contrastes\n'
 
   return {
     summary: reportSummary,

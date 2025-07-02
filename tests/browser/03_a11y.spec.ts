@@ -1,5 +1,6 @@
 import { test } from '@japa/runner'
 import { configureAxe, exportAxeResults } from './axe.config.js'
+import { accessibilityLogger } from './test_logger.js'
 
 /**
  * Tests d'accessibilité E2E pour les pages principales
@@ -53,10 +54,11 @@ test.group('Accessibilité - Pages principales', () => {
     // Pas de violations critiques d'accessibilité
     expect(axeResults.violations.filter(v => v.impact === 'critical')).toHaveLength(0)
 
+    const criticalViolations = axeResults.violations.filter(v => v.impact === 'critical').length
+    accessibilityLogger.accessibility('Page d\'accueil', axeResults.violations.length, criticalViolations)
+
     // Exporter les résultats pour analyse
     await exportAxeResults(axeResults, 'homepage')
-
-    console.log(`✅ Page d'accueil : ${axeResults.violations.length} violations détectées`)
   })
 
   test('Liste des simulateurs - Navigation et accessibilité', async ({ visit, expect }) => {
@@ -90,9 +92,11 @@ test.group('Accessibilité - Pages principales', () => {
     }
 
     expect(axeResults.violations.filter(v => v.impact === 'critical')).toHaveLength(0)
-    await exportAxeResults(axeResults, 'simulateurs-list')
 
-    console.log(`✅ Liste simulateurs : ${axeResults.violations.length} violations détectées`)
+    const criticalViolations = axeResults.violations.filter(v => v.impact === 'critical').length
+    accessibilityLogger.accessibility('Liste des simulateurs', axeResults.violations.length, criticalViolations)
+
+    await exportAxeResults(axeResults, 'simulateurs-list')
   })
 
   test('Page de simulateur - Écran d\'accueil', async ({ visit, expect }) => {
@@ -118,9 +122,11 @@ test.group('Accessibilité - Pages principales', () => {
     expect(['BUTTON', 'A'].includes(focusedElement || '')).toBe(true)
 
     expect(axeResults.violations.filter(v => v.impact === 'critical')).toHaveLength(0)
-    await exportAxeResults(axeResults, 'simulateur-welcome')
 
-    console.log(`✅ Simulateur (accueil) : ${axeResults.violations.length} violations détectées`)
+    const criticalViolations = axeResults.violations.filter(v => v.impact === 'critical').length
+    accessibilityLogger.accessibility('Simulateur - écran d\'accueil', axeResults.violations.length, criticalViolations)
+
+    await exportAxeResults(axeResults, 'simulateur-welcome')
   })
 
   test('Formulaire de simulation - Première page', async ({ visit, expect }) => {
@@ -173,9 +179,11 @@ test.group('Accessibilité - Pages principales', () => {
     }
 
     expect(axeResults.violations.filter(v => v.impact === 'critical')).toHaveLength(0)
-    await exportAxeResults(axeResults, 'simulateur-form')
 
-    console.log(`✅ Formulaire simulation : ${axeResults.violations.length} violations détectées`)
+    const criticalViolations = axeResults.violations.filter(v => v.impact === 'critical').length
+    accessibilityLogger.accessibility('Formulaire de simulation', axeResults.violations.length, criticalViolations)
+
+    await exportAxeResults(axeResults, 'simulateur-form')
   })
 
   test('Pages statiques - Contact et mentions', async ({ visit, expect }) => {
@@ -187,7 +195,6 @@ test.group('Accessibilité - Pages principales', () => {
     const contactResults = await contactAxeBuilder.analyze()
 
     expect(contactResults.violations.filter(v => v.impact === 'critical')).toHaveLength(0)
-    await exportAxeResults(contactResults, 'contact-page')
 
     // Test de la page cookies
     const cookiesPage = await visit('/cookies', { waitUntil: 'networkidle' })
@@ -197,8 +204,16 @@ test.group('Accessibilité - Pages principales', () => {
     const cookiesResults = await cookiesAxeBuilder.analyze()
 
     expect(cookiesResults.violations.filter(v => v.impact === 'critical')).toHaveLength(0)
-    await exportAxeResults(cookiesResults, 'cookies-page')
 
-    console.log(`✅ Pages statiques : Contact et Cookies validées`)
+    // Log results for both static pages
+    const contactCritical = contactResults.violations.filter(v => v.impact === 'critical').length
+    const cookiesCritical = cookiesResults.violations.filter(v => v.impact === 'critical').length
+    const totalViolations = contactResults.violations.length + cookiesResults.violations.length
+    const totalCritical = contactCritical + cookiesCritical
+
+    accessibilityLogger.accessibility('Pages statiques (Contact & Cookies)', totalViolations, totalCritical)
+
+    await exportAxeResults(contactResults, 'contact-page')
+    await exportAxeResults(cookiesResults, 'cookies-page')
   })
 })

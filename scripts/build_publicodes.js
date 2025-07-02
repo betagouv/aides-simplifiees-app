@@ -4,6 +4,9 @@ import { execSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { BuildLogger } from './build_logger.js'
+
+const logger = new BuildLogger('PUBLICODES')
 
 const publicodesPackages = [
   'aom-bordeaux',
@@ -15,39 +18,45 @@ function buildPackage(packageName) {
   const packagePath = path.join('publicodes', packageName)
 
   if (!existsSync(packagePath)) {
-    console.error(`❌ Package ${packageName} not found at ${packagePath}`)
+    logger.error(`Package ${packageName} not found at ${packagePath}`)
     process.exit(1)
   }
 
-  console.log(`📦 Building ${packageName}...`)
+  logger.step(`Building ${packageName}...`)
 
   try {
     // Install dependencies
-    execSync('pnpm install', {
+    const installOutput = execSync('pnpm install', {
       cwd: packagePath,
-      stdio: 'inherit',
+      stdio: 'pipe',
+      encoding: 'utf-8',
       timeout: 120000, // 2 minutes timeout
     })
 
+    logger.outputBlock(installOutput)
+
     // Compile
-    execSync('pnpm run compile', {
+    const compileOutput = execSync('pnpm run compile', {
       cwd: packagePath,
-      stdio: 'inherit',
+      stdio: 'pipe',
+      encoding: 'utf-8',
       timeout: 180000, // 3 minutes timeout
     })
 
-    console.log(`✅ ${packageName} built successfully`)
+    logger.outputBlock(compileOutput)
+
+    logger.success(`${packageName} built successfully`)
   }
   catch (error) {
-    console.error(`❌ Failed to build ${packageName}:`, error.message)
+    logger.error(`Failed to build ${packageName}: ${error.message}`)
     process.exit(1)
   }
 }
 
-console.log('🚀 Building all publicodes packages...')
+logger.startProcess('publicodes packages build')
 
 for (const packageName of publicodesPackages) {
   buildPackage(packageName)
 }
 
-console.log('🎉 All publicodes packages built successfully!')
+logger.completeProcess('publicodes packages build')

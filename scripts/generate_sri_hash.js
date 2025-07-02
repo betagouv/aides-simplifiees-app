@@ -5,6 +5,9 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { BuildLogger } from './build_logger.js'
+
+const logger = new BuildLogger('SRI')
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(__dirname, '..')
@@ -41,20 +44,20 @@ function getIframeConfig() {
       existingList = JSON.parse(listStr)
     }
     catch (error) {
-      console.error('❌ CRITICAL ERROR: Could not parse existing integrity list!')
-      console.error('Parse error:', error.message)
-      console.error('')
-      console.error('This is a critical security issue - the build cannot continue without')
-      console.error('being able to verify existing version hashes.')
-      console.error('')
-      console.error('The config file format may be corrupted. Please check:')
-      console.error('- config/iframe_integration.ts syntax')
-      console.error('- IFRAME_SCRIPT_INTEGRITY_LIST array format')
-      console.error('')
-      console.error('Extracted content that failed to parse:')
-      console.error(integrityListMatch[1])
-      console.error('')
-      console.error('Build aborted to prevent overwriting existing version hashes.')
+      logger.error('CRITICAL ERROR: Could not parse existing integrity list!')
+      logger.error(`Parse error: ${error.message}`)
+      logger.error('')
+      logger.error('This is a critical security issue - the build cannot continue without')
+      logger.error('being able to verify existing version hashes.')
+      logger.error('')
+      logger.error('The config file format may be corrupted. Please check:')
+      logger.error('- config/iframe_integration.ts syntax')
+      logger.error('- IFRAME_SCRIPT_INTEGRITY_LIST array format')
+      logger.error('')
+      logger.error('Extracted content that failed to parse:')
+      logger.error(integrityListMatch[1])
+      logger.error('')
+      logger.error('Build aborted to prevent overwriting existing version hashes.')
       process.exit(1)
     }
   }
@@ -80,13 +83,13 @@ function generateSriHash(version) {
     hash.update(fileContent)
     const sriHash = `sha384-${hash.digest('base64')}`
 
-    console.log(`Generated SRI hash for iframe-integration@${version}.js:`)
-    console.log(sriHash)
+    logger.info(`Generated SRI hash for iframe-integration@${version}.js:`)
+    logger.info(sriHash)
 
     return sriHash
   }
   catch (error) {
-    console.error(`Error generating SRI hash for version ${version}:`, error)
+    logger.error(`Error generating SRI hash for version ${version}: ${error}`)
     throw error
   }
 }
@@ -101,31 +104,31 @@ function updateConfigWithIntegrity(version, integrity, force = false) {
   const existingEntry = existingList.find(item => item.version === version)
   if (existingEntry && existingEntry.integrity !== integrity) {
     if (!force) {
-      console.error(`❌ Error: Version ${version} already exists with a different integrity hash!`)
-      console.error(`   Existing hash: ${existingEntry.integrity}`)
-      console.error(`   New hash:      ${integrity}`)
-      console.error('')
-      console.error('This could indicate that:')
-      console.error('1. The script content has changed but you kept the same version')
-      console.error('2. You should increment the version number instead')
-      console.error('')
-      console.error('To fix this:')
-      console.error(`- Change IFRAME_SCRIPT_LATEST_VERSION to a new version (e.g., increment from ${version})`)
-      console.error('- Or revert your changes if they were unintentional')
-      console.error('- Or use --force flag if you really need to update this version (NOT RECOMMENDED)')
+      logger.error(`Error: Version ${version} already exists with a different integrity hash!`)
+      logger.error(`   Existing hash: ${existingEntry.integrity}`)
+      logger.error(`   New hash:      ${integrity}`)
+      logger.error('')
+      logger.error('This could indicate that:')
+      logger.error('1. The script content has changed but you kept the same version')
+      logger.error('2. You should increment the version number instead')
+      logger.error('')
+      logger.error('To fix this:')
+      logger.error(`- Change IFRAME_SCRIPT_LATEST_VERSION to a new version (e.g., increment from ${version})`)
+      logger.error('- Or revert your changes if they were unintentional')
+      logger.error('- Or use --force flag if you really need to update this version (NOT RECOMMENDED)')
       process.exit(1)
     }
     else {
-      console.warn(`⚠️  WARNING: Forcing update of existing version ${version} with new integrity hash!`)
-      console.warn(`   Old hash: ${existingEntry.integrity}`)
-      console.warn(`   New hash: ${integrity}`)
-      console.warn('   This may break existing integrations using this version!')
+      logger.warning(`WARNING: Forcing update of existing version ${version} with new integrity hash!`)
+      logger.warning(`   Old hash: ${existingEntry.integrity}`)
+      logger.warning(`   New hash: ${integrity}`)
+      logger.warning('   This may break existing integrations using this version!')
     }
   }
 
   // If same version with same hash, just update silently (rebuild case)
   if (existingEntry && existingEntry.integrity === integrity) {
-    console.log(`✅ Version ${version} already exists with the same integrity hash - no changes needed`)
+    logger.success(`Version ${version} already exists with the same integrity hash - no changes needed`)
     return
   }
 
@@ -178,7 +181,7 @@ export function getLatestIntegrity(): string {
 
   const configPath = resolve(projectRoot, 'config/iframe_integration.ts')
   writeFileSync(configPath, configContent)
-  console.log(`${action} integrity hash in config/iframe_integration.ts for version ${version}`)
+  logger.success(`${action} integrity hash in config/iframe_integration.ts for version ${version}`)
 }
 
 /**
@@ -191,7 +194,7 @@ function main() {
 
   if (!version) {
     const { latestVersion } = getIframeConfig()
-    console.log(`No version specified, using latest version: ${latestVersion}`)
+    logger.info(`No version specified, using latest version: ${latestVersion}`)
     const integrity = generateSriHash(latestVersion)
     updateConfigWithIntegrity(latestVersion, integrity, force)
   }

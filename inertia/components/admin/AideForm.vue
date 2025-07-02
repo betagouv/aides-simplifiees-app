@@ -29,15 +29,22 @@ const form = useForm({
   typeAideId: props.defaultValues?.typeAideId,
   usage: props.defaultValues?.usage || '',
   instructeur: props.defaultValues?.instructeur || '',
-  textesLoi: props.defaultValues?.textesLoi || [],
+  /**
+   * Below a useless mapping to make sure the `textesLoi` pass typechecking.
+   * @see https://github.com/inertiajs/inertia/issues/1193
+   */
+  textesLoi: (props.defaultValues?.textesLoi || [] as TexteLoi[]).map(texte => ({
+    label: texte.label,
+    url: texte.url,
+  })),
 })
 // Gérer les textes de loi (tableau d'objets)
 function addTexteLoi() {
-  form.textesLoi.push({ label: '', url: '' })
+  form.textesLoi?.push({ label: '', url: '' })
 }
 
 function removeTexteLoi(index: number) {
-  form.textesLoi.splice(index, 1)
+  form.textesLoi?.splice(index, 1)
 }
 </script>
 

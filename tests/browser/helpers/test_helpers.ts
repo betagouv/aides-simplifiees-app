@@ -1,4 +1,7 @@
 import type { Locator, Page } from 'playwright'
+import { TestLogger } from '../test_logger.js'
+
+const logger = new TestLogger({ prefix: 'TEST', timestamp: false })
 
 export async function startSurvey(page: Page): Promise<void> {
   const startButton = page.getByTestId('survey-start-button')
@@ -146,7 +149,7 @@ export async function answerAllQuestionsInCurrentPage(page: Page): Promise<boole
     return true
   }
   catch (error) {
-    console.error('Error answering questions in current page:', error)
+    logger.error(`Error answering questions in current page: ${error}`)
     return false
   }
 }
@@ -218,7 +221,7 @@ export async function getAllSurveyPageAnswers(page: Page): Promise<Record<string
       continue
     }
     // If no known input type found, log a warning
-    console.warn(`No known input type found for question ID: ${questionId}`)
+    logger.warn(`No known input type found for question ID: ${questionId}`)
   }
   return answers
 }

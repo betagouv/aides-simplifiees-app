@@ -6,6 +6,7 @@
 
 import type { AxeBuilder } from '@axe-core/playwright'
 import type { Page } from 'playwright'
+import { accessibilityLogger } from './test_logger.js'
 
 export const axeConfig = {
   // Configuration par défaut pour tous les tests
@@ -80,6 +81,17 @@ export const adminAxeConfig = {
   },
 }
 
+// Shared run ID for the current test session
+let currentRunId: string | null = null
+
+function getRunId(): string {
+  if (!currentRunId) {
+    const runTimestamp = new Date().toISOString().replace(/[:.]/g, '-').replace('T', '_').split('.')[0]
+    currentRunId = `run_${runTimestamp}`
+  }
+  return currentRunId
+}
+
 /**
  * Exporte les résultats d'accessibilité vers un fichier JSON
  */
@@ -88,15 +100,17 @@ export async function exportAxeResults(results: any, testName: string): Promise<
   const path = await import('node:path')
   const process = await import('node:process')
 
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const filename = `${testName}_${timestamp}.json`
+  // Use shared run directory for all tests in this session
+  const runDir = path.join(process.cwd(), 'reports', 'accessibility', getRunId())
 
-  // create the reports directory if it doesn't exist
-  const reportsDir = path.join(process.cwd(), 'reports', 'accessibility')
-  await fs.mkdir(reportsDir, { recursive: true })
+  // Simple filename without timestamp
+  const filename = `${testName}.json`
 
-  const filePath = path.join(process.cwd(), 'reports', 'accessibility', filename)
+  // Create the run directory if it doesn't exist
+  await fs.mkdir(runDir, { recursive: true })
+
+  const filePath = path.join(runDir, filename)
 
   await fs.writeFile(filePath, JSON.stringify(results, null, 2))
-  console.log(`📊 Rapport d'accessibilité sauvegardé: ${filePath}`)
+  accessibilityLogger.report(path.relative(process.cwd(), filePath))
 }

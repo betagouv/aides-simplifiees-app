@@ -68,7 +68,7 @@ export default class NotionController {
     }
 
     const html = notion.content
-      ? marked(notion.content)
+      ? await marked(notion.content)
       : ''
 
     return inertia.render('content/notions/notion', {
@@ -99,7 +99,7 @@ export default class NotionController {
     }
 
     const html = notion.content
-      ? marked(notion.content)
+      ? await marked(notion.content)
       : ''
 
     return inertia.render('content/notions/simulateur-notion', {

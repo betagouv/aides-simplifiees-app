@@ -37,7 +37,7 @@ export default class PageController {
     }
 
     const html = page.content
-      ? marked(page.content)
+      ? await marked(page.content)
       : ''
 
     return inertia.render('content/pages/page', {

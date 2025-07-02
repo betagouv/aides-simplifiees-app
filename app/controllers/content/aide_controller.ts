@@ -88,7 +88,7 @@ export default class AideController {
     }
 
     const html = aide.content
-      ? marked(aide.content)
+      ? await marked(aide.content)
       : ''
 
     return inertia.render('content/aides/aide', {
@@ -120,7 +120,7 @@ export default class AideController {
     }
 
     const html = aide.content
-      ? marked(aide.content)
+      ? await marked(aide.content)
       : ''
 
     return inertia.render('content/aides/resultats-aide', {

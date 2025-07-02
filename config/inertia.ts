@@ -32,5 +32,7 @@ const inertiaConfig = defineConfig({
 export default inertiaConfig
 
 declare module '@adonisjs/inertia/types' {
-  export interface SharedProps extends InferSharedProps<typeof inertiaConfig>, Partial<SharedEnvProps> {}
+  export interface SharedProps extends InferSharedProps<typeof inertiaConfig>, Partial<SharedEnvProps> {
+    [key: string]: any
+  }
 }

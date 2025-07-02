@@ -16,7 +16,7 @@ export default class AdminAideController {
     toJson() {
       return {
         id: this.aide.id,
-        updatedAt: this.aide.updatedAt,
+        updatedAt: this.aide.updatedAt.toString(), // Convert DateTime to string for JSON serialization
         title: this.aide.title,
         slug: this.aide.slug,
         status: this.aide.status,
@@ -41,7 +41,7 @@ export default class AdminAideController {
       return this.aides.map((aide) => {
         return {
           id: aide.id,
-          updatedAt: aide.updatedAt,
+          updatedAt: aide.updatedAt.toString(), // Convert DateTime to string for JSON serialization
           title: aide.title,
           slug: aide.slug,
           status: aide.status,

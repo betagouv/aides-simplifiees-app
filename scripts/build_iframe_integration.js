@@ -5,6 +5,9 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { BuildLogger } from './build_logger.js'
+
+const logger = new BuildLogger('IFRAME')
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const projectRoot = resolve(__dirname, '..')
@@ -28,41 +31,44 @@ function getCurrentVersion() {
  * Main build process
  */
 function buildIframeIntegration() {
-  console.log('🚀 Starting iframe integration build process...\n')
+  logger.startProcess('iframe integration build')
 
   try {
     // Step 1: Get current version from config (no auto-increment)
     const targetVersion = getCurrentVersion()
 
-    console.log(`📦 Target version: ${targetVersion}`)
-    console.log('')
+    logger.info(`Target version: ${targetVersion}`)
 
     // Step 2: Build with Vite
-    console.log('🏗️  Building with Vite...')
-    execSync('vite build --config vite.iframe-integration.config.ts', {
-      stdio: 'inherit',
+    logger.step('Building with Vite...')
+    const buildOutput = execSync('vite build --config vite.iframe-integration.config.ts', {
+      stdio: 'pipe',
+      encoding: 'utf-8',
       cwd: projectRoot,
     })
-    console.log('')
+
+    logger.outputBlock(buildOutput)
 
     // Step 3: Generate SRI hash
-    console.log('🔐 Generating SRI hash...')
-    execSync(`node scripts/generate-sri-hash.js ${targetVersion}`, {
-      stdio: 'inherit',
+    logger.step('Generating SRI hash...')
+    const sriOutput = execSync(`node scripts/generate_sri_hash.js ${targetVersion}`, {
+      stdio: 'pipe',
+      encoding: 'utf-8',
       cwd: projectRoot,
     })
-    console.log('')
 
-    console.log(`✅ Build completed successfully!`)
-    console.log(`📁 Generated: public/assets/iframe-integration@${targetVersion}.js`)
-    console.log(`🔐 SRI hash updated in config for version ${targetVersion}`)
-    console.log('')
-    console.log('🎯 Next steps:')
-    console.log('   - Commit the changes to git')
-    console.log('   - The version is ready for integration')
+    logger.outputBlock(sriOutput)
+
+    logger.success(`Generated: public/assets/iframe-integration@${targetVersion}.js`)
+    logger.success(`SRI hash updated in config for version ${targetVersion}`)
+    logger.info('Next steps:')
+    logger.info('  - Commit the changes to git')
+    logger.info('  - The version is ready for integration')
+
+    logger.completeProcess('iframe integration build')
   }
   catch (error) {
-    console.error('❌ Build failed:', error.message)
+    logger.failProcess('iframe integration build', error.message)
     process.exit(1)
   }
 }

@@ -1,10 +1,10 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import type { DateTime } from 'luxon'
 import Aide from '#models/aide'
 import FormSubmission from '#models/form_submission'
 import Simulateur from '#models/simulateur'
 import SimulateurService from '#services/simulateur_service'
 import { Exception } from '@adonisjs/core/exceptions'
+import { DateTime } from 'luxon'
 
 export default class SimulateurController {
   /**
@@ -115,7 +115,7 @@ export default class SimulateurController {
 
     return inertia.render('simulateurs/resultats', {
       simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
-      createdAt: formSubmission.createdAt,
+      createdAt: formSubmission.createdAt.toString(),
       results: await this.transformSimulationResults(formSubmission.results, params),
       secureHash: params.hash as string,
     })
@@ -142,7 +142,7 @@ export default class SimulateurController {
 
     return inertia.render('simulateurs/resultats', {
       simulateur: new SimulateurController.SingleDto(simulateur).toJson(),
-      createdAt: new Date(),
+      createdAt: DateTime.now().toString(),
       results: await this.transformSimulationResults(mockCalculationResponse, {
         simulateur_slug: params.simulateur_slug,
         hash: 'mock-hash',

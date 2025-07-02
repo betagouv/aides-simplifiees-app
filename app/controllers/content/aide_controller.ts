@@ -15,7 +15,7 @@ export default class AideController {
     toJson() {
       return {
         id: this.aide.id,
-        updatedAt: this.aide.updatedAt,
+        updatedAt: this.aide.updatedAt.toString(), // Convert DateTime to string for JSON serialization
         title: this.aide.title,
         slug: this.aide.slug,
         typeAide: this.aide.typeAide
@@ -88,7 +88,7 @@ export default class AideController {
     }
 
     const html = aide.content
-      ? marked(aide.content)
+      ? await marked(aide.content)
       : ''
 
     return inertia.render('content/aides/aide', {
@@ -120,7 +120,7 @@ export default class AideController {
     }
 
     const html = aide.content
-      ? marked(aide.content)
+      ? await marked(aide.content)
       : ''
 
     return inertia.render('content/aides/resultats-aide', {

@@ -14,7 +14,7 @@ export default class AdminSimulateurController {
     toJson() {
       return {
         id: this.simulateur.id,
-        updatedAt: this.simulateur.updatedAt,
+        updatedAt: this.simulateur.updatedAt.toString(), // Convert DateTime to string for JSON serialization
         title: this.simulateur.title,
         slug: this.simulateur.slug,
         status: this.simulateur.status,

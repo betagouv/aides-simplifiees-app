@@ -1,6 +1,15 @@
 # CHANGELOG
 
-## 1.3.1 [#123](https://github.com/betagouv/aides-simplifiees-app/pull/123)
+### 1.3.2 [#125](https://github.com/betagouv/aides-simplifiees-app/pull/125)
+
+- Ajout de fonctionnalités :
+  - Améliore le logging des tests
+  - Améliore la gestion et le logging des scripts
+- Corrections :
+  - Corrections de typage
+  - Corrections mineures de controlleurs et stores
+
+### 1.3.1 [#123](https://github.com/betagouv/aides-simplifiees-app/pull/123)
 - Ajout de fonctionnalités :
   - Configure et implémente des tests d'a11y
 - Améliorations :
@@ -49,7 +58,7 @@
   - Améliore la gestion des erreurs
   - Ajoute une propriété optionnelle "required" aux questions
 
-## 1.1.1 [#94](https://github.com/betagouv/aides-simplifiees-app/pull/94)
+### 1.1.1 [#94](https://github.com/betagouv/aides-simplifiees-app/pull/94)
 - Ajout de fonctionnalités :
 - Détails :
   - Améliorations du calcul du formulaire innovation

@@ -30,6 +30,7 @@ server.use([
   () => import('@adonisjs/vite/vite_middleware'),
   () => import('@adonisjs/inertia/inertia_middleware'),
   () => import('#middleware/share_env_middleware'),
+  () => import('#middleware/request_logging_middleware'),
 ])
 
 /**

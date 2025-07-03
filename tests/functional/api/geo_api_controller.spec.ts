@@ -12,9 +12,6 @@ test.group('API GeoApiController', (group) => {
     // Stub the axios.get method
     axiosGetStub = sinon.stub(axios, 'get')
 
-    // Stub console methods to prevent pollution
-    sinon.stub(console, 'error')
-
     // Stub the env.get method for LEXIMPACT_URL
     envGetStub = sinon.stub(env, 'get')
     envGetStub.withArgs('LEXIMPACT_URL').returns('https://api-adresse.data.gouv.fr')

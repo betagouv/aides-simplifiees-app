@@ -1,9 +1,12 @@
-import type { TimePeriod } from '#services/matomo_reporting_service'
+/* eslint-disable perfectionist/sort-imports */
 import type { HttpContext } from '@adonisjs/core/http'
-import Simulateur from '#models/simulateur'
-import MatomoReportingService from '#services/matomo_reporting_service'
-import env from '#start/env'
 import { Exception } from '@adonisjs/core/exceptions'
+import logger from '@adonisjs/core/services/logger'
+import type { TimePeriod } from '#services/matomo_reporting_service'
+import MatomoReportingService from '#services/matomo_reporting_service'
+import LoggingService from '#services/logging_service'
+import Simulateur from '#models/simulateur'
+import env from '#start/env'
 
 /**
  * Get the specified number of past weeks (Monday to Sunday) which are already over
@@ -28,6 +31,7 @@ function getPastWeekPeriods(numberOfWeeks = 4): TimePeriod[] {
 }
 
 export default class StatisticsController {
+  private loggingService: LoggingService
   private matomoService: MatomoReportingService
 
   private url = env.get('MATOMO_URL')
@@ -35,7 +39,15 @@ export default class StatisticsController {
   private siteId = env.get('MATOMO_SITE_ID')
 
   constructor() {
+    this.loggingService = new LoggingService(logger)
+
     if (!this?.url || !this?.token || !this?.siteId) {
+      this.loggingService.logError(new Error('Missing Matomo configuration'), undefined, {
+        context: 'statistics_controller_init',
+        url: !!this.url,
+        token: !!this.token,
+        siteId: !!this.siteId,
+      })
       throw new Exception('Missing Matomo configuration (url, token, or siteId)', { status: 500 })
     }
     this.matomoService = new MatomoReportingService({
@@ -46,6 +58,8 @@ export default class StatisticsController {
   }
 
   public async getStatistics({ response }: HttpContext) {
+    const timer = this.loggingService.startTimer('statistics_fetch')
+
     try {
       // Get published simulators and their titles
       const publishedSimulators = await Simulateur.query()
@@ -59,6 +73,12 @@ export default class StatisticsController {
 
       const allowedSimulatorIds = publishedSimulators.map(s => s.slug)
       const data = await this.matomoService.fetchEventsCount(allowedSimulatorIds, () => getPastWeekPeriods(8))
+
+      this.loggingService.logBusinessEvent('statistics_fetched', {
+        simulatorCount: publishedSimulators.length,
+        duration: timer.stop(),
+      })
+
       response.header('Content-Type', 'application/json')
       return {
         data,
@@ -66,7 +86,11 @@ export default class StatisticsController {
       }
     }
     catch (error: any) {
-      console.error('Error in statistics endpoint:', error.message)
+      this.loggingService.logError(error, undefined, {
+        context: 'statistics_fetch',
+        duration: timer.stop(),
+      })
+
       return response.status(500).json({
         error: 'Failed to fetch statistics',
         details: error.message,

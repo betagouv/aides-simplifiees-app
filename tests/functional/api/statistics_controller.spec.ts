@@ -16,10 +16,6 @@ test.group('API StatisticsController', (group) => {
     // Stub the axios.post method
     axiosPostStub = sinon.stub(axios, 'post')
 
-    // consoleErrorStub = sinon.stub(console, 'error')
-    // consoleWarnStub = sinon.stub(console, 'warn')
-    // consoleInfoStub = sinon.stub(console, 'info')
-
     adminUser = await UserFactory.createAdminUser()
 
     // Create test simulators with published status

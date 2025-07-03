@@ -1,10 +1,21 @@
+/* eslint-disable perfectionist/sort-imports */
+import process from 'node:process'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { StatusPageRange, StatusPageRenderer } from '@adonisjs/core/types/http'
-import process from 'node:process'
 import { ExceptionHandler } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
+import logger from '@adonisjs/core/services/logger'
+import { errors as vinErrors } from '@vinejs/vine'
+import LoggingService from '#services/logging_service'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
+  private loggingService: LoggingService
+
+  constructor() {
+    super()
+    this.loggingService = new LoggingService(logger)
+  }
+
   /**
    * In debug mode, the exception handler will display verbose errors
    * with pretty printed stack traces.
@@ -50,6 +61,14 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    // Handle validation errors from VineJS
+    if (error instanceof vinErrors.E_VALIDATION_ERROR) {
+      this.loggingService.logWarning('Validation error occurred', ctx, {
+        validationErrors: error.messages,
+        errorCode: 'E_VALIDATION_ERROR',
+      })
+    }
+
     return super.handle(error, ctx)
   }
 
@@ -64,6 +83,41 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       return
     }
 
+    // Use enhanced logging service for better error reporting
+    if (error instanceof Error) {
+      this.loggingService.logError(error, ctx, {
+        stack: error.stack,
+        errorName: error.name,
+        errorCode: (error as any).code,
+        status: (error as any).status,
+        context: this.context(ctx),
+      })
+    }
+    else {
+      // Handle non-Error objects
+      this.loggingService.logError(new Error('Unknown error type'), ctx, {
+        originalError: String(error),
+        errorType: typeof error,
+        context: this.context(ctx),
+      })
+    }
+
     return super.report(error, ctx)
+  }
+
+  /**
+   * Get additional context for error reporting
+   */
+  protected context(ctx: HttpContext) {
+    return {
+      requestId: ctx.request.id(),
+      userId: ctx.auth?.user?.id,
+      userEmail: ctx.auth?.user?.email,
+      ip: ctx.request.ip(),
+      userAgent: ctx.request.header('user-agent'),
+      method: ctx.request.method(),
+      url: ctx.request.url(true),
+      referer: ctx.request.header('referer'),
+    }
   }
 }

@@ -1,7 +1,8 @@
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import type { DateTime } from 'luxon'
+import Persona from '#models/persona'
+import Step from '#models/step'
 import { BaseModel, beforeCreate, column, hasMany } from '@adonisjs/lucid/orm'
-import Step from './step.js'
 
 export default class Simulateur extends BaseModel {
   @column({ isPrimary: true })
@@ -51,4 +52,7 @@ export default class Simulateur extends BaseModel {
 
   @hasMany(() => Step)
   declare steps: HasMany<typeof Step>
+
+  @hasMany(() => Persona)
+  declare personas: HasMany<typeof Persona>
 }

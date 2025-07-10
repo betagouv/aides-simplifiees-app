@@ -1,3 +1,5 @@
+import LoggingService from '#services/logging_service'
+import logger from '@adonisjs/core/services/logger'
 import axios from 'axios'
 
 interface MatomoConfig {
@@ -28,6 +30,7 @@ export interface TimePeriod {
 }
 
 export default class MatomoReportingService {
+  private loggingService: LoggingService
   private config: MatomoConfig
   private readonly requestTimeout = 5000
 
@@ -36,6 +39,7 @@ export default class MatomoReportingService {
   }
 
   constructor(config: MatomoConfig) {
+    this.loggingService = new LoggingService(logger)
     this.config = config
   }
 
@@ -43,19 +47,42 @@ export default class MatomoReportingService {
     simulateurSlugs: string[],
     getPeriods: () => TimePeriod[],
   ): Promise<TidyDataEntry[]> {
+    const timer = this.loggingService.startTimer('matomo_fetch_events', {
+      simulateurSlugs,
+      periodCount: getPeriods().length,
+    })
+
     try {
       const actions: ActionType[] = ['Start', 'Submit', 'Eligibility']
       // const actions: ActionType[] = ['Start', 'Submit', 'Eligibility', 'IntermediaryResults']
       const periods = getPeriods()
 
+      this.loggingService.logExternalApiCall('Matomo', '/index.php', 'POST', {
+        simulateurSlugs,
+        actions,
+        periodCount: periods.length,
+        totalRequests: actions.length * simulateurSlugs.length * periods.length,
+      })
+
       const urls = this.constructBulkUrls(actions, periods, simulateurSlugs)
       const bulkResults = await this.fetchBulk(urls)
       const results = this.processBulkResults(bulkResults, actions, periods, simulateurSlugs)
 
+      timer.stopWithMessage('Matomo events count fetched successfully', {
+        resultsCount: results.length,
+      })
+
       return results
     }
     catch (error) {
-      console.error('Failed to fetch Matomo event counts:', error)
+      timer.stopWithMessage('Failed to fetch Matomo event counts', {
+        error: error instanceof Error ? error.message : String(error),
+      })
+
+      this.loggingService.logError(error instanceof Error ? error : new Error(String(error)), undefined, {
+        simulateurSlugs,
+        operation: 'fetchEventsCount',
+      })
 
       // Return empty results instead of throwing
       return []
@@ -113,7 +140,10 @@ export default class MatomoReportingService {
       ...urls,
     }
 
-    console.info(`Making bulk API request with ${Object.keys(urls).length} individual requests`)
+    this.loggingService.logExternalApiCall('Matomo', '/index.php', 'POST', {
+      bulkRequestCount: Object.keys(urls).length,
+      endpoint: this.endpoint,
+    })
 
     const response = await axios.post(this.endpoint, bulkParams, {
       headers: {
@@ -128,7 +158,13 @@ export default class MatomoReportingService {
     })
 
     if (!response || response.status !== 200) {
-      throw new Error(`Bulk API request failed with status ${response?.status}`)
+      const error = new Error(`Bulk API request failed with status ${response?.status}`)
+      this.loggingService.logError(error, undefined, {
+        status: response?.status,
+        endpoint: this.endpoint,
+        bulkRequestCount: Object.keys(urls).length,
+      })
+      throw error
     }
 
     return response.data
@@ -142,7 +178,10 @@ export default class MatomoReportingService {
     const tidyData: TidyDataEntry[] = []
 
     if (!Array.isArray(bulkResults)) {
-      console.warn('Bulk results is not an array:', bulkResults)
+      this.loggingService.logWarning('Bulk results is not an array', undefined, {
+        bulkResults,
+        type: typeof bulkResults,
+      })
       return tidyData
     }
 
@@ -153,7 +192,13 @@ export default class MatomoReportingService {
       for (const simulateurSlug of simulateurSlugs) {
         for (const period of periods) {
           if (resultIndex >= bulkResults.length) {
-            console.warn(`Missing result for ${action} ${simulateurSlug} ${period.start}-${period.end}`)
+            this.loggingService.logWarning('Missing result for bulk request', undefined, {
+              action,
+              simulateurSlug,
+              period: `${period.start}-${period.end}`,
+              resultIndex,
+              totalResults: bulkResults.length,
+            })
             resultIndex++
             continue
           }
@@ -174,7 +219,13 @@ export default class MatomoReportingService {
             })
           }
           else {
-            console.warn(`Invalid data for ${action} ${simulateurSlug} ${period.start}-${period.end}:`, periodData)
+            this.loggingService.logWarning('Invalid data format from Matomo API', undefined, {
+              action,
+              simulateurSlug,
+              period: `${period.start}-${period.end}`,
+              dataType: typeof periodData,
+              isArray: Array.isArray(periodData),
+            })
             // Still add entry with 0 count to maintain data structure
             tidyData.push({
               simulateurSlug,
@@ -188,6 +239,13 @@ export default class MatomoReportingService {
         }
       }
     }
+
+    this.loggingService.logBusinessEvent('matomo_bulk_results_processed', {
+      totalEntries: tidyData.length,
+      actionsCount: actions.length,
+      simulateursCount: simulateurSlugs.length,
+      periodsCount: periods.length,
+    })
 
     return tidyData
   }

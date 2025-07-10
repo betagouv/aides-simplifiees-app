@@ -1,18 +1,31 @@
+/* eslint-disable perfectionist/sort-imports */
 import type { HttpContext } from '@adonisjs/core/http'
+import logger from '@adonisjs/core/services/logger'
 import FormSubmission from '#models/form_submission'
+import LoggingService from '#services/logging_service'
 
 export default class FormSubmissionController {
+  private loggingService: LoggingService
+
+  constructor() {
+    this.loggingService = new LoggingService(logger)
+  }
+
   /**
    * Store form submission data
    * Saves answers and results for a simulator and returns a secure URL for viewing results
    */
-  public async store({ request, response }: HttpContext) {
+  public async store(ctx: HttpContext) {
+    const { request, response } = ctx
+    const timer = this.loggingService.startTimer('form_submission_store')
+
     try {
       // Get the JSON body from the request
       const { simulateurId, answers, results } = request.body()
 
       // Validate required fields
       if (!simulateurId) {
+        this.loggingService.logWarning('Form submission missing simulateurId', ctx)
         return response.status(400).json({
           success: false,
           error: 'Missing required field: simulateurId',
@@ -20,6 +33,9 @@ export default class FormSubmissionController {
       }
 
       if (!answers) {
+        this.loggingService.logWarning('Form submission missing answers', ctx, {
+          simulateurId,
+        })
         return response.status(400).json({
           success: false,
           error: 'Missing required field: answers',
@@ -27,7 +43,11 @@ export default class FormSubmissionController {
       }
 
       // Log the received data
-      console.log(`[API] Storing form data for simulator: ${simulateurId}`)
+      this.loggingService.logFormSubmission('simulator_form', ctx, {
+        simulateurId,
+        answersCount: Object.keys(answers).length,
+        hasResults: !!results,
+      })
 
       // Create a new FormSubmission record
       const submission = await FormSubmission.create({
@@ -39,6 +59,8 @@ export default class FormSubmissionController {
       // Get the URL for viewing results
       const resultsUrl = submission.getResultsUrl()
 
+      timer.stopWithMessage(`Form submission created successfully with ID ${submission.id}`)
+
       return response.status(200).json({
         success: true,
         message: 'Form data stored successfully',
@@ -48,7 +70,12 @@ export default class FormSubmissionController {
       })
     }
     catch (error: any) {
-      console.error('Error storing form data:', error)
+      timer.stopWithMessage(`Form submission failed: ${error.message}`)
+
+      this.loggingService.logError(error, ctx, {
+        context: 'form_submission_store',
+        simulateurId: request.body()?.simulateurId,
+      })
 
       return response.status(500).json({
         success: false,
@@ -61,11 +88,17 @@ export default class FormSubmissionController {
   /**
    * Retrieve a form submission by secure hash
    */
-  public async show({ params, response }: HttpContext) {
+  public async show(ctx: HttpContext) {
+    const { params, response } = ctx
+    const timer = this.loggingService.startTimer('form_submission_show', {
+      hash: params.hash,
+    })
+
     try {
       const { hash } = params
 
       if (!hash) {
+        this.loggingService.logWarning('Form submission retrieval missing hash', ctx)
         return response.status(400).json({
           success: false,
           error: 'Missing required parameter: hash',
@@ -77,11 +110,22 @@ export default class FormSubmissionController {
         .first()
 
       if (!submission) {
+        this.loggingService.logWarning('Form submission not found', ctx, {
+          hash,
+        })
         return response.status(404).json({
           success: false,
           error: 'Form submission not found',
         })
       }
+
+      timer.stopWithMessage(`Form submission retrieved successfully for hash ${hash}`)
+
+      this.loggingService.logBusinessEvent('form_submission_retrieved', {
+        submissionId: submission.id,
+        simulatorId: submission.simulatorId,
+        hash,
+      })
 
       return response.status(200).json({
         success: true,
@@ -95,7 +139,12 @@ export default class FormSubmissionController {
       })
     }
     catch (error: any) {
-      console.error('Error retrieving form submission:', error)
+      timer.stopWithMessage(`Form submission retrieval failed: ${error.message}`)
+
+      this.loggingService.logError(error, ctx, {
+        context: 'form_submission_show',
+        hash: params.hash,
+      })
 
       return response.status(500).json({
         success: false,

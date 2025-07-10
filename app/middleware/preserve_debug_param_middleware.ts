@@ -1,6 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 
+import LoggingService from '#services/logging_service'
+
 /**
  * Middleware to preserve the 'debug' query parameter from the referer URL
  * to the current request URL.
@@ -32,7 +34,13 @@ export default class PreserveDebugParamMiddleware {
       }
     }
     catch (error) {
-      console.error('Error in PreserveDebugParamMiddleware:', error)
+      const loggingService = new LoggingService(ctx.logger)
+      loggingService.logError(error as Error, ctx, {
+        referer,
+        url: request.url(),
+        method: request.method(),
+        userAgent: request.header('user-agent'),
+      })
     }
 
     await next()

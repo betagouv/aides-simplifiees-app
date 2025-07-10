@@ -12,14 +12,14 @@ import { compareVersions } from '~/utils/compare_versions'
 export function useSurveySchemaManager({
   onNewSchema,
 }: {
-  onNewSchema?: (simulateurId?: string) => void
+  onNewSchema?: (simulateurSlug?: string) => void
 } = {}) {
   /**
    * State
    */
-  const schemas = ref<{ [simulateurId: string]: SurveyNormalizedSchema | null }>({})
-  const schemaStatus = ref<{ [simulateurId: string]: 'idle' | 'pending' | 'error' | 'success' }>({})
-  const versions = ref<{ [simulateurId: string]: string }>({})
+  const schemas = ref<{ [simulateurSlug: string]: SurveyNormalizedSchema | null }>({})
+  const schemaStatus = ref<{ [simulateurSlug: string]: 'idle' | 'pending' | 'error' | 'success' }>({})
+  const versions = ref<{ [simulateurSlug: string]: string }>({})
 
   /**
    * Composables
@@ -30,36 +30,36 @@ export function useSurveySchemaManager({
    * Methods
    */
 
-  const getVersion = (simulateurId: string): string => {
-    const version = versions.value[simulateurId]
-    debug.log(`[Surveys store][${simulateurId}] Version:`, version)
+  const getVersion = (simulateurSlug: string): string => {
+    const version = versions.value[simulateurSlug]
+    debug.log(`[Surveys store][${simulateurSlug}] Version:`, version)
     return version
   }
 
-  const setVersion = (simulateurId: string, version: string) => {
-    versions.value[simulateurId] = version
-    debug.log(`[Surveys store][${simulateurId}] Version set to:`, version)
+  const setVersion = (simulateurSlug: string, version: string) => {
+    versions.value[simulateurSlug] = version
+    debug.log(`[Surveys store][${simulateurSlug}] Version set to:`, version)
   }
 
-  const getSchemaStatus = (simulateurId: string): 'idle' | 'pending' | 'error' | 'success' => {
-    return schemaStatus.value[simulateurId] || 'idle'
+  const getSchemaStatus = (simulateurSlug: string): 'idle' | 'pending' | 'error' | 'success' => {
+    return schemaStatus.value[simulateurSlug] || 'idle'
   }
 
   function setSchemaStatus(
-    simulateurId: string,
+    simulateurSlug: string,
     status: 'idle' | 'pending' | 'error' | 'success',
   ) {
     if (status === 'error') {
-      console.error(`[Surveys store][${simulateurId}] Error loading survey schema`)
+      console.error(`[Surveys store][${simulateurSlug}] Error loading survey schema`)
     }
     else {
-      debug.log(`[Surveys store][${simulateurId}] Schema status:`, status)
+      debug.log(`[Surveys store][${simulateurSlug}] Schema status:`, status)
     }
-    schemaStatus.value[simulateurId] = status
+    schemaStatus.value[simulateurSlug] = status
   }
 
-  const getSchema = (simulateurId: string): SurveyNormalizedSchema | null => {
-    return schemas.value[simulateurId] || null
+  const getSchema = (simulateurSlug: string): SurveyNormalizedSchema | null => {
+    return schemas.value[simulateurSlug] || null
   }
 
   const setSchema = (simulateurSlug: string, schema: SurveySchema) => {
@@ -88,7 +88,7 @@ export function useSurveySchemaManager({
         const normalizedStep: SurveyDeepStep = {
           id: step.id,
           title: step.title,
-          pages: step.questions.map((question: SurveyQuestion, index: number) => {
+          pages: step.questions.map((question: SurveyQuestionData, index: number) => {
             return {
               id: `${step.id}_page_${index + 1}`,
               // title: question.title,
@@ -146,27 +146,27 @@ export function useSurveySchemaManager({
     })
   }
 
-  async function loadSchema(simulateurId: string) {
-    debug.log(`[Surveys store][${simulateurId}] Loading survey schema...`)
+  async function loadSchema(simulateurSlug: string) {
+    debug.log(`[Surveys store][${simulateurSlug}] Loading survey schema...`)
 
     const {
       data: schema,
       isFetching,
       isFinished,
       error: loadingError,
-    } = useFetch<SurveySchema>(`/forms/${simulateurId}.json`).get().json()
+    } = useFetch<SurveySchema>(`/forms/${simulateurSlug}.json`).get().json()
 
     watch(
       [isFinished, isFetching, loadingError],
       () => {
         if (loadingError.value) {
-          setSchemaStatus(simulateurId, 'error')
+          setSchemaStatus(simulateurSlug, 'error')
         }
         else if (isFinished.value) {
-          setSchemaStatus(simulateurId, 'success')
+          setSchemaStatus(simulateurSlug, 'success')
         }
         else if (isFetching.value) {
-          setSchemaStatus(simulateurId, 'pending')
+          setSchemaStatus(simulateurSlug, 'pending')
         }
       },
       { immediate: true },
@@ -176,35 +176,35 @@ export function useSurveySchemaManager({
       if (newSchema) {
         try {
           if (newSchema.forceRefresh) {
-            debug.warn(`[Surveys store][${simulateurId}] Schema forceRefresh is true, resetting survey...`)
-            setVersion(simulateurId, newSchema.version)
-            setSchema(simulateurId, newSchema)
-            onNewSchema?.(simulateurId)
+            debug.warn(`[Surveys store][${simulateurSlug}] Schema forceRefresh is true, resetting survey...`)
+            setVersion(simulateurSlug, newSchema.version)
+            setSchema(simulateurSlug, newSchema)
+            onNewSchema?.(simulateurSlug)
           }
           else {
-            const storedVersion = getVersion(simulateurId)
+            const storedVersion = getVersion(simulateurSlug)
             if (!storedVersion) {
-              debug.log(`[Surveys store][${simulateurId}] No stored version found, assuming first load`)
-              setVersion(simulateurId, newSchema.version)
-              setSchema(simulateurId, newSchema)
-              onNewSchema?.(simulateurId)
+              debug.log(`[Surveys store][${simulateurSlug}] No stored version found, assuming first load`)
+              setVersion(simulateurSlug, newSchema.version)
+              setSchema(simulateurSlug, newSchema)
+              onNewSchema?.(simulateurSlug)
             }
             else if (compareVersions(newSchema.version, storedVersion) > 0) {
-              debug.warn(`[Surveys store][${simulateurId}] Schema version changed !`)
-              setVersion(simulateurId, newSchema.version)
-              setSchema(simulateurId, newSchema)
-              onNewSchema?.(simulateurId)
+              debug.warn(`[Surveys store][${simulateurSlug}] Schema version changed !`)
+              setVersion(simulateurSlug, newSchema.version)
+              setSchema(simulateurSlug, newSchema)
+              onNewSchema?.(simulateurSlug)
             }
             else {
               debug.log(
-                `[Surveys store][${simulateurId}] Schema version unchanged, no need to reset survey`,
+                `[Surveys store][${simulateurSlug}] Schema version unchanged, no need to reset survey`,
               )
-              setSchema(simulateurId, newSchema)
+              setSchema(simulateurSlug, newSchema)
             }
           }
         }
         catch (error) {
-          console.error(`[Surveys store][${simulateurId}] Error updating schema:`, error)
+          console.error(`[Surveys store][${simulateurSlug}] Error updating schema:`, error)
         }
       }
     })

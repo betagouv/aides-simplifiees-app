@@ -572,7 +572,7 @@ export async function checkBasicAccessibility(page: Page): Promise<{ passed: boo
 /**
  * Generate test data based on simulateur type
  */
-export function generateTestData(simulateurId: string) {
+export function generateTestData(simulateurSlug: string) {
   const baseData = {
     age: 25,
     city: 'Paris',
@@ -580,7 +580,7 @@ export function generateTestData(simulateurId: string) {
     hasJob: true,
   }
 
-  switch (simulateurId) {
+  switch (simulateurSlug) {
     case 'comprehensive-test':
       return {
         ...baseData,

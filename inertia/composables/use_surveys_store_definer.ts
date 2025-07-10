@@ -10,8 +10,8 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
     /**
      * State
      */
-    const answers = ref<{ [simulateurId: string]: SurveyAnswers }>({})
-    const currentPageIds = ref<{ [simulateurId: string]: string | null }>({})
+    const answers = ref<{ [simulateurSlug: string]: SurveyAnswers }>({})
+    const currentPageIds = ref<{ [simulateurSlug: string]: string | null }>({})
 
     /**
      * Composables
@@ -26,9 +26,9 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       getSchema,
       getSchemaStatus,
     } = useSurveySchemaManager({
-      onNewSchema: (simulateurId) => {
-        if (simulateurId) {
-          resetSurvey(simulateurId)
+      onNewSchema: (simulateurSlug) => {
+        if (simulateurSlug) {
+          resetSurvey(simulateurSlug)
         }
       },
     })
@@ -36,25 +36,25 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
     /**
      * Answers related methods
      */
-    const getAnswers = (simulateurId: string): SurveyAnswers => {
-      const currentAnswers = answers.value[simulateurId]
+    const getAnswers = (simulateurSlug: string): SurveyAnswers => {
+      const currentAnswers = answers.value[simulateurSlug]
       return currentAnswers ?? {}
     }
 
-    const getAnswersForCalculation = (simulateurId: string): SurveyAnswers => {
-      const currentAnswers = getAnswers(simulateurId)
+    const getAnswersForCalculation = (simulateurSlug: string): SurveyAnswers => {
+      const currentAnswers = getAnswers(simulateurSlug)
       return Object.entries(currentAnswers)
         .filter(([questionId, answer]) => {
-          const question = findQuestionById(simulateurId, questionId)
+          const question = findQuestionById(simulateurSlug, questionId)
           if (!question) {
             return false
           }
           // Check if the question is visible
-          const isVisible = isQuestionVisible(simulateurId, questionId)
+          const isVisible = isQuestionVisible(simulateurSlug, questionId)
           return isVisible && answer !== undefined
         })
         .reduce((acc, [questionId, answer]) => {
-          const question = findQuestionById(simulateurId, questionId)
+          const question = findQuestionById(simulateurSlug, questionId)
           if (question?.type === 'combobox') {
             // If the question is a combobox, parse the answer
             try {
@@ -63,7 +63,7 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
             }
             catch (error) {
               debug.warn(
-                `[Surveys store][${simulateurId}] Error parsing combobox answer for ${questionId}:`,
+                `[Surveys store][${simulateurSlug}] Error parsing combobox answer for ${questionId}:`,
                 error,
               )
             }
@@ -75,53 +75,53 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
         }, {} as SurveyAnswers)
     }
 
-    const hasAnswers = (simulateurId: string): boolean => {
-      const currentAnswers = getAnswers(simulateurId)
+    const hasAnswers = (simulateurSlug: string): boolean => {
+      const currentAnswers = getAnswers(simulateurSlug)
       return Object.keys(currentAnswers).length > 0
     }
 
-    const getAnswer = (simulateurId: string, questionId: string): any => {
-      const currentAnswers = getAnswers(simulateurId)
+    const getAnswer = (simulateurSlug: string, questionId: string): any => {
+      const currentAnswers = getAnswers(simulateurSlug)
       const answer = currentAnswers[questionId]
       if (answer === undefined) {
-        // debug.warn(`[Surveys store][${simulateurId}] Answer not found for ${questionId}`)
+        // debug.warn(`[Surveys store][${simulateurSlug}] Answer not found for ${questionId}`)
         return null
       }
-      // debug.log(`[Surveys store][${simulateurId}] Answer for ${questionId}:`, answer)
+      // debug.log(`[Surveys store][${simulateurSlug}] Answer for ${questionId}:`, answer)
       return answer
     }
 
-    const hasAnswer = (simulateurId: string, questionId: string): boolean => {
-      const currentAnswers = getAnswers(simulateurId)
+    const hasAnswer = (simulateurSlug: string, questionId: string): boolean => {
+      const currentAnswers = getAnswers(simulateurSlug)
       const answer = currentAnswers[questionId]
       if (answer === undefined) {
-        // debug.warn(`[Surveys store][${simulateurId}] Answer not found for ${questionId}`)
+        // debug.warn(`[Surveys store][${simulateurSlug}] Answer not found for ${questionId}`)
         return false
       }
-      // debug.log(`[Surveys store][${simulateurId}] Answer for ${questionId}:`, answer)
+      // debug.log(`[Surveys store][${simulateurSlug}] Answer for ${questionId}:`, answer)
       return true
     }
 
-    function setAnswer(simulateurId: string, questionId: string, value: any) {
+    function setAnswer(simulateurSlug: string, questionId: string, value: any) {
       // Initialize answers object for this simulateur if it doesn't exist
-      if (!answers.value[simulateurId]) {
-        answers.value[simulateurId] = {}
+      if (!answers.value[simulateurSlug]) {
+        answers.value[simulateurSlug] = {}
       }
 
-      answers.value[simulateurId][questionId] = value
+      answers.value[simulateurSlug][questionId] = value
 
-      debug.log(`[Surveys store][${simulateurId}] Answer set for ${questionId}:`, value)
+      debug.log(`[Surveys store][${simulateurSlug}] Answer set for ${questionId}:`, value)
 
       // Track the answer in analytics
-      const question = findQuestionById(simulateurId, questionId)
+      const question = findQuestionById(simulateurSlug, questionId)
       if (question && enableMatomo) {
-        matomo?.trackSurveyAnswer(simulateurId, questionId, question.title)
+        matomo?.trackSurveyAnswer(simulateurSlug, questionId, question.title)
       }
     }
 
-    const formatAnswer = (simulateurId: string, questionId: string, value: any): string => {
+    const formatAnswer = (simulateurSlug: string, questionId: string, value: any): string => {
       // get choice title
-      const question = findQuestionById(simulateurId, questionId)
+      const question = findQuestionById(simulateurSlug, questionId)
       if (question) {
         switch (question.type) {
           case 'boolean': {
@@ -151,43 +151,43 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
           return choice.title
         }
       }
-      return getAnswer(simulateurId, questionId)
+      return getAnswer(simulateurSlug, questionId)
     }
 
     /**
      * Page related methods
      */
 
-    function getCurrentPageId(simulateurId: string): string | null {
-      const id = currentPageIds.value[simulateurId] || null
+    function getCurrentPageId(simulateurSlug: string): string | null {
+      const id = currentPageIds.value[simulateurSlug] || null
       if (id === null) {
-        debug.warn(`[Surveys store][${simulateurId}] No current page ID found, setting to first page`)
-        setFirstPage(simulateurId)
+        debug.warn(`[Surveys store][${simulateurSlug}] No current page ID found, setting to first page`)
+        setFirstPage(simulateurSlug)
       }
-      return currentPageIds.value[simulateurId] || null
+      return currentPageIds.value[simulateurSlug] || null
     }
 
-    function setCurrentPageId(simulateurId: string, pageId: string) {
-      currentPageIds.value[simulateurId] = pageId
-      debug.log(`[Surveys store][${simulateurId}] Current question ID set to:`, pageId)
+    function setCurrentPageId(simulateurSlug: string, pageId: string) {
+      currentPageIds.value[simulateurSlug] = pageId
+      debug.log(`[Surveys store][${simulateurSlug}] Current question ID set to:`, pageId)
     }
 
-    const getCurrentPage = (simulateurId: string): SurveyPage | null => {
-      const currentSchema = getSchema(simulateurId)
-      const currentPageId = getCurrentPageId(simulateurId)
+    const getCurrentPage = (simulateurSlug: string): SurveyPageData | null => {
+      const currentSchema = getSchema(simulateurSlug)
+      const currentPageId = getCurrentPageId(simulateurSlug)
 
       if (!currentSchema || !currentPageId) {
         return null
       }
 
-      const allPages = getAllPages(simulateurId)
+      const allPages = getAllPages(simulateurSlug)
       const currentPage = allPages
         ?.find(page => page.id === currentPageId)
       return currentPage ?? null
     }
 
-    function getAllPages(simulateurId: string): SurveyPage[] {
-      const currentSchema = getSchema(simulateurId)
+    function getAllPages(simulateurSlug: string): SurveyPageData[] {
+      const currentSchema = getSchema(simulateurSlug)
       if (!currentSchema) {
         return []
       }
@@ -195,37 +195,37 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return currentSchema.steps.flatMap(step => step.pages || [])
     }
 
-    function getAllQuestionsPages(simulateurId: string): SurveyQuestionsPage[] {
-      const allPages = getAllPages(simulateurId)
+    function getAllQuestionsPages(simulateurSlug: string): SurveyQuestionsPageData[] {
+      const allPages = getAllPages(simulateurSlug)
       const questionsPages = allPages
         .filter((page) => {
-          return (page as SurveyQuestionsPage).questions !== undefined
+          return (page as SurveyQuestionsPageData).questions !== undefined
         })
-      return questionsPages as SurveyQuestionsPage[]
+      return questionsPages as SurveyQuestionsPageData[]
     }
 
-    function setFirstPage(simulateurId: string) {
-      const allPages = getAllQuestionsPages(simulateurId)
+    function setFirstPage(simulateurSlug: string) {
+      const allPages = getAllQuestionsPages(simulateurSlug)
       const firstPage = allPages
         .find((page) => {
           return page.questions
             ?.some((question) => {
-              return isQuestionVisible(simulateurId, question.id)
+              return isQuestionVisible(simulateurSlug, question.id)
             })
         })
 
       if (firstPage) {
-        setCurrentPageId(simulateurId, firstPage.id)
+        setCurrentPageId(simulateurSlug, firstPage.id)
       }
     }
 
-    const getNextVisiblePage = (simulateurId: string): SurveyPage | null => {
-      const currentPage = getCurrentPage(simulateurId)
+    const getNextVisiblePage = (simulateurSlug: string): SurveyPageData | null => {
+      const currentPage = getCurrentPage(simulateurSlug)
       if (!currentPage) {
         return null
       }
 
-      const allPages = getAllPages(simulateurId)
+      const allPages = getAllPages(simulateurSlug)
       const currentIndex = allPages.findIndex(page => page.id === currentPage.id)
 
       if (currentIndex === -1) {
@@ -236,18 +236,18 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       for (let i = currentIndex + 1; i < allPages.length; i++) {
         const nextPage = allPages[i]
         // A page is visible if any of its questions are visible OR if it is an intermediary results page
-        if ((nextPage as SurveyResultsPage).type === 'intermediary-results') {
-          debug.log(`[Surveys store][${simulateurId}] Next visible page: ${nextPage.id}`)
+        if ((nextPage as SurveyResultsPageData).type === 'intermediary-results') {
+          debug.log(`[Surveys store][${simulateurSlug}] Next visible page: ${nextPage.id}`)
           return nextPage
         }
-        const hasVisibleQuestion = (nextPage as SurveyQuestionsPage)
+        const hasVisibleQuestion = (nextPage as SurveyQuestionsPageData)
           ?.questions
           .some((q) => {
-            return isQuestionVisible(simulateurId, q.id)
+            return isQuestionVisible(simulateurSlug, q.id)
           }) ?? false
 
         if (hasVisibleQuestion) {
-          debug.log(`[Surveys store][${simulateurId}] Next visible page: ${nextPage.id}`)
+          debug.log(`[Surveys store][${simulateurSlug}] Next visible page: ${nextPage.id}`)
           return nextPage
         }
       }
@@ -255,13 +255,13 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return null
     }
 
-    const getPreviousVisiblePage = (simulateurId: string): SurveyPage | null => {
-      const currentPage = getCurrentPage(simulateurId)
+    const getPreviousVisiblePage = (simulateurSlug: string): SurveyPageData | null => {
+      const currentPage = getCurrentPage(simulateurSlug)
       if (!currentPage) {
         return null
       }
 
-      const allPages = getAllPages(simulateurId)
+      const allPages = getAllPages(simulateurSlug)
       const currentIndex = allPages.findIndex(page => page.id === currentPage.id)
 
       if (currentIndex === -1) {
@@ -272,17 +272,17 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       for (let i = currentIndex - 1; i >= 0; i--) {
         const prevPage = allPages[i]
         // A page is visible if any of its questions are visible OR if it is an intermediary results page
-        if ((prevPage as SurveyResultsPage).type === 'intermediary-results') {
-          debug.log(`[Surveys store][${simulateurId}] Previous visible page: ${prevPage.id}`)
+        if ((prevPage as SurveyResultsPageData).type === 'intermediary-results') {
+          debug.log(`[Surveys store][${simulateurSlug}] Previous visible page: ${prevPage.id}`)
           return prevPage
         }
-        const hasVisibleQuestion = (prevPage as SurveyQuestionsPage)
+        const hasVisibleQuestion = (prevPage as SurveyQuestionsPageData)
           ?.questions
           .some((q) => {
-            return isQuestionVisible(simulateurId, q.id)
+            return isQuestionVisible(simulateurSlug, q.id)
           }) ?? false
         if (hasVisibleQuestion) {
-          debug.log(`[Surveys store][${simulateurId}] Previous visible page: ${prevPage.id}`)
+          debug.log(`[Surveys store][${simulateurSlug}] Previous visible page: ${prevPage.id}`)
           return prevPage
         }
       }
@@ -290,36 +290,36 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return null
     }
 
-    const isFirstPage = (simulateurId: string): boolean => {
-      return getPreviousVisiblePage(simulateurId) === null
+    const isFirstPage = (simulateurSlug: string): boolean => {
+      return getPreviousVisiblePage(simulateurSlug) === null
     }
 
-    const isLastPage = (simulateurId: string): boolean => {
-      return getNextVisiblePage(simulateurId) === null
+    const isLastPage = (simulateurSlug: string): boolean => {
+      return getNextVisiblePage(simulateurSlug) === null
     }
 
-    function goToNextPage(simulateurId: string) {
-      const nextPage = getNextVisiblePage(simulateurId)
+    function goToNextPage(simulateurSlug: string) {
+      const nextPage = getNextVisiblePage(simulateurSlug)
       if (nextPage) {
-        setCurrentPageId(simulateurId, nextPage.id)
+        setCurrentPageId(simulateurSlug, nextPage.id)
         return true
       }
       return false
     }
 
-    function goToPreviousPage(simulateurId: string) {
-      const prevPage = getPreviousVisiblePage(simulateurId)
+    function goToPreviousPage(simulateurSlug: string) {
+      const prevPage = getPreviousVisiblePage(simulateurSlug)
       if (prevPage) {
-        setCurrentPageId(simulateurId, prevPage.id)
+        setCurrentPageId(simulateurSlug, prevPage.id)
         return true
       }
       return false
     }
 
-    function setCurrentPageFromQuestionId(simulateurId: string, questionId: string) {
-      const question = findQuestionById(simulateurId, questionId)
+    function setCurrentPageFromQuestionId(simulateurSlug: string, questionId: string) {
+      const question = findQuestionById(simulateurSlug, questionId)
       if (question) {
-        const page = getAllQuestionsPages(simulateurId)
+        const page = getAllQuestionsPages(simulateurSlug)
           .find((p) => {
             return p.questions
               ?.some((q) => {
@@ -327,7 +327,7 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
               })
           })
         if (page) {
-          setCurrentPageId(simulateurId, page.id)
+          setCurrentPageId(simulateurSlug, page.id)
         }
       }
     }
@@ -336,18 +336,18 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
      * Question related methods
      */
 
-    function getQuestions(simulateurId: string): SurveyQuestion[] {
-      const currentSchema = getSchema(simulateurId)
+    function getQuestions(simulateurSlug: string): SurveyQuestionData[] {
+      const currentSchema = getSchema(simulateurSlug)
       const questions = currentSchema
         ?.steps
         .flatMap((step) => {
-          return step.pages.flatMap(page => ((page as SurveyQuestionsPage).questions ?? []))
+          return step.pages.flatMap(page => ((page as SurveyQuestionsPageData).questions ?? []))
         })
       return questions ?? []
     }
 
-    function findQuestionById(simulateurId: string, questionId: string): SurveyQuestion | null {
-      const questions = getQuestions(simulateurId)
+    function findQuestionById(simulateurSlug: string, questionId: string): SurveyQuestionData | null {
+      const questions = getQuestions(simulateurSlug)
       const question = questions
         .find((q) => {
           return q.id === questionId
@@ -355,9 +355,9 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return question ?? null
     }
 
-    function isQuestionVisible(simulateurId: string, questionId: string): boolean {
-      const question = findQuestionById(simulateurId, questionId)
-      const currentAnswers = getAnswers(simulateurId)
+    function isQuestionVisible(simulateurSlug: string, questionId: string): boolean {
+      const question = findQuestionById(simulateurSlug, questionId)
+      const currentAnswers = getAnswers(simulateurSlug)
 
       if (!question) {
         return false
@@ -384,20 +384,20 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return true
     }
 
-    function getGroupedQuestions(simulateurId: string): QuestionGroup[] {
-      const steps = getAllSteps(simulateurId)
+    function getGroupedQuestions(simulateurSlug: string): QuestionGroup[] {
+      const steps = getAllSteps(simulateurSlug)
       const groupedQuestions = steps
         .map((step) => {
           const questions = step.pages
             .flatMap((page) => {
-              return (page as SurveyQuestionsPage)
+              return (page as SurveyQuestionsPageData)
                 .questions
                 ?.map((question) => {
                   return {
                     id: question.id,
                     title: question.title,
-                    answer: getAnswer(simulateurId, question.id),
-                    visible: isQuestionVisible(simulateurId, question.id),
+                    answer: getAnswer(simulateurSlug, question.id),
+                    visible: isQuestionVisible(simulateurSlug, question.id),
                   }
                 }) ?? []
             })
@@ -409,20 +409,20 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return groupedQuestions
     }
 
-    function getGroupedVisibleQuestions(simulateurId: string): QuestionGroup[] {
-      const steps = getAllSteps(simulateurId)
+    function getGroupedVisibleQuestions(simulateurSlug: string): QuestionGroup[] {
+      const steps = getAllSteps(simulateurSlug)
       const groupedQuestions = steps
         .map((step) => {
           const questions = step.pages
             .flatMap((page) => {
-              return (page as SurveyQuestionsPage)
+              return (page as SurveyQuestionsPageData)
                 .questions
                 ?.map((question) => {
                   return {
                     id: question.id,
                     title: question.title,
-                    answer: getAnswer(simulateurId, question.id),
-                    visible: isQuestionVisible(simulateurId, question.id),
+                    answer: getAnswer(simulateurSlug, question.id),
+                    visible: isQuestionVisible(simulateurSlug, question.id),
                   }
                 })
                 ?.filter((question) => {
@@ -437,21 +437,21 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return groupedQuestions
     }
 
-    function getVisibleQuestions(simulateurId: string): SurveyQuestion[] {
-      const questions = getQuestions(simulateurId)
+    function getVisibleQuestions(simulateurSlug: string): SurveyQuestionData[] {
+      const questions = getQuestions(simulateurSlug)
       const visibleQuestions = questions
         .filter((question) => {
-          return isQuestionVisible(simulateurId, question.id)
+          return isQuestionVisible(simulateurSlug, question.id)
         })
       return visibleQuestions
     }
 
-    function isQuestionInCurrentPage(simulateurId: string, questionId: string): boolean {
-      const currentPage = getCurrentPage(simulateurId)
+    function isQuestionInCurrentPage(simulateurSlug: string, questionId: string): boolean {
+      const currentPage = getCurrentPage(simulateurSlug)
       if (!currentPage) {
         return false
       }
-      const isInCurrentPage = (currentPage as SurveyQuestionsPage)
+      const isInCurrentPage = (currentPage as SurveyQuestionsPageData)
         .questions
         ?.some((q) => {
           return q.id === questionId
@@ -459,37 +459,37 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return isInCurrentPage ?? false
     }
 
-    function areAllRequiredQuestionsAnswered(simulateurId: string): boolean {
-      const visibleQuestions = getVisibleQuestions(simulateurId)
+    function areAllRequiredQuestionsAnswered(simulateurSlug: string): boolean {
+      const visibleQuestions = getVisibleQuestions(simulateurSlug)
       const areAllAnswered = visibleQuestions
         .filter((question) => {
           // Only consider questions that are explicitly required (default to true if not specified)
           return question.required !== false
         })
         .every((question) => {
-          return hasAnswer(simulateurId, question.id)
+          return hasAnswer(simulateurSlug, question.id)
         })
       return areAllAnswered
     }
 
-    function getVisibleQuestionsInCurrentPage(simulateurId: string): SurveyQuestion[] {
-      const currentPage = getCurrentPage(simulateurId)
+    function getVisibleQuestionsInCurrentPage(simulateurSlug: string): SurveyQuestionData[] {
+      const currentPage = getCurrentPage(simulateurSlug)
       if (!currentPage) {
         return []
       }
-      const questions = (currentPage as SurveyQuestionsPage)
+      const questions = (currentPage as SurveyQuestionsPageData)
         ?.questions
         ?.filter((question) => {
-          return isQuestionVisible(simulateurId, question.id)
+          return isQuestionVisible(simulateurSlug, question.id)
         })
       return questions ?? []
     }
 
-    function areAllQuestionsInPageValid(simulateurId: string): boolean {
-      const visibleQuestions = getVisibleQuestionsInCurrentPage(simulateurId)
+    function areAllQuestionsInPageValid(simulateurSlug: string): boolean {
+      const visibleQuestions = getVisibleQuestionsInCurrentPage(simulateurSlug)
       const areAllValid = visibleQuestions
         .every((question) => {
-          return isAnswerValid(question, getAnswer(simulateurId, question.id))
+          return isAnswerValid(question, getAnswer(simulateurSlug, question.id))
         })
       return areAllValid
     }
@@ -498,14 +498,14 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
      * Step related methods
      */
 
-    function getAllSteps(simulateurId: string): SurveyDeepStep[] {
-      const currentSchema = getSchema(simulateurId)
+    function getAllSteps(simulateurSlug: string): SurveyDeepStep[] {
+      const currentSchema = getSchema(simulateurSlug)
       return currentSchema?.steps ?? []
     }
 
-    function getCurrentStep(simulateurId: string): SurveyDeepStep | null {
-      const steps = getAllSteps(simulateurId)
-      const currentPageId = getCurrentPageId(simulateurId)
+    function getCurrentStep(simulateurSlug: string): SurveyDeepStep | null {
+      const steps = getAllSteps(simulateurSlug)
+      const currentPageId = getCurrentPageId(simulateurSlug)
       const currentStep = steps
         .find((step) => {
           return step.pages
@@ -516,14 +516,14 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return currentStep ?? null
     }
 
-    const getCurrentStepId = (simulateurId: string): string | null => {
-      const step = getCurrentStep(simulateurId)
+    const getCurrentStepId = (simulateurSlug: string): string | null => {
+      const step = getCurrentStep(simulateurSlug)
       return step?.id ?? null
     }
 
-    const getCurrentStepIndex = (simulateurId: string): number | null => {
-      const step = getCurrentStep(simulateurId)
-      const steps = getAllSteps(simulateurId)
+    const getCurrentStepIndex = (simulateurSlug: string): number | null => {
+      const step = getCurrentStep(simulateurSlug)
+      const steps = getAllSteps(simulateurSlug)
       const stepIndex = steps
         .findIndex((s) => {
           return s.id === step?.id
@@ -540,20 +540,20 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
      * Progress related methods
      */
 
-    const getProgress = (simulateurId: string): number => {
-      const currentSchema = getSchema(simulateurId)
-      const currentAnswers = getAnswers(simulateurId)
+    const getProgress = (simulateurSlug: string): number => {
+      const currentSchema = getSchema(simulateurSlug)
+      const currentAnswers = getAnswers(simulateurSlug)
 
       if (!currentSchema) {
         return 0
       }
 
-      const questions = getQuestions(simulateurId)
+      const questions = getQuestions(simulateurSlug)
 
       // Count all visible questions
       let visibleQuestionsCount
         = questions.filter((question) => {
-          return isQuestionVisible(simulateurId, question.id)
+          return isQuestionVisible(simulateurSlug, question.id)
         }).length ?? 0
 
       // If there are no visible questions (unlikely but possible), use total questions count
@@ -563,7 +563,7 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
 
       // Count answered questions - but only count those that are visible
       const answeredVisibleQuestionsCount = Object.keys(currentAnswers).filter((questionId) => {
-        return isQuestionVisible(simulateurId, questionId)
+        return isQuestionVisible(simulateurSlug, questionId)
       }).length
 
       return Math.min(
@@ -576,52 +576,52 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
      * Global survey related methods
      */
 
-    function resetSurvey(simulateurId: string) {
-      debug.log(`[Surveys store][${simulateurId}] Resetting survey...`)
-      answers.value[simulateurId] = {}
+    function resetSurvey(simulateurSlug: string) {
+      debug.log(`[Surveys store][${simulateurSlug}] Resetting survey...`)
+      answers.value[simulateurSlug] = {}
 
       // Reset to first category/question
-      setFirstPage(simulateurId)
+      setFirstPage(simulateurSlug)
     }
 
     // Welcome screen
-    const showWelcomeScreen = ref<{ [simulateurId: string]: boolean }>({})
-    function getShowWelcomeScreen(simulateurId: string): boolean {
-      return showWelcomeScreen.value[simulateurId] ?? true
+    const showWelcomeScreen = ref<{ [simulateurSlug: string]: boolean }>({})
+    function getShowWelcomeScreen(simulateurSlug: string): boolean {
+      return showWelcomeScreen.value[simulateurSlug] ?? true
     }
-    function setShowWelcomeScreen(simulateurId: string, value: boolean) {
-      showWelcomeScreen.value[simulateurId] = value
+    function setShowWelcomeScreen(simulateurSlug: string, value: boolean) {
+      showWelcomeScreen.value[simulateurSlug] = value
     }
 
     // Choice screen
-    const showChoiceScreen = ref<{ [simulateurId: string]: boolean }>({})
-    function getShowChoiceScreen(simulateurId: string): boolean {
-      return showChoiceScreen.value[simulateurId] ?? true
+    const showChoiceScreen = ref<{ [simulateurSlug: string]: boolean }>({})
+    function getShowChoiceScreen(simulateurSlug: string): boolean {
+      return showChoiceScreen.value[simulateurSlug] ?? true
     }
-    function setShowChoiceScreen(simulateurId: string, value: boolean) {
-      showChoiceScreen.value[simulateurId] = value
+    function setShowChoiceScreen(simulateurSlug: string, value: boolean) {
+      showChoiceScreen.value[simulateurSlug] = value
     }
 
     /**
      * Event listeners / emitters
      */
-    const completeListeners = ref<{ [simulateurId: string]: Set<(simulateurId: string) => void> }>(
+    const completeListeners = ref<{ [simulateurSlug: string]: Set<(simulateurSlug: string) => void> }>(
       {},
     )
 
-    function onComplete(simulateurId: string, listener: () => void) {
-      if (!completeListeners.value[simulateurId]) {
-        completeListeners.value[simulateurId] = new Set()
+    function onComplete(simulateurSlug: string, listener: () => void) {
+      if (!completeListeners.value[simulateurSlug]) {
+        completeListeners.value[simulateurSlug] = new Set()
       }
-      completeListeners.value[simulateurId].add(listener)
+      completeListeners.value[simulateurSlug].add(listener)
     }
 
     /**
-     * Right now cannot be used because simulateurId is unkown on unmount
+     * Right now cannot be used because simulateurSlug is unkown on unmount
      */
-    function offComplete(simulateurId: string, listener: () => void) {
-      if (completeListeners.value[simulateurId]) {
-        completeListeners.value[simulateurId].delete(listener)
+    function offComplete(simulateurSlug: string, listener: () => void) {
+      if (completeListeners.value[simulateurSlug]) {
+        completeListeners.value[simulateurSlug].delete(listener)
       }
     }
 
@@ -631,18 +631,18 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       })
     }
 
-    function tryComplete(simulateurId: string) {
+    function tryComplete(simulateurSlug: string) {
       // Check if all questions are answered
       // We might need better form validation later
-      const allAnswered = areAllRequiredQuestionsAnswered(simulateurId)
+      const allAnswered = areAllRequiredQuestionsAnswered(simulateurSlug)
 
       if (allAnswered) {
         // Trigger completion event
-        completeListeners.value[simulateurId]?.forEach((listener) => {
-          listener(simulateurId)
+        completeListeners.value[simulateurSlug]?.forEach((listener) => {
+          listener(simulateurSlug)
         })
 
-        debug.log(`[Surveys store][${simulateurId}] Survey completed!`)
+        debug.log(`[Surveys store][${simulateurSlug}] Survey completed!`)
       }
     }
 

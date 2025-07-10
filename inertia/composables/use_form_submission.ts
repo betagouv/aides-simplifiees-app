@@ -8,25 +8,25 @@ export function useFormSubmission() {
 
   const status = ref<'idle' | 'pending' | 'success' | 'error'>()
 
-  const submit = async (simulateurId: string, answers: any, results: SimulationResultsAides): Promise<{
+  const submit = async (simulateurSlug: string, answers: any, results: SimulationResultsAides): Promise<{
     success: boolean
     hash?: string
   }> => {
-    debug.log('[useSubmission] submitForm', simulateurId, answers)
+    debug.log('[useSubmission] submitForm', simulateurSlug, answers)
 
     try {
       status.value = 'pending'
 
       // Track form submission in Matomo
       const matomo = useMatomoTracking()
-      matomo.trackSurveySubmit(simulateurId)
+      matomo.trackSurveySubmit(simulateurSlug)
 
       // Store form data and results
       try {
         const response = await axios.post(
           '/api/form-submissions',
           {
-            simulateurId,
+            simulateurSlug,
             answers,
             results,
           },

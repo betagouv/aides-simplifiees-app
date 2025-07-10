@@ -42,48 +42,48 @@ export function useMatomoTracking() {
   /**
    * Track an answer to a survey question
    */
-  function trackSurveyAnswer(simulateurId: string, questionId: string, questionTitle: string) {
+  function trackSurveyAnswer(simulateurSlug: string, questionId: string, questionTitle: string) {
     if (import.meta.env.SSR) {
       return
     }
-    const category = getMatomoCategory(simulateurId)
-    const name = `[${simulateurId}][${category.split(']')[1].slice(1)}]${questionId}:${questionTitle}`
+    const category = getMatomoCategory(simulateurSlug)
+    const name = `[${simulateurSlug}][${category.split(']')[1].slice(1)}]${questionId}:${questionTitle}`
     trackEvent(category, 'Answer', name)
   }
 
   /**
    * Track the start of a survey
    */
-  function trackSurveyStart(simulateurId: string) {
+  function trackSurveyStart(simulateurSlug: string) {
     if (import.meta.env.SSR) {
       return
     }
-    const category = getMatomoCategory(simulateurId)
-    const name = `[${simulateurId}][${category.split(']')[1].slice(1)}]`
+    const category = getMatomoCategory(simulateurSlug)
+    const name = `[${simulateurSlug}][${category.split(']')[1].slice(1)}]`
     trackEvent(category, 'Start', name)
   }
 
   /**
    * Track the submission of a survey
    */
-  function trackSurveySubmit(simulateurId: string) {
+  function trackSurveySubmit(simulateurSlug: string) {
     if (import.meta.env.SSR) {
       return
     }
-    const category = getMatomoCategory(simulateurId)
-    const name = `[${simulateurId}][${category.split(']')[1].slice(1)}]`
+    const category = getMatomoCategory(simulateurSlug)
+    const name = `[${simulateurSlug}][${category.split(']')[1].slice(1)}]`
     trackEvent(category, 'Submit', name)
   }
 
   /**
    * Track Eligibility
    */
-  function trackEligibility(simulateurId: string, aidesLength: number) {
+  function trackEligibility(simulateurSlug: string, aidesLength: number) {
     if (import.meta.env.SSR) {
       return
     }
-    const category = getMatomoCategory(simulateurId)
-    const name = `[${simulateurId}][${category.split(']')[1].slice(1)}]`
+    const category = getMatomoCategory(simulateurSlug)
+    const name = `[${simulateurSlug}][${category.split(']')[1].slice(1)}]`
     trackEvent(category, 'Eligibility', name, aidesLength)
   }
 

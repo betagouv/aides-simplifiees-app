@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 1.4.2 [#129](https://github.com/betagouv/aides-simplifiees-app/pull/129)
+- Corrections :
+  - Répare le chemin d'accès au seeder persona
+
 ### 1.4.1 [#128](https://github.com/betagouv/aides-simplifiees-app/pull/128)
 - Ajout de fonctionnalités :
   - Créé une entité persona pour gérer des cas de tests des simulateurs

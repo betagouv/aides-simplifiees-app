@@ -178,10 +178,10 @@
         },
         {
           "id": "nombre-personnes-logement",
-          "title": "Combien de personnes habiteront dans le logement, y compris vous-même ?",
+          "title": "En dehors de vous, combien de personnes habiteront dans le logement ?",
           "type": "number",
-          "min": 1,
-          "default": 1,
+          "min": 0,
+          "default": 0,
           "visibleWhen": "situation-logement=locataire"
         },
         {

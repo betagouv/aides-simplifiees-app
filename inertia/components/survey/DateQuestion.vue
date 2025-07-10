@@ -2,7 +2,7 @@
 import { DsfrInputGroup } from '@gouvminint/vue-dsfr'
 
 defineProps<{
-  question: SurveyQuestion
+  question: SurveyQuestionData
 }>()
 
 const model = defineModel<string | undefined>()

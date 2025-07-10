@@ -1,5 +1,5 @@
 /**
- * Test logging utility for browser tests
+ * Test logging utility for e2e tests
  */
 
 export interface TestLoggerOptions {

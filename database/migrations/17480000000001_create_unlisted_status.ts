@@ -68,6 +68,9 @@ export default class extends BaseSchema {
       const hasStatusColumn = await this.db.schema.hasColumn(tableName, 'status')
 
       if (hasStatusColumn) {
+        // First, update any 'unlisted' records to 'draft' before applying the constraint
+        await this.db.from(tableName).where('status', 'unlisted').update({ status: 'draft' })
+
         // Use raw SQL to revert enum values
         await this.db.rawQuery(`
           -- Drop the check constraint if it exists

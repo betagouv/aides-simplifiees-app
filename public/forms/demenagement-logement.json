@@ -5,6 +5,14 @@
   "title": "Déménagement et logement",
   "description": "Répondez à ces questions pour découvrir les aides au logement et déménagement auxquelles vous pourriez être éligible",
   "engine": "openfisca",
+  "questionsToApi": [
+    "locapass-eligibilite",
+    "mobilite-master-1",
+    "mobilite-parcoursup",
+    "aide-personnalisee-logement",
+    "garantie-visale-eligibilite",
+    "garantie-visale"
+  ],
   "steps": [
     {
       "id": "profil",
@@ -74,6 +82,7 @@
           "type": "date"
         },
         {
+          "id": "handicap",
           "title": "Avez-vous une reconnaissance administrative d'une situation de handicap ?",
           "description": "Vous disposez d'une reconnaissance administrative de votre situation de handicap lorsque vous avez déposé un dossier à la MDPH (Maison Départementale des personnes handicapées) et que celle-ci vous a attribué un taux d'incapacité lié à votre handicap.",
           "type": "boolean"

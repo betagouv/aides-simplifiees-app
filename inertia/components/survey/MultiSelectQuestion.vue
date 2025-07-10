@@ -4,7 +4,7 @@ import { DsfrCheckboxSet, DsfrTooltip } from '@gouvminint/vue-dsfr'
 import { onMounted, ref, useTemplateRef } from 'vue'
 
 const props = defineProps<{
-  question: SurveyQuestion
+  question: SurveyQuestionData
 }>()
 
 const model = defineModel<string[]>()

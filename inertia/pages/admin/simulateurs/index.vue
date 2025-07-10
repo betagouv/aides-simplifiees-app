@@ -3,6 +3,7 @@ import type AdminSimulateurController from '#controllers/admin/admin_simulateur_
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import AdminListContainer from '~/components/admin/AdminItemsListContainer.vue'
+import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const {
@@ -20,6 +21,9 @@ setBreadcrumbs([
 
 <template>
   <Head title="Simulateurs | Administration" />
+  <AdminPageHeading
+    title="Administration des simulateurs"
+  />
   <AdminListContainer
     title="Administration des simulateurs"
     entity-name="simulateur"
@@ -31,5 +35,6 @@ setBreadcrumbs([
     view-path-prefix="/simulateurs"
     delete-path-prefix="/admin/simulateurs"
     :items="simulateurs"
+    has-public-single-view
   />
 </template>

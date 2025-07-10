@@ -26,8 +26,9 @@ export default class AideSeeder extends BaseSeeder {
     }
 
     async function createAide({ typeAideSlug, ...options }: Record<string, any>): Promise<void> {
+      const rootDir = path.dirname(new URL(import.meta.url).pathname)
       const contentPromise = fs.promises.readFile(
-        path.join(import.meta.dirname, `content/aides/${options.slug}.md`),
+        path.join(rootDir, `content/aides/${options.slug}.md`),
         { encoding: 'utf-8' },
       )
       const typeAidePromise = getTypeAide(typeAideSlug)

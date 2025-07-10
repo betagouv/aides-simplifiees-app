@@ -35,7 +35,7 @@ defineEmits<{
             icon: { name: 'ri:save-line', ssr: true },
             type: 'submit',
             iconRight: true,
-            disabled: form.processing,
+            disabled: form.processing || form.hasErrors,
           },
         ]"
       />

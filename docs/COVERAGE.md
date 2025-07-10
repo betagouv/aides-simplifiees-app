@@ -81,12 +81,6 @@ The LCOV report (`coverage/lcov.info`) can be used with services like:
 # Quick coverage check
 npm run test:coverage && npm run coverage:report
 
-# Coverage with specific test files
-npx c8 node ace test tests/unit/models/
-
-# Coverage for functional tests only
-npx c8 node ace test tests/functional/
-
 # Generate only HTML report
 npx c8 report --reporter=html
 ```

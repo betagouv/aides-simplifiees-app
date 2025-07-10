@@ -1,4 +1,4 @@
 {
   "extends": "./tsconfig.base.json",
-  "exclude": ["./inertia/**/*", "./tests/browser/**/*", "node_modules", "build"]
+  "exclude": ["./inertia/**/*", "tests/e2e/**/*", "node_modules", "build"]
 }

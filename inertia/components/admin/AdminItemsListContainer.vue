@@ -1,34 +1,42 @@
-<script setup lang="ts">
-import { DsfrAlert, DsfrBadge, DsfrButton, DsfrButtonGroup, DsfrCard, DsfrDataTable, DsfrModal } from '@gouvminint/vue-dsfr'
+<script setup lang="ts" generic="T extends 'slug' | 'id' = 'slug'">
+import { DsfrAlert, DsfrBadge, DsfrButtonGroup, DsfrCard, DsfrDataTable, DsfrModal } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
-import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 
-interface ListItem {
+// Base item interface with common properties
+interface BaseItem {
   id: number
   title: string
-  slug: string
   status: string
   updatedAt?: string | Date | null
   description?: string | null
 }
 
+// Type that enforces slug presence when T is 'slug'
+type ListItem<U extends 'slug' | 'id'> = U extends 'slug'
+  ? BaseItem & { slug: string } // Required slug when U is 'slug'
+  : BaseItem & { slug?: string } // Optional slug when U is 'id'
+
 const props = withDefaults(defineProps<{
+  urlSegmentId?: T
   title: string
   layout?: 'cards' | 'table'
-  items: ListItem[]
+  items: ListItem<T>[]
   inertiaPropsName: string
   entityName: string
   entityGender: 'm' | 'f'
   entityNamePlural: string
   createPath: string
+  hasPublicSingleView?: boolean
   editPathPrefix: string
   viewPathPrefix: string
   deletePathPrefix: string
   emptyMessage?: string
 }>(), {
+  hasPublicSingleView: false,
+  urlSegmentId: 'slug' as any,
   layout: 'cards',
   emptyMessage: 'Aucun élément n\'a encore été créé',
 })
@@ -91,21 +99,41 @@ function deleteItem() {
     })
   }
 }
+
+/**
+ * Returns the segment ID for the item based on the configured URL segment ID (slug or id).
+ */
+function getItemSegmentId(item: ListItem<T>): string {
+  if (props.urlSegmentId === 'slug') {
+    // When using 'slug' mode, slug is guaranteed to be non-undefined thanks to our type
+    return item.slug as string
+  }
+  return String(item.id)
+}
 </script>
 
 <template>
-  <AdminPageHeading :title="`Administration des ${entityNamePlural}`" />
   <BrandBackgroundContainer
     textured
     subtle
   >
     <SectionContainer type="page-footer">
-      <div class="fr-grid-row fr-grid-row--right fr-mb-2w">
-        <DsfrButton
-          :label="`Créer ${articleIndefini} ${entityName}`"
-          icon="fr-icon-add-line"
-          @click="() => router.visit(createPath)"
-        />
+      <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
+        <div
+          class="fr-col-12"
+          :style="{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }"
+        >
+          <DsfrButtonGroup
+            class="fr-ml-2v"
+            :buttons="[
+              {
+                label: `Créer ${articleIndefini} ${entityName}`,
+                icon: { name: 'ri:add-line', ssr: true },
+                onClick: () => router.visit(props.createPath),
+              },
+            ]"
+          />
+        </div>
       </div>
       <DsfrAlert
         v-if="items.length === 0"
@@ -142,12 +170,12 @@ function deleteItem() {
                   icon: { name: 'ri:edit-line', ssr: true },
                   onClick: () => router.visit(`${props.editPathPrefix}/${item.id}/edit`),
                 },
-                {
+                ...(hasPublicSingleView ? [{
                   label: 'Consulter',
                   icon: { name: 'ri:eye-line', ssr: true },
-                  onClick: () => router.visit(`${props.viewPathPrefix}/${item.slug}`),
+                  onClick: () => router.visit(`${props.viewPathPrefix}/${getItemSegmentId(item)}`),
                   secondary: true,
-                },
+                }] : []),
                 {
                   label: 'Supprimer',
                   icon: { name: 'ri:delete-bin-2-line', ssr: true },
@@ -174,14 +202,15 @@ function deleteItem() {
               :title="`Liste des ${entityNamePlural}`"
               :headers-row="[
                 { key: 'title', label: 'Titre' },
-                { key: 'slug', label: 'Slug' },
+                // Conditionally include slug column if urlSegmentId is 'slug'
+                ...(props.urlSegmentId === 'slug' ? [{ key: 'slug', label: 'Slug' }] : []),
                 { key: 'status', label: 'Statut' },
                 { key: 'updatedAt', label: 'Dernière modification' },
                 { key: 'actions', label: 'Actions' },
               ]"
-              :rows="items.map((item) => ({
+              :rows="items.map((item: ListItem<T>) => ({
                 title: item.title,
-                slug: item.slug,
+                slug: item.slug ?? undefined,
                 status: formatStatus(item.status),
                 updatedAt: formatDate(item.updatedAt) || '',
                 actions: item.id,
@@ -229,17 +258,17 @@ function deleteItem() {
                           icon: { name: 'ri:edit-line', ssr: true },
                           onClick: () => router.visit(`${props.editPathPrefix}/${cell}/edit`),
                         },
-                        {
+                        ...(hasPublicSingleView ? [{
                           label: 'Consulter',
                           icon: { name: 'ri:eye-line', ssr: true },
                           onClick: () => {
-                            const item = items.find(i => i.id === Number(cell))
+                            const item = items.find((i: ListItem<T>) => i.id === Number(cell))
                             if (item) {
-                              router.visit(`${props.viewPathPrefix}/${item.slug}`)
+                              router.visit(`${props.viewPathPrefix}/${getItemSegmentId(item)}`)
                             }
                           },
                           secondary: true,
-                        },
+                        }] : []),
                         {
                           label: 'Supprimer',
                           icon: { name: 'ri:delete-bin-2-line', ssr: true },

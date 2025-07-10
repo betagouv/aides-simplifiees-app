@@ -3,6 +3,7 @@ import type AdminPageController from '#controllers/admin/admin_page_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import AdminListContainer from '~/components/admin/AdminItemsListContainer.vue'
+import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const {
@@ -20,6 +21,9 @@ setBreadcrumbs([
 
 <template>
   <Head title="Pages | Administration" />
+  <AdminPageHeading
+    title="Administration des pages"
+  />
   <AdminListContainer
     title="Administration des pages"
     entity-name="page"
@@ -31,5 +35,6 @@ setBreadcrumbs([
     view-path-prefix="/content"
     delete-path-prefix="/admin/pages"
     :items="pages"
+    has-public-single-view
   />
 </template>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { DsfrButton } from '@gouvminint/vue-dsfr'
+import { DsfrButton, DsfrTooltip } from '@gouvminint/vue-dsfr'
 import { router } from '@inertiajs/vue3'
 import { computed, customRef, onMounted } from 'vue'
 import BooleanQuestion from '~/components/survey/BooleanQuestion.vue'
@@ -9,7 +9,6 @@ import MultiSelectQuestion from '~/components/survey/MultiSelectQuestion.vue'
 import NumberQuestion from '~/components/survey/NumberQuestion.vue'
 import RadioButtonQuestion from '~/components/survey/RadioButtonQuestion.vue'
 import UnkownQuestionType from '~/components/survey/UnkownQuestionType.vue'
-import { useSurveysStore } from '~/stores/surveys'
 import {
   autocompleteConfigs,
   autocompleteFunctions,
@@ -17,7 +16,11 @@ import {
 
 const props = withDefaults(
   defineProps<{
-    question: SurveyQuestion
+    store?: {
+      getAnswer: (simulateurSlug: string, questionId: string) => any
+      setAnswer: (simulateurSlug: string, questionId: string, value: any) => void
+    }
+    question: SurveyQuestionData
     simulateurSlug: string
     defaultValue?: any
     size?: 'sm' | 'md'
@@ -36,13 +39,11 @@ const emit = defineEmits<{
 /**
  * Create a reactive model for each question
  */
-const surveysStore = useSurveysStore()
-
 const model = customRef((track, trigger) => {
   return {
     get() {
       track()
-      const storeAnswer = surveysStore.getAnswer(
+      const storeAnswer = props.store?.getAnswer(
         props.simulateurSlug,
         props.question.id,
       )
@@ -55,7 +56,7 @@ const model = customRef((track, trigger) => {
       return undefined
     },
     set(value) {
-      surveysStore.setAnswer(
+      props.store?.setAnswer(
         props.simulateurSlug,
         props.question.id,
         value,
@@ -134,10 +135,9 @@ onMounted(() => {
             'fr-text--md fr-mb-1v': size === 'sm',
           },
         ]"
-        :aria-describedby="
-          question?.description
-            ? `question-description-${question.id}`
-            : undefined
+        :aria-describedby="question?.description
+          ? `question-description-${question.id}`
+          : undefined
         "
       >
         {{ question.title }} <span
@@ -145,22 +145,6 @@ onMounted(() => {
           class="brand-required-question-marker"
         >*</span>
       </h3>
-      <p
-        v-if="required"
-        class="fr-hint-text fr-text--error fr-mb-1v"
-        :class="[
-          {
-            'fr-text--xs': size === 'md',
-            'fr-text--xxs': size === 'sm',
-          },
-        ]"
-      >
-        <span
-          class="fr-icon-information-line"
-          aria-hidden="true"
-        />
-        Requis
-      </p>
       <p
         v-if="question?.description"
         :id="`question-description-${question.id}`"
@@ -181,6 +165,7 @@ onMounted(() => {
       data-testid="survey-question-notion-button"
       icon="ri:information-line"
       secondary
+      type="button"
       icon-right
       class="fr-mb-2w"
       @click="
@@ -198,6 +183,7 @@ onMounted(() => {
       class="brand-survey-question-tooltip-container"
     >
       <DsfrTooltip
+        type="button"
         class="brand-survey-question-tooltip fr-btn--secondary"
         data-testid="survey-question-tooltip"
         :content="typeof question.tooltip === 'string' ? question.tooltip : question.tooltip.content"

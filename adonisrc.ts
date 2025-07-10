@@ -67,15 +67,10 @@ export default defineConfig({
         timeout: 2000,
       },
       {
-        files: ['tests/functional/**/*.spec(.ts|.js)'],
-        name: 'functional',
-        timeout: 30000,
-      },
-      {
         files: [
-          'tests/browser/**/*.spec(.ts|.js)',
+          'tests/e2e/**/*.spec(.ts|.js)',
         ],
-        name: 'browser',
+        name: 'e2e',
         timeout: 30000,
       },
     ],

@@ -12,7 +12,7 @@ export default class NotionSeeder extends BaseSeeder {
       await Notion.query().delete()
     }
 
-    const rootDir = import.meta.dirname
+    const rootDir = path.dirname(new URL(import.meta.url).pathname)
 
     // Lecture des fichiers markdown
     const handicapContent = fs.readFileSync(

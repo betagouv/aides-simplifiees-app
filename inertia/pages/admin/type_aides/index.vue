@@ -3,6 +3,7 @@ import type AdminTypeAideController from '#controllers/admin/admin_type_aide_con
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import AdminListContainer from '~/components/admin/AdminItemsListContainer.vue'
+import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
 const {
@@ -20,6 +21,9 @@ setBreadcrumbs([
 
 <template>
   <Head title="Types d'aides | Administration" />
+  <AdminPageHeading
+    title="Administration des types d'aides"
+  />
   <AdminListContainer
     title="Administration des types d'aides"
     entity-name="un type d'aide"

@@ -2,7 +2,6 @@
 import { DsfrAlert, DsfrBadge, DsfrButtonGroup, DsfrCard, DsfrDataTable, DsfrModal } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
 import { computed, ref } from 'vue'
-import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
 import BrandBackgroundContainer from '~/components/layout/BrandBackgroundContainer.vue'
 import SectionContainer from '~/components/layout/SectionContainer.vue'
 
@@ -30,11 +29,13 @@ const props = withDefaults(defineProps<{
   entityGender: 'm' | 'f'
   entityNamePlural: string
   createPath: string
+  hasPublicSingleView?: boolean
   editPathPrefix: string
   viewPathPrefix: string
   deletePathPrefix: string
   emptyMessage?: string
 }>(), {
+  hasPublicSingleView: false,
   urlSegmentId: 'slug' as any,
   layout: 'cards',
   emptyMessage: 'Aucun élément n\'a encore été créé',
@@ -112,18 +113,16 @@ function getItemSegmentId(item: ListItem<T>): string {
 </script>
 
 <template>
-  <AdminPageHeading :title="`Administration des ${entityNamePlural}`" />
   <BrandBackgroundContainer
     textured
     subtle
   >
     <SectionContainer type="page-footer">
-      <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right fr-mb-4w">
+      <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
         <div
           class="fr-col-12"
           :style="{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }"
         >
-          <slot name="custom-actions" />
           <DsfrButtonGroup
             class="fr-ml-2v"
             :buttons="[
@@ -171,12 +170,12 @@ function getItemSegmentId(item: ListItem<T>): string {
                   icon: { name: 'ri:edit-line', ssr: true },
                   onClick: () => router.visit(`${props.editPathPrefix}/${item.id}/edit`),
                 },
-                {
+                ...(hasPublicSingleView ? [{
                   label: 'Consulter',
                   icon: { name: 'ri:eye-line', ssr: true },
                   onClick: () => router.visit(`${props.viewPathPrefix}/${getItemSegmentId(item)}`),
                   secondary: true,
-                },
+                }] : []),
                 {
                   label: 'Supprimer',
                   icon: { name: 'ri:delete-bin-2-line', ssr: true },
@@ -259,7 +258,7 @@ function getItemSegmentId(item: ListItem<T>): string {
                           icon: { name: 'ri:edit-line', ssr: true },
                           onClick: () => router.visit(`${props.editPathPrefix}/${cell}/edit`),
                         },
-                        {
+                        ...(hasPublicSingleView ? [{
                           label: 'Consulter',
                           icon: { name: 'ri:eye-line', ssr: true },
                           onClick: () => {
@@ -269,7 +268,7 @@ function getItemSegmentId(item: ListItem<T>): string {
                             }
                           },
                           secondary: true,
-                        },
+                        }] : []),
                         {
                           label: 'Supprimer',
                           icon: { name: 'ri:delete-bin-2-line', ssr: true },

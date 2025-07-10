@@ -20,7 +20,7 @@ const props = withDefaults(
       getAnswer: (simulateurSlug: string, questionId: string) => any
       setAnswer: (simulateurSlug: string, questionId: string, value: any) => void
     }
-    question: SurveyQuestion
+    question: SurveyQuestionData
     simulateurSlug: string
     defaultValue?: any
     size?: 'sm' | 'md'

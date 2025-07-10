@@ -44,7 +44,7 @@ const page = computed(() =>
 )
 
 // Map publicodes field to survey question
-function mapToSurveyQuestion(field: any): SurveyQuestion {
+function mapToSurveyQuestion(field: any): SurveyQuestionData {
   let choices: SurveyChoice[] | undefined
   let type
   if (field.element === 'checkbox') {

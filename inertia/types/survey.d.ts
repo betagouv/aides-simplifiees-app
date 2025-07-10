@@ -16,7 +16,7 @@ declare global {
     minSearchLength?: number
   }
 
-  type SurveyQuestion = {
+  type SurveyQuestionData = {
     id: string
     title: string
     description?: string
@@ -58,13 +58,13 @@ declare global {
     }[]
   }
 
-  interface SurveyQuestionsPage {
+  interface SurveyQuestionsPageData {
     id: string
     title?: string
-    questions: SurveyQuestion[]
+    questions: SurveyQuestionData[]
   }
 
-  interface SurveyResultsPage {
+  interface SurveyResultsPageData {
     id: string
     title?: string
     type: 'intermediary-results'
@@ -72,7 +72,7 @@ declare global {
     dispositifs: string[]
   }
 
-  type SurveyPage = SurveyQuestionsPage | SurveyResultsPage
+  type SurveyPageData = SurveyQuestionsPageData | SurveyResultsPageData
 
   interface SurveyStep {
     id: string
@@ -80,11 +80,11 @@ declare global {
   }
 
   interface SurveyFlatStep extends SurveyStep {
-    questions: SurveyQuestion[]
+    questions: SurveyQuestionData[]
   }
 
   interface SurveyDeepStep extends SurveyStep {
-    pages: SurveyPage[]
+    pages: SurveyPageData[]
   }
 
   interface SurveyTest {

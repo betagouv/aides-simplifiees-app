@@ -5,7 +5,7 @@ import { useAsyncState, useDebounceFn } from '@vueuse/core'
 import { nextTick, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{
-  question: SurveyQuestion
+  question: SurveyQuestionData
   autocompleteFn: AutocompleteFn
   autocompleteConfig?: SurveyQuestionAutocompleteConfig
 }>(), {

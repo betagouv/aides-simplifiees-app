@@ -38,7 +38,7 @@ const visibleQuestionsInCurrentPage = computed(() => surveysStore.getVisibleQues
     >
       @todo: Add a11y text for screen readers "Page x sur y de l'étape"
     </h2> -->
-    <template v-if="(currentPage as SurveyQuestionsPage)?.questions">
+    <template v-if="(currentPage as SurveyQuestionsPageData)?.questions">
       <template
         v-for="question in visibleQuestionsInCurrentPage"
         :key="question.id"
@@ -51,7 +51,7 @@ const visibleQuestionsInCurrentPage = computed(() => surveysStore.getVisibleQues
         />
       </template>
     </template>
-    <template v-else-if="(currentPage as SurveyResultsPage)?.type === 'intermediary-results'">
+    <template v-else-if="(currentPage as SurveyResultsPageData)?.type === 'intermediary-results'">
       <SurveyIntermediaryResultsPage />
     </template>
   </div>

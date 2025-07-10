@@ -86,6 +86,7 @@ function togglePasswordVisibility() {
                   :type="showPassword ? 'text' : 'password'"
                   :error-message="errors?.password"
                   required
+                  @keydown.enter="submitForm"
                 />
                 <DsfrButton
                   class="password-toggle-button"

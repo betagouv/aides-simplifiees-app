@@ -20,11 +20,10 @@ export default class extends BaseSchema {
   }
 
   async down() {
+  // Simplement supprimer la colonne type_aide_id et recréer type comme nullable
     this.schema.alterTable(this.tableName, (table) => {
       table.dropColumn('type_aide_id')
-    })
-    this.schema.alterTable(this.tableName, (table) => {
-      table.string('type').notNullable()
+      table.string('type').nullable() // Garder nullable pour éviter les erreurs
     })
   }
 }

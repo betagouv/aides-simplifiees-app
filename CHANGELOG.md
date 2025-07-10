@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.0 [#127](https://github.com/betagouv/aides-simplifiees-app/pull/127)
+- Ajout de fonctionnalités :
+  - Introduit un système complet de journalisation structurée
+
 ### 1.3.2 [#125](https://github.com/betagouv/aides-simplifiees-app/pull/125)
 
 - Ajout de fonctionnalités :

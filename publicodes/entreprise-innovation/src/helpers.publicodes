@@ -99,3 +99,18 @@ regimeFiscalReelOuConditionDExoneration . explications:
           - elles sont des entreprises reprises en difficulté
           - elles bénéficient de zones spécifiques (ZFR, ZFU_TE, BER, ZRD, ZFA_DOM, ZRR, BUD ou ZDP)
     - sinon: regimeFiscalEstReel . explications
+
+
+
+performancesSuperieuresOui:
+  valeur:
+    une de ces conditions:
+      - performancesSuperieures . techniques
+      - performancesSuperieures . eco
+      - performancesSuperieures . ergonomiques
+      - performancesSuperieures . fonctionnalites
+
+performancesSuperieuresOui . explications:
+  applicable si: performancesSuperieuresOui = non
+  texte: |
+    Pour être éligible au CII, il faut impérativement concevoir un prototype et que le produit final se distingue des produits déjà existants de par ses performances supérieures.

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "forceRefresh": false,
   "id": "entreprise-innovation",
   "title": "Dispositifs d'innovation et de recherche",
@@ -501,6 +501,68 @@
               "type": "number"
             }
           ]
+        },
+        {
+          "id": "prototype-page",
+          "title": "Conception d'un prototype ou d'une installation pilote",
+          "questions": [
+            {
+              "id": "i-have-a-prototype",
+              "title": "Je conçois un prototype ou une installation pilote",
+              "type": "boolean"
+            },
+            {
+              "id": "prototype-destination",
+              "title": "Le prototype est-il destiné à ?",
+              "type": "radio",
+              "visibleWhen": "i-have-a-prototype=true",
+              "choices": [
+                {
+                  "id": "marche",
+                  "title": "Être mis sur le marché"
+                },
+                {
+                  "id": "modele",
+                  "title": "Être utilisé comme modèle pour la réalisation d'un nouveau produit"
+                }
+              ]
+            },
+            {
+              "id": "produit-mis-marche",
+              "title": "Le produit final a-t-il déjà été mis à disposition sur le marché ?",
+              "type": "boolean",
+              "visibleWhen": "i-have-a-prototype=true && prototype-destination=modele"
+            },
+            {
+              "id": "performances-superieures",
+              "title": "Le produit final se distinguera-t-il des produits déjà existants de par ses performances supérieures en termes :",
+              "type": "checkbox",
+              "visibleWhen": "i-have-a-prototype=true && prototype-destination=modele && produit-mis-marche=false",
+              "choices": [
+                {
+                  "id": "techniques",
+                  "title": "Techniques"
+                },
+                {
+                  "id": "eco",
+                  "title": "D'éco-conception"
+                },
+                {
+                  "id": "ergonomiques",
+                  "title": "Ergonomiques"
+                },
+                {
+                  "id": "fonctionnalites",
+                  "title": "De fonctionnalités"
+                },
+                {
+                  "id": "performances-superieures-aucune",
+                  "title": "Aucune des choix ci-dessus",
+                  "exclusive": true
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -781,63 +843,6 @@
           ]
         },
         {
-          "id": "prototype-page",
-          "title": "Conception d'un prototype ou d'une installation pilote",
-          "questions": [
-            {
-              "id": "prototype-destination",
-              "title": "Le prototype est-il destiné à ?",
-              "type": "radio",
-              "visibleWhen": "type-depenses.includes('prototype')",
-              "choices": [
-                {
-                  "id": "marche",
-                  "title": "Être mis sur le marché"
-                },
-                {
-                  "id": "modele",
-                  "title": "Être utilisé comme modèle pour la réalisation d'un nouveau produit"
-                }
-              ]
-            },
-            {
-              "id": "produit-mis-marche",
-              "title": "Le produit final a-t-il déjà été mis à disposition sur le marché ?",
-              "type": "boolean",
-              "visibleWhen": "prototype-destination=modele"
-            },
-            {
-              "id": "performances-superieures",
-              "title": "Le produit final se distinguera-t-il des produits déjà existants de par ses performances supérieures en termes :",
-              "type": "checkbox",
-              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false",
-              "choices": [
-                {
-                  "id": "techniques",
-                  "title": "Techniques"
-                },
-                {
-                  "id": "eco",
-                  "title": "D'éco-conception"
-                },
-                {
-                  "id": "ergonomiques",
-                  "title": "Ergonomiques"
-                },
-                {
-                  "id": "fonctionnalites",
-                  "title": "De fonctionnalités"
-                },
-                {
-                  "id": "performances-superieures-aucune",
-                  "title": "Aucune des choix ci-dessus",
-                  "exclusive": true
-                }
-              ]
-            }
-          ]
-        },
-        {
           "id": "prototype-immobilisations",
           "title": "Détail par nature de dépenses éligibles",
           "questions": [
@@ -866,22 +871,30 @@
         },
         {
           "id": "prototype-personnel",
-          "title": "Dépenses de personnel directement et exclusivement affecté à la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits :",
+          "title": "Dépenses de personnel",
           "questions": [
             {
               "id": "depenses-prototype-chercheurs-techniciens",
-              "title": "Chercheurs et techniciens de recherche qui sont directement et exclusivement affectés aux opérations de recherche et développement",
+              "title": "Dépenses de personnel directement et exclusivement affecté à la réalisation d'opérations de conception de prototypes ou installations pilotes de nouveaux produits :",
               "default": 0,
               "type": "number",
               "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             },
             {
-              "id": "depenses-prototype-remuneration-invention",
-              "title": "Salariés auteurs d'une invention après des opérations de recherche a qui on a versé une rémunération supplémentaire",
+              "id": "depenses-prototype-chercheurs-techniciens-dom",
+              "title": "Dont dépenses réalisées dans un département d'Outre-mer",
+              "default": 0,
+              "type": "number",
+              "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
+            },
+            {
+              "id": "depenses-prototype-chercheurs-techniciens-corse",
+              "title": "Dont dépenses réalisées en Corse",
               "default": 0,
               "type": "number",
               "visibleWhen": "type-depenses.includes('prototype') && prototype-destination=modele && produit-mis-marche=false && performances-superieures.includes('techniques', 'eco', 'ergonomiques', 'fonctionnalites')"
             }
+
           ]
         },
         {

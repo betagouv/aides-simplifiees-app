@@ -73,27 +73,61 @@ cir . depensesMetropole:
         - somme:
           - depensesRdRemunerationInvention
           - (-depensesRdRemunerationInventionDom)
-      - somme:
-          - depensesNormalisationSalaires
-          - (-depensesNormalisationSalairesDom)
-      - somme:
-          - depensesPrototypeFraisDepotDessins
-          - (-depensesPrototypeFraisDepotDessinsDom)
+      - produit:
+        - 0.65 # 0.5 * 1.3
+        - somme:
+            - depensesNormalisationSalaires
+            - (-depensesNormalisationSalairesDom)
+      - produit:
+        - 0.5
+        - somme:
+            - depensesNormalisationDirigeant
+            - (-depensesNormalisationDirigeantDom)
       - somme:
           - depensesRdRechercheLiensDependance . avecPlafond
           - depensesRdRechercheSansLiensDependance . avecPlafond
       - somme:
-          - depensesNormalisationDirigeant
-          - (-depensesNormalisationDirigeantDom)
-      - somme:
           - 0
           - (-cir . deductions . metropole)
       - depensesNormalisationRemboursementsSubventions
-      - depensesNormalisationSubventions
-      - depensesNormalisationConseil
 
 # N'est pas modélisé pour l'instant:  "Dépenses liées à l'élaboration de nouvelles créations par les entreprises du secteur textile-habillement-cuir, y compris lorsqu'elles sont confiées à des stylistes ou bureaux de style agréés (jusqu'au 31 décembre 2027)."
+depensesNormalisationConseilAvecTraitement:
+  le minimum de:
+    - depensesNormalisationConseil
+    - depensesNormalisationConseilAvecTraitementMax
 
+depensesNormalisationConseilAvecTraitementMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+          - depensesNormalisationSalaires
+          - depensesNormalisationDirigeant
+          - depensesNormalisationRemboursementsSubventions
+          - (-depensesNormalisationSubventions)
+
+depensesRdDepensesConseilAvecTraitement:
+  le minimum de:
+    - depensesRdDepensesConseil
+    - depensesRdDepensesConseilAvecTraitementMax
+
+depensesRdDepensesConseilAvecTraitementMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+          - depensesRdAmortissementBiens
+            - depensesRdIndemnisationAssurance
+            - depensesRdChercheursTechniciens
+            - depensesRdRemunerationInvention
+            - depensesRdRechercheLiensDependance . avecPlafond
+            - depensesRdRechercheSansLiensDependance . avecPlafond
+            - depensesOrdc
+            - remboursementsSubventionsOrdc
+            - (-depensesRdSubventionsPubliques)
 
 depensesRdRechercheLiensDependance . avecPlafond:
   le minimum de:
@@ -132,9 +166,12 @@ cir . depensesDom:
       - produit:
         - 0.4
         - depensesRdRemunerationInventionDom
-      - depensesNormalisationSalairesDom
-      - depensesPrototypeFraisDepotDessinsDom
-      - depensesNormalisationDirigeantDom
+      - produit:
+        - 0.65 # 0.5 * 1.3
+        - depensesNormalisationSalairesDom
+      - produit:
+        - 0.5
+        - depensesNormalisationDirigeantDom
       - somme:
           - depensesRdRechercheLiensDependanceDom . avecPlafond
           - depensesRdRechercheSansLiensDependanceDom . avecPlafond
@@ -146,8 +183,10 @@ cir . deductions:
   valeur:
     somme:
       - depensesRdSubventionsPubliques
-      - depensesRdDepensesConseil
       - depensesRdDepensesTiersCir
+      - depensesNormalisationSubventions
+      - depensesNormalisationConseilAvecTraitement
+      - depensesRdDepensesConseilAvecTraitement
 
 cir . deductions . dom:
     variations:

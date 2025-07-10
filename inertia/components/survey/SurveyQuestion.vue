@@ -165,6 +165,7 @@ onMounted(() => {
       data-testid="survey-question-notion-button"
       icon="ri:information-line"
       secondary
+      type="button"
       icon-right
       class="fr-mb-2w"
       @click="
@@ -182,6 +183,7 @@ onMounted(() => {
       class="brand-survey-question-tooltip-container"
     >
       <DsfrTooltip
+        type="button"
         class="brand-survey-question-tooltip fr-btn--secondary"
         data-testid="survey-question-tooltip"
         :content="typeof question.tooltip === 'string' ? question.tooltip : question.tooltip.content"

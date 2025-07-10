@@ -216,6 +216,7 @@ nextTick(() => {
       />
       <DsfrButton
         title="Rechercher"
+        type="button"
         :aria-label="`Rechercher pour ${question.title}`"
         @click="handleSearchClick"
       >

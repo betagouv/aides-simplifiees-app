@@ -54,6 +54,7 @@ function moveTooltips() {
     ref="tooltips"
   >
     <DsfrTooltip
+      type="button"
       data-testid="survey-choice-tooltip"
       :content="(choice.tooltip as string)"
     />

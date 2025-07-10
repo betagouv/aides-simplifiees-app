@@ -13,7 +13,7 @@ export default class PageSeeder extends BaseSeeder {
       await Page.query().delete()
     }
 
-    const rootDir = import.meta.dirname
+    const rootDir = path.dirname(new URL(import.meta.url).pathname)
 
     // Lecture des fichiers markdown
     const accessibiliteContent = fs.readFileSync(

@@ -207,8 +207,10 @@ depensesPrototypeChercheursTechniciens:
   titre: Chercheurs et techniciens de recherche qui sont directement et exclusivement affectés aux opérations de recherche et développement
   par défaut: 0
 
-depensesPrototypeRemunerationInvention:
-  titre: Salariés auteurs d'une invention après des opérations de recherche a qui on a versé une rémunération supplémentaire
+depensesPrototypeChercheursTechniciensDom:
+  par défaut: 0
+
+depensesPrototypeChercheursTechniciensCorse:
   par défaut: 0
 
 depensesPrototypeAmortissementsBrevets:
@@ -293,7 +295,7 @@ performancesSuperieures . ergonomiques:
 performancesSuperieures . fonctionnalites:
   par défaut: non
 performancesSuperieures . performancesSuperieuresAucune:
-  par défaut: non
+  par défaut: oui
 
 typeDeRevenus:
   une possibilité:
@@ -315,7 +317,13 @@ typeImposition:
 
 
 prototypeDestination:
+  par défaut: "'modele'"
+  une possibilité:
+    - "'marche'"
+    - "'modele'"
+
 produitMisMarche:
+  par défaut: non
 
 
 

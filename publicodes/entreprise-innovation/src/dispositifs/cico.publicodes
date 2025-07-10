@@ -49,14 +49,15 @@ cico . montant:
   valeur:
     produit:
       - cico . taux
-      - somme:
-        - depensesOrdc
-        - (-depensesRdSubventionsPubliques)
-        - (-subventionsOrdc)
-        - remboursementsSubventionsOrdc
-        - (-depensesRdDepensesConseil)
-        - (-depensesRdDepensesTiersCir)
-  plafond: 6000000 €/an
+      - le minimum de:
+        - 6000000 €/an
+        - somme:
+          - depensesOrdc
+          - (-depensesRdSubventionsPubliques)
+          - (-subventionsOrdc)
+          - remboursementsSubventionsOrdc
+          - (-depensesRdDepensesConseil)
+          - (-depensesRdDepensesTiersCir)
 
 cico . taux:
   variations:

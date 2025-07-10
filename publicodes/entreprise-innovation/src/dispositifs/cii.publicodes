@@ -7,6 +7,9 @@ cii . eligibilite:
     - estUnePME
     - natureActivite . commercialeIndustrielleAgricole
     - regimeFiscalReelOuConditionDExoneration
+    - prototypeDestination = 'modele'
+    - produitMisMarche = non
+    - performancesSuperieuresOui
 
 cii . eligibilite . explications:
   applicable si: eligibilite = non
@@ -14,7 +17,20 @@ cii . eligibilite . explications:
     {{ estUnePME . explications }}
     {{ natureActivite . commercialeIndustrielleAgricole . explications }}
     {{ regimeFiscalReelOuConditionDExoneration . explications }}
+    {{ prototypeDestination . explications }}
+    {{ produitMisMarche . explications }}
+    {{ performancesSuperieuresOui . explications }}
 
+
+prototypeDestination . explications:
+  applicable si: prototypeDestination = 'marche'
+  texte: |
+    Le CII s'applique pour les prototypes utilisés comme modèle pour la réalisation d'un nouveau produit.
+
+produitMisMarche . explications:
+  applicable si: produitMisMarche = oui
+  texte: |
+    Le CII s'applique seulement si le produit final n'a pas déjà été mis à disposition sur le marché.
 
 cii . montant:
   titre: Montant du Crédit d'Impôt Innovation
@@ -29,43 +45,81 @@ cii . montantPlafonne:
   unité: €
   valeur:
     somme:
-      - cii . depensesBase
-      - cii . depensesDOM
-      - cii . depensesCorse
+      - cii . montantDOM
+      - cii . montantCorse
+      - cii . montantMetropole
       - (-cii . deductions)
-  plafond: 400000€
+      - depensesPrototypeRemboursementsSubventions
 
-cii . depensesBase:
-  valeur:
-    produit:
-      - 20%
-      - somme:
-          - depensesPrototypeAmortissementsImmobilisations
-          - depensesPrototypeChercheursTechniciens
-          - depensesPrototypeRemunerationInvention
-          - depensesPrototypeAmortissementsBrevets
-          - depensesPrototypeFraisDepotDessins
-          - depensesPrototypeDepensesSousTraitance
-          - depensesPrototypeRemboursementsSubventions
-
-cii . depensesDOM:
+cii . montantDOM:
   produit:
     - 60%
-    - somme:
-        - depensesPrototypeAmortissementsImmobilisationsDom
-        - depensesPrototypeAmortissementsBrevetsDom
-        - depensesPrototypeFraisDepotDessinsDom
-        - depensesPrototypeDepensesSousTraitanceDom
+    - le minimum de:
+      - 400000€
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisationsAvecTraitementDom
+          - depensesPrototypeChercheursTechniciensDom
+          - depensesPrototypeAmortissementsBrevetsDom
+          - depensesPrototypeFraisDepotDessinsDom
+          - depensesPrototypeDepensesSousTraitanceDom
 
-cii . depensesCorse:
+cii . montantCorse:
   valeur:
     produit:
       - cii . tauxCorse
+      - le minimum de:
+        - cii . montantCorseMax
+        - somme:
+            - depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorse
+            - depensesPrototypeChercheursTechniciensCorse
+            - depensesPrototypeAmortissementsBrevetsCorse
+            - depensesPrototypeFraisDepotDessinsCorse
+            - depensesPrototypeDepensesSousTraitanceCorse
+
+
+cii . montantCorseMax:
+  le maximum de:
+      - 0
       - somme:
-          - depensesPrototypeAmortissementsImmobilisationsCorse
-          - depensesPrototypeAmortissementsBrevetsCorse
-          - depensesPrototypeFraisDepotDessinsCorse
-          - depensesPrototypeDepensesSousTraitanceCorse
+          - 400000€
+          - (-cii . montantDOM)
+
+cii . montantMetropole:
+  valeur:
+    produit:
+      - 20%
+      - le minimum de:
+        - cii . montantMetropoleMax
+        - somme:
+            - somme :
+              - depensesPrototypeAmortissementsImmobilisationsAvecTraitement
+              - (-depensesPrototypeAmortissementsImmobilisationsAvecTraitementDom)
+              - (-depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorse)
+            - somme:
+              - depensesPrototypeChercheursTechniciens
+              - (-depensesPrototypeChercheursTechniciensDom)
+              - (-depensesPrototypeChercheursTechniciensCorse)
+            - somme:
+              - depensesPrototypeAmortissementsBrevets
+              - (-depensesPrototypeAmortissementsBrevetsDom)
+              - (-depensesPrototypeAmortissementsBrevetsCorse)
+            - somme:
+              - depensesPrototypeFraisDepotDessins
+              - (-depensesPrototypeFraisDepotDessinsDom)
+              - (-depensesPrototypeFraisDepotDessinsCorse)
+            - somme:
+              - depensesPrototypeDepensesSousTraitance
+              - (-depensesPrototypeDepensesSousTraitanceDom)
+              - (-depensesPrototypeDepensesSousTraitanceCorse)
+
+cii . montantMetropoleMax:
+  le maximum de:
+      - 0
+      - somme:
+          - 400000€
+          - (-cii . montantDOM)
+          - (-cii . montantCorse)
+
 
 cii . tauxCorse:
   valeur:
@@ -85,6 +139,69 @@ cii . deductions:
       - depensesPrototypeSubventionsPubliques
       - depensesPrototypeDepensesConseil
       - depensesPrototypeDepensesTiersCii
+
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitement:
+  le minimum de:
+    - somme:
+      - depensesPrototypeAmortissementsImmobilisations
+      - (-depensesPrototypeAmortissementsImmobilisationsDom)
+      - (-depensesPrototypeAmortissementsImmobilisationsCorse)
+    - depensesPrototypeAmortissementsImmobilisationsAvecTraitementMax
+
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisations
+          - depensesPrototypeChercheursTechniciens
+          - depensesPrototypeAmortissementsBrevets
+          - depensesPrototypeFraisDepotDessins
+          - depensesPrototypeDepensesSousTraitance
+          - depensesPrototypeRemboursementsSubventions
+          - (-depensesPrototypeSubventionsPubliques)
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementDom:
+  le minimum de:
+    - depensesPrototypeAmortissementsImmobilisationsDom
+    - depensesPrototypeAmortissementsImmobilisationsAvecTraitementDomMax
+
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementDomMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+            - depensesPrototypeAmortissementsImmobilisationsDom
+            - depensesPrototypeChercheursTechniciensDom
+            - depensesPrototypeAmortissementsBrevetsDom
+            - depensesPrototypeFraisDepotDessinsDom
+            - depensesPrototypeDepensesSousTraitanceDom
+            #- depensesPrototypeRemboursementsSubventionsDom
+            #- (-depensesPrototypeSubventionsPubliquesDom)
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorse:
+  le minimum de:
+    - depensesPrototypeAmortissementsImmobilisationsCorse
+    - depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorseMax
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorseMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisationsCorse
+          - depensesPrototypeChercheursTechniciensCorse
+          - depensesPrototypeAmortissementsBrevetsCorse
+          - depensesPrototypeFraisDepotDessinsCorse
+          - depensesPrototypeDepensesSousTraitanceCorse
+          #- depensesPrototypeRemboursementsSubventionsCorse
+          #- (-depensesPrototypeSubventionsPubliquesCorse)
 
 cii . depassementEffectifN:
   valeur: effectifTotalN >= 250

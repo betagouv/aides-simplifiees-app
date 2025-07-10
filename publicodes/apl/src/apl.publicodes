@@ -1,4 +1,5 @@
 # Règles de calcul APL 2024
+# source: https://www.legifrance.gouv.fr/loda/id/JORFTEXT000039160329
 
 # ----------------------------------------------------
 # ---------- Variables d'entrée utilisateur ----------
@@ -9,7 +10,7 @@ couple:
   type: bool
 
 enfantsACharge:
-  question: "Combien de personnes à charge avez-vous ?"
+  question: "Combien de personnes avez-vous à charge ?"
   type: entier
   unité: personne
   par défaut: 0
@@ -69,15 +70,16 @@ meublee:
 # relatif au calcul des aides personnelles au logement et de la prime de déménagement.
 
 # ----------------- Plafond de loyer -----------------
-# Montant du plafond de loyer dans le cas général (en euros) (à compter du 01/10/23)
+# Montant du plafond de loyer dans le cas général (en euros) (à compter du 01/10/2024)
+# Valeurs officielles de l'article 7 de l'arrêté du 27 septembre 2024
 # (PS = personne seule, C = couple, pàc = personne à charge)
-# |-------------------------------------------------------------------------------------------|
-# | zone | PS + 0 pàc | C + 0 pàc | 1 pàc  | 2 pàc  | 3 pàc  | 4 pàc  | 5 pàc  | par pàc sup. |
-# | ---- | ---------- | --------- | ------ | ------ | ------ | ------ | ------ | ------------ |
-# | I    | 319,30     | 385,09    | 435,24 | 498,39 | 561,54 | 624,69 | 687,84 | + 63,15      |
-# | II   | 278,28     | 340,62    | 383,28 | 439,07 | 494,86 | 550,65 | 606,44 | + 55,79      |
-# | III  | 260,82     | 316,17    | 354,51 | 405,32 | 456,13 | 506,94 | 557,75 | + 50,81      |
-# |-------------------------------------------------------------------------------------------|
+# |-------------------------------------------------------|
+# | zone | PS + 0 pàc | C + 0 pàc | 1 pàc  | par pàc sup. |
+# | ---- | ---------- | --------- | ------ | ------------ |
+# | I    | 329,71     | 397,64    | 449,43 | + 65,21      |
+# | II   | 287,35     | 351,72    | 395,77 | + 57,61      |
+# | III  | 269,32     | 326,48    | 366,07 | + 52,47      |
+# |-------------------------------------------------------|
 plafond_loyer:
   titre: "Plafond de loyer L"
   unité: €/mois
@@ -90,24 +92,14 @@ plafond_loyer:
               toutes ces conditions:
                 - couple = non
                 - enfantsACharge = 0
-            alors: 319.30
+            alors: 329.71
           - si:
               toutes ces conditions:
                 - couple = oui
                 - enfantsACharge = 0
-            alors: 385.09
-          - si: enfantsACharge = 1
-            alors: 435.24
-          - si: enfantsACharge = 2
-            alors: 498.39
-          - si: enfantsACharge = 3
-            alors: 561.54
-          - si: enfantsACharge = 4
-            alors: 624.69
-          - si: enfantsACharge = 5
-            alors: 687.84
-          - si: enfantsACharge > 5
-            alors: 687.84 + 63.15 * (enfantsACharge - 5)
+            alors: 397.64
+          - si: enfantsACharge >= 1
+            alors: 449.43 + 65.21 * (enfantsACharge - 1)
     - si: zone = 2
       alors:
         variations:
@@ -115,24 +107,14 @@ plafond_loyer:
               toutes ces conditions:
                 - couple = non
                 - enfantsACharge = 0
-            alors: 278.28
+            alors: 287.35
           - si:
               toutes ces conditions:
                 - couple = oui
                 - enfantsACharge = 0
-            alors: 340.62
-          - si: enfantsACharge = 1
-            alors: 383.28
-          - si: enfantsACharge = 2
-            alors: 439.07
-          - si: enfantsACharge = 3
-            alors: 494.86
-          - si: enfantsACharge = 4
-            alors: 550.65
-          - si: enfantsACharge = 5
-            alors: 606.44
-          - si: enfantsACharge > 5
-            alors: 606.44 + 55.79 * (enfantsACharge - 5)
+            alors: 351.72
+          - si: enfantsACharge >= 1
+            alors: 395.77 + 57.61 * (enfantsACharge - 1)
     - si: zone = 3
       alors:
         variations:
@@ -140,28 +122,19 @@ plafond_loyer:
               toutes ces conditions:
                 - couple = non
                 - enfantsACharge = 0
-            alors: 260.82
+            alors: 269.32
           - si:
               toutes ces conditions:
                 - couple = oui
                 - enfantsACharge = 0
-            alors: 316.17
-          - si: enfantsACharge = 1
-            alors: 354.51
-          - si: enfantsACharge = 2
-            alors: 405.32
-          - si: enfantsACharge = 3
-            alors: 456.13
-          - si: enfantsACharge = 4
-            alors: 506.94
-          - si: enfantsACharge = 5
-            alors: 557.75
-          - si: enfantsACharge > 5
-            alors: 557.75 + 50.81 * (enfantsACharge - 5)
+            alors: 326.48
+          - si: enfantsACharge >= 1
+            alors: 366.07 + 52.47 * (enfantsACharge - 1)
 
 # ----------- Plafond de loyer pour chambre ----------
+# Article 8 de l'arrêté du 27 septembre 2024
 # Dans le cas où le logement occupé est une chambre, quelle que soit la taille du ménage,
-# les plafonds de loyers sont fixés comme suit (arrondis au centime d’euro le plus proche) :
+# les plafonds de loyers sont fixés comme suit (arrondis au centime d'euro le plus proche) :
 # - 90 % des loyers plafonds de location pour une personne seule
 # - 75 % des loyers plafonds de location pour une personne seule, dans le cas des personnes âgées ou handicapées adultes hébergées à titre onéreux chez des particuliers
 plafond_loyer_chambre:
@@ -173,31 +146,32 @@ plafond_loyer_chambre:
       alors:
         variations:
           - si: zone = 1
-            alors: 287.37
+            alors: 296.74
           - si: zone = 2
-            alors: 250.45
+            alors: 258.62
           - si: zone = 3
-            alors: 234.74
+            alors: 242.39
     - sinon:
         variations:
           - si: zone = 1
-            alors: 239.48
+            alors: 247.28
           - si: zone = 2
-            alors: 208.71
+            alors: 215.51
           - si: zone = 3
-            alors: 195.62
+            alors: 201.99
 
 # ---------- Plafond de loyer en colocation ----------
-# Montant du plafond de loyer en colocation (en euros) (à compter du 01/10/23)
+# Article 16 de l'arrêté du 27 septembre 2024
+# Montant du plafond de loyer en colocation (en euros) (à compter du 01/10/2024)
 # Dans le cas d'une collocation, le plafond de loyer est égal à 75 % du plafond de loyer dans le cas général.
 # (PS = personne seule, C = couple, pàc = personne à charge)
-# |-------------------------------------------------------------------------------------------|
-# | zone | PS + 0 pàc | C + 0 pàc | 1 pàc  | 2 pàc  | 3 pàc  | 4 pàc  | 5 pàc  | par pàc sup. |
-# | ---- | ---------- | --------- | ------ | ------ | ------ | ------ | ------ | ------------ |
-# | I    | 239,48     | 288,82    | 326,43 | 373,79 | 421,15 | 468,51 | 515,87 | + 47,36      |
-# | II   | 208,71     | 255,47    | 287,46 | 329,30 | 371,14 | 412,98 | 454,82 | + 41,84      |
-# | III  | 195,62     | 237,13    | 265,88 | 303,99 | 342,10 | 380,21 | 418,32 | + 38,11      |
-# |-------------------------------------------------------------------------------------------|
+# |-------------------------------------------------------|
+# | zone | PS + 0 pàc | C + 0 pàc | 1 pàc  | par pàc sup. |
+# | ---- | ---------- | --------- | ------ | ------------ |
+# | I    | 247,28     | 298,23    | 337,07 | + 48,91      |
+# | II   | 215,51     | 263,79    | 296,83 | + 43,21      |
+# | III  | 201,99     | 244,86    | 274,55 | + 39,35      |
+# |-------------------------------------------------------|
 plafond_loyer_collocation:
   titre: "Plafond de loyer en colocation"
   unité: €/mois
@@ -210,24 +184,14 @@ plafond_loyer_collocation:
               toutes ces conditions:
                 - couple = non
                 - enfantsACharge = 0
-            alors: 239.48
+            alors: 247.28
           - si:
               toutes ces conditions:
                 - couple = oui
                 - enfantsACharge = 0
-            alors: 288.82
-          - si: enfantsACharge = 1
-            alors: 326.43
-          - si: enfantsACharge = 2
-            alors: 373.79
-          - si: enfantsACharge = 3
-            alors: 421.15
-          - si: enfantsACharge = 4
-            alors: 468.51
-          - si: enfantsACharge = 5
-            alors: 515.87
-          - si: enfantsACharge > 5
-            alors: 515.87 + 47.36 * (enfantsACharge - 5)
+            alors: 298.23
+          - si: enfantsACharge >= 1
+            alors: 337.07 + 48.91 * (enfantsACharge - 1)
     - si: zone = 2
       alors:
         variations:
@@ -235,24 +199,14 @@ plafond_loyer_collocation:
               toutes ces conditions:
                 - couple = non
                 - enfantsACharge = 0
-            alors: 208.71
+            alors: 215.51
           - si:
               toutes ces conditions:
                 - couple = oui
                 - enfantsACharge = 0
-            alors: 255.47
-          - si: enfantsACharge = 1
-            alors: 287.46
-          - si: enfantsACharge = 2
-            alors: 329.30
-          - si: enfantsACharge = 3
-            alors: 371.14
-          - si: enfantsACharge = 4
-            alors: 412.98
-          - si: enfantsACharge = 5
-            alors: 454.82
-          - si: enfantsACharge > 5
-            alors: 454.82 + 41.84 * (enfantsACharge - 5)
+            alors: 263.79
+          - si: enfantsACharge >= 1
+            alors: 296.83 + 43.21 * (enfantsACharge - 1)
     - si: zone = 3
       alors:
         variations:
@@ -260,24 +214,14 @@ plafond_loyer_collocation:
               toutes ces conditions:
                 - couple = non
                 - enfantsACharge = 0
-            alors: 195.62
+            alors: 201.99
           - si:
               toutes ces conditions:
                 - couple = oui
                 - enfantsACharge = 0
-            alors: 237.13
-          - si: enfantsACharge = 1
-            alors: 265.88
-          - si: enfantsACharge = 2
-            alors: 303.99
-          - si: enfantsACharge = 3
-            alors: 342.10
-          - si: enfantsACharge = 4
-            alors: 380.21
-          - si: enfantsACharge = 5
-            alors: 418.32
-          - si: enfantsACharge > 5
-            alors: 418.32 + 38.11 * (enfantsACharge - 5)
+            alors: 244.86
+          - si: enfantsACharge >= 1
+            alors: 274.55 + 39.35 * (enfantsACharge - 1)
 
 # ---------- Plafond de loyer final ----------
 plafond_loyer_final:
@@ -338,78 +282,31 @@ type_logement:
     - sinon: '"ordinaire"'
 
 # ----------------- Forfait charges C ----------------
-# Montant du forfait de charges C dans le cas général (en euros) (à compter du 01/10/23)
+# Article 9 et 16 de l'arrêté du 27 septembre 2024
+# Montant du forfait de charges C dans le cas général (en euros) (à compter du 01/10/2024)
 # (PS = personne seule, C = couple, pàc = personne à charge)
 # |------------------------------------------------------------------------------------------------------------------------------------|
-# | cas         | PS sans pàc | C sans pàc | PS + 1 pàc | C + 1 pàc | PS + 2 pàc  | C + 2 pàc | PS + 3 pàc | C + 3 pàc  | par pàc sup. |
-# | ----------- | ----------- | ---------- | ---------- | --------- | ----------- | --------- | ---------- | ---------- | ------------ |
-# | Cas général | 58,08       | 58,08      | 71,25      | 71,25     | 84,42       | 84,42     | 97,59      | 97,59      | + 13,17      |
-# | Colocation  | 29,03       | 58,08      | 42,20      | 71,25     | 55,37       | 84,42     | 68,54      | 97,59      | + 13,17      |
+# | cas         | PS sans pàc | C sans pàc | par pàc sup. |
+# | ----------- | ----------- | ---------- | ------------ |
+# | Cas général | 59,97       | 59,97      | + 13,60      |
+# | Colocation  | 29,98       | 59,97      | + 13,60      |
 # |------------------------------------------------------------------------------------------------------------------------------------|
 
 # Forfait charges de base (cas général)
 C . cas_general:
   titre: "Forfait charges cas général"
   unité: €/mois
-  variations:
-    - si: enfantsACharge = 0
-      alors: 58.08
-    - si: enfantsACharge = 1
-      alors: 71.25
-    - si: enfantsACharge = 2
-      alors: 84.42
-    - si: enfantsACharge = 3
-      alors: 97.59
-    - si: enfantsACharge > 3
-      alors: 97.59 + 13.17 * (enfantsACharge - 3)
+  valeur: 59.97 + 13.60 * enfantsACharge
 
 # Forfait charges en colocation
 C . colocation:
   titre: "Forfait charges colocation"
   unité: €/mois
   variations:
-    - si:
-        toutes ces conditions:
-          - personne_seule
-          - enfantsACharge = 0
-      alors: 29.03
-    - si:
-        toutes ces conditions:
-          - couple
-          - enfantsACharge = 0
-      alors: 58.08
-    - si:
-        toutes ces conditions:
-          - personne_seule
-          - enfantsACharge = 1
-      alors: 42.20
-    - si:
-        toutes ces conditions:
-          - couple
-          - enfantsACharge = 1
-      alors: 71.25
-    - si:
-        toutes ces conditions:
-          - personne_seule
-          - enfantsACharge = 2
-      alors: 55.37
-    - si:
-        toutes ces conditions:
-          - couple
-          - enfantsACharge = 2
-      alors: 84.42
-    - si:
-        toutes ces conditions:
-          - personne_seule
-          - enfantsACharge = 3
-      alors: 68.54
-    - si:
-        toutes ces conditions:
-          - couple
-          - enfantsACharge = 3
-      alors: 97.59
-    - si: enfantsACharge > 3
-      alors: 97.59 + 13.17 * (enfantsACharge - 3)
+    - si: personne_seule = oui
+      alors: 29.98 + 13.60 * enfantsACharge
+    - si: couple = oui
+      alors: 59.97 + 13.60 * enfantsACharge
 
 C:
   titre: "Forfait charges"
@@ -421,13 +318,14 @@ C:
     - sinon: C . cas_general
 
 # ---------- Participation minimale P0 ----------
+# Article 13 de l'arrêté du 27 septembre 2024
 P0:
   titre: "Participation minimale P0"
   unité: €/mois
   description: "P0 est une composante de la participation personnelle Pp qui correspond à la part fixe, indépendante du revenu, que doit au minimum acquitter le locataire."
   le maximum de:
     - 0.085 * (L + C)
-    - 37.91
+    - 39.15
 
 # -------------------------------------------------------------
 # --------------- Les paramètres de ressources ---------------
@@ -474,24 +372,14 @@ LR_zone2:
         toutes ces conditions:
           - couple = non
           - enfantsACharge = 0
-      alors: 278.28
+      alors: 287.35
     - si:
         toutes ces conditions:
           - couple = oui
           - enfantsACharge = 0
-      alors: 340.62
-    - si: enfantsACharge = 1
-      alors: 383.28
-    - si: enfantsACharge = 2
-      alors: 439.07
-    - si: enfantsACharge = 3
-      alors: 494.86
-    - si: enfantsACharge = 4
-      alors: 550.65
-    - si: enfantsACharge = 5
-      alors: 606.44
-    - si: enfantsACharge > 5
-      alors: 606.44 + 55.79 * (enfantsACharge - 5)
+      alors: 351.72
+    - si: enfantsACharge >= 1
+      alors: 395.77 + 57.61 * (enfantsACharge - 1)
 
 # ---------- Taux loyer TL ----------
 # TL dépend du rapport RL du loyer réel éventuellement plafonné (L),
@@ -541,7 +429,7 @@ TP:
     - TL
 
 # ---------- Seuil de ressources R0 ----------
-# Montant du forfait R0 (en euros) (à compter du 01/01/24)
+# Article 15 de l'arrêté du 30 décembre 2024 (applicable au 01/01/2025)
 R0:
   titre: "Seuil de ressources R0 "
   unité: €/an
@@ -555,26 +443,26 @@ R0:
         toutes ces conditions:
           - couple = non
           - enfantsACharge = 0
-      alors: 5186
+      alors: 5235
     - si:
         toutes ces conditions:
           - couple = oui
           - enfantsACharge = 0
-      alors: 7430
+      alors: 7501
     - si: enfantsACharge = 1
-      alors: 8862
+      alors: 8947
     - si: enfantsACharge = 2
-      alors: 9061
+      alors: 9148
     - si: enfantsACharge = 3
-      alors: 9408
+      alors: 9498
     - si: enfantsACharge = 4
-      alors: 9758
+      alors: 9851
     - si: enfantsACharge = 5
-      alors: 10105
+      alors: 10202
     - si: enfantsACharge = 6
-      alors: 10454
+      alors: 10554
     - si: enfantsACharge > 6
-      alors: 10454 + 343 * (enfantsACharge - 6)
+      alors: 10554 + 346 * (enfantsACharge - 6)
 
 # ---------- Participation personnelle Pp ----------
 participation_personnelle:

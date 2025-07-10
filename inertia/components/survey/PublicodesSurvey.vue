@@ -143,6 +143,7 @@ const navButtons = computed(() => {
     >
       <div v-if="!field.hidden">
         <SurveyQuestion
+          :store="surveysStore"
           :question="question"
           :simulateur-slug="props.simulateurSlug"
           :default-value="field.value ?? field.checked ?? field.defaultValue ?? field.defaultChecked"

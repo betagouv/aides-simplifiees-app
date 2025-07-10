@@ -44,6 +44,7 @@ const visibleQuestionsInCurrentPage = computed(() => surveysStore.getVisibleQues
         :key="question.id"
       >
         <SurveyQuestion
+          :store="surveysStore"
           :question="question"
           :simulateur-slug="simulateur.slug"
           :size="currentPage.title ? 'sm' : 'md'"

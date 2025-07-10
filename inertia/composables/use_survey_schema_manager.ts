@@ -62,11 +62,12 @@ export function useSurveySchemaManager({
     return schemas.value[simulateurId] || null
   }
 
-  const setSchema = (simulateurId: string, schema: SurveyNormalizedSchema) => {
+  const setSchema = (simulateurSlug: string, schema: SurveySchema) => {
     // Normalize schema before setting it
     const normalizedSchema = normalizeSchema(schema)
-    schemas.value[simulateurId] = normalizedSchema
-    debug.log(`[Surveys store][${simulateurId}] Schema set:`, normalizedSchema)
+    validateSchema(normalizedSchema)
+    schemas.value[simulateurSlug] = normalizedSchema
+    debug.log(`[Surveys store][${simulateurSlug}] Schema set:`, normalizedSchema)
   }
 
   /**
@@ -74,34 +75,75 @@ export function useSurveySchemaManager({
    * This converts legacy format (steps with direct questions) to the new format (steps with pages)
    */
   function normalizeSchema(schema: SurveySchema): SurveyNormalizedSchema {
-    const normalizedSchema = { ...schema }
-
     // Convert each step to use the page-based format if needed
-    normalizedSchema.steps = schema.steps.map((step) => {
+    const normalizedSteps: SurveyDeepStep[] = schema.steps.map((step) => {
       // If the step already uses pages, return as is
-      if (step.pages && step.pages.length > 0) {
-        return step
+      if ('pages' in step && step.pages && step.pages.length > 0) {
+        return step as SurveyDeepStep
       }
 
       // Convert legacy format (direct questions) to page-based format
       // Create one page per question
-      if (step.questions && step.questions.length > 0) {
-        const normalizedStep = { ...step }
-        normalizedStep.pages = step.questions.map((question: SurveyQuestion, index: number) => {
-          return {
-            id: `${step.id}_page_${index + 1}`,
-            // title: question.title,
-            questions: [question],
-          }
-        })
+      if ('questions' in step && step.questions && step.questions.length > 0) {
+        const normalizedStep: SurveyDeepStep = {
+          id: step.id,
+          title: step.title,
+          pages: step.questions.map((question: SurveyQuestion, index: number) => {
+            return {
+              id: `${step.id}_page_${index + 1}`,
+              // title: question.title,
+              questions: [question],
+            }
+          }),
+        }
 
         return normalizedStep
       }
 
-      return step
+      // If step has neither pages nor questions, create empty step
+      return {
+        id: step.id,
+        title: step.title,
+        pages: [],
+      }
     })
 
-    return normalizedSchema
+    // Create normalized schema with proper typing
+    if (schema.engine === 'openfisca') {
+      return {
+        ...schema,
+        steps: normalizedSteps,
+      } as OpenFiscaNormalizedSchema
+    }
+    else {
+      return {
+        ...schema,
+        steps: normalizedSteps,
+      } as PublicodesNormalizedSchema
+    }
+  }
+
+  function validateSchema(schema: SurveyNormalizedSchema) {
+    if (!schema.id) {
+      throw new Error('Schema must have an id')
+    }
+    if (!schema.version) {
+      throw new Error('Schema must have a version')
+    }
+    // if (!schema.steps || schema.steps.length === 0) {
+    //   throw new Error('Schema must have at least one step')
+    // }
+
+    // Validate each step
+    schema.steps.forEach((step) => {
+      if (!step.id) {
+        console.warn(`Step must have an id: ${JSON.stringify(step)}`)
+      }
+      if (!step.title) {
+        console.warn(`Step must have a title: ${JSON.stringify(step)}`)
+      }
+      // Additional validation can be added here based on question type
+    })
   }
 
   async function loadSchema(simulateurId: string) {

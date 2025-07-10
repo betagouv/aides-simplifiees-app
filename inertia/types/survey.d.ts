@@ -95,35 +95,85 @@ declare global {
     results: Record<string, any>
   }
 
-  interface SurveySchema {
-    version: string
-    forceRefresh: boolean
+  interface SurveySchemaBase {
     id: string
     title: string
+    version: string
+    forceRefresh: boolean
     description: string
-    engine?: string
-    dispositifs?: { id: string, title: string, description: string }[]
-    intermediaryResults?: {
-      dispositifs: { id: string, title: string, description: string }[]
-    }
-    steps: SurveyStepFlatStep[] | SurveyDeepStep[]
-    tests?: SurveyTest[]
+    steps: SurveyFlatStep[] | SurveyDeepStep[]
   }
 
-  interface SurveyNormalizedSchema extends SurveySchema {
+  interface OpenFiscaSurveySchema extends SurveySchemaBase {
+    engine: 'openfisca'
+    questionsToApi: string[]
+  }
+
+  interface PublicodesSurveySchema extends SurveySchemaBase {
+    engine: 'publicodes'
+    dispositifs: { id: string, title: string, description: string }[]
+  }
+
+  type SurveySchema = OpenFiscaSurveySchema | PublicodesSurveySchema
+
+  interface OpenFiscaNormalizedSchema extends Omit<OpenFiscaSurveySchema, 'steps'> {
     steps: SurveyDeepStep[]
   }
+
+  interface PublicodesNormalizedSchema extends Omit<PublicodesSurveySchema, 'steps'> {
+    steps: SurveyDeepStep[]
+  }
+
+  type SurveyNormalizedSchema = OpenFiscaNormalizedSchema | PublicodesNormalizedSchema
 
   interface SurveyAnswers {
     [key: string]: string | string[] | number | boolean | undefined
   }
 
-  interface SurveyResults {
-    data: SimulationResultsAides
-    meta: {
-      createdAt: Date
-    }
+  // Type guards for discriminating union types
+  function isOpenFiscaSchema(schema: SurveySchema): schema is OpenFiscaSurveySchema {
+    return schema.engine === 'openfisca'
   }
+
+  function isPublicodesSchema(schema: SurveySchema): schema is PublicodesSurveySchema {
+    return schema.engine === 'publicodes'
+  }
+
+  function isOpenFiscaNormalizedSchema(schema: SurveyNormalizedSchema): schema is OpenFiscaNormalizedSchema {
+    return schema.engine === 'openfisca'
+  }
+
+  function isPublicodesNormalizedSchema(schema: SurveyNormalizedSchema): schema is PublicodesNormalizedSchema {
+    return schema.engine === 'publicodes'
+  }
+
+  function isFlatStep(step: SurveyFlatStep | SurveyDeepStep): step is SurveyFlatStep {
+    return 'questions' in step && step.questions !== undefined
+  }
+
+  function isDeepStep(step: SurveyFlatStep | SurveyDeepStep): step is SurveyDeepStep {
+    return 'pages' in step && step.pages !== undefined
+  }
+
+  function isQuestionsPageData(page: SurveyPageData): page is SurveyQuestionsPageData {
+    return 'questions' in page && page.questions !== undefined
+  }
+
+  function isResultsPageData(page: SurveyPageData): page is SurveyResultsPageData {
+    return page.type === 'intermediary-results'
+  }
+
+  // Utility types for better developer experience
+  type SurveyEngine = SurveySchema['engine']
+  type SurveyStepUnion = SurveyFlatStep | SurveyDeepStep
+  type SurveyQuestionType = SurveyQuestionData['type']
+
+  // Helper type to extract question IDs from a schema
+  type ExtractQuestionIds<T extends SurveyNormalizedSchema> = T extends any
+    ? T['steps'][number]['pages'][number] extends SurveyQuestionsPageData
+      ? T['steps'][number]['pages'][number]['questions'][number]['id']
+      : never
+    : never
 }
 
 export {}

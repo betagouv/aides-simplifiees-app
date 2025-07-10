@@ -3,7 +3,7 @@ import { customRef } from 'vue'
 import RadioButtonQuestion from '~/components/survey/RadioButtonQuestion.vue'
 
 const props = defineProps<{
-  question: SurveyQuestion
+  question: SurveyQuestionData
 }>()
 
 const question = {

@@ -14,7 +14,7 @@ test.group('API FormSubmissionController', (group) => {
 
   test('POST /api/form-submissions should store form data and return secure hash', async ({ client, assert }) => {
     const formData = {
-      simulateurId: 'demenagement-logement',
+      simulateurSlug: 'demenagement-logement',
       answers: {
         question1: 'answer1',
         question2: 'answer2',
@@ -51,17 +51,17 @@ test.group('API FormSubmissionController', (group) => {
     assert.exists(body.resultsUrl)
 
     // Verify that the URL contains the correct structure
-    assert.include(body.resultsUrl, `/simulateurs/${formData.simulateurId}/resultats/`)
+    assert.include(body.resultsUrl, `/simulateurs/${formData.simulateurSlug}/resultats/`)
 
     // Verify that the data was actually stored in the database
     const submission = await FormSubmission.findOrFail(body.submissionId)
-    assert.equal(submission.simulatorId, formData.simulateurId)
+    assert.equal(submission.simulatorId, formData.simulateurSlug)
     assert.deepEqual(submission.answers, formData.answers)
     assert.deepEqual(submission.results, formData.results)
   })
 
   test('POST /api/form-submissions should handle missing required fields', async ({ client }) => {
-    // Missing simulateurId
+    // Missing simulateurSlug
     let response = await client
       .post('/api/form-submissions')
       .json({
@@ -72,14 +72,14 @@ test.group('API FormSubmissionController', (group) => {
     response.assertStatus(400)
     response.assertBodyContains({
       success: false,
-      error: 'Missing required field: simulateurId',
+      error: 'Missing required field: simulateurSlug',
     })
 
     // Missing answers
     response = await client
       .post('/api/form-submissions')
       .json({
-        simulateurId: 'demenagement-logement',
+        simulateurSlug: 'demenagement-logement',
         results: { eligible: true },
       })
 
@@ -93,7 +93,7 @@ test.group('API FormSubmissionController', (group) => {
   test('POST /api/form-submissions should handle optional results field', async ({ client, assert }) => {
     // Omitting results should use default empty object
     const formData = {
-      simulateurId: 'demenagement-logement',
+      simulateurSlug: 'demenagement-logement',
       answers: { question1: 'answer1' },
     }
 
@@ -113,7 +113,7 @@ test.group('API FormSubmissionController', (group) => {
   test('GET /api/form-submissions/:hash should retrieve submission by hash', async ({ client }) => {
     // First create a submission
     const formData = {
-      simulateurId: 'demenagement-logement',
+      simulateurSlug: 'demenagement-logement',
       answers: { question1: 'answer1' },
       results: { eligible: true },
     }

@@ -9,10 +9,10 @@ import SurveyChoiceScreen from '~/components/survey/SurveyChoiceScreen.vue'
 import SurveyForm from '~/components/survey/SurveyForm.vue'
 import SurveyNavigation from '~/components/survey/SurveyNavigation.vue'
 import SurveyWelcomeScreen from '~/components/survey/SurveyWelcomeScreen.vue'
-import { useEligibilityService } from '~/composables/use_eligibility_service'
+import { useFormSubmission } from '~/composables/use_form_submission'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
 import { useMatomoTracking } from '~/composables/use_matomo_tracking'
-import { useSubmissionStore } from '~/stores/submissions'
+import { useSimulation } from '~/composables/use_simulation'
 import { useSurveysStore } from '~/stores/surveys'
 import { scrollToAnchor } from '~/utils/dom'
 import { getParam } from '~/utils/url'
@@ -32,9 +32,9 @@ const hasAnswers = computed(() => surveysStore.hasAnswers(simulateur.slug))
 const progress = computed(() => surveysStore.getProgress(simulateur.slug))
 const showWelcomeScreen = computed(() => surveysStore.getShowWelcomeScreen(simulateur.slug))
 const showChoiceScreen = computed(() => surveysStore.getShowChoiceScreen(simulateur.slug))
-// Form submission
-const submissionStore = useSubmissionStore()
-const resultsFetchStatus = computed(() => submissionStore.getSubmissionStatus(simulateur.slug))
+
+const { status: submissionStatus, submit: submitForm } = useFormSubmission()
+const { status: simulationStatus, runSimulation } = useSimulation()
 
 const forceResume = getParam(url, 'resume') === 'true'
 
@@ -66,7 +66,8 @@ function initSurvey() {
 }
 
 function resumeForm() {
-  submissionStore.setSubmissionStatus(simulateur.slug, 'idle')
+  submissionStatus.value = 'idle'
+  simulationStatus.value = 'idle'
   surveysStore.setShowChoiceScreen(simulateur.slug, false)
   surveysStore.setShowWelcomeScreen(simulateur.slug, false)
   scrollToAnchor('simulateur-title')
@@ -74,64 +75,42 @@ function resumeForm() {
 
 // Restart the form from the beginning
 function restartForm() {
-  submissionStore.setSubmissionStatus(simulateur.slug, 'idle')
+  submissionStatus.value = 'idle'
+  simulationStatus.value = 'idle'
   surveysStore.resetSurvey(simulateur.slug)
   surveysStore.setShowChoiceScreen(simulateur.slug, false)
   surveysStore.setShowWelcomeScreen(simulateur.slug, true)
   scrollToAnchor('simulateur-title')
 }
 
-// Gérer la soumission du formulaire
+/**
+ * Submit the form answers and results to the server
+ */
 async function handleFormComplete(): Promise<void> {
-  const simulateurVisibleAnswers = surveysStore.getAnswersForCalculation(simulateur.slug)
   const schema = surveysStore.getSchema(simulateur.slug)
-  if (schema?.engine === 'publicodes') {
-    const aidesToEvaluate = schema?.dispositifs ?? []
-
-    const { calculateEligibility } = useEligibilityService()
-    const eligibilityResults = await calculateEligibility(simulateur.slug, simulateurVisibleAnswers, aidesToEvaluate)
-
-    submissionStore.submitFormPublicodes(simulateur.slug, simulateurVisibleAnswers, eligibilityResults.aidesResults)
-      .then((success: boolean) => {
-        console.log('success submitFormPublicodes', success)
-        if (success) {
-          setTimeout(() => {
-          // Inertia router redirection instead of window.location.href
-            const secureHash = submissionStore.getSecureHash(simulateur.slug)
-            router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
-              preserveState: true,
-              preserveScroll: true,
-            })
-          }, 1000)
-        }
-        else {
-          setTimeout(() => {
-            resumeForm()
-          }, 1500)
-        }
-      })
+  if (!schema) {
+    console.error(`Schema not found for simulateur: ${simulateur.slug}`)
+    return
   }
-  else {
-    submissionStore
-      .submitForm(simulateur.slug, simulateurVisibleAnswers)
-      .then((success: boolean) => {
-        if (success) {
-          setTimeout(() => {
-          // Inertia router redirection instead of window.location.href
-            const secureHash = submissionStore.getSecureHash(simulateur.slug)
-            router.visit(`/simulateurs/${simulateur.slug}/resultats/${secureHash}#simulateur-title`, {
-              preserveState: true,
-              preserveScroll: true,
-            })
-          }, 1000)
-        }
-        else {
-          setTimeout(() => {
-            resumeForm()
-          }, 1500)
-        }
-      })
+  const answers = surveysStore.getAnswersForCalculation(simulateur.slug)
+  const results = await runSimulation(answers, schema)
+  if (!results) {
+    console.error(`Simulation failed for simulateur: ${simulateur.slug}`)
+    return
   }
+  submitForm(simulateur.slug, answers, results)
+    .then((response) => {
+      if (response.success && response.hash) {
+        setTimeout(() => {
+          router.visit(`/simulateurs/${simulateur.slug}/resultats/${response.hash}#simulateur-title`, { preserveState: true })
+        }, 1000)
+      }
+      else {
+        setTimeout(() => {
+          resumeForm()
+        }, 1500)
+      }
+    })
 }
 
 onMounted(() => {
@@ -207,26 +186,32 @@ const { isIframe } = useIframeDisplay()
 
       <!-- Results status panel -->
       <div
-        v-else-if="resultsFetchStatus !== 'idle'"
+        v-else-if="(
+          submissionStatus !== 'idle'
+          || simulationStatus !== 'idle'
+        )"
         class="status-panel"
       >
         <LoadingSpinner
-          v-if="resultsFetchStatus === 'pending'"
+          v-if="(
+            submissionStatus === 'pending'
+            || simulationStatus === 'pending'
+          )"
           text="Estimation en cours..."
           test-id="survey-results-loading"
           size="lg"
         />
         <DsfrBadge
-          v-else-if="resultsFetchStatus === 'success' || resultsFetchStatus === 'error'"
+          v-else-if="submissionStatus === 'success' || submissionStatus === 'error'"
           :type="({
             success: 'success',
             error: 'error',
-          }[resultsFetchStatus] as 'info' | 'success' | 'error')"
-          :data-testid="`survey-results-${resultsFetchStatus}`"
+          }[submissionStatus] as 'info' | 'success' | 'error')"
+          :data-testid="`survey-results-${submissionStatus}`"
           :label="{
             success: 'Estimation terminée',
             error: 'Erreur lors de l\'estimation',
-          }[resultsFetchStatus]"
+          }[submissionStatus]"
         />
       </div>
 

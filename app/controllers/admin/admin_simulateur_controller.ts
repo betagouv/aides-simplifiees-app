@@ -36,7 +36,7 @@ export default class AdminSimulateurController {
       return this.simulateurs.map((simulateur) => {
         return {
           id: simulateur.id,
-          updatedAt: simulateur.updatedAt,
+          updatedAt: simulateur.updatedAt.toString(), // Convert DateTime to string for JSON serialization
           title: simulateur.title,
           slug: simulateur.slug,
           status: simulateur.status,

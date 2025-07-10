@@ -12,14 +12,14 @@ import { compareVersions } from '~/utils/compare_versions'
 export function useSurveySchemaManager({
   onNewSchema,
 }: {
-  onNewSchema?: (simulateurId?: string) => void
+  onNewSchema?: (simulateurSlug?: string) => void
 } = {}) {
   /**
    * State
    */
-  const schemas = ref<{ [simulateurId: string]: SurveyNormalizedSchema | null }>({})
-  const schemaStatus = ref<{ [simulateurId: string]: 'idle' | 'pending' | 'error' | 'success' }>({})
-  const versions = ref<{ [simulateurId: string]: string }>({})
+  const schemas = ref<{ [simulateurSlug: string]: SurveyNormalizedSchema | null }>({})
+  const schemaStatus = ref<{ [simulateurSlug: string]: 'idle' | 'pending' | 'error' | 'success' }>({})
+  const versions = ref<{ [simulateurSlug: string]: string }>({})
 
   /**
    * Composables
@@ -30,43 +30,44 @@ export function useSurveySchemaManager({
    * Methods
    */
 
-  const getVersion = (simulateurId: string): string => {
-    const version = versions.value[simulateurId]
-    debug.log(`[Surveys store][${simulateurId}] Version:`, version)
+  const getVersion = (simulateurSlug: string): string => {
+    const version = versions.value[simulateurSlug]
+    debug.log(`[Surveys store][${simulateurSlug}] Version:`, version)
     return version
   }
 
-  const setVersion = (simulateurId: string, version: string) => {
-    versions.value[simulateurId] = version
-    debug.log(`[Surveys store][${simulateurId}] Version set to:`, version)
+  const setVersion = (simulateurSlug: string, version: string) => {
+    versions.value[simulateurSlug] = version
+    debug.log(`[Surveys store][${simulateurSlug}] Version set to:`, version)
   }
 
-  const getSchemaStatus = (simulateurId: string): 'idle' | 'pending' | 'error' | 'success' => {
-    return schemaStatus.value[simulateurId] || 'idle'
+  const getSchemaStatus = (simulateurSlug: string): 'idle' | 'pending' | 'error' | 'success' => {
+    return schemaStatus.value[simulateurSlug] || 'idle'
   }
 
   function setSchemaStatus(
-    simulateurId: string,
+    simulateurSlug: string,
     status: 'idle' | 'pending' | 'error' | 'success',
   ) {
     if (status === 'error') {
-      console.error(`[Surveys store][${simulateurId}] Error loading survey schema`)
+      console.error(`[Surveys store][${simulateurSlug}] Error loading survey schema`)
     }
     else {
-      debug.log(`[Surveys store][${simulateurId}] Schema status:`, status)
+      debug.log(`[Surveys store][${simulateurSlug}] Schema status:`, status)
     }
-    schemaStatus.value[simulateurId] = status
+    schemaStatus.value[simulateurSlug] = status
   }
 
-  const getSchema = (simulateurId: string): SurveyNormalizedSchema | null => {
-    return schemas.value[simulateurId] || null
+  const getSchema = (simulateurSlug: string): SurveyNormalizedSchema | null => {
+    return schemas.value[simulateurSlug] || null
   }
 
-  const setSchema = (simulateurId: string, schema: SurveyNormalizedSchema) => {
+  const setSchema = (simulateurSlug: string, schema: SurveySchema) => {
     // Normalize schema before setting it
     const normalizedSchema = normalizeSchema(schema)
-    schemas.value[simulateurId] = normalizedSchema
-    debug.log(`[Surveys store][${simulateurId}] Schema set:`, normalizedSchema)
+    validateSchema(normalizedSchema)
+    schemas.value[simulateurSlug] = normalizedSchema
+    debug.log(`[Surveys store][${simulateurSlug}] Schema set:`, normalizedSchema)
   }
 
   /**
@@ -74,57 +75,98 @@ export function useSurveySchemaManager({
    * This converts legacy format (steps with direct questions) to the new format (steps with pages)
    */
   function normalizeSchema(schema: SurveySchema): SurveyNormalizedSchema {
-    const normalizedSchema = { ...schema }
-
     // Convert each step to use the page-based format if needed
-    normalizedSchema.steps = schema.steps.map((step) => {
+    const normalizedSteps: SurveyDeepStep[] = schema.steps.map((step) => {
       // If the step already uses pages, return as is
-      if (step.pages && step.pages.length > 0) {
-        return step
+      if ('pages' in step && step.pages && step.pages.length > 0) {
+        return step as SurveyDeepStep
       }
 
       // Convert legacy format (direct questions) to page-based format
       // Create one page per question
-      if (step.questions && step.questions.length > 0) {
-        const normalizedStep = { ...step }
-        normalizedStep.pages = step.questions.map((question: SurveyQuestion, index: number) => {
-          return {
-            id: `${step.id}_page_${index + 1}`,
-            // title: question.title,
-            questions: [question],
-          }
-        })
+      if ('questions' in step && step.questions && step.questions.length > 0) {
+        const normalizedStep: SurveyDeepStep = {
+          id: step.id,
+          title: step.title,
+          pages: step.questions.map((question: SurveyQuestionData, index: number) => {
+            return {
+              id: `${step.id}_page_${index + 1}`,
+              // title: question.title,
+              questions: [question],
+            }
+          }),
+        }
 
         return normalizedStep
       }
 
-      return step
+      // If step has neither pages nor questions, create empty step
+      return {
+        id: step.id,
+        title: step.title,
+        pages: [],
+      }
     })
 
-    return normalizedSchema
+    // Create normalized schema with proper typing
+    if (schema.engine === 'openfisca') {
+      return {
+        ...schema,
+        steps: normalizedSteps,
+      } as OpenFiscaNormalizedSchema
+    }
+    else {
+      return {
+        ...schema,
+        steps: normalizedSteps,
+      } as PublicodesNormalizedSchema
+    }
   }
 
-  async function loadSchema(simulateurId: string) {
-    debug.log(`[Surveys store][${simulateurId}] Loading survey schema...`)
+  function validateSchema(schema: SurveyNormalizedSchema) {
+    if (!schema.id) {
+      throw new Error('Schema must have an id')
+    }
+    if (!schema.version) {
+      throw new Error('Schema must have a version')
+    }
+    // if (!schema.steps || schema.steps.length === 0) {
+    //   throw new Error('Schema must have at least one step')
+    // }
+
+    // Validate each step
+    schema.steps.forEach((step) => {
+      if (!step.id) {
+        console.warn(`Step must have an id: ${JSON.stringify(step)}`)
+      }
+      if (!step.title) {
+        console.warn(`Step must have a title: ${JSON.stringify(step)}`)
+      }
+      // Additional validation can be added here based on question type
+    })
+  }
+
+  async function loadSchema(simulateurSlug: string) {
+    debug.log(`[Surveys store][${simulateurSlug}] Loading survey schema...`)
 
     const {
       data: schema,
       isFetching,
       isFinished,
       error: loadingError,
-    } = useFetch<SurveySchema>(`/forms/${simulateurId}.json`).get().json()
+    } = useFetch<SurveySchema>(`/forms/${simulateurSlug}.json`).get().json()
 
     watch(
       [isFinished, isFetching, loadingError],
       () => {
         if (loadingError.value) {
-          setSchemaStatus(simulateurId, 'error')
+          setSchemaStatus(simulateurSlug, 'error')
         }
         else if (isFinished.value) {
-          setSchemaStatus(simulateurId, 'success')
+          setSchemaStatus(simulateurSlug, 'success')
         }
         else if (isFetching.value) {
-          setSchemaStatus(simulateurId, 'pending')
+          setSchemaStatus(simulateurSlug, 'pending')
         }
       },
       { immediate: true },
@@ -134,35 +176,35 @@ export function useSurveySchemaManager({
       if (newSchema) {
         try {
           if (newSchema.forceRefresh) {
-            debug.warn(`[Surveys store][${simulateurId}] Schema forceRefresh is true, resetting survey...`)
-            setVersion(simulateurId, newSchema.version)
-            setSchema(simulateurId, newSchema)
-            onNewSchema?.(simulateurId)
+            debug.warn(`[Surveys store][${simulateurSlug}] Schema forceRefresh is true, resetting survey...`)
+            setVersion(simulateurSlug, newSchema.version)
+            setSchema(simulateurSlug, newSchema)
+            onNewSchema?.(simulateurSlug)
           }
           else {
-            const storedVersion = getVersion(simulateurId)
+            const storedVersion = getVersion(simulateurSlug)
             if (!storedVersion) {
-              debug.log(`[Surveys store][${simulateurId}] No stored version found, assuming first load`)
-              setVersion(simulateurId, newSchema.version)
-              setSchema(simulateurId, newSchema)
-              onNewSchema?.(simulateurId)
+              debug.log(`[Surveys store][${simulateurSlug}] No stored version found, assuming first load`)
+              setVersion(simulateurSlug, newSchema.version)
+              setSchema(simulateurSlug, newSchema)
+              onNewSchema?.(simulateurSlug)
             }
             else if (compareVersions(newSchema.version, storedVersion) > 0) {
-              debug.warn(`[Surveys store][${simulateurId}] Schema version changed !`)
-              setVersion(simulateurId, newSchema.version)
-              setSchema(simulateurId, newSchema)
-              onNewSchema?.(simulateurId)
+              debug.warn(`[Surveys store][${simulateurSlug}] Schema version changed !`)
+              setVersion(simulateurSlug, newSchema.version)
+              setSchema(simulateurSlug, newSchema)
+              onNewSchema?.(simulateurSlug)
             }
             else {
               debug.log(
-                `[Surveys store][${simulateurId}] Schema version unchanged, no need to reset survey`,
+                `[Surveys store][${simulateurSlug}] Schema version unchanged, no need to reset survey`,
               )
-              setSchema(simulateurId, newSchema)
+              setSchema(simulateurSlug, newSchema)
             }
           }
         }
         catch (error) {
-          console.error(`[Surveys store][${simulateurId}] Error updating schema:`, error)
+          console.error(`[Surveys store][${simulateurSlug}] Error updating schema:`, error)
         }
       }
     })

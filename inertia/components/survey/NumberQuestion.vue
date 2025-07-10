@@ -3,7 +3,7 @@ import { DsfrInputGroup } from '@gouvminint/vue-dsfr'
 import { customRef } from 'vue'
 
 const props = defineProps<{
-  question: SurveyQuestion
+  question: SurveyQuestionData
 }>()
 
 /**

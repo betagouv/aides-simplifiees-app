@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type AdminSimulateurController from '#controllers/admin/admin_simulateur_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
+import { DsfrCallout } from '@gouvminint/vue-dsfr'
 import { Head, router, usePage } from '@inertiajs/vue3'
 import SimulateurForm from '~/components/admin/SimulateurForm.vue'
 import AdminPageHeading from '~/components/layout/AdminPageHeading.vue'
@@ -49,6 +50,22 @@ function handleCancel() {
         @submit="handleSubmit"
         @cancel="handleCancel"
       />
+      <div class="fr-grid-row fr-grid-row--gutters fr-mt-4w">
+        <div class="fr-col-12">
+          <DsfrCallout
+            title="Gestion des personas"
+            content="Gérez les cas de test (personas) pour ce simulateur afin de faciliter les tests et la validation."
+            :button="{
+              label: 'Gérer les personas',
+              icon: { name: 'ri-user-line', ssr: true },
+              secondary: true,
+              onClick: () => {
+                router.visit(`/admin/simulateurs/${simulateur.id}/personas`)
+              },
+            }"
+          />
+        </div>
+      </div>
     </SectionContainer>
   </BrandBackgroundContainer>
 </template>

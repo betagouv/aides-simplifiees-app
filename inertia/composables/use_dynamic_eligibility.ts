@@ -12,8 +12,14 @@ export function useDynamicEligibility(simulateurSlug: string) {
   const surveyAnswers = computed(() => surveysStore.getAnswersForCalculation(simulateurSlug))
   const schema = computed(() => surveysStore.getSchema(simulateurSlug))
 
-  // Get aides from the page configuration
-  const aidesToEvaluate = schema.value?.dispositifs || []
+  // Get aides from the page configuration (only for Publicodes schemas)
+  const aidesToEvaluate = computed(() => {
+    const currentSchema = schema.value
+    if (currentSchema && currentSchema.engine === 'publicodes') {
+      return currentSchema.dispositifs || []
+    }
+    return []
+  })
 
   // Use reactive ref for async computed results
   const calculatedResults = ref<EligibilityResults>({
@@ -25,7 +31,7 @@ export function useDynamicEligibility(simulateurSlug: string) {
 
   // Watch for changes and recalculate
   watch([surveyAnswers, schema], async () => {
-    if (!simulateurSlug || !aidesToEvaluate.length) {
+    if (!simulateurSlug || !aidesToEvaluate.value.length) {
       calculatedResults.value = {
         eligibleDispositifs: [],
         potentialDispositifs: [],
@@ -39,7 +45,7 @@ export function useDynamicEligibility(simulateurSlug: string) {
       calculatedResults.value = await calculateEligibility(
         simulateurSlug,
         surveyAnswers.value,
-        aidesToEvaluate,
+        aidesToEvaluate.value,
       )
     }
     catch (error) {

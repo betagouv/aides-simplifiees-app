@@ -3,7 +3,7 @@ import { DsfrRadioButtonSet, DsfrTooltip } from '@gouvminint/vue-dsfr'
 import { onMounted, useTemplateRef } from 'vue'
 
 const props = defineProps<{
-  question: SurveyQuestion
+  question: SurveyQuestionData
 }>()
 
 const model = defineModel<string | undefined>()
@@ -54,6 +54,7 @@ function moveTooltips() {
     ref="tooltips"
   >
     <DsfrTooltip
+      type="button"
       data-testid="survey-choice-tooltip"
       :content="(choice.tooltip as string)"
     />

@@ -1,5 +1,18 @@
 # CHANGELOG
 
+### 1.4.1 [#128](https://github.com/betagouv/aides-simplifiees-app/pull/128)
+- Ajout de fonctionnalités :
+  - Créé une entité persona pour gérer des cas de tests des simulateurs
+  - Permet l'utilisation de l'id comme segment d'url dans la vue de listing d'item côté admin
+- Améliorations :
+  - Mises à jour mineures des vues et de types
+- Corrections :
+  - S'assure que les boutons susceptibles d'être au sein du formulaire d'admin des personas soient de type "button"
+  - Répare les méthodes down des migrations qui empéchaient un refresh complet de la db
+- Refactorisation :
+  - Refactorise la gestion des formulaires
+  - Déplace et renomme les suites de test
+
 ## 1.4.0 [#127](https://github.com/betagouv/aides-simplifiees-app/pull/127)
 - Ajout de fonctionnalités :
   - Introduit un système complet de journalisation structurée

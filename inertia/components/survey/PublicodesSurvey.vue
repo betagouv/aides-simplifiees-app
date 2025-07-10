@@ -44,7 +44,7 @@ const page = computed(() =>
 )
 
 // Map publicodes field to survey question
-function mapToSurveyQuestion(field: any): SurveyQuestion {
+function mapToSurveyQuestion(field: any): SurveyQuestionData {
   let choices: SurveyChoice[] | undefined
   let type
   if (field.element === 'checkbox') {
@@ -143,6 +143,7 @@ const navButtons = computed(() => {
     >
       <div v-if="!field.hidden">
         <SurveyQuestion
+          :store="surveysStore"
           :question="question"
           :simulateur-slug="props.simulateurSlug"
           :default-value="field.value ?? field.checked ?? field.defaultValue ?? field.defaultChecked"

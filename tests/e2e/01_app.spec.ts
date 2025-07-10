@@ -23,8 +23,6 @@ test.group('Application UI tests', () => {
     expect(await headerTitle.textContent()).toContain('aides simplifiées')
 
     // Get the current viewport width
-    /** @todo provide the window object */
-    // @ts-expect-error window is not defined in this context
     const viewportWidth = await page.evaluate(() => window.innerWidth)
     const navMenu = page.locator('[aria-label="Menu principal"]').first()
 

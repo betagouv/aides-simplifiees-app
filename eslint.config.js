@@ -13,6 +13,7 @@ export default antfu(
     '**/publicodes-build/**',
     '**/publicodes-build/**',
     '**/publicodes/**/README.md',
+    'docs/**',
   ]),
   {
     rules: {

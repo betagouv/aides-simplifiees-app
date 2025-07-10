@@ -1,4 +1,4 @@
-export function isAnswerValid(question: SurveyQuestion, answer: any): boolean {
+export function isAnswerValid(question: SurveyQuestionData, answer: any): boolean {
   if (!question) {
     return false
   }

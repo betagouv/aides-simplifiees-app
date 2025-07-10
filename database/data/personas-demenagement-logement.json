@@ -1,0 +1,231 @@
+[
+  {
+    "name": "Étudiant boursier en mobilité Parcoursup",
+    "description": "Jeune de 18 ans qui commence ses études supérieures dans une nouvelle région après avoir été accepté sur Parcoursup",
+    "test_data": {
+      "statut-professionnel": "etudiant",
+      "situation-professionnelle": "sans-emploi",
+      "etudiant-mobilite": "parcoursup-nouvelle-region",
+      "boursier": true,
+      "date-naissance": "2007-02-15",
+      "handicap": false,
+      "statut-marital": "celibataire",
+      "code-postal-nouvelle-ville": "{\"value\":\"75101\",\"text\":\"75001 - Paris 1er Arrondissement\"}",
+      "situation-logement": "locataire",
+      "type-logement": "logement-foyer",
+      "logement-conventionne": true,
+      "colocation": false,
+      "logement-parente-proprietaire": false,
+      "nombre-personnes-logement": 1,
+      "loyer-montant-mensuel": 400,
+      "loyer-montant-charges": 80,
+      "type-revenus": [
+        "aucun-revenus"
+      ],
+      "montant-bourse-superieur": 4000
+    },
+    "status": "active"
+  },
+  {
+    "name": "Alternant en couple",
+    "description": "Jeune de 20 ans en alternance qui cherche un logement avec son/sa conjoint(e)",
+    "test_data": {
+      "statut-professionnel": "etudiant",
+      "situation-professionnelle": "alternance",
+      "etudiant-mobilite": "pas-de-mobilite",
+      "date-naissance": "2005-06-10",
+      "handicap": false,
+      "statut-marital": "marie",
+      "code-postal-nouvelle-ville": "69381",
+      "situation-logement": "locataire",
+      "type-logement": "logement-non-meuble",
+      "logement-conventionne": true,
+      "colocation": false,
+      "logement-parente-proprietaire": false,
+      "nombre-personnes-logement": 2,
+      "loyer-montant-mensuel": 650,
+      "loyer-montant-charges": 100,
+      "type-revenus": ["revenus-activite"],
+      "salaire-imposable": 18000
+    },
+    "status": "active"
+  },
+  {
+    "name": "Étudiant en Master avec mobilité",
+    "description": "Étudiant boursier de 22 ans qui commence un Master dans une nouvelle ville",
+    "test_data": {
+      "statut-professionnel": "etudiant",
+      "situation-professionnelle": "stage",
+      "etudiant-mobilite": "master-nouvelle-zone",
+      "boursier": true,
+      "date-naissance": "2003-09-25",
+      "handicap": false,
+      "statut-marital": "celibataire",
+      "code-postal-nouvelle-ville": "75101",
+      "situation-logement": "locataire",
+      "type-logement": "logement-chambre",
+      "logement-conventionne": false,
+      "colocation": true,
+      "logement-parente-proprietaire": false,
+      "nombre-personnes-logement": 3,
+      "loyer-montant-mensuel": 550,
+      "loyer-montant-charges": 50,
+      "type-revenus": ["revenus-activite", "revenus-bourses"],
+      "salaire-imposable": 6000,
+      "montant-bourse-superieur": 5500
+    },
+    "status": "active"
+  },
+  {
+    "name": "Jeune actif primo-accédant",
+    "description": "Jeune salarié de 26 ans qui achète son premier logement",
+    "test_data": {
+      "statut-professionnel": "actif",
+      "date-naissance": "1999-03-12",
+      "handicap": false,
+      "statut-marital": "pacse",
+      "code-postal-nouvelle-ville": "33063",
+      "situation-logement": "proprietaire",
+      "primo-accedant": true,
+      "type-revenus": ["revenus-activite"],
+      "salaire-imposable": 32000
+    },
+    "status": "active"
+  },
+  {
+    "name": "Salarié en colocation",
+    "description": "Jeune actif de 25 ans qui cherche une colocation en centre-ville",
+    "test_data": {
+      "statut-professionnel": "actif",
+      "date-naissance": "2000-11-08",
+      "handicap": false,
+      "statut-marital": "celibataire",
+      "code-postal-nouvelle-ville": "75101",
+      "situation-logement": "locataire",
+      "type-logement": "logement-non-meuble",
+      "logement-conventionne": false,
+      "colocation": true,
+      "logement-parente-proprietaire": false,
+      "nombre-personnes-logement": 3,
+      "loyer-montant-mensuel": 800,
+      "loyer-montant-charges": 120,
+      "type-revenus": [
+        "revenus-activite"
+      ],
+      "salaire-imposable": 28000
+    },
+    "status": "active"
+  },
+  {
+    "name": "Demandeur d'emploi avec famille",
+    "description": "Personne de 35 ans en recherche d'emploi avec conjoint et enfants",
+    "test_data": {
+      "statut-professionnel": "chomeur",
+      "date-naissance": "1990-07-20",
+      "handicap": false,
+      "statut-marital": "marie",
+      "code-postal-nouvelle-ville": "59350",
+      "situation-logement": "locataire",
+      "type-logement": "logement-non-meuble",
+      "logement-conventionne": true,
+      "colocation": false,
+      "logement-parente-proprietaire": false,
+      "nombre-personnes-logement": 4,
+      "loyer-montant-mensuel": 900,
+      "loyer-montant-charges": 150,
+      "type-revenus": ["revenus-chomage"],
+      "montant-chomage": 18000
+    },
+    "status": "active"
+  },
+  {
+    "name": "Étudiant salarié rattaché aux parents",
+    "description": "Étudiant de 19 ans qui travaille et reste rattaché fiscalement à ses parents",
+    "test_data": {
+      "statut-professionnel": "etudiant",
+      "situation-professionnelle": "salarie-hors-alternance",
+      "etudiant-mobilite": "pas-de-mobilite",
+      "date-naissance": "2006-04-03",
+      "handicap": false,
+      "statut-marital": "celibataire",
+      "code-postal-nouvelle-ville": "13001",
+      "situation-logement": "locataire",
+      "type-logement": "logement-meuble",
+      "logement-conventionne": true,
+      "colocation": false,
+      "logement-parente-proprietaire": false,
+      "nombre-personnes-logement": 1,
+      "loyer-montant-mensuel": 500,
+      "loyer-montant-charges": 80,
+      "type-revenus": ["revenus-activite", "revenus-parents"],
+      "salaire-imposable": 8000,
+      "montant-parents": 45000
+    },
+    "status": "active"
+  },
+  {
+    "name": "Personne en situation de handicap",
+    "description": "Jeune actif de 28 ans avec reconnaissance administrative de handicap",
+    "test_data": {
+      "statut-professionnel": "actif",
+      "date-naissance": "1997-12-14",
+      "handicap": true,
+      "statut-marital": "celibataire",
+      "code-postal-nouvelle-ville": "31555",
+      "situation-logement": "locataire",
+      "type-logement": "logement-non-meuble",
+      "logement-conventionne": true,
+      "colocation": false,
+      "logement-parente-proprietaire": false,
+      "nombre-personnes-logement": 1,
+      "loyer-montant-mensuel": 600,
+      "loyer-montant-charges": 90,
+      "type-revenus": ["revenus-activite"],
+      "salaire-imposable": 24000
+    },
+    "status": "active"
+  },
+  {
+    "name": "Micro-entrepreneur",
+    "description": "Jeune entrepreneur de 30 ans avec revenus de micro-entreprise",
+    "test_data": {
+      "statut-professionnel": "actif",
+      "date-naissance": "1995-01-28",
+      "handicap": false,
+      "statut-marital": "divorce",
+      "code-postal-nouvelle-ville": "44109",
+      "situation-logement": "locataire",
+      "type-logement": "logement-non-meuble",
+      "logement-conventionne": false,
+      "colocation": false,
+      "logement-parente-proprietaire": false,
+      "nombre-personnes-logement": 1,
+      "loyer-montant-mensuel": 750,
+      "loyer-montant-charges": 100,
+      "type-revenus": ["revenus-entreprise"],
+      "montant-ca-micro-entreprise": 35000
+    },
+    "status": "active"
+  },
+  {
+    "name": "Retraité",
+    "description": "Personne retraitée de 67 ans qui déménage",
+    "test_data": {
+      "statut-professionnel": "retraite",
+      "date-naissance": "1958-05-16",
+      "handicap": false,
+      "statut-marital": "veuf",
+      "code-postal-nouvelle-ville": "06088",
+      "situation-logement": "locataire",
+      "type-logement": "logement-non-meuble",
+      "logement-conventionne": true,
+      "colocation": false,
+      "logement-parente-proprietaire": false,
+      "nombre-personnes-logement": 1,
+      "loyer-montant-mensuel": 700,
+      "loyer-montant-charges": 120,
+      "type-revenus": ["aucun-revenus"]
+    },
+    "status": "active"
+  }
+]

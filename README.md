@@ -21,7 +21,7 @@ Pour exécuter ce projet, vous aurez besoin des éléments suivants :
 
 - `app/` : Contient les modèles, contrôleurs et services.
 - `inertia/` : Composants Vue.js et pages Inertia.
-- `tests/browser/` : Tests E2E avec Playwright, incluant les tests d'accessibilité.
+- `tests/` : Tests unitaires, fonctionnels et d'accessibilité.
 - `database/` : Seeders et migrations pour la base de données.
 - `config/` : Fichiers de configuration pour AdonisJS.
 

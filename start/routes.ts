@@ -37,6 +37,7 @@ const AdminPageController = () => import('#controllers/admin/admin_page_controll
 const AdminNotionController = () => import('#controllers/admin/admin_notion_controller')
 const AdminAideController = () => import('#controllers/admin/admin_aide_controller')
 const AdminSimulateurController = () => import('#controllers/admin/admin_simulateur_controller')
+const AdminPersonaController = () => import('#controllers/admin/admin_persona_controller')
 const AdminTypeAideController = () => import('#controllers/admin/admin_type_aide_controller')
 
 /**
@@ -129,6 +130,19 @@ router
     router.post('/admin/simulateurs', [AdminSimulateurController, 'store'])
     router.put('/admin/simulateurs/:id', [AdminSimulateurController, 'update'])
     router.delete('/admin/simulateurs/:id', [AdminSimulateurController, 'destroy'])
+
+    /**
+     * CRUD pour les Personas (cas de test)
+     */
+    router.get('/admin/simulateurs/:simulateur_id/personas', [AdminPersonaController, 'index'])
+    router.get('/admin/simulateurs/:simulateur_id/personas/create', [AdminPersonaController, 'create'])
+    router.get('/admin/simulateurs/:simulateur_id/personas/:id/edit', [AdminPersonaController, 'edit'])
+    router.post('/admin/simulateurs/:simulateur_id/personas', [AdminPersonaController, 'store'])
+    router.put('/admin/simulateurs/:simulateur_id/personas/:id', [AdminPersonaController, 'update'])
+    router.delete('/admin/simulateurs/:simulateur_id/personas/:id', [AdminPersonaController, 'destroy'])
+    router.post('/admin/simulateurs/:simulateur_id/personas/import', [AdminPersonaController, 'import'])
+    router.get('/admin/simulateurs/:simulateur_id/personas/export', [AdminPersonaController, 'export'])
+    router.get('/admin/simulateurs/:simulateur_id/personas/:id/run-simulation', [AdminPersonaController, 'runSimulation'])
 
     /**
      * CRUD pour les TypeAides

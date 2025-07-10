@@ -26,7 +26,7 @@ export const plugins: Config['plugins'] = [
     baseURL: 'http://localhost:3333',
   }),
   browserClient({
-    runInSuites: ['browser'],
+    runInSuites: ['e2e'],
   }),
   sessionApiClient(app),
   shieldApiClient(),
@@ -53,13 +53,13 @@ export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
  * Learn more - https://japa.dev/docs/test-suites#lifecycle-hooks
  */
 export const configureSuite: Config['configureSuite'] = (suite) => {
-  if (suite.name === 'functional') {
+  if (suite.name === 'unit') {
     return [
       suite.setup(() => testUtils.httpServer().start()),
       suite.setup(() => testUtils.db().truncate()),
     ]
   }
-  if (suite.name === 'browser') {
+  if (suite.name === 'e2e') {
     return [
       suite.setup(() => testUtils.httpServer().start()),
       suite.setup(() => testUtils.db().truncate()),

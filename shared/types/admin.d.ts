@@ -1,5 +1,6 @@
 import type AdminAideController from '#controllers/admin/admin_aide_controller'
 import type AdminNotionController from '#controllers/admin/admin_notion_controller'
+import type AdminPersonaController from '#controllers/admin/admin_persona_controller'
 import type AdminSimulateurController from '#controllers/admin/admin_simulateur_controller'
 import type AdminTypeAideController from '#controllers/admin/admin_type_aide_controller'
 import type { InferPageProps } from '@inertiajs/vue3'
@@ -23,6 +24,7 @@ declare global {
 
   type TypeAideFormType = UserForm<InferPageProps<AdminTypeAideController, 'edit'>['typeAide']>
 
+  type PersonaFormType = UserForm<InferPageProps<AdminPersonaController, 'edit'>['persona']>
 }
 
 export {}

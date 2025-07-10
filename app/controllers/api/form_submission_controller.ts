@@ -21,20 +21,20 @@ export default class FormSubmissionController {
 
     try {
       // Get the JSON body from the request
-      const { simulateurId, answers, results } = request.body()
+      const { simulateurSlug, answers, results } = request.body()
 
       // Validate required fields
-      if (!simulateurId) {
-        this.loggingService.logWarning('Form submission missing simulateurId', ctx)
+      if (!simulateurSlug) {
+        this.loggingService.logWarning('Form submission missing simulateurSlug', ctx)
         return response.status(400).json({
           success: false,
-          error: 'Missing required field: simulateurId',
+          error: 'Missing required field: simulateurSlug',
         })
       }
 
       if (!answers) {
         this.loggingService.logWarning('Form submission missing answers', ctx, {
-          simulateurId,
+          simulateurSlug,
         })
         return response.status(400).json({
           success: false,
@@ -44,14 +44,14 @@ export default class FormSubmissionController {
 
       // Log the received data
       this.loggingService.logFormSubmission('simulator_form', ctx, {
-        simulateurId,
+        simulateurSlug,
         answersCount: Object.keys(answers).length,
         hasResults: !!results,
       })
 
       // Create a new FormSubmission record
       const submission = await FormSubmission.create({
-        simulatorId: simulateurId,
+        simulatorId: simulateurSlug,
         answers,
         results: results || {}, // Make results optional with default empty object
       })
@@ -74,7 +74,7 @@ export default class FormSubmissionController {
 
       this.loggingService.logError(error, ctx, {
         context: 'form_submission_store',
-        simulateurId: request.body()?.simulateurId,
+        simulateurSlug: request.body()?.simulateurSlug,
       })
 
       return response.status(500).json({

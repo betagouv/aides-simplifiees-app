@@ -1,0 +1,781 @@
+# Règles de calcul APL 2025 (version simplifiée fidèle aux barèmes officiels)
+
+# ----------------------------------------------------
+# ---------- Variables d'entrée utilisateur ----------
+# ----------------------------------------------------
+
+couple:
+  question: "Vivez-vous en couple ?"
+  type: bool
+  description: "Vrai si le foyer est un couple, sinon personne seule."
+
+enfantsACharge:
+  question: "Nombre de personnes à charge (enfants)"
+  description: "Nombre d'enfants ou autres personnes à charge du foyer."
+  une possibilité:
+    - 1
+    - 2
+    - 3
+
+zone:
+  question: "Zone géographique du logement (1, 2 ou 3)"
+  une possibilité:
+    - 1
+    - 2
+    - 3
+  description: "1=Île-de-France, 2=Grandes agglo./DOM/Corse, 3=Reste du territoire."
+
+loyer:
+  question: "Montant mensuel du loyer hors charges (€)"
+  unité: €
+  description: "Loyer mensuel hors charges récupérables."
+
+revenuAnnuel:
+  question: "Revenu net imposable du foyer sur 12 derniers mois (€)"
+  unité: €
+  description: "Total des ressources prises en compte, arrondi à la centaine supérieure."
+
+beneficiaireRls:
+  question: "Bénéficiez-vous de la réduction de loyer de solidarité (RLS) ?"
+  type: bool
+  description: "Vrai si le foyer a droit à la RLS (locatif ordinaire métropole)."
+
+cas_particulier_hebergement_onereux:
+  question: "cas des personnes âgées ou handicapées adultes hébergées à titre onéreux chez des particulier ?"
+  type: bool
+  description: "Vrai si le foyer est une personne âgée ou handicapée hébergée chez un particulier."
+
+chambre:
+  question: "Le logement occupé est-il une chambre ?"
+  type: bool
+  description: "Vrai si le logement est une chambre dans un logement-foyer."
+
+collocation:
+  question: "Le logement est-il occupé en colocation ?"
+  type: bool
+  description: "Vrai si le logement est partagé entre plusieurs colocataires."
+
+meublee:
+  question: "Le logement est-il meublé ?"
+  type: bool
+  description: "Vrai si le logement est loué meublé."
+
+# -------------------------------------------------------------
+# ------------- Paramètres de dépense de logement -------------
+# -------------------------------------------------------------
+# Articles D. 823-16 et D. 823-18 du CCH et articles 7, 8 et 16 de l’arrêté du 27 septembre 2019
+# relatif au calcul des aides personnelles au logement et de la prime de déménagement.
+
+# ----------------- Plafond de loyer -----------------
+# Montant du plafond de loyer dans le cas général (en euros) (à compter du 01/10/23)
+# (PS = personne seule, C = couple, pàc = personne à charge)
+# |-------------------------------------------------------------------------------------------|
+# | zone | PS + 0 pàc | C + 0 pàc | 1 pàc  | 2 pàc  | 3 pàc  | 4 pàc  | 5 pàc  | par pàc sup. |
+# | ---- | ---------- | --------- | ------ | ------ | ------ | ------ | ------ | ------------ |
+# | I    | 319,30     | 385,09    | 435,24 | 498,39 | 561,54 | 624,69 | 687,84 | + 63,15      |
+# | II   | 278,28     | 340,62    | 383,28 | 439,07 | 494,86 | 550,65 | 606,44 | + 55,79      |
+# | III  | 260,82     | 316,17    | 354,51 | 405,32 | 456,13 | 506,94 | 557,75 | + 50,81      |
+# |-------------------------------------------------------------------------------------------|
+plafond_loyer:
+  titre: "Plafond de loyer L"
+  unité: €/mois
+  description: "Plafond mensuel de loyer pris en compte selon zone et composition."
+  variations:
+    - si: zone = 1
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 319.30
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 385.09
+          - si: enfantsACharge = 1
+            alors: 435.24
+          - si: enfantsACharge = 2
+            alors: 498.39
+          - si: enfantsACharge = 3
+            alors: 561.54
+          - si: enfantsACharge = 4
+            alors: 624.69
+          - si: enfantsACharge = 5
+            alors: 687.84
+          - si: enfantsACharge > 5
+            alors: 687.84 + 63.15 * (enfantsACharge - 5)
+    - si: zone = 2
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 278.28
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 340.62
+          - si: enfantsACharge = 1
+            alors: 383.28
+          - si: enfantsACharge = 2
+            alors: 439.07
+          - si: enfantsACharge = 3
+            alors: 494.86
+          - si: enfantsACharge = 4
+            alors: 550.65
+          - si: enfantsACharge = 5
+            alors: 606.44
+          - si: enfantsACharge > 5
+            alors: 606.44 + 55.79 * (enfantsACharge - 5)
+    - si: zone = 3
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 260.82
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 316.17
+          - si: enfantsACharge = 1
+            alors: 354.51
+          - si: enfantsACharge = 2
+            alors: 405.32
+          - si: enfantsACharge = 3
+            alors: 456.13
+          - si: enfantsACharge = 4
+            alors: 506.94
+          - si: enfantsACharge = 5
+            alors: 557.75
+          - si: enfantsACharge > 5
+            alors: 557.75 + 50.81 * (enfantsACharge - 5)
+
+# ----------- Plafond de loyer pour chambre ----------
+# Dans le cas où le logement occupé est une chambre, quelle que soit la taille du ménage,
+# les plafonds de loyers sont fixés comme suit (arrondis au centime d’euro le plus proche) :
+# - 90 % des loyers plafonds de location pour une personne seule
+# - 75 % des loyers plafonds de location pour une personne seule, dans le cas des personnes âgées ou handicapées adultes hébergées à titre onéreux chez des particuliers
+plafond_loyer_chambre:
+  titre: "Plafond de loyer pour chambre (cas général)"
+  unité: €/mois
+  description: "Plafond de loyer pour une chambre"
+  variations:
+    - si: cas_particulier_hebergement_onereux = non
+      alors:
+        variations:
+          - si: zone = 1
+            alors: 287.37
+          - si: zone = 2
+            alors: 250.45
+          - si: zone = 3
+            alors: 234.74
+    - sinon:
+        variations:
+          - si: zone = 1
+            alors: 239.48
+          - si: zone = 2
+            alors: 208.71
+          - si: zone = 3
+            alors: 195.62
+
+# ---------- Plafond de loyer en colocation ----------
+# Montant du plafond de loyer en colocation (en euros) (à compter du 01/10/23)
+# Dans le cas d'une collocation, le plafond de loyer est égal à 75 % du plafond de loyer dans le cas général.
+# (PS = personne seule, C = couple, pàc = personne à charge)
+# |-------------------------------------------------------------------------------------------|
+# | zone | PS + 0 pàc | C + 0 pàc | 1 pàc  | 2 pàc  | 3 pàc  | 4 pàc  | 5 pàc  | par pàc sup. |
+# | ---- | ---------- | --------- | ------ | ------ | ------ | ------ | ------ | ------------ |
+# | I    | 239,48     | 288,82    | 326,43 | 373,79 | 421,15 | 468,51 | 515,87 | + 47,36      |
+# | II   | 208,71     | 255,47    | 287,46 | 329,30 | 371,14 | 412,98 | 454,82 | + 41,84      |
+# | III  | 195,62     | 237,13    | 265,88 | 303,99 | 342,10 | 380,21 | 418,32 | + 38,11      |
+# |-------------------------------------------------------------------------------------------|
+plafond_loyer_collocation:
+  titre: "Plafond de loyer en colocation"
+  unité: €/mois
+  description: "Plafond de loyer pour colocation selon zone et nombre de colocataires."
+  variations:
+    - si: zone = 1
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 239.48
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 288.82
+          - si: enfantsACharge = 1
+            alors: 326.43
+          - si: enfantsACharge = 2
+            alors: 373.79
+          - si: enfantsACharge = 3
+            alors: 421.15
+          - si: enfantsACharge = 4
+            alors: 468.51
+          - si: enfantsACharge = 5
+            alors: 515.87
+          - si: enfantsACharge > 5
+            alors: 515.87 + 47.36 * (enfantsACharge - 5)
+    - si: zone = 2
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 208.71
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 255.47
+          - si: enfantsACharge = 1
+            alors: 287.46
+          - si: enfantsACharge = 2
+            alors: 329.30
+          - si: enfantsACharge = 3
+            alors: 371.14
+          - si: enfantsACharge = 4
+            alors: 412.98
+          - si: enfantsACharge = 5
+            alors: 454.82
+          - si: enfantsACharge > 5
+            alors: 454.82 + 41.84 * (enfantsACharge - 5)
+    - si: zone = 3
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 195.62
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 237.13
+          - si: enfantsACharge = 1
+            alors: 265.88
+          - si: enfantsACharge = 2
+            alors: 303.99
+          - si: enfantsACharge = 3
+            alors: 342.10
+          - si: enfantsACharge = 4
+            alors: 380.21
+          - si: enfantsACharge = 5
+            alors: 418.32
+          - si: enfantsACharge > 5
+            alors: 418.32 + 38.11 * (enfantsACharge - 5)
+
+# ---------- Plafond de loyer final ----------
+plafond_loyer_final:
+  titre: "Plafond de loyer final"
+  unité: €/mois
+  description: "Plafond de loyer applicable selon situation."
+  variations:
+    - si: chambre = oui
+      alors: plafond_loyer_chambre
+    - si: collocation = oui
+      alors: plafond_loyer_collocation
+    - sinon: plafond_loyer
+
+# ---------- Loyer prix en compte ----------
+# L est le loyer mensuel réel pris en compte dans la limite d’un plafond variable en fonction de trois zones géographiques et du nombre de personnes à charge.
+# Dans le cas d’une location, ou sous-location, meublée, le loyer pris en compte (dans la limite du plafond),
+# est égal à 2/3 du loyer effectivement payé (article D. 842-2 du CCH).
+L:
+  titre: "Loyer prix en compte"
+  unité: €/mois
+  description: "Loyer pris en compte pour le calcul de l'APL."
+  valeur: 200
+  # le maximum de:
+  #   - 0
+  #   - le minimum de:
+  #       - plafond_loyer_final
+  #       - variations:
+  #           - si: collocation = oui et meublee = oui
+  #             alors: (2 / 3) * loyer
+  #           - sinon: loyer
+
+# ----------------- Forfait charges C ----------------
+# Montant du forfait de charges C dans le cas général (en euros) (à compter du 01/10/23)
+# (PS = personne seule, C = couple, pàc = personne à charge)
+# |------------------------------------------------------------------------------------------------------------------------------------|
+# | cas         | PS sans pàc | C sans pàc | PS + 1 pàc | C + 1 pàc | PS + 2 pàc  | C + 2 pàc | PS + 3 pàc | C + 3 pàc  | par pàc sup. |
+# | ----------- | ----------- | ---------- | ---------- | --------- | ----------- | --------- | ---------- | ---------- | ------------ |
+# | Cas général | 58,08       | 58,08      | 71,25      | 71,25     | 84,42       | 84,42     | 97,59      | 97,59      | + 13,17      |
+# | Colocation  | 29,03       | 58,08      | 42,20      | 71,25     | 55,37       | 84,42     | 68,54      | 97,59      | + 13,17      |
+# |------------------------------------------------------------------------------------------------------------------------------------|
+C:
+  titre: "Forfait charges"
+  unité: €/mois
+  description: "Forfait de charges selon composition du foyer."
+  variations:
+    - si: collocation = oui
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 29.03
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 58.08
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 1
+            alors: 42.20
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 1
+            alors: 71.25
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 2
+            alors: 55.37
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 2
+            alors: 84.42
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 3
+            alors: 68.54
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 3
+            alors: 97.59
+          - si: enfantsACharge > 3
+            alors: 97.59 + 13.17 * (enfantsACharge - 3)
+    - sinon:
+        variations:
+          - si: enfantsACharge = 0
+            alors: 58.08
+          - si: enfantsACharge = 1
+            alors: 71.25
+          - si: enfantsACharge = 2
+            alors: 84.42
+          - si: enfantsACharge = 3
+            alors: 97.59
+          - si: enfantsACharge > 3
+            alors: 97.59 + 13.17 * (enfantsACharge - 3)
+
+# ---------- Participation minimale P0 ----------
+P0:
+  titre: "Participation minimale P0"
+  unité: €/mois
+  description: "P0 est une composante de la participation personnelle Pp qui correspond à la part fixe, indépendante du revenu, que doit au minimum acquitter le locataire."
+  le maximum de:
+    - 0.085 * (L + C)
+    - 37.91
+
+# -------------------------------------------------------------
+# --------------- Les paramètres de ressources ---------------
+# -------------------------------------------------------------
+
+# ---------- Taux familial TF ----------
+TF:
+  titre: "Taux familial TF"
+  unité: "%"
+  description: "Taux de prise en compte des ressources selon taille du foyer."
+  variations:
+    - si:
+        toutes ces conditions:
+          - couple = non
+          - enfantsACharge = 0
+      alors: 2.83%
+    - si:
+        toutes ces conditions:
+          - couple = oui
+          - enfantsACharge = 0
+      alors: 3.15%
+    - si: enfantsACharge = 1
+      alors: 2.70%
+    - si: enfantsACharge = 2
+      alors: 2.38%
+    - si: enfantsACharge = 3
+      alors: 2.01%
+    - si: enfantsACharge = 4
+      alors: 1.85%
+    - si: enfantsACharge = 5
+      alors: 1.79%
+    - si: enfantsACharge = 6
+      alors: 1.73%
+    - si: enfantsACharge > 6
+      alors: 1.73% - 0.06% * (enfantsACharge - 6)
+
+# ---------- Loyer de référence LR (zone II) ----------
+LR_zone2:
+  titre: "Loyer de référence LR (zone II)"
+  unité: €/mois
+  description: "Plafond de loyer en zone II selon composition du foyer."
+  variations:
+    - si:
+        toutes ces conditions:
+          - couple = non
+          - enfantsACharge = 0
+      alors: 278.28
+    - si:
+        toutes ces conditions:
+          - couple = oui
+          - enfantsACharge = 0
+      alors: 340.62
+    - si: enfantsACharge = 1
+      alors: 383.28
+    - si: enfantsACharge = 2
+      alors: 439.07
+    - si: enfantsACharge = 3
+      alors: 494.86
+    - si: enfantsACharge = 4
+      alors: 550.65
+    - si: enfantsACharge = 5
+      alors: 606.44
+    - si: enfantsACharge > 5
+      alors: 606.44 + 55.79 * (enfantsACharge - 5)
+
+# ---------- Taux loyer TL ----------
+# TL dépend du rapport RL du loyer réel éventuellement plafonné (L),
+# sur le loyer de référence (LR) qui correspond au loyer plafond de la zone II métropole pour le ménage considéré en locatif ordinaire
+# RL = L / LR
+# RL est exprimé en pourcentage et est arrondi à la deuxième décimale.
+RL_percent:
+  titre: "Rapport loyer RL"
+  unité: "%"
+  description: "Rapport du loyer prix en compte sur le loyer de référence (en %)."
+  formule: (L / LR_zone2) * 100
+# Si RL < 45 % =>  TL = 0 %
+# Si 45 % < RL < 75 % => TL = 0,45 % * (RL – 45 %)
+# Si RL > 75 % => TL = 0,45 % * 30 % + 0,68 % * (RL – 75 %)
+# Autrement dit, lorsque le rapport RL, exprimé en pourcentage, est supérieur à 45 %,
+# le taux complémentaire de loyer TL est calculé par addition du résultat de l’application de deux taux fixés à :
+# • 0,45 % pour la tranche de RL entre 45 % et 75 % ;
+# • 0,68 % pour la tranche de RL au-dessus de 75 %.
+# TL est exprimé en pourcentage et est arrondi à la troisième décimale.
+TL:
+  titre: "Taux loyer TL"
+  unité: "%"
+  description: "Taux complémentaire lié au loyer."
+  variations:
+    - si: RL_percent <= 0.45
+      alors: 0
+    - si: RL_percent <= 0.75
+      alors: 0.45 * (RL_percent - 0.45)
+    - sinon: 0.45 * 30 + 0.68 * (RL_percent - 0.75)
+
+# ---------- Taux global TP ----------
+# Taux de participation personnelle TP (paramètres TF et TL)
+# Le taux de participation personnelle TP est la somme des taux TF et TL avec :
+# - TF, taux fonction de la taille du ménage ;
+# - TL, taux complémentaire fonction du loyer.
+TP:
+  titre: "Taux global TP"
+  unité: "%"
+  description: "Taux total de prise en compte des ressources (TF + TL)."
+  formule: TF + TL
+
+# ---------- Seuil de ressources R0 ----------
+# Montant du forfait R0 (en euros) (à compter du 01/01/24)
+R0:
+  titre: "Seuil de ressources R0 "
+  unité: €/an
+  description: |
+    R0 correspond à un abattement forfaitaire appliqué aux ressources des ménages.
+    Il s’agit par ailleurs du seuil de ressources annuelles au-delà duquel l’aide commence à décroitre.
+    Autrement dit, un ménage dont les ressources annuelles sont inférieures ou égales au R0
+    bénéficie d’une aide personnelle au logement maximale.
+  variations:
+    - si:
+        toutes ces conditions:
+          - couple = non
+          - enfantsACharge = 0
+      alors: 5186
+    - si:
+        toutes ces conditions:
+          - couple = oui
+          - enfantsACharge = 0
+      alors: 7430
+    - si: enfantsACharge = 1
+      alors: 8862
+    - si: enfantsACharge = 2
+      alors: 9061
+    - si: enfantsACharge = 3
+      alors: 9408
+    - si: enfantsACharge = 4
+      alors: 9758
+    - si: enfantsACharge = 5
+      alors: 10105
+    - si: enfantsACharge = 6
+      alors: 10454
+    - si: enfantsACharge > 6
+      alors: 10454 + 343 * (enfantsACharge - 6)
+
+# ---------- Participation personnelle Pp ----------
+participation_personnelle:
+  titre: "Participation personnelle Pp"
+  unité: €/mois
+  description: "Montant dû par le foyer selon revenus."
+  variations:
+    - si: revenuAnnuel <= R0
+      alors: P0
+    - sinon: P0 + (TP / 100) * (revenuAnnuel - R0)
+
+# ---------- Aide brute avant dégressivité ----------
+aide_brute:
+  titre: "Aide brute"
+  unité: €/mois
+  description: "L + C - participation_personnelle."
+  formule: L + C - participation_personnelle
+
+# ---------- Dégressivité pour loyers élevés ----------
+cd:
+  titre: "Coefficient de dégressivité cd"
+  description: "Coefficient cd selon zone."
+  variations:
+    - si: zone = 1
+      alors: 3.4
+    - si: zone = 2
+      alors: 2.5
+    - si: zone = 3
+      alors: 2.5
+
+cs:
+  titre: "Seuil de supression de l'aide cs"
+  description: "Coefficient cs selon zone."
+  variations:
+    - si: zone = 1
+      alors: 4
+    - si: zone = 2
+      alors: 3.1
+    - si: zone = 3
+      alors: 3.1
+
+aide_apres_degressivite:
+  titre: "Aide après dégressivité"
+  unité: €/mois
+  description: "Application de la dégressivité si loyer > plafond*cd."
+  variations:
+    - si: loyer <= plafond_loyer_final * cd
+      alors: aide_brute
+    - si: loyer < plafond_loyer_final * cs
+      alors: aide_brute * ((cs - (loyer / plafond_loyer_final)) / (cs - cd))
+    - sinon: 0
+
+# ---------- Minoration forfaitaire de 5 € ----------
+aide_apres_minoration:
+  titre: "Aide après minoration forfaitaire"
+  unité: €/mois
+  description: "Après minoration de 5 €."
+  le maximum de:
+    - 0
+    - aide_apres_degressivite - 5
+
+# ---------- Réduction de loyer de solidarité (RLS) ----------
+# Montant mensuel de la RLS (en euros) (à compter du 01/01/24)
+# (PS = personne seule, C = couple, pàc = personne à charge)
+# |-------------------------------------------------------------------------------------------|
+# | zone | PS + 0 pàc | C + 0 pàc | 1 pàc  | 2 pàc  | 3 pàc  | 4 pàc  | 5 pàc  | par pàc sup. |
+# | ---- | ---------- | --------- | ------ | ------ | ------ | ------ | ------ | ------------ |
+# | 1    | 55,20      | 66,73     | 75,31  | 86,09  | 96,87  | 107,65 | 118,43 | + 10,78      |
+# | 2    | 48,45      | 59,15     | 66,06  | 75,66  | 85,26  | 94,86  | 104,46 | + 9,60       |
+# | 3    | 45,36      | 54,92     | 61,42  | 70,07  | 78,72  | 87,37  | 96,02  | + 8,65       |
+# |-------------------------------------------------------------------------------------------|
+
+RLS_base:
+  titre: "Montant de base RLS"
+  unité: €/mois
+  description: "Montant mensuel de la RLS (en euros) (à compter du 01/01/24)"
+  variations:
+    - si: zone = 1
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 55.20
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 66.73
+          - si: enfantsACharge = 1
+            alors: 75.31
+          - si: enfantsACharge = 2
+            alors: 86.09
+          - si: enfantsACharge = 3
+            alors: 96.87
+          - si: enfantsACharge = 4
+            alors: 107.65
+          - si: enfantsACharge = 5
+            alors: 118.43
+          - si: enfantsACharge > 5
+            alors: 118.43 + 10.78 * (enfantsACharge - 5)
+    - si: zone = 2
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 48.45
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 59.15
+          - si: enfantsACharge = 1
+            alors: 66.06
+          - si: enfantsACharge = 2
+            alors: 75.66
+          - si: enfantsACharge = 3
+            alors: 85.26
+          - si: enfantsACharge = 4
+            alors: 94.86
+          - si: enfantsACharge = 5
+            alors: 104.46
+          - si: enfantsACharge > 5
+            alors: 104.46 + 9.60 * (enfantsACharge - 5)
+    - si: zone = 3
+      alors:
+        variations:
+          - si:
+              toutes ces conditions:
+                - couple = non
+                - enfantsACharge = 0
+            alors: 45.36
+          - si:
+              toutes ces conditions:
+                - couple = oui
+                - enfantsACharge = 0
+            alors: 54.92
+          - si: enfantsACharge = 1
+            alors: 61.42
+          - si: enfantsACharge = 2
+            alors: 70.07
+          - si: enfantsACharge = 3
+            alors: 78.72
+          - si: enfantsACharge = 4
+            alors: 87.37
+          - si: enfantsACharge = 5
+            alors: 96.02
+          - si: enfantsACharge > 5
+            alors: 96.02 + 8.65 * (enfantsACharge - 5)
+
+# Pour les locataires qui bénéficient de la réduction de loyer de solidarité en application de l’article L. 442-2-1 du CCH,
+# ce résultat est réduit d’un montant égal à 98 % de la réduction de loyer de solidarité.
+# A noter que pour les colocataires, la valeur de la réduction de loyer de solidarité est fixée à 75 % des montants mentionnés ci-avant.
+# Pour rappel, la RLS ne s’applique, sous conditions de ressources des ménages allocataires,
+# que pour les logements locatifs ordinaires (hors logements-foyers) ouvrant droit à l’aide personnalisée au logement (APL)
+# et gérés par les organismes mentionnés à l’article L. 441-2 du CCH. De fait, elle ne s’applique par en outre-mer.
+RLS_montant:
+  titre: "Montant RLS pris en compte"
+  unité: €/mois
+  description: "98% de la RLS_base si bénéficiaire."
+  variations:
+    - si:
+        toutes ces conditions:
+          - beneficiaireRls = oui
+          - collocation = non
+      alors: 0.98 * RLS_base
+    - si:
+        toutes ces conditions:
+          - beneficiaireRls = oui
+          - collocation = oui
+      alors: 0.75 * 0.98 * RLS_base
+    - sinon: 0
+
+# ---------- Aide après application de la RLS ----------
+aide_apres_RLS:
+  titre: "Aide après RLS"
+  unité: €/mois
+  description: "Après déduction de la RLS."
+  le maximum de:
+    - 0
+    - aide_apres_minoration - RLS_montant
+
+# ---------- CRDS 0,5% ----------
+crds:
+  titre: "CRDS (0,5%)"
+  unité: €/mois
+  description: "Contribution RDDS, arrondi au centime inférieur."
+  formule: (aide_apres_RLS * 0.005 * 100) / 100
+  # formule: floor(aide_apres_RLS * 0.005 * 100) / 100
+
+## TODO
+## Particularités du barème locatif ordinaire en outre-mer (hors Saint-Pierre-et-Miquelon)
+
+# ---------- APL net et montant versé ----------
+APL_net:
+  titre: "APL net"
+  unité: €/mois
+  description: "Montant net arrondi à l'euro inférieur."
+  formule: (aide_apres_RLS - crds)
+  # formule: floor(aide_apres_RLS - crds)
+
+aide-personnalisee-logement:
+  description: "Aide personnalisée au logement (APL) calculée selon les barèmes 2025"
+  type: aide
+
+# Calcul du montant de l'APL
+aide-personnalisee-logement . montant:
+  description: "Montant mensuel de l'aide personnalisée au logement (APL)"
+  le maximum de:
+    - 0
+    - APL_net
+  unité: €
+
+# Éligibilité à l'APL
+aide-personnalisee-logement . eligibilite:
+  description: "Éligibilité à l'aide personnalisée au logement (APL)"
+  formule: aide-personnalisee-logement . montant > 0
+
+aide-personnalisee-logement . resultat:
+  texte: |
+    <h3> Aide personnalisée au logement (APL) 2025</h3>
+    <p>Montant mensuel de l'APL : {{aide-personnalisee-logement . montant}}</p>
+    <p>Éligibilité : {{aide-personnalisee-logement . eligibilite}}</p>
+    <p>Participation personnelle : {{participation_personnelle}}</p>
+    <p>APL nette après RLS et CRDS : {{APL_net}}</p>
+    <p>Montant de la RLS : {{RLS_montant}}</p>
+    <p>CRDS (0,5%) : {{crds}}</p>
+    <p>Plafond de loyer applicable : {{plafond_loyer_final}}</p>
+    <p>Loyer pris en compte : {{L}}</p>
+    <p>Forfait de charges : {{C}}</p>
+    <p>Plafond de loyer pour chambre : {{plafond_loyer_chambre}}</p>
+    <p>Plafond de loyer en colocation : {{plafond_loyer_collocation}}</p>
+    <p>Plafond de loyer final : {{plafond_loyer_final}}</p>
+
+resultat:
+  texte: |
+    <h3> Aide personnalisée au logement (APL) 2025</h3>
+    <p>Montant mensuel de l'APL : {{aide-personnalisee-logement . montant}}</p>
+    <p>Éligibilité : {{aide-personnalisee-logement . eligibilite}}</p>
+    <p>Participation personnelle : {{participation_personnelle}}</p>
+    <p>APL nette après RLS et CRDS : {{APL_net}}</p>
+    <p>Montant de la RLS : {{RLS_montant}}</p>
+    <p>CRDS (0,5%) : {{crds}}</p>
+    <p>Plafond de loyer applicable : {{plafond_loyer_final}}</p>
+    <p>Loyer pris en compte : {{L}}</p>
+    <p>Forfait de charges : {{C}}</p>
+    <p>Plafond de loyer pour chambre : {{plafond_loyer_chambre}}</p>
+    <p>Plafond de loyer en colocation : {{plafond_loyer_collocation}}</p>
+    <p>Plafond de loyer final : {{plafond_loyer_final}}</p>

@@ -12,6 +12,8 @@ const publicodesPackages = [
   'publicodes-aom-bordeaux',
   'publicodes-aom-rennes',
   'publicodes-entreprise-innovation',
+  'apl',
+  // 'entreprise-innovation',
 ]
 
 // TODO: Remove this build script once packages are published to npm

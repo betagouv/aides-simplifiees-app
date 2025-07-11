@@ -313,7 +313,7 @@ export default class AdminPersonaController {
 
       // Create a form submission with persona test data
       const submission = await FormSubmission.create({
-        simulatorId: simulateur.slug,
+        simulateurSlug: simulateur.slug,
         answers: persona.testData,
         results: persona.testData, // Use the testData as mock results for now
       })

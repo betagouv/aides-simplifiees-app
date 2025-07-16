@@ -10,6 +10,7 @@ cii . eligibilite:
     - prototypeDestination = 'modele'
     - produitMisMarche = non
     - performancesSuperieuresOui
+    - entrepriseEnDifficulte = non
 
 cii . eligibilite . explications:
   applicable si: eligibilite = non

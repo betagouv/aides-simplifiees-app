@@ -17,9 +17,10 @@ cico . eligibilite . explications:
     {{ natureActivite . commercialeIndustrielleAgricole . explications}}
     {{ regimeFiscalEstReel . explications }}
     {{ cico . eligibilite . imposition . explications }}
-    {{ entrepriseEnDifficulte . explications }}
+    {{ entrepriseEnDifficulte . explicationsCICo }}
 
-entrepriseEnDifficulte . explications:
+
+entrepriseEnDifficulte . explicationsCICo:
   applicable si: entrepriseEnDifficulte = oui
   texte: |
     Une entreprise en difficulté au sens de la réglementation européenne ne peut pas bénéficier du CICo.

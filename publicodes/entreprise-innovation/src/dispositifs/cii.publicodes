@@ -21,6 +21,12 @@ cii . eligibilite . explications:
     {{ prototypeDestination . explications }}
     {{ produitMisMarche . explications }}
     {{ performancesSuperieuresOui . explications }}
+    {{ entrepriseEnDifficulte . explications }}
+
+entrepriseEnDifficulte . explications:
+  applicable si: entrepriseEnDifficulte = oui
+  texte: |
+    Une entreprise en difficulté au sens de la réglementation européenne ne peut pas bénéficier du CII.
 
 
 prototypeDestination . explications:

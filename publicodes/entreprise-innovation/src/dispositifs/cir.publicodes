@@ -55,6 +55,7 @@ cir . creditDom:
 cir . depensesMetropole:
   valeur:
     somme:
+      - remboursementsSubventionsOrdc
       - produit:
         - 0.75
         - somme:
@@ -119,7 +120,7 @@ depensesRdDepensesConseilAvecTraitementMax:
     - produit:
       - 0.05
       - somme:
-          - depensesRdAmortissementBiens
+            - depensesRdAmortissementBiens
             - depensesRdIndemnisationAssurance
             - depensesRdChercheursTechniciens
             - depensesRdRemunerationInvention

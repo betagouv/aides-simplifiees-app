@@ -763,7 +763,6 @@
           "id": "rd-deductions",
           "title": "Détail des sommes à déduire de l'assiette du crédit d'impôt",
           "questions": [
-
             {
               "id": "depenses-rd-subventions-publiques",
               "title": "Montant des subventions publiques reçues par l'entreprise en raison des opérations de R&D (hors aides publiques reçues dont le montant a été renseigné au titre des opérations menées en collaboration avec un ORDC agréé)",

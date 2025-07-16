@@ -51,13 +51,16 @@ cico . montant:
       - cico . taux
       - le minimum de:
         - 6000000 €/an
-        - somme:
-          - depensesOrdc
-          - (-depensesRdSubventionsPubliques)
-          - (-subventionsOrdc)
-          - remboursementsSubventionsOrdc
-          - (-depensesRdDepensesConseil)
-          - (-depensesRdDepensesTiersCir)
+        - cico . auMoinsZero
+
+
+cico . auMoinsZero:
+  le maximum de:
+    - 0
+    - somme:
+        - depensesOrdc
+        - (-subventionsOrdc)
+
 
 cico . taux:
   variations:

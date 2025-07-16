@@ -10,6 +10,7 @@ cii . eligibilite:
     - prototypeDestination = 'modele'
     - produitMisMarche = non
     - performancesSuperieuresOui
+    - entrepriseEnDifficulte = non
 
 cii . eligibilite . explications:
   applicable si: eligibilite = non
@@ -20,6 +21,12 @@ cii . eligibilite . explications:
     {{ prototypeDestination . explications }}
     {{ produitMisMarche . explications }}
     {{ performancesSuperieuresOui . explications }}
+    {{ entrepriseEnDifficulte . explicationsCII }}
+
+entrepriseEnDifficulte . explicationsCII:
+  applicable si: entrepriseEnDifficulte = oui
+  texte: |
+    Une entreprise en difficulté au sens de la réglementation européenne ne peut pas bénéficier du CII.
 
 
 prototypeDestination . explications:

@@ -8,6 +8,7 @@ cico . eligibilite:
     - natureActivite . commercialeIndustrielleAgricole
     - regimeFiscalEstReel
     - cico . eligibilite . imposition
+    - entrepriseEnDifficulte = non
 
 cico . eligibilite . explications:
   applicable si: eligibilite = non
@@ -16,6 +17,15 @@ cico . eligibilite . explications:
     {{ natureActivite . commercialeIndustrielleAgricole . explications}}
     {{ regimeFiscalEstReel . explications }}
     {{ cico . eligibilite . imposition . explications }}
+    {{ entrepriseEnDifficulte . explicationsCICo }}
+
+
+entrepriseEnDifficulte . explicationsCICo:
+  applicable si: entrepriseEnDifficulte = oui
+  texte: |
+    Une entreprise en difficulté au sens de la réglementation européenne ne peut pas bénéficier du CICo.
+
+
 
 cico . eligibilite . imposition:
   variations:
@@ -49,14 +59,18 @@ cico . montant:
   valeur:
     produit:
       - cico . taux
-      - somme:
+      - le minimum de:
+        - 6000000 €/an
+        - cico . auMoinsZero
+
+
+cico . auMoinsZero:
+  le maximum de:
+    - 0
+    - somme:
         - depensesOrdc
-        - (-depensesRdSubventionsPubliques)
         - (-subventionsOrdc)
-        - remboursementsSubventionsOrdc
-        - (-depensesRdDepensesConseil)
-        - (-depensesRdDepensesTiersCir)
-  plafond: 6000000 €/an
+
 
 cico . taux:
   variations:

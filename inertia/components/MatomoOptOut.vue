@@ -18,6 +18,7 @@ useScriptTag(
 /**
  * The loaded matomo script will create some HTML in the #matomo-opt-out div.
  * We use mutation observer to style the HTML to match the DSFR.
+ * Additionally, we replace the text "suivi." with "suivi(e)."
  */
 const matomoOptOut = ref(null)
 let ignoreMutation = false
@@ -27,6 +28,7 @@ useMutationObserver(matomoOptOut, (mutations) => {
   }
   ignoreMutation = true // Ignore mutations until the next tick to avoid infinite loop
   mutations.forEach((mutation) => {
+    // replace the default Matomo opt-out checkbox with a DSFR styled checkbox
     const target = mutation.target as HTMLElement
     const input = target.querySelector('input[type="checkbox"]')
     const label = target.querySelector('label')
@@ -38,6 +40,13 @@ useMutationObserver(matomoOptOut, (mutations) => {
       wrapper.appendChild(label)
       mutation.target.appendChild(wrapper)
     }
+    // replace textContent matching "suivi." with "suivi(e)."
+    target.querySelectorAll('span')
+      .forEach((span) => {
+        if (span.textContent) {
+          span.textContent = span.textContent.replaceAll(/suivi\./g, 'suivi(e).')
+        }
+      })
   })
   nextTick(() => {
     ignoreMutation = false // Observe mutations again

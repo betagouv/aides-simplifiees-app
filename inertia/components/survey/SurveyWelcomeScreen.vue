@@ -43,6 +43,13 @@ const isPreprod = page.props.isPreprod
         Ce service est en construction : vos retours sont les bienvenus pour l'améliorer et prendre en compte plus de situations.
       </p>
       <p>
+        <span
+          class="fr-icon-information-line fr-icon--sm"
+          aria-hidden="true"
+        />
+        <strong>Les questions marquées d'une <span style="color: var(--artwork-minor-red-marianne); font-weight: bold;">étoile rouge (*)</span> sont obligatoires</strong> pour continuer la simulation.
+      </p>
+      <p>
         En accédant au service, vous acceptez les
         <DsfrLink
           :icon="{ name: 'ri:external-link-line', ssr: true }"

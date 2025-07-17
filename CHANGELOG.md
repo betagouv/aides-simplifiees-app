@@ -1,5 +1,10 @@
 # CHANGELOG
 
+# 1.4.3 [#149]('https://github.com/betagouv/aides-simplifiees-app/pull/149')
+- Améliorations :
+  - Améliore les modèle publicodes pour les simulateurs d'innovation
+  - Modifications de contenu mineures
+
 ### 1.4.2 [#129](https://github.com/betagouv/aides-simplifiees-app/pull/129)
 - Corrections :
   - Répare le chemin d'accès au seeder persona

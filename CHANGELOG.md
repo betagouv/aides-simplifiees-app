@@ -1,5 +1,12 @@
 # CHANGELOG
 
+# 1.4.4 [#144]
+- Améliorations :
+  - Suppressions d'items superflus dans le simulateur déménagement
+- Refactorisations :
+  - Refactorise la construction des requêtes à openFisca
+- Mises à jour des dépendances
+
 # 1.4.3 [#149]('https://github.com/betagouv/aides-simplifiees-app/pull/149')
 - Améliorations :
   - Améliore les modèle publicodes pour les simulateurs d'innovation

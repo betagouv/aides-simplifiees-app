@@ -74,10 +74,6 @@ export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifie
     dispatch: dispatchEtudiantMobilite,
     period: 'MONTH',
   },
-  'confirmation-end': {
-    // end of survey
-    exclude: true,
-  },
 }
 
 export const menagesVariables: { [aidesSimplifieesKey: string]: AidesSimplifieesMapping } = {

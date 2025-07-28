@@ -46,10 +46,6 @@ export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifie
     openfiscaVariableName: 'rpns_imposables',
     period: 'YEAR',
   },
-  'montant-parents': {
-    // TODO add people and define the right type of revenue to set
-    exclude: true,
-  },
   'statut-marital': {
     // 'celibataire'
     openfiscaVariableName: 'statut_marital',
@@ -70,10 +66,6 @@ export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifie
     period: 'MONTH',
     // TODO: check 'situation-professionnelle' values as some also match 'statut-professionnel' values
   },
-  'nombre-personnes-logement': {
-    // int
-    exclude: true,
-  },
   'type-revenus': {
     // checkbox => multiple choices
     exclude: true,
@@ -81,10 +73,6 @@ export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifie
   'etudiant-mobilite': {
     dispatch: dispatchEtudiantMobilite,
     period: 'MONTH',
-  },
-  'confirmation-end': {
-    // end of survey
-    exclude: true,
   },
 }
 

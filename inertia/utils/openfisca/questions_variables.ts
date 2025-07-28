@@ -43,5 +43,4 @@ export const menagesQuestionsVariables: { [aidesSimplifieesKey: string]: OpenFis
   },
 }
 
-export const foyersFiscauxQuestionsVariables: { [aidesSimplifieesKey: string]: OpenFiscaMapping }
-  = {}
+export const foyersFiscauxQuestionsVariables: { [aidesSimplifieesKey: string]: OpenFiscaMapping } = {}

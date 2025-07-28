@@ -1,7 +1,9 @@
+import axios from 'axios'
 import { ref } from 'vue'
 import { useEligibilityService } from '~/composables/use_eligibility_service'
-import { extractAidesResults } from '~/utils/beautify_results'
-import { buildRequest, fetchOpenFiscaFranceCalculation } from '~/utils/calculate_aides'
+import { extractAidesResults } from '~/utils/openfisca/beautify_results'
+import { buildCalculationRequest } from '~/utils/openfisca/build_calculation_request'
+import { standardizeBirthDate } from '~/utils/openfisca/standardize_birth_date'
 
 /**
  * Composable for handling simulation logic with OpenFisca or Publicodes
@@ -29,19 +31,27 @@ export function useSimulation() {
         status.value = 'success'
       }
       else {
-        const request: OpenFiscaCalculationRequest = buildRequest(answers, schema.questionsToApi ?? [])
-        const openfiscaResponse: OpenFiscaCalculationResponse = await fetchOpenFiscaFranceCalculation(request)
-        const aidesResults: SimulationResultsAides = extractAidesResults(openfiscaResponse, schema.questionsToApi ?? [])
+        const request = buildCalculationRequest(answers, schema.questionsToApi ?? [])
+        standardizeBirthDate(request) // Standardise birth dates for caching
+        const response = await axios.post<OpenFiscaCalculationResponse>('/api/calculate', request, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          withCredentials: false,
+        })
+        const aidesResults = extractAidesResults(response.data, schema.questionsToApi ?? [])
         results.value = aidesResults
         status.value = 'success'
       }
       return results.value
     }
-    catch (err: any) {
-      const errorMessage = err.message || 'Erreur lors de la simulation'
-      error.value = errorMessage
+    catch (simulationError) {
+      console.error('[Simulation] Error:', simulationError)
       status.value = 'error'
-      console.error('[Simulation] Error:', err)
+      const errorMessage = simulationError.message || 'Erreur lors de la simulation'
+      error.value = errorMessage
       return null
     }
   }

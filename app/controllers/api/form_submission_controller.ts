@@ -51,7 +51,7 @@ export default class FormSubmissionController {
 
       // Create a new FormSubmission record
       const submission = await FormSubmission.create({
-        simulatorId: simulateurSlug,
+        simulateurSlug,
         answers,
         results: results || {}, // Make results optional with default empty object
       })
@@ -123,7 +123,7 @@ export default class FormSubmissionController {
 
       this.loggingService.logBusinessEvent('form_submission_retrieved', {
         submissionId: submission.id,
-        simulatorId: submission.simulatorId,
+        simulateurSlug: submission.simulateurSlug,
         hash,
       })
 
@@ -131,7 +131,7 @@ export default class FormSubmissionController {
         success: true,
         submission: {
           id: submission.id,
-          simulatorId: submission.simulatorId,
+          simulateurSlug: submission.simulateurSlug,
           answers: submission.answers,
           results: submission.results,
           createdAt: submission.createdAt,

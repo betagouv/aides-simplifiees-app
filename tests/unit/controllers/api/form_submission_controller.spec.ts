@@ -55,7 +55,7 @@ test.group('API FormSubmissionController', (group) => {
 
     // Verify that the data was actually stored in the database
     const submission = await FormSubmission.findOrFail(body.submissionId)
-    assert.equal(submission.simulatorId, formData.simulateurSlug)
+    assert.equal(submission.simulateurSlug, formData.simulateurSlug)
     assert.deepEqual(submission.answers, formData.answers)
     assert.deepEqual(submission.results, formData.results)
   })
@@ -132,7 +132,7 @@ test.group('API FormSubmissionController', (group) => {
     response.assertBodyContains({
       success: true,
       submission: {
-        simulatorId: 'demenagement-logement',
+        simulateurSlug: 'demenagement-logement',
         answers: { question1: 'answer1' },
         results: { eligible: true },
       },

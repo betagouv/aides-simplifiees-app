@@ -177,14 +177,6 @@
           "visibleWhen": "situation-logement=locataire"
         },
         {
-          "id": "nombre-personnes-logement",
-          "title": "En dehors de vous, combien de personnes habiteront dans le logement ?",
-          "type": "number",
-          "min": 0,
-          "default": 0,
-          "visibleWhen": "situation-logement=locataire"
-        },
-        {
           "id": "loyer-montant-mensuel",
           "title": "Quel sera le montant de votre part du loyer (hors charges) dans votre futur logement ?",
           "description": "Indiquez le montant en euros par mois, sans déduire vos aides au logement si vous en recevez. Exemple : pour un studio à Paris, le loyer mensuel peut varier entre 400€ et 900€.",

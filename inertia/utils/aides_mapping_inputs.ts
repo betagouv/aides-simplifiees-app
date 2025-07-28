@@ -66,10 +66,6 @@ export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifie
     period: 'MONTH',
     // TODO: check 'situation-professionnelle' values as some also match 'statut-professionnel' values
   },
-  'nombre-personnes-logement': {
-    // int
-    exclude: true,
-  },
   'type-revenus': {
     // checkbox => multiple choices
     exclude: true,

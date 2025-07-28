@@ -1,13 +1,15 @@
-// mapping client/public/forms/demenagement-logement.json
-// to aides-calculatrice-back (openfisca-france here)
-// checked with openfisca-france v169.16.16
+/**
+ * Mapping client/public/forms/demenagement-logement.json keys to openfisca-france request variables
+ *
+ * Checked with openfisca-france v169.16.16
+ */
 
 import {
   dispatchEtudiantMobilite,
   dispatchSituationLogement,
   dispatchSituationProfessionnelle,
   dispatchTypeLogement,
-} from './calculate_aides'
+} from '~/utils/openfisca/dispatchers'
 
 export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifieesMapping } = {
   'date-naissance': {

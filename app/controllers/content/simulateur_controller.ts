@@ -103,7 +103,7 @@ export default class SimulateurController {
 
     const formSubmission = await FormSubmission.query()
       .where('secure_hash', params.hash)
-      .where('simulator_id', params.simulateur_slug)
+      .where('simulateur_slug', simulateur.slug)
       .first() as {
       results: SimulationResultsAides
       createdAt: DateTime

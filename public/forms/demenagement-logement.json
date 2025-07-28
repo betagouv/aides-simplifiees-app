@@ -222,7 +222,6 @@
             { "id": "revenus-chomage", "title": "Chômage" },
             { "id": "revenus-bourses", "title": "Bourses" },
             { "id": "revenus-entreprise", "title": "Revenus professionnels non salariés" },
-            { "id": "revenus-parents", "title": "Ressources des parents" },
             {
               "id": "aucun-revenus",
               "title": "Aucun revenu à déclarer",
@@ -283,18 +282,6 @@
           "placeholder": "Montant en euros",
           "notion": {
             "id": "montant-ca-micro-entreprise",
-            "buttonLabel": "En savoir plus"
-          }
-        },
-        {
-          "id": "montant-parents",
-          "title": "Quel a été le montant total des ressources de vos parents au cours des 12 derniers mois ?",
-          "description": "Indiquez ce montant si vous êtes rattaché(e) à leur foyer fiscal et que vous ne déclarez pas vos propres revenus. En cas de doute, vous pouvez leur demander : ces informations figurent sur leur avis d’imposition.",
-          "type": "number",
-          "visibleWhen": "type-revenus.includes('revenus-parents')",
-          "placeholder": "Montant en euros",
-          "notion": {
-            "id": "montant-parents",
             "buttonLabel": "En savoir plus"
           }
         }

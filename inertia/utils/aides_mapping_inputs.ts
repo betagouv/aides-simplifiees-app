@@ -46,10 +46,6 @@ export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifie
     openfiscaVariableName: 'rpns_imposables',
     period: 'YEAR',
   },
-  'montant-parents': {
-    // TODO add people and define the right type of revenue to set
-    exclude: true,
-  },
   'statut-marital': {
     // 'celibataire'
     openfiscaVariableName: 'statut_marital',

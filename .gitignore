@@ -39,3 +39,4 @@ coverage
 
 # LLM planning documents
 *.plan.llm.txt
+matomo_export*.csv

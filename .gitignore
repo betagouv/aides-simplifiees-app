@@ -36,3 +36,5 @@ coverage
 
 # accessibility reports
 /reports/accessibility
+
+matomo_export*.csv

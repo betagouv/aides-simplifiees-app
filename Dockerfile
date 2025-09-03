@@ -1,96 +1,42 @@
-# Multi-stage build for AdonisJS + Vue.js application
-FROM node:22.11.0-alpine AS base
+ARG NODE_IMAGE=node:22.16.0-alpine3.22
 
-# Install pnpm
+FROM $NODE_IMAGE AS base
 RUN npm install -g pnpm@10
 
-# Set working directory
-WORKDIR /app
-
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
-
-# Copy tsconfig and other config files
-COPY tsconfig*.json ./
-COPY adonisrc.ts ./
-
-#########################################
-# Dependencies stage
-#########################################
+# All dependencies stage
 FROM base AS deps
-
-# Install all dependencies (including dev dependencies for build)
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-#########################################
-# Build stage
-#########################################
-FROM base AS build
-
-# Copy node_modules from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-
-# Copy source code
-COPY . .
-
-# Build Publicodes
-RUN pnpm run build:publicodes
-
-# Build icons
-RUN pnpm run detect:icons
-RUN pnpm run build:icons
-
-# Build iframe integration
-RUN pnpm run build:iframe-integration
-
-# Type check
-RUN pnpm run typecheck
-
-# Build the application
-RUN pnpm run build
-
-#########################################
 # Production dependencies stage
-#########################################
-FROM base AS prod-deps
-
-# Install only production dependencies (skip scripts like husky prepare)
+FROM base AS production-deps
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
-#########################################
+# Build stage
+FROM base AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules /app/node_modules
+COPY . .
+RUN pnpm run build
+
 # Production stage
-#########################################
-FROM node:22.11.0-alpine AS production
-
-# Install pnpm in production stage
-RUN npm install -g pnpm@10
-
-# Add non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S adonisjs -u 1001
-
+FROM base AS production
+ENV NODE_ENV=production
+ENV PORT=3333
 WORKDIR /app
 
-# Copy production dependencies
-COPY --from=prod-deps --chown=adonisjs:nodejs /app/node_modules ./node_modules
+# Create non-root user and temp directory
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S adonisjs -u 1001 -G nodejs && \
+    mkdir -p /app/tmp && \
+    chown -R adonisjs:nodejs /app/tmp
 
-# Copy built application
-COPY --from=build --chown=adonisjs:nodejs /app/build ./
-COPY --from=build --chown=adonisjs:nodejs /app/public ./public
-COPY --from=build --chown=adonisjs:nodejs /app/publicodes ./publicodes
+COPY --from=production-deps --chown=adonisjs:nodejs /app/node_modules /app/node_modules
+COPY --from=build --chown=adonisjs:nodejs /app/build /app/build
 
-# Copy package.json for script access
-COPY --chown=adonisjs:nodejs package.json ./
-
-# Set user
 USER adonisjs
-
-# Expose port
-EXPOSE 3333
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3333/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
-
-# Start the application
-CMD ["node", "bin/server.js"]
+EXPOSE $PORT
+CMD ["node", "build/bin/server.js"]

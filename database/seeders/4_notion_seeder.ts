@@ -5,13 +5,6 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class NotionSeeder extends BaseSeeder {
   async run() {
-    // Check if notions already exist and delete them
-    const notionsCount = await Notion.query().count('* as total')
-
-    if (notionsCount[0].$extras.total > 0) {
-      await Notion.query().delete()
-    }
-
     const rootDir = path.dirname(new URL(import.meta.url).pathname)
 
     // Lecture des fichiers markdown
@@ -44,8 +37,8 @@ export default class NotionSeeder extends BaseSeeder {
       'utf-8',
     )
 
-    // Create sample notions
-    await Notion.createMany([
+    // Create or update notions using idempotent operation
+    await Notion.updateOrCreateMany('slug', [
       {
         title: 'Avez-vous une reconnaissance administrative de votre situation de handicap ?',
         slug: 'handicap',

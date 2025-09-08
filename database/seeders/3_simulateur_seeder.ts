@@ -4,7 +4,7 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class SimulateurSeeder extends BaseSeeder {
   async run() {
-    await Simulateur.createMany([
+    await Simulateur.updateOrCreateMany('slug', [
       {
         slug: 'demenagement-logement',
         title: 'Aides financières au déménagement et au logement',

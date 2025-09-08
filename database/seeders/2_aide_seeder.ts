@@ -6,13 +6,6 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class AideSeeder extends BaseSeeder {
   async run() {
-    // Check if aides already exist and delete them
-    const aidesCount = await Aide.query().count('* as total')
-
-    if (aidesCount[0].$extras.total > 0) {
-      await Aide.query().delete()
-    }
-
     const typeAideMap: Record<string, TypeAide> = {}
     async function getTypeAide(slug: string): Promise<TypeAide | null> {
       if (typeAideMap[slug]) {
@@ -25,7 +18,7 @@ export default class AideSeeder extends BaseSeeder {
       return typeAide
     }
 
-    async function createAide({ typeAideSlug, ...options }: Record<string, any>): Promise<void> {
+    async function createOrUpdateAide({ typeAideSlug, ...options }: Record<string, any>): Promise<void> {
       const rootDir = path.dirname(new URL(import.meta.url).pathname)
       const contentPromise = fs.promises.readFile(
         path.join(rootDir, `content/aides/${options.slug}.md`),
@@ -34,15 +27,18 @@ export default class AideSeeder extends BaseSeeder {
       const typeAidePromise = getTypeAide(typeAideSlug)
       await Promise.all([contentPromise, typeAidePromise])
         .then(([content, typeAide]) => {
-          Aide.create({
-            content,
-            typeAideId: typeAide?.id,
-            ...options,
-          })
+          return Aide.updateOrCreate(
+            { slug: options.slug }, // unique key
+            {
+              content,
+              typeAideId: typeAide?.id,
+              ...options,
+            },
+          )
         })
     }
 
-    // Create aides
+    // Create or update aides
     const aides = [
       {
         title: 'Aide Personnalisée au Logement (APL)',
@@ -141,6 +137,6 @@ export default class AideSeeder extends BaseSeeder {
       },
     ]
 
-    await aides.map(createAide)
+    await Promise.all(aides.map(createOrUpdateAide))
   }
 }

@@ -5,14 +5,6 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class PageSeeder extends BaseSeeder {
   async run() {
-    // Check if pages already exist and delete them
-    const pagesCount = await Page.query().count('* as total')
-
-    if (pagesCount[0].$extras.total > 0) {
-      console.log('✓ Pages exist, deleting them before reseeding')
-      await Page.query().delete()
-    }
-
     const rootDir = path.dirname(new URL(import.meta.url).pathname)
 
     // Lecture des fichiers markdown
@@ -37,8 +29,8 @@ export default class PageSeeder extends BaseSeeder {
 
     const cookiesContent = fs.readFileSync(path.join(rootDir, 'content/pages/cookies.md'), 'utf-8')
 
-    // Create sample pages
-    await Page.createMany([
+    // Create or update pages using idempotent operation
+    await Page.updateOrCreateMany('slug', [
       {
         title: 'Accessibilité',
         slug: 'accessibilite',

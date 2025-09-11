@@ -95,6 +95,15 @@ export default defineConfig({
       pattern: 'public/**',
       reloadServer: false,
     },
+    {
+      /**
+       * Copy seeder data files to the build directory
+       * These files are read by seeders at runtime to populate the database
+       * They might be needed in production environments for initial setup or testing
+       */
+      pattern: 'database/seeders/data/**/*',
+      reloadServer: false,
+    },
   ],
 
   assetsBundler: false,

@@ -3,29 +3,29 @@ const partenaires = [
   [
     {
       url: 'https://www.service-public.fr/',
-      src: '/public/logos/logo-service-public.png',
+      src: '/logos/logo-service-public.png',
       alt: 'Service-Public.fr',
     },
     {
       url: 'https://monlogementetudiant.beta.gouv.fr/',
-      src: '/public/logos/logo-mon-logement-etudiant.png',
+      src: '/logos/logo-mon-logement-etudiant.png',
       alt: 'Mon Logement Étudiant',
     },
   ],
   [
     {
       url: 'https://etuloge.fr/',
-      src: '/public/logos/logo-etuloge.png',
+      src: '/logos/logo-etuloge.png',
       alt: 'Etuloge',
     },
     {
       url: 'https://www.lokaviz.fr/',
-      src: '/public/logos/logo-lokaviz.png',
+      src: '/logos/logo-lokaviz.png',
       alt: 'Lokaviz',
     },
     {
       url: 'https://www.immojeune.com/',
-      src: '/public/logos/logo-imojeune.png',
+      src: '/logos/logo-imojeune.png',
       alt: 'Imojeune',
     },
   ],

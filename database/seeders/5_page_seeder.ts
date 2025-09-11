@@ -58,7 +58,7 @@ export default class PageSeeder extends BaseSeeder {
     // Read content files and prepare data for insertion
     const pagesToCreate = pageData.map((page) => {
       const content = fs.readFileSync(
-        path.join(rootDir, 'data/pages', page.filename),
+        path.join(rootDir, '../seeders_data/pages', page.filename),
         'utf-8',
       )
 

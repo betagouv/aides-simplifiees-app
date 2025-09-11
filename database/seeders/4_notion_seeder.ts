@@ -64,7 +64,7 @@ export default class NotionSeeder extends BaseSeeder {
     // Read content files and prepare data for insertion
     const notionsToCreate = notionData.map((notion) => {
       const content = fs.readFileSync(
-        path.join(rootDir, 'data/notions', notion.filename),
+        path.join(rootDir, '../seeders_data/notions', notion.filename),
         'utf-8',
       )
 

@@ -16,7 +16,7 @@ export default class PersonaSeeder extends BaseSeeder {
 
     // Read the personas JSON file
     const rootDir = path.dirname(new URL(import.meta.url).pathname)
-    const personasFilePath = path.join(rootDir, 'data/personas', 'personas-demenagement-logement.json')
+    const personasFilePath = path.join(rootDir, '../seeders_data/personas', 'personas-demenagement-logement.json')
 
     let personasData: any[]
     try {

@@ -7,74 +7,71 @@ export default class PageSeeder extends BaseSeeder {
   async run() {
     const rootDir = path.dirname(new URL(import.meta.url).pathname)
 
-    // Lecture des fichiers markdown
-    const accessibiliteContent = fs.readFileSync(
-      path.join(rootDir, 'content/pages/accessibilite.md'),
-      'utf-8',
-    )
-
-    const donneesPersonnellesContent = fs.readFileSync(
-      path.join(rootDir, 'content/pages/donnees-personnelles.md'),
-      'utf-8',
-    )
-
-    const cguContent = fs.readFileSync(path.join(rootDir, 'content/pages/cgu.md'), 'utf-8')
-
-    const mentionsLegalesContent = fs.readFileSync(
-      path.join(rootDir, 'content/pages/mentions-legales.md'),
-      'utf-8',
-    )
-
-    const aproposContent = fs.readFileSync(path.join(rootDir, 'content/pages/apropos.md'), 'utf-8')
-
-    const cookiesContent = fs.readFileSync(path.join(rootDir, 'content/pages/cookies.md'), 'utf-8')
-
-    // Create or update pages using idempotent operation
-    await Page.updateOrCreateMany('slug', [
+    // Define page data with their file paths and metadata
+    const pageData = [
       {
         title: 'Accessibilité',
         slug: 'accessibilite',
-        content: accessibiliteContent,
+        filename: 'accessibilite.md',
         metaDescription: 'Informations sur l\'accessibilité de la plateforme Aides Simplifiées',
-        status: 'published',
+        status: 'published' as const,
       },
       {
         title: 'Politique de confidentialité et données personnelles',
         slug: 'donnees-personnelles',
-        content: donneesPersonnellesContent,
+        filename: 'donnees-personnelles.md',
         metaDescription:
           'Notre politique de confidentialité et le traitement des données personnelles',
-        status: 'published',
+        status: 'published' as const,
       },
       {
         title: 'Conditions Générales d\'Utilisation',
         slug: 'cgu',
-        content: cguContent,
+        filename: 'cgu.md',
         metaDescription:
           'Les conditions générales d\'utilisation de la plateforme Aides Simplifiées',
-        status: 'published',
+        status: 'published' as const,
       },
       {
         title: 'Mentions légales',
         slug: 'mentions-legales',
-        content: mentionsLegalesContent,
+        filename: 'mentions-legales.md',
         metaDescription: 'Mentions légales de la plateforme Aides Simplifiées',
-        status: 'published',
+        status: 'published' as const,
       },
       {
         title: 'À propos',
         slug: 'a-propos',
-        content: aproposContent,
+        filename: 'apropos.md',
         metaDescription: 'En savoir plus sur la plateforme Aides Simplifiées',
-        status: 'published',
+        status: 'published' as const,
       },
       {
         title: 'Cookies',
         slug: 'cookies',
-        content: cookiesContent,
+        filename: 'cookies.md',
         metaDescription: 'Notre politique concernant les cookies',
-        status: 'published',
+        status: 'published' as const,
       },
-    ])
+    ]
+
+    // Read content files and prepare data for insertion
+    const pagesToCreate = pageData.map((page) => {
+      const content = fs.readFileSync(
+        path.join(rootDir, 'data/pages', page.filename),
+        'utf-8',
+      )
+
+      return {
+        title: page.title,
+        slug: page.slug,
+        content,
+        metaDescription: page.metaDescription,
+        status: page.status,
+      }
+    })
+
+    // Create or update pages using idempotent operation
+    await Page.updateOrCreateMany('slug', pagesToCreate)
   }
 }

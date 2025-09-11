@@ -16,7 +16,7 @@ export default class PersonaSeeder extends BaseSeeder {
 
     // Read the personas JSON file
     const rootDir = path.dirname(new URL(import.meta.url).pathname)
-    const personasFilePath = path.join(rootDir, '../data', 'personas-demenagement-logement.json')
+    const personasFilePath = path.join(rootDir, 'data/personas', 'personas-demenagement-logement.json')
 
     let personasData: any[]
     try {
@@ -56,8 +56,6 @@ export default class PersonaSeeder extends BaseSeeder {
           },
         )
       }
-
-      console.log(`✓ Created or updated ${activePersonas.length} personas for simulateur "${simulateur.title}"`)
     }
     else {
       console.log('No active personas found in the data file')

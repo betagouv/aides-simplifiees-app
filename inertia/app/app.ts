@@ -42,13 +42,6 @@ createInertiaApp({
 
   setup({ el, App, props, plugin }) {
     const app = createSSRApp({ render: () => h(App, props) })
-    app.config.warnHandler = (msg, _vm, trace) => {
-      if (import.meta.env.MODE === 'development' && msg.match('Hydration')) {
-        console.warn(`Intercepted Vue hydration mismatch warning`)
-        return
-      }
-      console.warn(`[Vue warn]: ${msg}${trace}`)
-    }
     const pinia = createPinia()
     pinia.use(piniaPluginPersistedstate)
 

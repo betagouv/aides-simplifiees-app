@@ -11,8 +11,11 @@ const logger = new BuildLogger('PUBLICODES')
 const publicodesPackages = [
   'aom-bordeaux',
   'aom-rennes',
-  'entreprise-innovation',
+  // 'entreprise-innovation',
 ]
+
+// TODO: Remove this build script once packages are published to npm
+// and consumed as dependencies instead of local packages
 
 function buildPackage(packageName) {
   const packagePath = path.join('publicodes', packageName)

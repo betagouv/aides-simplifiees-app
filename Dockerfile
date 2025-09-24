@@ -1,26 +1,32 @@
 ARG NODE_IMAGE=node:22.16.0-alpine3.22
 
 FROM $NODE_IMAGE AS base
-RUN npm install -g pnpm@10
+
+# Set up PNPM_HOME and PATH
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+# Enable corepack for pnpm management
+RUN corepack enable && corepack prepare pnpm@10 --activate
 
 # All dependencies stage
 FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm-store-deps,target=/pnpm/store pnpm install --frozen-lockfile
 
 # Production dependencies stage
 FROM base AS production-deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile --ignore-scripts
+RUN --mount=type=cache,id=pnpm-store-prod,target=/pnpm/store pnpm install --prod --frozen-lockfile --ignore-scripts
 
 # Build stage
 FROM base AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules /app/node_modules
 COPY . .
-RUN pnpm run build
+RUN --mount=type=cache,id=pnpm-store-build,target=/pnpm/store pnpm run build
 
 # Production stage
 FROM base AS production

@@ -32,7 +32,7 @@ CMD ["pnpm", "run", "dev"]
 FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN --mount=type=cache,id=pnpm-store-deps,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm-store-deps,target=/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 # Production dependencies stage
 FROM base AS production-deps

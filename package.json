@@ -68,6 +68,7 @@
     "@inertiajs/vue3": "^2.2.4",
     "@publicodes/forms": "^0.6.0",
     "@publicodes/tools": "^1.8.0",
+    "@shallowred/publicodes-entreprise-innovation": "^1.0.0",
     "@vinejs/vine": "^3.0.1",
     "@vue/server-renderer": "^3.5.22",
     "@vueuse/core": "^13.9.0",

@@ -217,10 +217,18 @@ nextTick(() => {
       <DsfrButton
         title="Rechercher"
         type="button"
+        :disabled="isLoading"
         :aria-label="`Rechercher pour ${question.title}`"
+        class="search-button"
         @click="handleSearchClick"
       >
-        Rechercher
+        <span class="button-content">
+          <span
+            :class="isLoading ? 'fr-icon-refresh-line loading' : 'fr-icon-search-line'"
+            aria-hidden="true"
+          />
+          Rechercher
+        </span>
       </DsfrButton>
     </div>
 
@@ -276,5 +284,37 @@ nextTick(() => {
 <style scoped lang="scss">
 .combobox-wrapper {
   position: relative;
+}
+
+.search-button {
+  .button-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fr-icon-search-line,
+  .fr-icon-refresh-line {
+    transition: opacity 0.2s ease-in-out;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  &::before {
+    display: none;
+  }
+
+  .fr-icon-refresh-line.loading::before {
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

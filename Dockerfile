@@ -9,6 +9,25 @@ ENV PATH="$PNPM_HOME:$PATH"
 # Enable corepack for pnpm management
 RUN corepack enable && corepack prepare pnpm@10 --activate
 
+# Development stage
+FROM base AS development
+ENV NODE_ENV=development
+ENV PORT=3333
+WORKDIR /app
+
+# Install all dependencies (including dev dependencies) with Docker build cache for pnpm store
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
+
+# Copy source code (will be overridden by volume mount in docker-compose)
+COPY . .
+
+EXPOSE $PORT
+EXPOSE 9229
+
+# Development command - supports HMR/watch
+CMD ["pnpm", "run", "dev"]
+
 # All dependencies stage
 FROM base AS deps
 WORKDIR /app

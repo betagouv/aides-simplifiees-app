@@ -3,15 +3,8 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class TypeAideSeeder extends BaseSeeder {
   async run() {
-    // Check if type_aides already exist and delete them
-    const typeAidesCount = await TypeAide.query().count('* as total')
-
-    if (typeAidesCount[0].$extras.total > 0) {
-      await TypeAide.query().delete()
-    }
-
-    // Create type_aides
-    await TypeAide.createMany([
+    // Create or update type_aides using idempotent operation
+    await TypeAide.updateOrCreateMany('slug', [
       { slug: 'aide-financiere', label: 'Aide financière', iconName: 'ri:money-euro-circle-line' },
       { slug: 'pret', label: 'Prêt', iconName: 'ri:arrow-left-right-line' },
       { slug: 'garantie', label: 'Garantie', iconName: 'ri:chat-check-line' },

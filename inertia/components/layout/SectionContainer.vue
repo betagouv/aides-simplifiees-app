@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-type SectionType =
-  | 'default'
-  | 'grouped-first'
-  | 'grouped'
-  | 'grouped-last'
-  | 'page-breadcrumb'
-  | 'page-header'
-  | 'page-block'
-  | 'page-footer'
-  | 'page-full'
+type SectionType
+  = | 'default'
+    | 'grouped-first'
+    | 'grouped'
+    | 'grouped-last'
+    | 'page-breadcrumb'
+    | 'page-header'
+    | 'page-block'
+    | 'page-footer'
+    | 'page-full'
 
 const props = withDefaults(
   defineProps<{

@@ -3,8 +3,7 @@ import type AdminNotionController from '#controllers/admin/admin_notion_controll
 import type AdminPersonaController from '#controllers/admin/admin_persona_controller'
 import type AdminSimulateurController from '#controllers/admin/admin_simulateur_controller'
 import type AdminTypeAideController from '#controllers/admin/admin_type_aide_controller'
-import type { InferPageProps } from '@inertiajs/vue3'
-import type { InertiaForm } from '@inertiajs/vue3'
+import type { InertiaForm, InferPageProps } from '@inertiajs/vue3'
 
 declare global {
 

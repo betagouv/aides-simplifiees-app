@@ -6,14 +6,6 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class PersonaSeeder extends BaseSeeder {
   async run() {
-    // Check if personas already exist and delete them
-    const personasCount = await Persona.query().count('* as total')
-
-    if (personasCount[0].$extras.total > 0) {
-      console.log('✓ Personas exist, deleting them before reseeding')
-      await Persona.query().delete()
-    }
-
     // Find the "demenagement-logement" simulateur
     const simulateur = await Simulateur.findBy('slug', 'demenagement-logement')
 
@@ -24,7 +16,7 @@ export default class PersonaSeeder extends BaseSeeder {
 
     // Read the personas JSON file
     const rootDir = path.dirname(new URL(import.meta.url).pathname)
-    const personasFilePath = path.join(rootDir, '../data', 'personas-demenagement-logement.json')
+    const personasFilePath = path.join(rootDir, '../seeders_data/personas', 'personas-demenagement-logement.json')
 
     let personasData: any[]
     try {
@@ -47,21 +39,26 @@ export default class PersonaSeeder extends BaseSeeder {
       return
     }
 
-    // Create personas
-    const createdPersonas = []
-    for (const personaData of personasData) {
-      if (personaData.status === 'active') {
-        const persona = await Persona.create({
-          name: personaData.name,
-          description: personaData.description,
-          simulateurId: simulateur.id,
-          status: personaData.status || 'active',
-          testData: personaData.test_data, // Use test_data from JSON file
-        })
-        createdPersonas.push(persona)
+    // Create or update personas using idempotent operation
+    const activePersonas = personasData.filter(persona => persona.status === 'active')
+
+    if (activePersonas.length > 0) {
+      // We'll use updateOrCreate for each persona individually since they need dynamic data
+      for (const personaData of activePersonas) {
+        await Persona.updateOrCreate(
+          { name: personaData.name, simulateurId: simulateur.id }, // unique key combination
+          {
+            name: personaData.name,
+            description: personaData.description,
+            simulateurId: simulateur.id,
+            status: personaData.status || 'active',
+            testData: personaData.test_data, // Use test_data from JSON file
+          },
+        )
       }
     }
-
-    console.log(`✓ Created ${createdPersonas.length} personas for simulateur "${simulateur.title}"`)
+    else {
+      console.log('No active personas found in the data file')
+    }
   }
 }

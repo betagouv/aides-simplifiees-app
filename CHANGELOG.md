@@ -1,6 +1,27 @@
 # CHANGELOG
 
-# 1.4.4 [#144]
+# CHANGELOG
+
+# 1.4.5 [#156](https://github.com/betagouv/aides-simplifiees-app/pull/156)
+- Ajout de fonctionnalités :
+  - Ajoute un état de chargement et une animation au bouton de recherche dans ComboboxQuestion
+  - Implémente un health check simple pour l'application
+- Améliorations :
+  - Créé une configuration Docker et pnpm pour le développement et la production
+  - Rend les seeders idempotents pour éviter les doublons
+  - Améliore l'emplacement des données des seeders pour la migration initiale
+  - Réactive les warnings d'hydration mismatch pour un meilleur debugging
+- Refactorisations :
+  - Importe les règles publicodes innovation depuis npm (@shallowred/publicodes-entreprise-innovation v1.0.0)
+  - Déplace les données des seeders vers un emplacement plus approprié
+  - Désactive le serveur de fichiers statiques en production
+- Infrastructure :
+  - Migration vers Docker Compose version 1
+  - Ajoute un script de build Docker optimisé
+  - Configure l'environnement de développement dans le Dockerfile
+- Mises à jour des dépendances et lint/formatage
+
+# 1.4.4 [#144](https://github.com/betagouv/aides-simplifiees-app/pull/154)
 - Améliorations :
   - Suppressions d'items superflus dans le simulateur déménagement
 - Refactorisations :

@@ -135,7 +135,7 @@ window.addEventListener('aides-simplifiees-message', function(event) {
             <p>
               Le script d'intégration est accessible
               <a
-                href="https://github.com/betagouv/aides-simulateur-front/blob/main/client/public/iframe-integration.js"
+                href="https://github.com/betagouv/aides-simplifiees-app/blob/main/public/assets"
                 target="_blank"
               >sur le dépôt hébergeant notre code</a>.
             </p>

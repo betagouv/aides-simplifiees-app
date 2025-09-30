@@ -1,0 +1,84 @@
+# Dependencies (will be installed in container)
+node_modules
+
+# Build artifacts (will be built in container)
+build
+coverage
+.nyc_output
+
+# Development/Editor files
+.vscode
+.idea
+.DS_Store
+.DS_STORE
+
+# Environment files (should be set via Docker env vars)
+.env
+.env.example
+.env.test
+tmp
+
+# Git and version control
+.git
+.gitignore
+.githooks
+.husky
+
+# Docker files (not needed in container)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Documentation (not needed in production)
+*.md
+docs/
+CHANGELOG.md
+DOCKER.md
+LICENSE
+README.md
+icon-usage-report-*.md
+
+# Development and testing files
+tests/
+reports/
+coverage/
+.c8rc.json
+logfile
+logs/
+queries/
+replications/
+
+# GitHub specific files
+.github/
+
+# Lock files (only need pnpm-lock.yaml)
+package-lock.json
+
+# Build configuration that's not needed in final image
+.prettier-config
+.editorconfig
+.nvmrc
+.npmrc
+
+# Scripts that are only needed during build
+scripts/build_icons_collections.js
+scripts/build_iframe_integration.js
+scripts/build_publicodes.js
+scripts/detect_icons.js
+
+# Keep these for production:
+# package.json - needed for dependencies
+# pnpm-lock.yaml - needed for exact dependency versions
+# tsconfig*.json - needed for TypeScript compilation
+# adonisrc.ts - needed for AdonisJS configuration
+# vite.config.ts - needed for Vite build
+# app/ - source code
+# config/ - application configuration
+# database/ - migrations and seeders
+# inertia/ - frontend code
+# public/ - static assets
+# resources/ - templates and resources
+# start/ - application bootstrap
+# shared/ - shared types
+# src/ - additional source code
+# publicodes/ - business logic

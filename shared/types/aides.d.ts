@@ -2,13 +2,13 @@ import type TypeAide from '#models/type_aide'
 
 declare global {
 
-  type UsageAide =
-    | 'loyer-logement'
-    | 'frais-installation-logement'
-    | 'caution-logement'
-    | 'pret-garantie-logement'
-    | 'credit-impot'
-    | 'jeune-entreprise'
+  type UsageAide
+    = | 'loyer-logement'
+      | 'frais-installation-logement'
+      | 'caution-logement'
+      | 'pret-garantie-logement'
+      | 'credit-impot'
+      | 'jeune-entreprise'
 
   interface SimulationResultsAides {
     [aidesSimplifieesKey: string]: boolean | number

@@ -8,7 +8,9 @@
 */
 
 import { IFRAME_SCRIPT_LATEST_VERSION } from '#config/iframe_integration'
+import env from '#start/env'
 import { middleware } from '#start/kernel'
+import app from '@adonisjs/core/services/app'
 import router from '@adonisjs/core/services/router'
 
 /**
@@ -28,6 +30,11 @@ const FormSubmissionController = () => import('#controllers/api/form_submission_
  * Static pages controllers
  */
 const StaticPagesController = () => import('#controllers/static_pages_controller')
+
+/**
+ * Health checks controller
+ */
+const HealthChecksController = () => import('#controllers/health_checks_controller')
 
 /**
  * Admin content controllers
@@ -68,6 +75,23 @@ router.get('/cookies', [StaticPagesController, 'showCookies'])
 /**
  * API Routes
  */
+router
+  .get('/health', [HealthChecksController])
+  .use(({ request, response }, next) => {
+    // Allow health checks without secret in development
+    if (!app.inProduction) {
+      return next()
+    }
+
+    // In production, require monitoring secret header
+    const monitoringSecret = env.get('MONITORING_SECRET')
+    if (monitoringSecret && request.header('x-monitoring-secret') === monitoringSecret) {
+      return next()
+    }
+
+    response.unauthorized({ message: 'Unauthorized access' })
+  })
+
 router.get('/api/statistics', [StatisticsController, 'getStatistics'])
 router.get('/api/autocomplete/communes', [GeoApiController, 'autocompleteCommunes'])
 router.post('/api/calculate', [OpenFiscaController, 'calculate'])

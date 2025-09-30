@@ -1,0 +1,202 @@
+cir:
+
+cir . eligibilite:
+  titre: Éligibilité au Crédit d'Impôt Recherche
+  variations:
+    - si: natureActivite . commercialeIndustrielleAgricole
+      alors: regimeFiscalReelOuConditionDExoneration
+    - si:  natureActivite . artisanale
+      alors:
+        toutes ces conditions:
+          - regimeFiscalEstReel
+          - typeDeRevenus = 'bic'
+    - sinon: non
+
+cir . eligibilite . explications:
+  applicable si: eligibilite = non
+  variations:
+    - si: natureActivite . commercialeIndustrielleAgricole
+      alors:
+        texte: |
+          Votre entreprise est une entreprise commerciale, industrielle ou agricole et
+          {{ regimeFiscalReelOuConditionDExoneration . explications }}
+    - si: natureActivite . artisanale
+      alors:
+        texte: |
+          Votre entreprise est artisanale et n'est pas imposée au régime réel d'imposition (BIC ou BNC).
+    - sinon:
+        texte: Votre nature d'activité n'est pas éligible au CIR.
+
+cir . montant:
+  valeur:
+    somme:
+      - cir . creditMetropole
+      - cir . creditDom
+      - cico . montant
+
+
+cir . creditMetropole:
+  barème:
+    assiette: cir . depensesMetropole
+    tranches:
+      - taux: 30%
+        plafond: 100000000
+      - taux: 5%
+
+cir . creditDom:
+  barème:
+    assiette: cir . depensesDom
+    tranches:
+      - taux: 50%
+        plafond: 100000000
+      - taux: 5%
+
+
+cir . depensesMetropole:
+  valeur:
+    somme:
+      - remboursementsSubventionsOrdc
+      - produit:
+        - 0.75
+        - somme:
+            - depensesRdAmortissementBiens
+            - (-depensesRdAmortissementBiensDom)
+      - somme:
+          - depensesRdIndemnisationAssurance
+          - (-depensesRdIndemnisationAssuranceDom)
+      - produit:
+        - 0.4
+        - somme:
+          - depensesRdChercheursTechniciens
+          - (-depensesRdChercheursTechniciensDom)
+      - produit:
+        - 0.4
+        - somme:
+          - depensesRdRemunerationInvention
+          - (-depensesRdRemunerationInventionDom)
+      - produit:
+        - 0.65 # 0.5 * 1.3
+        - somme:
+            - depensesNormalisationSalaires
+            - (-depensesNormalisationSalairesDom)
+      - produit:
+        - 0.5
+        - somme:
+            - depensesNormalisationDirigeant
+            - (-depensesNormalisationDirigeantDom)
+      - somme:
+          - depensesRdRechercheLiensDependance . avecPlafond
+          - depensesRdRechercheSansLiensDependance . avecPlafond
+      - somme:
+          - 0
+          - (-cir . deductions . metropole)
+      - depensesNormalisationRemboursementsSubventions
+
+# N'est pas modélisé pour l'instant:  "Dépenses liées à l'élaboration de nouvelles créations par les entreprises du secteur textile-habillement-cuir, y compris lorsqu'elles sont confiées à des stylistes ou bureaux de style agréés (jusqu'au 31 décembre 2027)."
+depensesNormalisationConseilAvecTraitement:
+  le minimum de:
+    - depensesNormalisationConseil
+    - depensesNormalisationConseilAvecTraitementMax
+
+depensesNormalisationConseilAvecTraitementMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+          - depensesNormalisationSalaires
+          - depensesNormalisationDirigeant
+          - depensesNormalisationRemboursementsSubventions
+          - (-depensesNormalisationSubventions)
+
+depensesRdDepensesConseilAvecTraitement:
+  le minimum de:
+    - depensesRdDepensesConseil
+    - depensesRdDepensesConseilAvecTraitementMax
+
+depensesRdDepensesConseilAvecTraitementMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+            - depensesRdAmortissementBiens
+            - depensesRdIndemnisationAssurance
+            - depensesRdChercheursTechniciens
+            - depensesRdRemunerationInvention
+            - depensesRdRechercheLiensDependance . avecPlafond
+            - depensesRdRechercheSansLiensDependance . avecPlafond
+            - depensesOrdc
+            - remboursementsSubventionsOrdc
+            - (-depensesRdSubventionsPubliques)
+
+depensesRdRechercheLiensDependance . avecPlafond:
+  le minimum de:
+        - 2000000
+        - somme:
+            - depensesRdRechercheLiensDependance
+            - (-depensesRdRechercheLiensDependanceDom)
+
+depensesRdRechercheSansLiensDependance . avecPlafond:
+  le minimum de:
+        - 10000000
+        - somme:
+            - depensesRdRechercheSansLiensDependance
+            - (-depensesRdRechercheSansLiensDependanceDom)
+
+depensesRdRechercheLiensDependanceDom . avecPlafond:
+  le minimum de:
+        - 2000000
+        - depensesRdRechercheLiensDependanceDom
+
+depensesRdRechercheSansLiensDependanceDom . avecPlafond:
+  le minimum de:
+        - 10000000
+        - depensesRdRechercheSansLiensDependanceDom
+
+cir . depensesDom:
+  valeur:
+    somme:
+      - produit:
+        - 0.75
+        - depensesRdAmortissementBiensDom
+      - depensesRdIndemnisationAssuranceDom
+      - produit:
+        - 0.4
+        - depensesRdChercheursTechniciensDom
+      - produit:
+        - 0.4
+        - depensesRdRemunerationInventionDom
+      - produit:
+        - 0.65 # 0.5 * 1.3
+        - depensesNormalisationSalairesDom
+      - produit:
+        - 0.5
+        - depensesNormalisationDirigeantDom
+      - somme:
+          - depensesRdRechercheLiensDependanceDom . avecPlafond
+          - depensesRdRechercheSansLiensDependanceDom . avecPlafond
+      - somme:
+          - 0
+          - (-cir . deductions . dom)
+
+cir . deductions:
+  valeur:
+    somme:
+      - depensesRdSubventionsPubliques
+      - depensesRdDepensesTiersCir
+      - depensesNormalisationSubventions
+      - depensesNormalisationConseilAvecTraitement
+      - depensesRdDepensesConseilAvecTraitement
+
+cir . deductions . dom:
+    variations:
+      - si: situationGeographique = "dom"
+        alors: cir . deductions
+      - sinon: 0
+
+cir . deductions . metropole:
+    variations:
+      - si: situationGeographique = "metropole"
+        alors: cir . deductions
+      - sinon: 0

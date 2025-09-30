@@ -38,7 +38,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '~/': `${getDirname(import.meta.url)}/inertia/`,
-      '~publicodes/': `${getDirname(import.meta.url)}/publicodes/`,
+      '~packages/': `${getDirname(import.meta.url)}/packages/`,
     },
   },
 

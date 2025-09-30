@@ -1,0 +1,82 @@
+cico:
+  titre: Crédit d'impôt Collaboratif
+
+cico . eligibilite:
+  titre: Eligibilité au CICo
+  toutes ces conditions:
+    - contratOrdc
+    - natureActivite . commercialeIndustrielleAgricole
+    - regimeFiscalEstReel
+    - cico . eligibilite . imposition
+    - entrepriseEnDifficulte = non
+
+cico . eligibilite . explications:
+  applicable si: eligibilite = non
+  texte: |
+    {{ contratOrdc . explications  }}
+    {{ natureActivite . commercialeIndustrielleAgricole . explications}}
+    {{ regimeFiscalEstReel . explications }}
+    {{ cico . eligibilite . imposition . explications }}
+    {{ entrepriseEnDifficulte . explicationsCICo }}
+
+
+entrepriseEnDifficulte . explicationsCICo:
+  applicable si: entrepriseEnDifficulte = oui
+  texte: |
+    Une entreprise en difficulté au sens de la réglementation européenne ne peut pas bénéficier du CICo.
+
+
+
+cico . eligibilite . imposition:
+  variations:
+    - si: typeImposition = 'exonere'
+      alors:
+          une de ces conditions:
+          - jei . eligibilite
+          - categorieExoneration . repriseEntrepriseEnDifficulte
+          # Question : zone spécifique sous forme de chaine de car vs booléen ?
+          - categorieExonerationZoneSpecifique = 'ZFR'
+          - categorieExonerationZoneSpecifique = 'ZFU_TE'
+          - categorieExonerationZoneSpecifique = 'BER'
+          - categorieExonerationZoneSpecifique = 'ZRD'
+          - categorieExonerationZoneSpecifique = 'ZFA_DOM'
+          - categorieExonerationZoneSpecifique = 'ZRR'
+          - categorieExonerationZoneSpecifique = 'BUD'
+          - categorieExonerationZoneSpecifique = 'ZDP'
+    - sinon: oui
+
+cico . eligibilite . imposition . explications:
+  applicable si: imposition = non
+  texte: |
+    Votre entreprise est exonérée d'impôt.
+
+    NB : Les entreprises exonérées d'impôt sont éligibles au CICo uniquement si :
+    - elles sont des Jeunes Entreprises Innovantes (JEI)
+    - elles sont des entreprises reprises en difficulté
+    - elles bénéficie situées dans une zone spécifiques (ZFR, ZFU_TE, BER, ZRD, ZFA_DOM, ZRR, BUD ou ZDP)
+
+cico . montant:
+  valeur:
+    produit:
+      - cico . taux
+      - le minimum de:
+        - 6000000 €/an
+        - cico . auMoinsZero
+
+
+cico . auMoinsZero:
+  le maximum de:
+    - 0
+    - somme:
+        - depensesOrdc
+        - (-subventionsOrdc)
+
+
+cico . taux:
+  variations:
+    - si:
+        une de ces conditions:
+          - estUnePME
+          - regimeFiscal = "'micro'"
+      alors: 50%
+    - sinon: 40%

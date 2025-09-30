@@ -1,23 +1,30 @@
-# aom-bordeaux
+# Publicodes AOM Bordeaux
 
-Modèle de tarification de l'AOM de Bordeaux
+Modèle publicodes de tarification de l'Autorité Organisatrice de la Mobilité (AOM) de Bordeaux Métropole.
 
 ## Installation
 
-```sh
-npm install aom-bordeaux publicodes
+```bash
+npm install @betagouv/publicodes-aom-bordeaux publicodes
 ```
 
 ## Usage
 
 ```typescript
-import { Engine } from 'publicodes'
-import rules from 'aom-bordeaux'
+import Engine from 'publicodes'
+import rules from '@betagouv/publicodes-aom-bordeaux'
 
 const engine = new Engine(rules)
 
-console.log(engine.evaluate('salaire net').nodeValue)
-// 1957.5
+// Calcul d'un tarif
+const result = engine
+  .setSituation({
+    'âge': 25,
+    'type . abonnement': 'mensuel'
+  })
+  .evaluate('résultat')
+
+console.log(result.nodeValue) // Prix en euros
 
 engine.setSituation({ 'salaire brut': 4000 })
 console.log(engine.evaluate('salaire net').nodeValue)

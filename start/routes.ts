@@ -85,7 +85,7 @@ router
 
     // In production, require monitoring secret header
     const monitoringSecret = env.get('MONITORING_SECRET')
-    if (!monitoringSecret || request.header('x-monitoring-secret') === monitoringSecret) {
+    if (monitoringSecret && request.header('x-monitoring-secret') === monitoringSecret) {
       return next()
     }
 

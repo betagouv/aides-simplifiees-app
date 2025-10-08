@@ -1,0 +1,257 @@
+Application Domains - Documentation Strategy
+
+This document identifies the main business and technical domains that need high-level documentation. Each domain is documented with focus on concepts, flows, relationships, and patterns.
+
+Documentation Philosophy
+
+Document:
+- Domain concepts and terminology
+- Data flows and user journeys
+- Relationships between entities
+- Architectural patterns used
+- Integration points
+- Business rules and constraints
+
+Do NOT document:
+- Individual controller methods
+- Specific service implementations
+- Detailed field-by-field model descriptions
+- Line-by-line code explanations
+
+Main Domains to Document
+
+1. Simulateurs Domain (Priority: HIGH)
+File: docs/domains/simulateurs.llm.txt
+
+Core user-facing feature. Financial aid simulators are multi-step questionnaires that guide users through determining their eligibility. Built on Publicodes rules engine.
+
+Entity Relationships:
+Simulateur (1) has many Steps (n)
+Step (1) has many Questions (n)
+Question (1) has many Choices (n)
+Simulateur (n) relates to Aides (n)
+Simulateur (n) covers TypeAides (n)
+
+User Flow:
+User selects simulator → Multi-step questionnaire → Form submission generates hash → Publicodes calculation with OpenFisca → Results display with eligible aids → Shareable result via hash URL
+
+Technical Patterns:
+- Step-based navigation with state persistence
+- Form state stored in FormSubmission via hash
+- Publicodes rules drive both questions and calculations
+- Resume capability via query parameter
+- Iframe mode for partner embedding
+
+Integration Points:
+- Publicodes packages in publicodes/ directory
+- OpenFisca API for fiscal calculations
+- FormSubmission for result storage/retrieval
+- Aides catalog for result display
+
+2. Aides Domain (Priority: HIGH)
+File: docs/domains/aides.llm.txt
+
+Financial aid catalog that users discover through simulators. Each aid has metadata, eligibility criteria, and belongs to categories (TypeAide).
+
+Entity Relationships:
+Aide (n) belongs to TypeAide (1)
+Aide (n) discovered by Simulateur (n)
+Aide (1) explained by Notion (n) [optional]
+
+Content Structure:
+- Basic info: title, description, organisme
+- Eligibility: conditions, montant, public cible
+- Links: URL to apply, documentation
+- Categorization: TypeAide for grouping
+
+Discovery Patterns:
+- Browse all aids (catalog page)
+- Discover through simulator results
+- Filter by TypeAide categories
+- View details with contextual simulator results
+
+Business Rules:
+- Aids can be linked to multiple simulators
+- Not all aids require a simulator (some are informational)
+- TypeAide provides hierarchical categorization
+
+3. Form Submission & Results Domain (Priority: HIGH)
+File: docs/domains/form-submission.llm.txt
+
+Form submissions store user answers and calculation results, accessible via a unique hash. Enables result sharing and resuming simulations.
+
+Data Flow:
+User fills form → FormSubmission created with hash → Publicodes calculation triggered → Results stored with hash → Hash used in shareable URL → Results retrieved by hash (no auth needed)
+
+Hash-Based Access:
+- Privacy: no authentication required
+- Shareability: users can share results URL
+- Immutability: submissions are not modified after creation
+- Expiration: consider data retention policy
+
+Technical Pattern:
+- Hash generation: unique identifier for each submission
+- JSON storage: flexible schema for different simulators
+- Result caching: calculation results stored with submission
+- API endpoints: create submission, retrieve by hash
+
+4. Publicodes Integration Domain (Priority: HIGH)
+File: docs/domains/publicodes.llm.txt
+
+Publicodes is the calculation engine that powers simulators. Rules are defined in YAML/JSON packages, compiled, and used for both form generation and eligibility calculations.
+
+Architecture Pattern:
+publicodes/<package-name>/ → Rule definitions (YAML)
+  ↓ build step
+public/forms/<package-name>.json → Compiled rules + form schema
+  ↓ runtime
+@publicodes/forms → Form rendering
+Publicodes engine → Calculation evaluation
+
+Integration Points:
+- Build time: pnpm build:publicodes compiles rules
+- Form generation: @publicodes/forms reads compiled schemas
+- Calculation: Publicodes engine evaluates with user input
+- OpenFisca: External API for complex fiscal calculations
+
+Rule Organization:
+- Each simulator has its own Publicodes package
+- Rules define: questions, validation, calculations
+- Form schema auto-generated from rules
+- Versioning: changes require rebuild
+
+Development Workflow:
+1. Modify rules in publicodes/<package>/
+2. Run pnpm build:publicodes
+3. Restart dev server to load new rules
+4. Test with personas (test cases)
+
+5. Admin & Content Management Domain (Priority: MEDIUM)
+File: docs/domains/admin.llm.txt
+
+Complete CMS for managing all application content. Admin-only access with full CRUD capabilities.
+
+Entity Management:
+- Simulateurs: Configure steps, questions, Publicodes package
+- Aides: Manage aid catalog and metadata
+- TypeAides: Organize aids into categories
+- Notions: Educational content and glossary
+- Pages: Static/dynamic content pages
+- Personas: Test cases for simulator validation
+
+Persona Testing Pattern:
+Admin creates Persona with user profile and expected results → Admin runs simulation → Compare actual vs expected → Validates Publicodes rules accuracy → Regression testing for rule changes
+
+Access Control:
+- Authentication: session-based admin login
+- Authorization: admin middleware on all routes
+- Single admin role (no fine-grained permissions)
+
+Content Publishing Flow:
+Admin creates/edits content → Content saved to database → Changes immediately visible (no staging) → Active/inactive toggles for gradual rollout
+
+6. Content & Notions Domain (Priority: LOW)
+File: docs/domains/content.llm.txt
+
+Two types of content: Notions (glossary/educational) and Pages (static/marketing content).
+
+Notions (Glossary):
+- Purpose: Explain complex terms and concepts
+- Access: Browse all notions or contextual from simulators
+- Structure: title, slug, content (markdown/HTML)
+- Integration: Linked from simulator questions for help
+
+Pages (Static Content):
+- Purpose: Marketing and informational pages
+- Examples: Homepage, Partners, Contact, Statistics
+- Management: Some hardcoded, some CMS-managed
+- Routing: /content/:page_slug for dynamic pages
+
+7. Partner Integration Domain (Priority: MEDIUM)
+File: docs/domains/iframe-integration.llm.txt
+
+Partners can embed simulators on their websites via a versioned JavaScript snippet. Handles cross-origin communication and responsive sizing.
+
+Integration Pattern:
+Partner website includes script and div → Script creates iframe with simulateur URL → Handles resize messages → Passes query params → Manages scroll behavior
+
+Technical Features:
+- Versioning: @version in script URL for cache control
+- SRI: Subresource Integrity hashes for security
+- Responsive: iframe-resizer for dynamic height
+- Isolation: Sandboxed iframe with limited permissions
+
+Build Process:
+1. Script source in src/assets/iframe-integration.js
+2. Build: pnpm build:iframe-integration
+3. Output: Versioned files in public/assets/
+4. SRI hash generation for documentation
+
+Query Parameters Preserved:
+- debug=true: Show calculation details
+- iframe=true: Trigger iframe-specific styling
+- UTM parameters: Analytics tracking
+
+8. API & External Integrations Domain (Priority: LOW)
+File: docs/domains/api-integrations.llm.txt
+
+External services and data sources.
+
+OpenFisca Integration:
+- Purpose: Complex fiscal calculations beyond Publicodes
+- Pattern: POST to OpenFisca API with situation data
+- Response: Calculated values for specific formulas
+- Usage: Called during simulator calculation phase
+
+GeoAPI Integration:
+- Purpose: French commune/city autocomplete
+- Pattern: GET with search query
+- Usage: Location-based questions in forms
+- Caching: Consider caching frequent searches
+
+Statistics & Analytics:
+- Purpose: Usage tracking and reporting
+- Matomo integration for privacy-friendly analytics
+- Admin dashboard displays aggregated stats
+- No PII stored in analytics
+
+Documentation File Structure
+
+docs/
+├── architecture.llm.txt          # Overall app architecture (already exists)
+└── domains/                      # Domain-specific documentation
+    ├── simulateurs.llm.txt       # Simulators flow and concepts
+    ├── aides.llm.txt             # Financial aids catalog
+    ├── form-submission.llm.txt   # Result storage and sharing
+    ├── publicodes.llm.txt        # Calculation engine
+    ├── admin.llm.txt             # Content management
+    ├── content.llm.txt           # Notions and pages
+    ├── iframe-integration.llm.txt # Partner embedding
+    └── api-integrations.llm.txt  # External services
+
+Implementation Priority
+
+Phase 1: Core User Features (Start Here)
+1. Simulateurs - The main user-facing feature
+2. Form Submission - How results work
+3. Publicodes - The calculation engine
+
+Phase 2: Content & Discovery
+4. Aides - The aid catalog
+5. Admin - Content management
+
+Phase 3: Supporting Features
+6. Content - Notions and pages
+7. Iframe Integration - Partner embedding
+8. API Integrations - External services
+
+Success Criteria
+
+Domain documentation is complete when:
+- A new developer can understand the domain's purpose
+- The relationships between entities are clear
+- The main user/data flow is documented
+- Integration points with other domains are identified
+- Business rules and constraints are captured
+- Documentation uses present tense (static reference)
+- No implementation details, only concepts and patterns

@@ -36,3 +36,6 @@ coverage
 
 # accessibility reports
 /reports/accessibility
+
+# LLM planning documents
+*.plan.llm.txt

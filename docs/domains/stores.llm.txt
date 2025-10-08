@@ -1,0 +1,697 @@
+# Stores Domain (State Management)
+
+## Overview
+
+The Stores domain manages global application state using Pinia, Vue 3's official state management library. Unlike Vuex, Pinia provides a simplified API with full TypeScript support, modular store structure, and composition API integration. Stores handle cross-component state including survey answers, breadcrumb navigation, theme preferences, chat widget state, and debug modes.
+
+## Core Concepts
+
+### Pinia Store System
+Modern state management for Vue 3:
+- **Type-Safe**: Full TypeScript inference
+- **Composition API**: Uses `ref()`, `computed()`, `reactive()`
+- **Modular**: Each store handles specific domain
+- **DevTools**: Vue DevTools integration for debugging
+- **Persistence**: Plugin support for localStorage/sessionStorage
+- **SSR Support**: Works with server-side rendering
+
+### Store Definition Pattern
+Two patterns for defining stores:
+
+**Setup Store** (Preferred):
+```typescript
+export const useMyStore = defineStore('my-store', () => {
+  const state = ref(initialValue)
+
+  function action() {
+    // mutate state
+  }
+
+  return { state, action }
+})
+```
+
+**Options Store** (Alternative):
+```typescript
+export const useMyStore = defineStore('my-store', {
+  state: () => ({ value: 0 }),
+  actions: { increment() { this.value++ } },
+  getters: { doubled: (state) => state.value * 2 }
+})
+```
+
+Application uses Setup Store pattern for consistency with Composition API.
+
+### Store Persistence
+Selected stores persist to localStorage:
+```typescript
+defineStore('surveys', storeDefiner, {
+  persist: {
+    pick: ['answers', 'versions', 'currentPageIds']
+  }
+})
+```
+
+**Purpose**: Preserve user progress across sessions.
+
+### Store Factory Pattern
+Complex stores use factory functions:
+```typescript
+export function useSurveysStoreDefiner({ enableMatomo = false }) {
+  return () => {
+    // Store logic
+  }
+}
+
+export const useSurveysStore = defineStore(
+  'surveys',
+  useSurveysStoreDefiner({ enableMatomo: true }),
+  { persist: {...} }
+)
+```
+
+**Benefits**: Configurable behavior, testability, reusability.
+
+## Store Catalog
+
+### Surveys Store (`stores/surveys.ts`)
+**Purpose**: Manages survey state, answers, navigation, and schema loading.
+
+**Responsibilities**:
+- Store user answers per simulator
+- Track current page in multi-step surveys
+- Load and cache survey schemas
+- Evaluate conditional question visibility
+- Provide formatted answer display
+- Integrate with analytics (Matomo)
+
+**Persisted State**:
+- `answers`: User answers by simulator slug
+- `versions`: Schema versions to detect changes
+- `currentPageIds`: Current page per simulator
+
+**Key Methods**:
+- `getAnswers(slug)`: Retrieve all answers for simulator
+- `getAnswer(slug, questionId)`: Get specific answer
+- `setAnswer(slug, questionId, value)`: Update answer
+- `getCurrentPage(slug)`: Get current survey page
+- `getNextVisiblePage(slug)`: Navigate forward
+- `getPreviousVisiblePage(slug)`: Navigate backward
+- `isQuestionVisible(slug, questionId)`: Check visibility conditions
+- `resetSurvey(slug)`: Clear all answers and restart
+
+**Integration**: Used by Survey.vue, PublicodesSurvey.vue, recapitulatif.vue
+
+### Breadcrumb Store (`stores/breadcrumbs.ts`)
+**Purpose**: Manages breadcrumb navigation trail.
+
+**State**:
+```typescript
+interface Breadcrumb {
+  text: string
+  to: string
+}
+const breadcrumbs = ref<Breadcrumb[]>([])
+```
+
+**Methods**:
+- `setBreadcrumbs(breadcrumbs)`: Set entire trail
+
+**Usage Pattern**:
+```typescript
+const { setBreadcrumbs } = useBreadcrumbStore()
+setBreadcrumbs([
+  { text: 'Accueil', to: '/' },
+  { text: 'Simulateurs', to: '/simulateurs' }
+])
+```
+
+**Display**: BreadcrumbSectionContainer component reads and renders trail.
+
+### Scheme Store (`stores/scheme.ts`)
+**Purpose**: Manages dark/light theme preferences.
+
+**State**:
+- `preferences`: Theme and scheme settings
+- `isModalOpen`: Theme selector modal visibility
+
+**Methods**:
+- `openModal()`: Show theme selector
+- `closeModal()`: Hide theme selector
+
+**VueDsfr Integration**:
+```typescript
+const { theme, scheme, setScheme } = useScheme()
+watchEffect(() => setScheme(preferences.scheme))
+```
+
+**Supported Schemes**:
+- `'light'`: Force light theme
+- `'dark'`: Force dark theme
+- `'system'`: Follow OS preference
+
+### Crisp Store (`stores/crisp.ts`)
+**Purpose**: Manages Crisp chat widget state.
+
+**State**:
+- `isChatOpen`: Whether chat window is open
+
+**Methods**:
+- `toggleChat()`: Open or close chat
+- `Crisp`: Full SDK access
+
+**Lifecycle**:
+- `onMounted()`: Register chat event listeners
+- `onBeforeUnmount()`: Cleanup listeners
+
+**Chat Events**:
+```typescript
+Crisp.chat.onChatOpened(() => {
+  Crisp.chat.show()
+  isChatOpen.value = true
+})
+
+Crisp.chat.onChatClosed(() => {
+  Crisp.chat.hide()
+  isChatOpen.value = false
+})
+```
+
+**Usage**: CrispButton.vue component toggles chat.
+
+### Survey Debug Store (`stores/survey_debug.ts`)
+**Purpose**: Provides conditional debug logging for surveys.
+
+**Activation**: Via URL query parameter `?debug=true`
+
+**State**:
+- `debugMode`: Computed from URL
+
+**Methods**:
+- `debug.log(...)`: Console.log only if debug mode
+- `debug.error(...)`: Console.error only if debug mode
+- `debug.warn(...)`: Console.warn only if debug mode
+
+**Usage**:
+```typescript
+const { debug } = useSurveyDebugStore()
+debug.log('[Survey] Processing answer:', answer)
+```
+
+**Purpose**: Reduce console noise in production, detailed logging in development.
+
+## Surveys Store Deep Dive
+
+### Answer Management
+
+**Storage Structure**:
+```typescript
+answers.value = {
+  'demenagement-logement': {
+    'statut-professionnel': 'etudiant',
+    'age': 25,
+    'loyer': 600
+  },
+  'aom-bordeaux': {
+    'zone-residence': 'zone-a'
+  }
+}
+```
+
+**Multi-Simulator Support**: Each simulator maintains independent state.
+
+**Answer Formatting**:
+```typescript
+formatAnswer(slug, questionId, value)
+```
+
+Converts raw values to display-friendly text:
+- Boolean → "Oui"/"Non"
+- Checkbox → Comma-separated choice titles
+- Radio → Selected choice title
+- Number → String representation
+- Combobox → Parsed label text
+
+**Calculation Filtering**:
+```typescript
+getAnswersForCalculation(slug)
+```
+
+Returns only:
+- Answers to visible questions (based on conditions)
+- Non-undefined values
+- Parsed combobox values (extract `value` from JSON)
+
+**Purpose**: Send clean data to calculation engines (OpenFisca/Publicodes).
+
+### Schema Management
+
+**Loading**:
+```typescript
+await loadSchema(simulateurSlug)
+```
+
+Fetches survey schema from `/forms/{slug}.json`, normalizes structure, stores with version.
+
+**Version Detection**:
+If schema version changes (forceRefresh or version mismatch):
+- Clear stored answers
+- Reset to first page
+- Trigger `onNewSchema` callback
+
+**Caching**: Schemas cached in memory after first load.
+
+**Status Tracking**:
+```typescript
+schemaStatus.value[slug] = 'loading' | 'loaded' | 'error'
+```
+
+### Page Navigation
+
+**Current Page Tracking**:
+```typescript
+currentPageIds.value['simulator-slug'] = 'page-3'
+```
+
+**Visibility Logic**:
+```typescript
+isQuestionVisible(slug, questionId)
+```
+
+Evaluates conditions:
+- Check question's `visibleIf` condition
+- Recursively check dependencies
+- Returns boolean
+
+**Navigation Methods**:
+- `getNextVisiblePage()`: Finds next page with visible questions or intermediary results
+- `getPreviousVisiblePage()`: Finds previous page with visible questions
+- `isFirstPage()`: No previous visible page
+- `isLastPage()`: No next visible page
+
+**Intermediary Results**: Special page type that's always visible regardless of conditions.
+
+### Question Finding
+
+**By ID**:
+```typescript
+findQuestionById(slug, questionId)
+```
+
+Searches all pages in all steps for matching question ID.
+
+**By Page**:
+```typescript
+getCurrentPage(slug).questions
+```
+
+Returns questions on current page.
+
+### Conditional Logic
+
+**Condition Evaluation**:
+```typescript
+evaluateCondition(condition, getAnswer)
+```
+
+Supports operators:
+- `equals`, `notEquals`
+- `in`, `notIn`
+- `greaterThan`, `lessThan`
+- `greaterThanOrEquals`, `lessThanOrEquals`
+- `and`, `or`, `not`
+
+**Example Condition**:
+```typescript
+{
+  operator: 'and',
+  conditions: [
+    { questionId: 'age', operator: 'greaterThan', value: 18 },
+    { questionId: 'statut', operator: 'equals', value: 'etudiant' }
+  ]
+}
+```
+
+### Analytics Integration
+
+**Matomo Tracking** (when enabled):
+```typescript
+setAnswer(slug, questionId, value) {
+  // ...
+  matomo?.trackSurveyAnswer(slug, questionId, question.title)
+}
+```
+
+Tracks each answer for analytics.
+
+## Data Flow Patterns
+
+### Store Initialization
+```typescript
+// 1. Import store
+import { useSurveysStore } from '~/stores/surveys'
+
+// 2. Get store instance
+const surveysStore = useSurveysStore()
+
+// 3. Use store
+surveysStore.setAnswer(slug, questionId, value)
+```
+
+**Singleton Pattern**: Same store instance shared across all components.
+
+### Reactive Store State
+```typescript
+// Store state is reactive
+const answers = computed(() => surveysStore.getAnswers(slug))
+
+// Updates automatically when store changes
+```
+
+### Store Composition
+```typescript
+// Store can use other stores
+const { debug } = useSurveyDebugStore()
+```
+
+### Store → Component
+```typescript
+// Component reads from store
+const currentPage = surveysStore.getCurrentPage(slug)
+```
+
+### Component → Store
+```typescript
+// Component updates store
+surveysStore.setAnswer(slug, 'age', 25)
+```
+
+### Store → API
+```typescript
+// Store triggers API call
+const schema = await fetch(`/forms/${slug}.json`)
+```
+
+## Technical Patterns
+
+### Computed Properties
+```typescript
+const debugMode = computed(() => {
+  return getParam(page.url, 'debug') === 'true'
+})
+```
+
+**Purpose**: Derived state that updates automatically.
+
+### Ref Unwrapping
+```typescript
+// Direct access to ref value
+const value = state.value
+
+// Automatic unwrapping in template
+<div>{{ state }}</div>
+```
+
+### Reactive Objects
+```typescript
+const preferences: Preferences = reactive({
+  theme: 'light',
+  scheme: 'light'
+})
+```
+
+**Use Case**: Objects with multiple properties.
+
+### Store Composables
+Stores use composables for complex logic:
+```typescript
+const { debug } = useSurveyDebugStore()
+const matomo = enableMatomo ? useMatomoTracking() : null
+```
+
+### Persistence Plugin
+```typescript
+{
+  persist: {
+    pick: ['answers', 'versions'],
+    // Automatically syncs to localStorage
+  }
+}
+```
+
+**Storage Key**: `pinia:surveys` (store ID prefixed)
+
+### Lazy Store Creation
+```typescript
+// Store created on first use
+const store = useSurveysStore()
+```
+
+**Before First Call**: Store doesn't exist.
+**After First Call**: Store instance created and reused.
+
+## Integration Points
+
+### View Components
+Components access stores:
+```typescript
+import { useSurveysStore } from '~/stores/surveys'
+
+const surveysStore = useSurveysStore()
+const answers = surveysStore.getAnswers(slug)
+```
+
+### Composables
+Composables use stores:
+```typescript
+export function useEligibility() {
+  const surveysStore = useSurveysStore()
+  const answers = surveysStore.getAnswersForCalculation(slug)
+  // ...
+}
+```
+
+### Layouts
+Layouts use stores for global state:
+```typescript
+const { breadcrumbs } = useBreadcrumbStore()
+
+<DsfrBreadcrumb :links="breadcrumbs" />
+```
+
+### Persistence Layer
+Pinia plugin syncs to localStorage:
+```typescript
+// Write
+localStorage.setItem('pinia:surveys', JSON.stringify(state))
+
+// Read
+const stored = localStorage.getItem('pinia:surveys')
+if (stored) {
+  Object.assign(state, JSON.parse(stored))
+}
+```
+
+### DevTools Integration
+Vue DevTools shows:
+- Current store state
+- Action history
+- State mutations
+- Time-travel debugging
+
+## Business Rules
+
+### Answer Persistence
+**Persisted**: Survey answers remain across:
+- Page refreshes
+- Browser close/reopen
+- Navigation away and back
+
+**Cleared**: Answers reset when:
+- User explicitly resets survey
+- Schema version changes
+- Schema `forceRefresh` flag set
+
+### Schema Versioning
+**Version Check**:
+```typescript
+if (schema.version !== storedVersion || schema.forceRefresh) {
+  resetSurvey(slug)
+}
+```
+
+**Purpose**: Prevent incompatible data after schema changes.
+
+### Question Visibility
+Questions hidden if:
+- `visibleIf` condition evaluates false
+- Any dependency condition fails
+
+**Recursive Check**: Dependencies of dependencies also evaluated.
+
+### Navigation Rules
+- Cannot navigate past last visible page
+- Cannot navigate before first visible page
+- Intermediary results pages always accessible
+- Empty pages (all questions hidden) skipped
+
+### Debug Mode
+**Activation**: Only via `?debug=true` URL parameter
+**Persistence**: Not persisted, must be in URL each session
+**Production**: Safe to leave code in production
+
+## Key Code Locations
+
+### Store Definitions
+- `inertia/stores/surveys.ts`: Survey state management
+- `inertia/stores/breadcrumbs.ts`: Navigation trail
+- `inertia/stores/scheme.ts`: Theme preferences
+- `inertia/stores/crisp.ts`: Chat widget state
+- `inertia/stores/survey_debug.ts`: Debug logging
+
+### Store Factory
+- `inertia/composables/use_surveys_store_definer.ts`: Surveys store logic (700 lines)
+
+### Integration
+- Components: Import and use stores directly
+- Composables: Access stores for complex operations
+- Persistence: Automatic via Pinia plugin
+
+### Types
+- `inertia/types/survey.d.ts`: Survey-related types
+- Pinia types: Built-in TypeScript support
+
+## Notes
+
+### Pinia vs Vuex
+**Why Pinia**:
+- Simpler API (no mutations)
+- Better TypeScript support
+- Composition API aligned
+- Smaller bundle size
+- Official recommendation for Vue 3
+
+**Migration**: Aides Simplifiées built with Pinia from start.
+
+### Store Naming Convention
+- **Store File**: `kebab-case.ts` (e.g., `survey_debug.ts`)
+- **Store ID**: `'kebab-case'` (e.g., `'survey-debug'`)
+- **Store Hook**: `usePascalCaseStore()` (e.g., `useSurveyDebugStore()`)
+
+### State Mutation
+**Direct Mutation** (Allowed in Pinia):
+```typescript
+store.value.answers = newAnswers
+```
+
+**No Special Syntax**: Unlike Vuex, no commit/dispatch needed.
+
+### Store Lifecycle
+1. **First Access**: Store instance created
+2. **Component Mount**: Store available immediately
+3. **Component Unmount**: Store persists
+4. **App Unmount**: Store cleaned up
+
+### Getters vs Computed
+**In Store**:
+```typescript
+const doubled = computed(() => count.value * 2)
+return { doubled }
+```
+
+**In Component**:
+```typescript
+const doubled = computed(() => store.count * 2)
+```
+
+Both work, prefer store-level for shared logic.
+
+### Actions vs Functions
+In Setup Stores, no distinction:
+```typescript
+function myAction() {
+  // Just a function
+}
+return { myAction }
+```
+
+**Benefit**: Simpler mental model.
+
+### Hot Module Replacement
+Stores support HMR in development:
+- State preserved on code changes
+- Actions update immediately
+- No manual reload needed
+
+### Testing Stores
+```typescript
+import { setActivePinia, createPinia } from 'pinia'
+
+beforeEach(() => {
+  setActivePinia(createPinia())
+})
+
+it('should store answer', () => {
+  const store = useSurveysStore()
+  store.setAnswer('test', 'q1', 'answer')
+  expect(store.getAnswer('test', 'q1')).toBe('answer')
+})
+```
+
+## Related Domains
+
+- **Views**: Components consume store state
+- **Simulateurs**: Survey stores manage simulator flow
+- **Form Submission**: Stores provide data for API calls
+- **Publicodes**: Stores provide answers for calculations
+
+## Store Dependencies
+
+```
+useSurveysStore
+  ├─ uses: useSurveyDebugStore
+  ├─ uses: useSurveySchemaManager (composable)
+  └─ uses: useMatomoTracking (composable)
+
+useSurveyDebugStore
+  └─ uses: usePage (Inertia)
+
+useSchemeStore
+  └─ uses: useScheme (VueDsfr)
+
+useCrispStore
+  └─ uses: Crisp SDK
+
+useBreadcrumbStore
+  └─ (no dependencies)
+```
+
+## Future Considerations
+
+### Potential Enhancements
+- **Undo/Redo**: Survey answer history with time travel
+- **Auto-Save**: Debounced API persistence for cross-device sync
+- **Offline Mode**: Service worker integration
+- **State Snapshots**: Export/import full survey state
+- **Multi-User**: Collaborative survey completion
+- **Real-time Sync**: WebSocket updates for shared surveys
+
+### Performance Optimization
+- **Selective Persistence**: Only persist changed answers
+- **Compression**: Compress localStorage data
+- **Lazy Loading**: Load stores on-demand
+- **Memory Management**: Clear old simulator data
+
+### Developer Experience
+- **Store Documentation**: JSDoc for all methods
+- **Type Safety**: Stricter TypeScript types
+- **Validation**: Runtime schema validation
+- **Debugging Tools**: Custom DevTools panels
+- **Store Testing**: Comprehensive test coverage
+
+### Advanced Features
+- **State Machine**: Formal state transitions for surveys
+- **Middleware**: Plugin system for store extensions
+- **Action History**: Audit trail of all changes
+- **Optimistic Updates**: Immediate UI updates before API confirmation
+- **Conflict Resolution**: Handle concurrent modifications

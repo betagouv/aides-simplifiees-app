@@ -9,6 +9,7 @@ import RouterLink from '~/components/RouterLink.vue'
 import collections from '~/icon_collections'
 import { getLayout } from './shared'
 
+// Type kept as any: Inertia's page prop type is complex and varies per route
 export default function render(page: any) {
   return createInertiaApp({
     page,

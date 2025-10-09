@@ -173,7 +173,7 @@ function getEntityId(entity: Entites): string {
  */
 function addSurveyAnswerToRequest(
   answerKey: string,
-  answerValue: boolean | number | string | undefined | string[],
+  answerValue: SurveyAnswerValue,
   mapping: AidesSimplifieesMapping,
   entity: Entites,
   request: OpenFiscaCalculationRequest,
@@ -183,16 +183,24 @@ function addSurveyAnswerToRequest(
     return request
   }
 
-  // Validate answer value
-  if (answerValue === undefined) {
+  // Skip null or undefined values
+  if (answerValue === undefined || answerValue === null) {
     throw new UndefinedValueError(answerKey)
   }
 
+  // Handle ComboboxAnswer type - extract the value
+  if (typeof answerValue === 'object' && !Array.isArray(answerValue) && 'value' in answerValue) {
+    answerValue = answerValue.value
+  }
+
+  // Validate answer value type (after extracting combobox value)
   if (
     typeof answerValue !== 'boolean'
     && typeof answerValue !== 'number'
     && typeof answerValue !== 'string'
   ) {
+    // Arrays are not handled here - they should be processed differently
+    // (e.g., checkbox arrays are expanded into multiple boolean fields)
     throw new UnexpectedValueError(answerKey)
   }
 
@@ -256,7 +264,7 @@ function addSurveyQuestionToRequest(
 function processSurveyAnswer(
   request: OpenFiscaCalculationRequest,
   answerKey: string,
-  answerValue: boolean | number | string | undefined | string[],
+  answerValue: SurveyAnswerValue,
 ): OpenFiscaCalculationRequest {
   try {
     // Try to find the mapping in each entity type

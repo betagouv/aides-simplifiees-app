@@ -17,7 +17,7 @@ export function useSimulation() {
    * Run a simulation with the provided answers
    */
   async function runSimulation(
-    answers: Record<string, any>,
+    answers: SurveyAnswers,
     schema: SurveyNormalizedSchema,
   ): Promise<SimulationResultsAides | null> {
     try {

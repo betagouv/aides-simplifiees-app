@@ -48,6 +48,8 @@ function addDeducedResults(results: SimulationResultsAides): SimulationResultsAi
 }
 
 interface EntityConfig {
+  // Variables contain OpenFisca mappings which have complex dispatch functions
+  // Type kept as any due to OpenFisca's dynamic mapping structure
   variables: Record<string, any>
   id: string
   entity: Entites

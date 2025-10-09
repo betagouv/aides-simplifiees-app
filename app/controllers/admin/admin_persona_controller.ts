@@ -3,10 +3,18 @@ import { promises as fs } from 'node:fs'
 import FormSubmission from '#models/form_submission'
 import Persona from '#models/persona'
 import Simulateur from '#models/simulateur'
+import LoggingService from '#services/logging_service'
 import { Exception } from '@adonisjs/core/exceptions'
 import app from '@adonisjs/core/services/app'
+import logger from '@adonisjs/core/services/logger'
 
 export default class AdminPersonaController {
+  private loggingService: LoggingService
+
+  constructor() {
+    this.loggingService = new LoggingService(logger)
+  }
+
   /**
    * Class to serialize the persona data for sharing types with Inertia in the create/edit views.
    */
@@ -291,7 +299,8 @@ export default class AdminPersonaController {
   /**
    * Run a simulation with persona test data
    */
-  public async runSimulation({ params, response }: HttpContext) {
+  public async runSimulation(ctx: HttpContext) {
+    const { params, response } = ctx
     try {
       const persona = await Persona.find(params.id)
       if (!persona) {
@@ -325,7 +334,10 @@ export default class AdminPersonaController {
       return response.redirect().toPath(resultsUrl)
     }
     catch (error: any) {
-      console.error('Error running simulation with persona:', error)
+      this.loggingService.logError(error, ctx, {
+        context: 'persona_simulation',
+        personaId: params.id,
+      })
 
       return response.status(500).json({
         success: false,

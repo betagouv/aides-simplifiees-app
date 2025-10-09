@@ -17,7 +17,7 @@ interface Commune {
     libelle_d_acheminement: string
     coordonnees_geographiques: [number, number]
   }[]
-  [key: string]: any
+  // API may return additional fields, but we only use the ones above
 }
 
 // Configuration par défaut pour les différentes fonctions d'autocomplétion

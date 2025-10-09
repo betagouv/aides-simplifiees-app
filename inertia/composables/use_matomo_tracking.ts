@@ -9,6 +9,7 @@ export function useMatomoTracking() {
     if (import.meta.env.SSR) {
       return
     }
+    // Type assertion needed: Matomo's _paq is an external library without TypeScript definitions
     if (typeof window === 'undefined' || !(window as any)._paq) {
       return
     }

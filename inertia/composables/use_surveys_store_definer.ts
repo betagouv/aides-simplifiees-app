@@ -80,7 +80,7 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return Object.keys(currentAnswers).length > 0
     }
 
-    const getAnswer = (simulateurSlug: string, questionId: string): any => {
+    const getAnswer = (simulateurSlug: string, questionId: string): SurveyAnswerValue => {
       const currentAnswers = getAnswers(simulateurSlug)
       const answer = currentAnswers[questionId]
       if (answer === undefined) {
@@ -102,7 +102,7 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       return true
     }
 
-    function setAnswer(simulateurSlug: string, questionId: string, value: any) {
+    function setAnswer(simulateurSlug: string, questionId: string, value: SurveyAnswerValue) {
       // Initialize answers object for this simulateur if it doesn't exist
       if (!answers.value[simulateurSlug]) {
         answers.value[simulateurSlug] = {}
@@ -119,7 +119,7 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       }
     }
 
-    const formatAnswer = (simulateurSlug: string, questionId: string, value: any): string => {
+    const formatAnswer = (simulateurSlug: string, questionId: string, value: SurveyAnswerValue): string => {
       // get choice title
       const question = findQuestionById(simulateurSlug, questionId)
       if (question) {
@@ -131,17 +131,26 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
             return value?.toString() ?? ''
           }
           case 'checkbox': {
-            const choices = question.choices
-              ?.filter((choice) => {
-                return value.includes(choice.id)
-              })
-              .map((choice) => {
-                return choice.title
-              })
-            return choices?.join(', ') ?? ''
+            if (Array.isArray(value)) {
+              const choices = question.choices
+                ?.filter((choice) => {
+                  return value.includes(choice.id)
+                })
+                .map((choice) => {
+                  return choice.title
+                })
+              return choices?.join(', ') ?? ''
+            }
+            return ''
           }
           case 'combobox': {
-            return JSON.parse(value)?.text
+            if (typeof value === 'string') {
+              return JSON.parse(value)?.text ?? value
+            }
+            if (value && typeof value === 'object' && 'text' in value) {
+              return value.text
+            }
+            return ''
           }
         }
         const choice = question.choices?.find((c) => {
@@ -151,7 +160,14 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
           return choice.title
         }
       }
-      return getAnswer(simulateurSlug, questionId)
+      // Fallback: convert to string or return empty
+      const answer = getAnswer(simulateurSlug, questionId)
+      if (answer === null || answer === undefined) return ''
+      if (typeof answer === 'string') return answer
+      if (typeof answer === 'number' || typeof answer === 'boolean') return answer.toString()
+      if (Array.isArray(answer)) return answer.join(', ')
+      if (typeof answer === 'object' && 'text' in answer) return answer.text
+      return ''
     }
 
     /**

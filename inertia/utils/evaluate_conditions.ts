@@ -1,13 +1,13 @@
 /**
  * Evaluates a condition string against a set of answers
  */
-export function evaluateCondition(conditionStr: string, answers: Record<string, any>): boolean {
+export function evaluateCondition(conditionStr: string, answers: SurveyAnswers): boolean {
   if (!conditionStr) {
     return true
   }
 
   // Create a function to get answer values
-  const getAnswerValue = (questionId: string): any => answers[questionId]
+  const getAnswerValue = (questionId: string): SurveyAnswerValue => answers[questionId]
 
   try {
     // Handle logical OR conditions by splitting and evaluating each part
@@ -94,12 +94,12 @@ export function evaluateCondition(conditionStr: string, answers: Record<string, 
         const leftValue = getAnswerValue(leftSide)
 
         // If the question hasn't been answered yet, return false
-        if (leftValue === undefined) {
+        if (leftValue === undefined || leftValue === null) {
           return false
         }
 
-        // Parse right side value
-        let rightValue: any = rightSide
+        // Parse right side value - could be string, number, or boolean
+        let rightValue: string | number | boolean = rightSide
 
         // Convert string 'true'/'false' to boolean if comparing with a boolean value
         if (typeof leftValue === 'boolean' && (rightValue === 'true' || rightValue === 'false')) {
@@ -115,7 +115,7 @@ export function evaluateCondition(conditionStr: string, answers: Record<string, 
         const isLeftDate = typeof leftValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(leftValue)
         const isRightDate = typeof rightValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(rightValue)
 
-        if (isLeftDate && isRightDate) {
+        if (isLeftDate && isRightDate && typeof leftValue === 'string' && typeof rightValue === 'string') {
           const leftDate = new Date(leftValue)
           const rightDate = new Date(rightValue)
 

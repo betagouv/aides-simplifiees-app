@@ -91,8 +91,8 @@ declare global {
     id: string
     description: string
     questionsToApi: string[]
-    answers: Record<string, any>
-    results: Record<string, any>
+    answers: SurveyAnswers
+    results: SimulationResultsAides
   }
 
   interface SurveySchemaBase {

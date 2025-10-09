@@ -6,6 +6,8 @@ import { computed, ref } from 'vue'
 
 export interface PublicodesFormConfig {
   rules: RawPublicodes<string>
+  // Type kept as any: Publicodes situation values can be complex expressions
+  // that don't map cleanly to SurveyAnswerValue
   initialSituation?: Record<string, any>
 }
 
@@ -99,6 +101,8 @@ export function usePublicodesForm(config: PublicodesFormConfig) {
     formState.value = formBuilder.goToPreviousPage(formState.value)
   }
 
+  // Type kept as any: Publicodes evaluation returns complex result types
+  // that don't have proper TypeScript definitions
   const evaluate = (ruleName: string): any => {
     try {
       return formBuilder.evaluate(formState.value, ruleName)

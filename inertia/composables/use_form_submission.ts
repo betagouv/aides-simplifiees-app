@@ -8,7 +8,7 @@ export function useFormSubmission() {
 
   const status = ref<'idle' | 'pending' | 'success' | 'error'>()
 
-  const submit = async (simulateurSlug: string, answers: any, results: SimulationResultsAides): Promise<{
+  const submit = async (simulateurSlug: string, answers: SurveyAnswers, results: SimulationResultsAides): Promise<{
     success: boolean
     hash?: string
   }> => {

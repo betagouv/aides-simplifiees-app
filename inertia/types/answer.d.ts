@@ -1,6 +1,6 @@
 /**
  * Type definitions for survey answer values
- * 
+ *
  * Survey answers can be various types depending on the question type:
  * - string: radio buttons, dates, text inputs
  * - number: numeric inputs
@@ -30,14 +30,14 @@ declare global {
    * - combobox → ComboboxAnswer
    * - unanswered → null | undefined
    */
-  type SurveyAnswerValue =
-    | string
-    | number
-    | boolean
-    | string[]
-    | ComboboxAnswer
-    | null
-    | undefined
+  type SurveyAnswerValue
+    = | string
+      | number
+      | boolean
+      | string[]
+      | ComboboxAnswer
+      | null
+      | undefined
 
   /**
    * Complete set of answers for a survey

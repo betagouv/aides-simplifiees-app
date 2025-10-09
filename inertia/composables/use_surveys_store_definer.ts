@@ -162,11 +162,16 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       }
       // Fallback: convert to string or return empty
       const answer = getAnswer(simulateurSlug, questionId)
-      if (answer === null || answer === undefined) return ''
-      if (typeof answer === 'string') return answer
-      if (typeof answer === 'number' || typeof answer === 'boolean') return answer.toString()
-      if (Array.isArray(answer)) return answer.join(', ')
-      if (typeof answer === 'object' && 'text' in answer) return answer.text
+      if (answer === null || answer === undefined)
+        return ''
+      if (typeof answer === 'string')
+        return answer
+      if (typeof answer === 'number' || typeof answer === 'boolean')
+        return answer.toString()
+      if (Array.isArray(answer))
+        return answer.join(', ')
+      if (typeof answer === 'object' && 'text' in answer)
+        return answer.text
       return ''
     }
 

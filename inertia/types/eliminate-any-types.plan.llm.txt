@@ -44,7 +44,7 @@ Using `any` bypasses TypeScript's type checking, leading to:
 ```typescript
 declare global {
   // Survey answer value - can be various types based on question type
-  type SurveyAnswerValue = 
+  type SurveyAnswerValue =
     | string              // radio, date, text
     | number              // number input
     | boolean             // boolean toggle
@@ -193,10 +193,10 @@ Run all tests to ensure behavior unchanged:
 ## Risks & Considerations
 1. **Breaking Changes**: Type changes may reveal hidden bugs
    - **Mitigation**: Comprehensive testing after each phase
-   
+
 2. **Complex Type Inference**: Some types may be difficult to infer
    - **Mitigation**: Use type guards and assertions where necessary
-   
+
 3. **External Libraries**: Publicodes types may not be fully typed
    - **Mitigation**: Use type assertions with explanatory comments
 

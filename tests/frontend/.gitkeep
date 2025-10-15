@@ -1,0 +1,3 @@
+# Frontend unit tests directory
+# Tests should be placed in subdirectories matching the source structure
+# Example: tests/frontend/utils/openfisca/file.spec.ts

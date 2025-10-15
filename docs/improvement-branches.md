@@ -162,7 +162,54 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ---
 
-### 6. Testing - Expand Coverage
+### ✅ 6. Frontend Unit Testing Infrastructure - COMPLETED (Ready for Merge)
+**Branch**: `feat/vitest-setup`  
+**Status**: ✅ Completed, awaiting merge to llms  
+**Completed**: 2025-11-01  
+**Effort**: 1 day  
+**Priority**: High
+
+**Scope**:
+- ✅ Set up Vitest for frontend unit testing
+- ✅ Configure Vue Test Utils integration
+- ✅ Add test directory structure
+- ✅ Configure coverage reporting
+- ✅ Add npm scripts for testing
+
+**Results**:
+- **Testing Framework**: Vitest with Vue Test Utils
+- **Environment**: happy-dom (lightweight DOM)
+- **Configuration**: Native Vite alias support
+- **Directory**: tests/frontend/ for frontend tests
+- **Commands**: test:frontend, test:frontend:ui, test:frontend:coverage
+
+**Files created**:
+- `vitest.config.ts` (28 lines)
+- `tests/frontend/.gitkeep` (directory marker)
+- `tests/frontend/vitest-setup.plan.llm.txt` (documentation)
+
+**Files modified**:
+- `package.json`: Added Vitest dependencies and scripts
+- `pnpm-lock.yaml`: Locked dependencies
+- `docs/architecture.llm.txt`: Updated testing section
+
+**Dependencies added**:
+- vitest@4.0.6
+- @vue/test-utils@2.4.6
+- happy-dom@20.0.10
+- @vitest/coverage-v8@4.0.6
+
+**Benefits**:
+- Native Vite alias support (resolves ~ imports)
+- Fast unit testing with HMR
+- Separate frontend/backend test environments
+- Vue 3 Composition API support
+- Built-in coverage reporting
+- UI mode for debugging
+
+---
+
+### 7. Testing - Expand Coverage
 **Branch**: `test/expand-coverage`  
 **Effort**: 3 weeks  
 **Priority**: High
@@ -174,15 +221,17 @@ Each improvement from the analysis document gets its own feature branch for:
 - Integration tests for API endpoints
 
 **Files to create**:
-- `tests/unit/openfisca/*.spec.ts`
-- `tests/unit/components/*.spec.ts`
-- `tests/unit/stores/*.spec.ts`
+- `tests/frontend/openfisca/*.spec.ts`
+- `tests/frontend/components/*.spec.ts`
+- `tests/frontend/stores/*.spec.ts`
 
 **Target**: 80% coverage on critical paths
 
+**Note**: Depends on `feat/vitest-setup` branch for testing infrastructure
+
 ---
 
-### 7. OpenFisca Request Builder Refactoring
+### 8. OpenFisca Request Builder Refactoring
 **Branch**: `refactor/openfisca-builder-pattern`  
 **Effort**: 2 weeks  
 **Priority**: High
@@ -204,7 +253,7 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ---
 
-### 8. Monitoring - Error Tracking
+### 9. Monitoring - Error Tracking
 **Branch**: `feat/error-tracking-sentry`  
 **Effort**: 1 week  
 **Priority**: High

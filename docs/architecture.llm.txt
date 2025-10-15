@@ -22,7 +22,7 @@ Aides Simplifiées is a full-stack web application for simulating eligibility to
 ### Build & Tooling
 - **Bundler**: Vite
 - **Package Manager**: pnpm (workspace)
-- **Tests**: Japa (AdonisJS framework) + Playwright (e2e)
+- **Tests**: Japa (backend) + Vitest (frontend) + Playwright (e2e)
 - **Linting**: ESLint
 - **TypeScript**: Strict mode
 
@@ -325,20 +325,34 @@ Always use these aliases for backend imports.
 
 ## Tests
 
-### Unit Tests
-- Framework: Japa
+### Backend Unit Tests
+- Framework: Japa (AdonisJS test framework)
 - Location: `tests/unit/`
+- Command: `pnpm test`
 - Coverage: `pnpm test:coverage`
+- Tests: Controllers, models, services, middleware
+
+### Frontend Unit Tests
+- Framework: Vitest
+- Location: `tests/frontend/`
+- Command: `pnpm test:frontend`
+- UI: `pnpm test:frontend:ui`
+- Coverage: `pnpm test:frontend:coverage`
+- Environment: happy-dom (lightweight DOM implementation)
+- Tests: Utilities, composables, components
+- Features: Native Vite alias support, Vue Test Utils integration
 
 ### E2E Tests
 - Framework: Playwright
 - Location: `tests/e2e/`
 - Browser: Chromium
+- Tests: Full user flows, simulation scenarios
 
 ### Accessibility Tests
 - Based on RGAA 4.1
 - Location: `tests/e2e/03_a11y/`
 - Reports: `reports/accessibility/`
+- Command: `pnpm test:a11y`
 
 ## Deployment
 

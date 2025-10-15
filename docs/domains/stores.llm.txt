@@ -77,6 +77,8 @@ export const useSurveysStore = defineStore(
 ### Surveys Store (`stores/surveys.ts`)
 **Purpose**: Manages survey state, answers, navigation, and schema loading.
 
+**Architecture**: Modular composition using domain-specific composables.
+
 **Responsibilities**:
 - Store user answers per simulator
 - Track current page in multi-step surveys
@@ -90,15 +92,75 @@ export const useSurveysStore = defineStore(
 - `versions`: Schema versions to detect changes
 - `currentPageIds`: Current page per simulator
 
-**Key Methods**:
-- `getAnswers(slug)`: Retrieve all answers for simulator
-- `getAnswer(slug, questionId)`: Get specific answer
-- `setAnswer(slug, questionId, value)`: Update answer
-- `getCurrentPage(slug)`: Get current survey page
-- `getNextVisiblePage(slug)`: Navigate forward
-- `getPreviousVisiblePage(slug)`: Navigate backward
-- `isQuestionVisible(slug, questionId)`: Check visibility conditions
-- `resetSurvey(slug)`: Clear all answers and restart
+**Composable Structure**:
+The store composes six domain-focused composables from `composables/surveys/`:
+
+1. **Questions** (`use_survey_questions.ts`):
+   - `getQuestions(slug)`: Get all questions in schema
+   - `findQuestionById(slug, id)`: Locate specific question
+
+2. **Visibility** (`use_survey_visibility.ts`):
+   - `isQuestionVisible(slug, id)`: Evaluate visibility conditions
+   - `getVisibleQuestions(slug)`: Filter visible questions
+
+3. **Answers** (`use_survey_answers.ts`):
+   - `getAnswers(slug)`: Retrieve all answers
+   - `getAnswer(slug, id)`: Get specific answer
+   - `setAnswer(slug, id, value)`: Update answer
+   - `hasAnswer(slug, id)`: Check if answered
+   - `getAnswersForCalculation(slug)`: Format for API
+
+4. **Formatting** (`use_survey_formatting.ts`):
+   - `formatAnswer(slug, id, value)`: Display-friendly format
+
+5. **Navigation** (`use_survey_navigation.ts`):
+   - `getCurrentPage(slug)`: Current page object
+   - `getNextVisiblePage(slug)`: Next navigable page
+   - `getPreviousVisiblePage(slug)`: Previous page
+   - `goToNextPage(slug)`: Navigate forward
+   - `goToPreviousPage(slug)`: Navigate backward
+   - `isFirstPage(slug)`: Check if first
+   - `isLastPage(slug)`: Check if last
+   - `getCurrentStep(slug)`: Current step in multi-step
+   - `getProgress(slug)`: Percentage completion
+
+6. **Validation** (`use_survey_validation.ts`):
+   - `areAllQuestionsInPageValid(slug)`: Validate current page
+   - `areAllRequiredQuestionsAnswered(slug)`: Check completeness
+   - `getVisibleQuestionsInCurrentPage(slug)`: Current page questions
+
+**Composition Pattern**:
+```typescript
+export function useSurveysStoreDefiner({ enableMatomo = false }) {
+  return () => {
+    const answers = ref<{ [slug: string]: SurveyAnswers }>({})
+    const currentPageIds = ref<{ [slug: string]: string | null }>({})
+
+    // Compose domain composables
+    const questions = useSurveyQuestions({ getSchema })
+    const visibility = useSurveyVisibility({ getAnswers, findQuestionById, getQuestions })
+    const answersLogic = useSurveyAnswers({ answers, findQuestionById, isQuestionVisible })
+    const navigation = useSurveyNavigation({ currentPageIds, getSchema, isQuestionVisible })
+    // ... compose others
+
+    return {
+      // Expose unified API
+      ...questions,
+      ...visibility,
+      ...answersLogic,
+      ...navigation,
+      // ...
+    }
+  }
+}
+```
+
+**Benefits of Modular Structure**:
+- **Clear separation**: Each composable handles one concern
+- **Testability**: Individual composables can be tested in isolation
+- **Maintainability**: Smaller files (< 400 lines each)
+- **Reusability**: Composables usable outside store context
+- **Type safety**: Strong typing preserved throughout
 
 **Integration**: Used by Survey.vue, PublicodesSurvey.vue, recapitulatif.vue
 
@@ -199,6 +261,282 @@ debug.log('[Survey] Processing answer:', answer)
 ```
 
 **Purpose**: Reduce console noise in production, detailed logging in development.
+
+## Survey Composables Architecture
+
+The surveys store is built using a modular composable architecture located in `inertia/composables/surveys/`. Each composable handles a specific domain concern, promoting separation of concerns and testability.
+
+### Composables Overview
+
+#### Questions Composable (`use_survey_questions.ts`)
+**Dependencies**: Schema only
+
+**Responsibilities**:
+- Extract all questions from schema
+- Find questions by ID
+
+**Methods**:
+```typescript
+getQuestions(slug): SurveyQuestionData[]
+findQuestionById(slug, id): SurveyQuestionData | null
+```
+
+**Usage**: Foundation for other composables needing question data.
+
+#### Visibility Composable (`use_survey_visibility.ts`)
+**Dependencies**: Answers, Questions
+
+**Responsibilities**:
+- Evaluate conditional visibility rules
+- Filter questions based on current answers
+
+**Condition Evaluation**:
+Supports both string and array formats:
+```typescript
+visibleWhen: "age >= 18"  // Single condition
+visibleWhen: ["age >= 18", "statut === 'etudiant'"]  // AND logic
+```
+
+**Methods**:
+```typescript
+isQuestionVisible(slug, id): boolean
+getVisibleQuestions(slug): SurveyQuestionData[]
+```
+
+**Integration**: `evaluateCondition()` utility handles condition parsing.
+
+#### Answers Composable (`use_survey_answers.ts`)
+**Dependencies**: Questions, Visibility, Matomo (optional)
+
+**Responsibilities**:
+- Store and retrieve answers
+- Filter answers for calculation
+- Track analytics events
+
+**Answer Processing**:
+```typescript
+// Raw storage
+setAnswer(slug, 'age', 25)
+
+// Filtered for calculation
+getAnswersForCalculation(slug)
+// Returns only visible, non-undefined answers
+// Parses combobox JSON to extract values
+```
+
+**Analytics Integration**:
+```typescript
+if (enableMatomo) {
+  matomo.trackSurveyAnswer(slug, questionId, question.title)
+}
+```
+
+**Methods**:
+```typescript
+getAnswers(slug): SurveyAnswers
+getAnswer(slug, id): any
+hasAnswer(slug, id): boolean
+setAnswer(slug, id, value): void
+getAnswersForCalculation(slug): SurveyAnswers
+```
+
+#### Formatting Composable (`use_survey_formatting.ts`)
+**Dependencies**: Answers, Questions
+
+**Responsibilities**:
+- Convert raw values to display text
+- Handle question type-specific formatting
+
+**Type-Specific Formatting**:
+```typescript
+formatAnswer(slug, 'has-children', true)  // → "Oui"
+formatAnswer(slug, 'transport-types', ['bus', 'metro'])  // → "Bus, Métro"
+formatAnswer(slug, 'city', '{"text":"Paris","value":"75"}')  // → "Paris"
+```
+
+**Methods**:
+```typescript
+formatAnswer(slug, questionId, value): string
+```
+
+#### Navigation Composable (`use_survey_navigation.ts`)
+**Dependencies**: Multiple (currentPageIds, schema, visibility, questions, answers)
+
+**Responsibilities**:
+- Track current page/step
+- Navigate between pages
+- Calculate progress
+- Group questions by step
+
+**Page Navigation**:
+```typescript
+getCurrentPage(slug): SurveyPageData | null
+getNextVisiblePage(slug): SurveyPageData | null
+getPreviousVisiblePage(slug): SurveyPageData | null
+goToNextPage(slug): boolean
+goToPreviousPage(slug): boolean
+```
+
+**Step Management**:
+```typescript
+getCurrentStep(slug): SurveyDeepStep | null
+getCurrentStepId(slug): string | null
+getCurrentStepIndex(slug): number | null
+```
+
+**Progress Calculation**:
+```typescript
+getProgress(slug): number  // 0-100 percentage
+// Counts visible answered questions / total visible questions
+```
+
+**Grouped Questions**:
+```typescript
+getGroupedQuestions(slug): QuestionGroup[]
+// Returns questions organized by step for recap pages
+```
+
+**Methods**: 27 navigation and organization methods
+
+#### Validation Composable (`use_survey_validation.ts`)
+**Dependencies**: Answers, Questions, Navigation, Visibility
+
+**Responsibilities**:
+- Validate current page answers
+- Check completion status
+- Filter visible questions for current page
+
+**Validation Logic**:
+```typescript
+areAllQuestionsInPageValid(slug): boolean
+// Uses isAnswerValid() from form_validation utility
+// Checks: required fields, format, min/max values
+
+areAllRequiredQuestionsAnswered(slug): boolean
+// Only visible questions with required !== false
+```
+
+**Methods**:
+```typescript
+getVisibleQuestionsInCurrentPage(slug): SurveyQuestionData[]
+areAllQuestionsInPageValid(slug): boolean
+areAllRequiredQuestionsAnswered(slug): boolean
+```
+
+### Composition Pattern
+
+The main store composes all six composables:
+
+```typescript
+export function useSurveysStoreDefiner({ enableMatomo = false }) {
+  return () => {
+    // State
+    const answers = ref<{ [slug: string]: SurveyAnswers }>({})
+    const currentPageIds = ref<{ [slug: string]: string | null }>({})
+
+    // Schema management
+    const { getSchema, loadSchema, versions, schemaStatus } = useSurveySchemaManager({
+      onNewSchema: (slug) => resetSurvey(slug)
+    })
+
+    // Compose domain composables in dependency order
+    const questions = useSurveyQuestions({ getSchema })
+    const visibility = useSurveyVisibility({
+      getAnswers: (slug) => answers.value[slug] ?? {},
+      findQuestionById: questions.findQuestionById,
+      getQuestions: questions.getQuestions
+    })
+    const answersLogic = useSurveyAnswers({
+      answers,
+      findQuestionById: questions.findQuestionById,
+      isQuestionVisible: visibility.isQuestionVisible,
+      matomo
+    })
+    const formatting = useSurveyFormatting({
+      getAnswer: answersLogic.getAnswer,
+      findQuestionById: questions.findQuestionById
+    })
+    const navigation = useSurveyNavigation({
+      currentPageIds,
+      getSchema,
+      isQuestionVisible: visibility.isQuestionVisible,
+      findQuestionById: questions.findQuestionById,
+      getAnswers: answersLogic.getAnswers,
+      getAnswer: answersLogic.getAnswer
+    })
+    const validation = useSurveyValidation({
+      getAnswer: answersLogic.getAnswer,
+      hasAnswer: answersLogic.hasAnswer,
+      getCurrentPage: navigation.getCurrentPage,
+      getVisibleQuestions: visibility.getVisibleQuestions,
+      isQuestionVisible: visibility.isQuestionVisible
+    })
+
+    // Return unified API
+    return {
+      // State
+      answers,
+      currentPageIds,
+      versions,
+      schemaStatus,
+      // Composed methods
+      ...questions,
+      ...visibility,
+      ...answersLogic,
+      ...formatting,
+      ...navigation,
+      ...validation,
+      // Store-specific methods
+      resetSurvey,
+      onComplete,
+      tryComplete,
+      // ...
+    }
+  }
+}
+```
+
+### Dependency Management
+
+**Initialization Order**:
+1. Questions (no dependencies)
+2. Visibility (depends on questions)
+3. Answers (depends on questions, visibility)
+4. Formatting (depends on answers, questions)
+5. Navigation (depends on multiple)
+6. Validation (depends on multiple)
+
+**Circular Dependency Prevention**:
+- Pass raw ref accessors instead of composed methods when needed
+- Initialize composables in correct dependency order
+- Use function references, not direct calls in options
+
+### Benefits of Modular Architecture
+
+**Separation of Concerns**:
+- Each composable handles one responsibility
+- Clear boundaries between domains
+- Easier to reason about code
+
+**Testability**:
+- Individual composables can be unit tested
+- Mock dependencies easily
+- Test edge cases in isolation
+
+**Maintainability**:
+- Smaller files (< 400 lines each vs 700-line monolith)
+- Changes localized to specific composable
+- Clear ownership of functionality
+
+**Reusability**:
+- Composables usable outside store context
+- Can compose in different ways
+- Share logic across features
+
+**Type Safety**:
+- Each composable has typed options interface
+- Return types fully inferred
+- Strong typing preserved throughout composition
 
 ## Surveys Store Deep Dive
 

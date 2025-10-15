@@ -126,9 +126,7 @@ declare global {
 
   type SurveyNormalizedSchema = OpenFiscaNormalizedSchema | PublicodesNormalizedSchema
 
-  interface SurveyAnswers {
-    [key: string]: string | string[] | number | boolean | undefined
-  }
+  // SurveyAnswers type is defined in answer.d.ts
 
   // Type guards for discriminating union types
   function isOpenFiscaSchema(schema: SurveySchema): schema is OpenFiscaSurveySchema {

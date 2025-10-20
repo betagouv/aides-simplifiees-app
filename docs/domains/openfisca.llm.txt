@@ -209,27 +209,61 @@ Results presented to user in simulator results page:
 ## Technical Patterns
 
 ### Request Builder Pattern
-Centralized function builds complex nested structure:
+The request building process uses a Builder pattern with entity managers to construct the complex nested OpenFisca request structure. The architecture separates concerns into specialized components:
+
+**OpenFiscaRequestBuilder**: Main builder class with fluent API
+```typescript
+const builder = new OpenFiscaRequestBuilder({ allowUndefinedValues: true })
+builder.addAnswer('statut-professionnel', 'etudiant')
+       .addAnswer('loyer', 600)
+const result = builder.build()
+```
+
+**MappingResolver**: Resolves form answer keys to OpenFisca variable mappings
+- Combines variables from all four entity types
+- Determines which entity a variable belongs to
+- Returns mapping object or null for unknown keys
+
+**EntityManager**: Base class for entity-specific logic
+- Manages variables for one entity type (individu, menage, etc.)
+- Handles variable conflicts and updates
+- Collects entity-specific errors
+- Resolves periods for variables
+
+**Concrete Entity Managers**:
+- `IndividuManager`: Manages individual entity variables
+- `MenageManager`: Manages household entity with member lists
+- `FoyerFiscalManager`: Manages tax household entity
+- `FamilleManager`: Manages family entity
+
+**Facade Integration**: `buildCalculationRequest()` uses the builder internally while maintaining backward compatibility:
 ```typescript
 function buildCalculationRequest(
-  answers: Record<string, any>,
-  questionsToApi: string[]
+  answers: SurveyAnswers,
+  questions: string[]
 ): OpenFiscaCalculationRequest {
-  const request = initRequest()
-
-  for (const [key, value] of Object.entries(answers)) {
-    processAnswer(request, key, value)
-  }
-
+  // Use builder for answer processing
+  const builder = new OpenFiscaRequestBuilder({ allowUndefinedValues: true })
+  builder.addAnswers(answers)
+  const result = builder.build()
+  
+  // Apply legacy business logic
+  let request = result.success ? result.request : fallbackMethod()
+  request = addScolariteBusinessLogic(request, answers)
+  request = addQuestionsToRequest(request, questions)
+  request = clampInputsInRequest(request)
+  
   return request
 }
 ```
 
 **Benefits**:
-- Single source of truth for transformation logic
-- Validates all inputs before API call
-- Handles complex entity relationships
-- Provides clear error messages
+- Modular architecture with clear separation of concerns
+- Each component independently testable
+- Centralized error collection across all entities
+- Type-safe with discriminated union result types
+- Easy to extend with new entity types or mappings
+- Backward compatible through facade pattern
 
 ### Dispatcher Pattern
 Complex mappings use dispatcher functions for conditional logic:
@@ -427,13 +461,24 @@ if (locapass_eligibilite === true) → 1200€
 ## Key Code Locations
 
 ### Utilities
-- `inertia/utils/openfisca/build_calculation_request.ts`: Request builder
+- `inertia/utils/openfisca/build_calculation_request.ts`: Request builder facade (uses builder internally)
 - `inertia/utils/openfisca/beautify_results.ts`: Result extraction
 - `inertia/utils/openfisca/constants.ts`: Entity IDs, enums, defaults
 - `inertia/utils/openfisca/date_periods.ts`: Period calculation
 - `inertia/utils/openfisca/errors.ts`: Custom error classes
 - `inertia/utils/openfisca/formatters.ts`: Value formatters
 - `inertia/utils/openfisca/standardize_birth_date.ts`: Date normalization
+
+### Request Builder Components
+- `inertia/utils/openfisca/request-builder/request_builder.ts`: Main builder class (361 lines)
+- `inertia/utils/openfisca/request-builder/mapping_resolver.ts`: Answer key to mapping resolution (89 lines)
+- `inertia/utils/openfisca/request-builder/entity_manager.ts`: Base class for entity managers (131 lines)
+- `inertia/utils/openfisca/request-builder/individu_manager.ts`: Individual entity manager (72 lines)
+- `inertia/utils/openfisca/request-builder/menage_manager.ts`: Household entity manager (119 lines)
+- `inertia/utils/openfisca/request-builder/foyer_fiscal_manager.ts`: Tax household entity manager (114 lines)
+- `inertia/utils/openfisca/request-builder/famille_manager.ts`: Family entity manager (112 lines)
+- `inertia/utils/openfisca/request-builder/types.ts`: Builder type definitions (59 lines)
+- `inertia/utils/openfisca/request-builder/index.ts`: Export barrel
 
 ### Mappings
 - `inertia/utils/openfisca/variables.ts`: Form → API mappings (request)
@@ -521,10 +566,24 @@ const unmapped = formQuestions.filter(q => !mappedVariables.includes(q))
 - User sees error message, not infinite loading
 
 ### Testing Considerations
-**Mock API**: Use mock server for tests
+**Backend Tests (Japa)**: Unit tests for controllers and API integration
+**Frontend Tests (Vitest)**: Unit tests for builder components and utilities
+**E2E Tests (Playwright)**: Full simulation flows with real API calls
+**Mock API**: Use mock server for unit tests
 **Fixtures**: Store sample requests/responses
 **Validation**: Test mapping completeness
 **Edge Cases**: Test boundary values, empty inputs
+
+### Test Files
+- `tests/frontend/utils/openfisca/request_builder.spec.ts`: Builder unit tests (15 tests)
+  - Initialization and empty state
+  - Adding answers (single, multiple, chaining)
+  - Value handling (undefined, null, ComboboxAnswer, arrays)
+  - Error collection and tracking
+  - Request state inspection
+  - Options configuration
+- `tests/unit/controllers/api/openfisca_controller.spec.ts`: API controller tests
+- `tests/e2e/02_simulation.spec.ts`: End-to-end simulation flows
 
 ## Related Domains
 

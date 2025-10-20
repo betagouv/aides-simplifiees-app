@@ -488,7 +488,7 @@ function clampInputsInRequest(request: OpenFiscaCalculationRequest) {
  * This function uses the OpenFiscaRequestBuilder internally but maintains
  * backward compatibility with the original API. It processes answers through
  * the builder pattern for better error handling and testability, then applies
- * legacy business logic for questions and input clamping.
+ * legacy business logic for input clamping.
  *
  * @param answers - Survey answers to process
  * @param questions - Questions to add to the request (for calculation)
@@ -498,9 +498,10 @@ export function buildCalculationRequest(
   answers: SurveyAnswers,
   questions: string[],
 ): OpenFiscaCalculationRequest {
-  // Use the new builder for answers processing
+  // Use the new builder for answers and questions processing
   const builder = new OpenFiscaRequestBuilder({ allowUndefinedValues: true })
   builder.addAnswers(answers)
+  builder.addQuestions(questions)
 
   const result = builder.build()
 
@@ -514,13 +515,11 @@ export function buildCalculationRequest(
     console.warn('OpenFiscaRequestBuilder failed, falling back to legacy method', result.errors)
     request = initRequest()
     request = addAnswersToRequest(request, answers)
+    request = addQuestionsToRequest(request, questions)
   }
 
   // Apply legacy business logic for scholarship
   request = addScolariteBusinessLogic(request, answers)
-
-  // Add questions (not yet migrated to builder)
-  request = addQuestionsToRequest(request, questions)
 
   // Clamp inputs (not yet migrated to builder)
   request = clampInputsInRequest(request)

@@ -7,7 +7,7 @@ import { EntityManager } from './entity_manager.js'
 interface FamilleEntity {
   parents: string[]
   enfants: string[]
-  [variable: string]: VariableValueOnPeriod | string[]
+  [variable: string]: VariableValueOnPeriod | VariableToCalculateOnPeriod | string[]
 }
 
 /**
@@ -30,13 +30,13 @@ export class FamilleManager extends EntityManager {
    * Add a variable to the famille entity
    *
    * @param variableName - OpenFisca variable name
-   * @param value - Variable value
+   * @param value - Variable value (null for questions that need calculation)
    * @param period - Period for the variable
    * @param answerKey - Original answer key (for error tracking)
    */
   addVariable(
     variableName: string,
-    value: boolean | number | string,
+    value: boolean | number | string | null,
     period: string,
     answerKey: string,
   ): void {
@@ -48,13 +48,19 @@ export class FamilleManager extends EntityManager {
       return
     }
 
+    // For questions (value is null), create variable to calculate
+    if (value === null) {
+      this.entity[variableName] = { [period]: null }
+      return
+    }
+
     if (existingVariable && !Array.isArray(existingVariable)) {
       const existingValue = existingVariable[period]
 
       if (this.shouldUpdateVariable(variableName, existingValue, value, answerKey)) {
-        this.entity[variableName] = { [period]: value }
+        this.entity[variableName] = { [period]: value } as VariableValueOnPeriod
       }
-      else if (existingValue !== undefined) {
+      else if (existingValue !== undefined && existingValue !== null) {
         this.logVariableConflict(variableName, existingValue, value, answerKey)
         this.addError({
           type: 'MAPPING_ERROR',
@@ -67,12 +73,12 @@ export class FamilleManager extends EntityManager {
         this.entity[variableName] = {
           ...existingVariable,
           [period]: value,
-        }
+        } as VariableValueOnPeriod
       }
     }
     else {
       // First time setting this variable
-      this.entity[variableName] = { [period]: value }
+      this.entity[variableName] = { [period]: value } as VariableValueOnPeriod
     }
   }
 

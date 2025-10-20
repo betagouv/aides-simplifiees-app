@@ -261,6 +261,81 @@ export class OpenFiscaRequestBuilder {
   }
 
   /**
+   * Add a question to the request for calculation
+   *
+   * Questions are special OpenFisca variables that should be calculated
+   * (e.g., 'apl', 'aide_mobilite_master'). They don't have answer values
+   * but need to be added to the request with empty period objects to
+   * trigger OpenFisca calculation.
+   *
+   * @param questionKey - Question key (e.g., 'aide-personnalisee-logement')
+   * @returns This builder instance for chaining
+   */
+  addQuestion(questionKey: string): this {
+    // Resolve mapping
+    const mapping = this.resolver.resolve(questionKey)
+    if (!mapping) {
+      this.addError({
+        type: 'UNKNOWN_VARIABLE',
+        message: `No mapping found for question key: ${questionKey}`,
+        answerKey: questionKey,
+      })
+      return this
+    }
+
+    // Only direct mappings are supported for questions
+    if (!('openfiscaVariableName' in mapping)) {
+      this.addError({
+        type: 'MAPPING_ERROR',
+        message: `Question key must have direct mapping: ${questionKey}`,
+        answerKey: questionKey,
+      })
+      return this
+    }
+
+    // Resolve entity
+    const entityId = this.resolver.resolveEntity(questionKey)
+    if (entityId === UNDEFINED_ENTITY_ID) {
+      this.addError({
+        type: 'UNKNOWN_ENTITY',
+        message: `No entity found for question key: ${questionKey}`,
+        answerKey: questionKey,
+      })
+      return this
+    }
+
+    // Get the entity manager
+    const manager = this.getEntityManager(entityId)
+    if (!manager) {
+      this.addError({
+        type: 'UNKNOWN_ENTITY',
+        message: `No entity manager found for entity ID: ${entityId}`,
+        answerKey: questionKey,
+      })
+      return this
+    }
+
+    // Add question to entity (using null as value to indicate it's a question)
+    const period = getCurrentPeriod(mapping.period)
+    manager.addVariable(mapping.openfiscaVariableName, null, period, questionKey)
+
+    return this
+  }
+
+  /**
+   * Add multiple questions to the request
+   *
+   * @param questions - Array of question keys
+   * @returns This builder instance for chaining
+   */
+  addQuestions(questions: string[]): this {
+    for (const questionKey of questions) {
+      this.addQuestion(questionKey)
+    }
+    return this
+  }
+
+  /**
    * Add a build error
    *
    * @param error - Build error to add

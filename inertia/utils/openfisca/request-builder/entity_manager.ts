@@ -22,21 +22,22 @@ export abstract class EntityManager {
    * Add a variable to the entity
    *
    * @param variableName - OpenFisca variable name
-   * @param value - Variable value
+   * @param value - Variable value (null for questions that need calculation)
    * @param period - Period for the variable
    * @param answerKey - Original answer key (for error tracking)
    */
   abstract addVariable(
     variableName: string,
-    value: boolean | number | string,
+    value: boolean | number | string | null,
     period: string,
     answerKey: string,
   ): void
 
   /**
    * Get the entity data structure
+   * Can contain both values and variables to calculate (questions)
    */
-  abstract getEntity(): Record<string, unknown>
+  abstract getEntity(): Record<string, VariableValueOnPeriod | VariableToCalculateOnPeriod | unknown>
 
   /**
    * Check if a variable should be updated based on business rules

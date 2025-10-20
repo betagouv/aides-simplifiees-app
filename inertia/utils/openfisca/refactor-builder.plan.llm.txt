@@ -66,13 +66,20 @@ The `build_calculation_request.ts` file (493 lines) has high cyclomatic complexi
 3. [ ] Maintain backward compatibility if needed
 
 ### Phase 6: Testing
-1. [ ] Unit tests for RequestBuilder (deferred - will test via integration)
-2. [ ] Unit tests for EntityManagers (deferred - will test via integration)
-3. [ ] Unit tests for MappingResolver (deferred - will test via integration)
-4. [ ] Integration tests with full request building (via existing E2E tests)
-5. [ ] Verify all existing 127 E2E tests pass
+1. [x] Set up Vitest for frontend testing
+2. [x] Unit tests for RequestBuilder (15 tests passing)
+   - initialization (2 tests)
+   - adding answers (3 tests)
+   - value handling (4 tests)
+   - error handling (4 tests)
+   - request state (1 test)
+   - options (1 test)
+3. [ ] Unit tests for EntityManagers (future)
+4. [ ] Unit tests for MappingResolver (future)
+5. [ ] Integration tests with full request building (via existing E2E tests)
+6. [ ] Verify all existing 127 E2E tests pass
 
-**Note**: Direct unit tests are deferred because inertia/ files use Vite `~` aliases which don't work in backend test runner. The builder will be thoroughly tested through E2E tests once integrated into the existing `build_calculation_request.ts` facade.
+**Note**: Vitest successfully set up and working! Can now test frontend utilities, composables, and components with native Vite alias support.
 
 ## Proposed Architecture
 
@@ -200,5 +207,21 @@ After user validation:
   * Fixed all imports to use relative paths (.js extensions) instead of Vite ~ aliases
     - Necessary because builder files are in inertia/ but need to work in test environment
   * All files compile successfully
+- 2025-11-01: Completed Phase 6 (Testing Setup)
+  * ✅ Set up Vitest for frontend unit testing
+  * Installed: vitest, @vue/test-utils, happy-dom, @vitest/coverage-v8
+  * Created vitest.config.ts with Vite alias support (~)
+  * Created tests/frontend/ directory structure
+  * Created comprehensive test suite for OpenFiscaRequestBuilder
+  * **15/15 tests passing** covering:
+    - Initialization and empty state
+    - Adding single and multiple answers
+    - Method chaining
+    - Value type handling (undefined, null, ComboboxAnswer, arrays)
+    - Error collection and tracking
+    - Request state inspection
+    - Options configuration
+  * Added npm scripts: test:frontend, test:frontend:ui, test:frontend:coverage, test:all
+  * Frontend testing now fully functional with native Vite support!
 
 ```

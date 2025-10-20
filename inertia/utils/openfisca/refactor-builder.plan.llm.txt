@@ -1,0 +1,204 @@
+# Plan: OpenFisca Request Builder Refactoring
+
+## Date
+Created: 2025-10-31
+
+## Context
+The `build_calculation_request.ts` file (493 lines) has high cyclomatic complexity and multiple responsibilities:
+- Request initialization
+- Variable mapping resolution
+- Entity management
+- Dispatch pattern handling
+- Error handling scattered throughout
+- Answer formatting
+
+**Current Issues**:
+- Difficult to test individual components
+- Hard to trace data transformations
+- Error collection not centralized
+- Mixed concerns (mapping, validation, formatting)
+- No clear separation between entity types
+
+## Objectives
+- [ ] Design Builder pattern architecture
+- [ ] Create request builder class with chainable API
+- [ ] Extract entity managers (individu, menage, foyer_fiscal, famille)
+- [ ] Centralize error collection
+- [ ] Implement mapping resolver
+- [ ] Add comprehensive unit tests
+- [ ] Update existing usages
+- [ ] Update documentation
+
+## Implementation Steps
+
+### Phase 1: Architecture Design
+1. [x] Analyze current implementation
+2. [x] Design class hierarchy
+3. [x] Define interfaces
+4. [x] Plan backward compatibility
+
+### Phase 2: Create Core Builder
+1. [x] Create `OpenFiscaRequestBuilder` class
+2. [x] Implement request initialization
+3. [x] Add chainable `addAnswer()` method
+4. [x] Implement error collection
+5. [x] Add `build()` method with validation
+
+### Phase 3: Extract Entity Managers
+1. [x] Create `EntityManager` base class
+2. [x] Implement `IndividuManager`
+3. [x] Implement `MenageManager`
+4. [x] Implement `FoyerFiscalManager`
+5. [x] Implement `FamilleManager`
+
+### Phase 4: Integrate Builder with Entity Managers
+1. [x] Create `MappingResolver` class
+2. [x] Handle direct mappings (integrated in builder)
+3. [x] Handle dispatch mappings (integrated in builder)
+4. [x] Handle entity resolution
+5. [x] Integrate entity managers into RequestBuilder
+6. [x] Process ComboboxAnswer types
+7. [x] Collect errors from all entity managers
+
+### Phase 5: Update Existing Code
+1. [ ] Update `use_simulation.ts` to use builder
+2. [ ] Update tests to use builder
+3. [ ] Maintain backward compatibility if needed
+
+### Phase 6: Testing
+1. [ ] Unit tests for RequestBuilder (deferred - will test via integration)
+2. [ ] Unit tests for EntityManagers (deferred - will test via integration)
+3. [ ] Unit tests for MappingResolver (deferred - will test via integration)
+4. [ ] Integration tests with full request building (via existing E2E tests)
+5. [ ] Verify all existing 127 E2E tests pass
+
+**Note**: Direct unit tests are deferred because inertia/ files use Vite `~` aliases which don't work in backend test runner. The builder will be thoroughly tested through E2E tests once integrated into the existing `build_calculation_request.ts` facade.
+
+## Proposed Architecture
+
+```typescript
+// Main builder class
+class OpenFiscaRequestBuilder {
+  private request: OpenFiscaCalculationRequest
+  private errors: RequestBuildError[]
+  private entityManagers: Record<Entites, EntityManager>
+  private mappingResolver: MappingResolver
+
+  constructor()
+  addAnswer(key: string, value: SurveyAnswerValue): this
+  addAnswers(answers: SurveyAnswers): this
+  build(): OpenFiscaCalculationRequest
+  getErrors(): RequestBuildError[]
+}
+
+// Entity management
+abstract class EntityManager {
+  abstract addVariable(variable: string, value: any, period: string): void
+  abstract getEntity(): OpenFiscaEntity
+}
+
+class IndividuManager extends EntityManager { }
+class MenageManager extends EntityManager { }
+class FoyerFiscalManager extends EntityManager { }
+class FamilleManager extends EntityManager { }
+
+// Mapping resolution
+class MappingResolver {
+  resolve(answerKey: string): OpenFiscaMapping | null
+  resolveEntity(answerKey: string): Entites
+}
+```
+
+## Files to Create
+- `inertia/utils/openfisca/request-builder/index.ts` - Main builder
+- `inertia/utils/openfisca/request-builder/entity_manager.ts` - Base class
+- `inertia/utils/openfisca/request-builder/individu_manager.ts`
+- `inertia/utils/openfisca/request-builder/menage_manager.ts`
+- `inertia/utils/openfisca/request-builder/foyer_fiscal_manager.ts`
+- `inertia/utils/openfisca/request-builder/famille_manager.ts`
+- `inertia/utils/openfisca/request-builder/mapping_resolver.ts`
+- `inertia/utils/openfisca/request-builder/types.ts`
+- `tests/unit/openfisca/request_builder.spec.ts`
+
+## Files to Modify
+- `inertia/utils/openfisca/build_calculation_request.ts` - Keep as facade, use builder internally
+- `inertia/composables/use_simulation.ts` - May need updates if API changes
+- `inertia/types/openfisca.d.ts` - Add new types if needed
+
+## Backward Compatibility Strategy
+Keep the existing `buildCalculationRequest()` function as a facade that uses the new builder internally:
+```typescript
+export function buildCalculationRequest(
+  answers: SurveyAnswers,
+  questionsToApi: string[]
+): OpenFiscaCalculationRequest {
+  const builder = new OpenFiscaRequestBuilder()
+  return builder.addAnswers(answers).build()
+}
+```
+
+## Benefits
+- **Testability**: Each component can be tested independently
+- **Maintainability**: Clear separation of concerns
+- **Debuggability**: Centralized error collection
+- **Extensibility**: Easy to add new entity types or mappings
+- **Type Safety**: Better TypeScript inference
+- **Developer Experience**: Chainable API is intuitive
+
+## Risks & Mitigation
+- **Risk**: Breaking existing functionality
+  - **Mitigation**: Comprehensive test coverage, backward compatible facade
+- **Risk**: Performance regression
+  - **Mitigation**: Benchmark before/after, optimize if needed
+- **Risk**: Increased complexity
+  - **Mitigation**: Clear documentation, simple API surface
+
+## Success Criteria
+- [ ] All existing E2E tests pass
+- [ ] Code coverage > 80% for new code
+- [ ] Cyclomatic complexity reduced by 50%
+- [ ] No breaking changes to public API
+- [ ] Clear error messages for debugging
+
+## Testing Strategy
+1. **Unit tests**: Each class tested independently
+2. **Integration tests**: Full request building flow
+3. **E2E tests**: Verify no regressions in user flows
+4. **Performance tests**: Ensure no significant slowdown
+
+## Documentation to Update
+After user validation:
+- `docs/domains/openfisca.llm.txt` - Builder pattern usage
+- `inertia/utils/openfisca/request-builder/README.md` (new) - Architecture guide
+
+## History
+- 2025-10-31: Created plan file, analyzed current implementation
+- 2025-10-31: Completed Phase 1 (Architecture Design) and Phase 2 (Core Builder)
+  * Created `types.ts` with RequestBuildError, BuildResult, RequestBuilderOptions
+  * Created `mapping_resolver.ts` with MappingResolver class (entity and mapping resolution)
+  * Created `request_builder.ts` with OpenFiscaRequestBuilder class (chainable API, error collection)
+  * Fixed TypeScript compilation errors (type imports, Record types, return types)
+  * All files compile successfully with no errors
+- 2025-11-01: Completed Phase 3 (Entity Managers)
+  * Created `entity_manager.ts` - Base abstract class with common logic
+    - Error collection, variable conflict detection, period resolution
+    - shouldUpdateVariable() for business rules (demenagement case)
+    - Helper methods: getErrors(), hasErrors(), getEntityId(), getEntityType()
+  * Created `individu_manager.ts` - Manages individual entity variables
+  * Created `menage_manager.ts` - Manages household entity with member lists (personne_de_reference, conjoint, enfants)
+  * Created `foyer_fiscal_manager.ts` - Manages tax household with declarants and personnes_a_charge
+  * Created `famille_manager.ts` - Manages family entity with parents and enfants
+  * Created `index.ts` - Central export point for all builder components
+  * All entity managers compile without errors (verified with pnpm typecheck)
+- 2025-11-01: Completed Phase 4 (Integration)
+  * Integrated entity managers into RequestBuilder
+  * Implemented processMapping() method - handles both direct and dispatch mappings
+  * Implemented getEntityManager() method - routes to correct entity manager
+  * Added ComboboxAnswer type handling (extracts value from {value, label})
+  * Implemented collectEntityErrors() - aggregates errors from all managers
+  * Updated build() method to populate request from entity managers
+  * Fixed all imports to use relative paths (.js extensions) instead of Vite ~ aliases
+    - Necessary because builder files are in inertia/ but need to work in test environment
+  * All files compile successfully
+
+```

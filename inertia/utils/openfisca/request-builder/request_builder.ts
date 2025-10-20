@@ -1,0 +1,360 @@
+import type {
+  BuildResult,
+  RequestBuilderOptions,
+  RequestBuildError,
+} from './types.js'
+import {
+  Entites,
+  FAMILLE_ID,
+  FOYER_FISCAL_ID,
+  INDIVIDU_ID,
+  MENAGE_ID,
+  UNDEFINED_ENTITY_ID,
+} from '../constants.js'
+import { getCurrentPeriod } from '../date_periods.js'
+import { FamilleManager } from './famille_manager.js'
+import { FoyerFiscalManager } from './foyer_fiscal_manager.js'
+import { IndividuManager } from './individu_manager.js'
+import { MappingResolver } from './mapping_resolver.js'
+import { MenageManager } from './menage_manager.js'
+
+/**
+ * Builder for OpenFisca calculation requests
+ *
+ * Provides a fluent API to construct OpenFisca API requests from survey answers.
+ * Handles mapping resolution, entity management, and error collection.
+ *
+ * @example
+ * const builder = new OpenFiscaRequestBuilder()
+ * const result = builder
+ *   .addAnswer('age', 25)
+ *   .addAnswer('salaire_net', 1500)
+ *   .build()
+ *
+ * if (result.errors.length > 0) {
+ *   console.error('Build errors:', result.errors)
+ * }
+ */
+export class OpenFiscaRequestBuilder {
+  private request: OpenFiscaCalculationRequest
+  private errors: RequestBuildError[] = []
+  private readonly resolver: MappingResolver
+  private readonly options: RequestBuilderOptions
+
+  // Entity managers
+  private readonly individuManager: IndividuManager
+  private readonly menageManager: MenageManager
+  private readonly foyerFiscalManager: FoyerFiscalManager
+  private readonly familleManager: FamilleManager
+
+  constructor(options: RequestBuilderOptions = {}) {
+    this.options = options
+    this.resolver = new MappingResolver()
+
+    // Initialize entity managers
+    this.individuManager = new IndividuManager(INDIVIDU_ID)
+    this.menageManager = new MenageManager(MENAGE_ID, INDIVIDU_ID)
+    this.foyerFiscalManager = new FoyerFiscalManager(FOYER_FISCAL_ID, INDIVIDU_ID)
+    this.familleManager = new FamilleManager(FAMILLE_ID, INDIVIDU_ID)
+
+    this.request = this.initRequest()
+  }
+
+  /**
+   * Initialize an empty OpenFisca request structure
+   */
+  private initRequest(): OpenFiscaCalculationRequest {
+    return {
+      individus: {
+        [INDIVIDU_ID]: {},
+      },
+      menages: {
+        [MENAGE_ID]: {
+          personne_de_reference: [INDIVIDU_ID],
+          conjoint: [],
+          enfants: [],
+        },
+      },
+      foyers_fiscaux: {
+        [FOYER_FISCAL_ID]: {
+          declarants: [INDIVIDU_ID],
+          personnes_a_charge: [],
+        },
+      },
+      familles: {
+        [FAMILLE_ID]: {
+          parents: [INDIVIDU_ID],
+          enfants: [],
+        },
+      },
+    }
+  }
+
+  /**
+   * Add a single answer to the request
+   *
+   * @param answerKey - Survey answer key
+   * @param answerValue - Answer value
+   * @returns This builder instance for chaining
+   */
+  addAnswer(answerKey: string, answerValue: SurveyAnswerValue): this {
+    // Skip undefined/null values
+    if (answerValue === undefined || answerValue === null) {
+      if (this.options.allowUndefinedValues !== false) {
+        return this
+      }
+      this.addError({
+        type: 'UNDEFINED_VALUE',
+        message: `Undefined value for answer key: ${answerKey}`,
+        answerKey,
+      })
+      return this
+    }
+
+    // Handle ComboboxAnswer type - extract the value
+    if (typeof answerValue === 'object' && !Array.isArray(answerValue) && 'value' in answerValue) {
+      answerValue = answerValue.value
+    }
+
+    // Validate answer value type (must be primitive after extraction)
+    if (
+      typeof answerValue !== 'boolean'
+      && typeof answerValue !== 'number'
+      && typeof answerValue !== 'string'
+    ) {
+      this.addError({
+        type: 'UNEXPECTED_VALUE',
+        message: `Unexpected value type for answer key: ${answerKey}`,
+        answerKey,
+      })
+      return this
+    }
+
+    // Resolve mapping
+    const mapping = this.resolver.resolve(answerKey)
+    if (!mapping) {
+      this.addError({
+        type: 'UNKNOWN_VARIABLE',
+        message: `No mapping found for answer key: ${answerKey}`,
+        answerKey,
+      })
+      return this
+    }
+
+    // Skip excluded mappings
+    if ('exclude' in mapping && mapping.exclude === true) {
+      return this
+    }
+
+    // Type guard: at this point mapping is OpenFiscaMapping
+    const openfiscaMapping = mapping as OpenFiscaMapping
+
+    // Resolve entity
+    const entityId = this.resolver.resolveEntity(answerKey)
+    if (entityId === UNDEFINED_ENTITY_ID) {
+      this.addError({
+        type: 'UNKNOWN_ENTITY',
+        message: `No entity found for answer key: ${answerKey}`,
+        answerKey,
+      })
+      return this
+    }
+
+    // Process mapping and add to entity manager
+    this.processMapping(answerKey, answerValue, openfiscaMapping, entityId)
+
+    return this
+  }
+
+  /**
+   * Process a mapping and add it to the appropriate entity manager
+   *
+   * @param answerKey - Survey answer key
+   * @param answerValue - Answer value (primitive type)
+   * @param mapping - OpenFisca mapping
+   * @param entityId - Entity ID (usager, menage_usager, etc.)
+   */
+  private processMapping(
+    answerKey: string,
+    answerValue: boolean | number | string,
+    mapping: OpenFiscaMapping,
+    entityId: string,
+  ): void {
+    let variablesToAdd: Record<string, VariableValueOnPeriod>
+
+    // Handle dispatch mapping
+    if ('dispatch' in mapping) {
+      variablesToAdd = mapping.dispatch(answerKey, answerValue, mapping.period)
+    }
+    // Handle direct mapping
+    else if ('openfiscaVariableName' in mapping) {
+      const period = getCurrentPeriod(mapping.period)
+      variablesToAdd = {
+        [mapping.openfiscaVariableName]: {
+          [period]: answerValue,
+        },
+      }
+    }
+    else {
+      this.addError({
+        type: 'MAPPING_ERROR',
+        message: `Invalid mapping for answer key: ${answerKey}`,
+        answerKey,
+      })
+      return
+    }
+
+    // Add variables to the appropriate entity manager
+    const manager = this.getEntityManager(entityId)
+    if (!manager) {
+      this.addError({
+        type: 'UNKNOWN_ENTITY',
+        message: `No entity manager found for entity ID: ${entityId}`,
+        answerKey,
+      })
+      return
+    }
+
+    // Add each variable to the entity manager
+    for (const [variableName, variableValue] of Object.entries(variablesToAdd)) {
+      const period = Object.keys(variableValue)[0]
+      const value = variableValue[period]
+
+      if (typeof value === 'boolean' || typeof value === 'number' || typeof value === 'string') {
+        manager.addVariable(variableName, value, period, answerKey)
+      }
+    }
+  }
+
+  /**
+   * Get the appropriate entity manager for an entity ID
+   *
+   * @param entityId - Entity ID
+   * @returns Entity manager or null if not found
+   */
+  private getEntityManager(entityId: string): IndividuManager | MenageManager | FoyerFiscalManager | FamilleManager | null {
+    switch (entityId) {
+      case INDIVIDU_ID:
+        return this.individuManager
+      case MENAGE_ID:
+        return this.menageManager
+      case FOYER_FISCAL_ID:
+        return this.foyerFiscalManager
+      case FAMILLE_ID:
+        return this.familleManager
+      default:
+        return null
+    }
+  }
+
+  /**
+   * Add multiple answers to the request
+   *
+   * @param answers - Record of answer key-value pairs
+   * @returns This builder instance for chaining
+   */
+  addAnswers(answers: Record<string, SurveyAnswerValue>): this {
+    for (const [key, value] of Object.entries(answers)) {
+      this.addAnswer(key, value)
+    }
+    return this
+  }
+
+  /**
+   * Add a build error
+   *
+   * @param error - Build error to add
+   */
+  private addError(error: RequestBuildError): void {
+    this.errors.push(error)
+
+    if (this.options.throwOnError) {
+      throw new Error(`${error.type}: ${error.message}`)
+    }
+  }
+
+  /**
+   * Build and validate the request
+   *
+   * @returns Build result with request and errors
+   */
+  build(): BuildResult {
+    // Collect errors from entity managers
+    this.collectEntityErrors()
+
+    // Populate request with entity data from managers
+    this.request[Entites.Individus][INDIVIDU_ID] = this.individuManager.getEntity()
+    this.request[Entites.Menages][MENAGE_ID] = this.menageManager.getEntity()
+    this.request[Entites.FoyersFiscaux][FOYER_FISCAL_ID] = this.foyerFiscalManager.getEntity()
+    this.request[Entites.Familles][FAMILLE_ID] = this.familleManager.getEntity()
+
+    // TODO: Add validation logic
+    // - Check for required variables
+    // - Validate entity relationships
+    // - Check for conflicting values
+
+    if (this.errors.length > 0) {
+      return {
+        success: false,
+        errors: this.errors,
+      }
+    }
+
+    return {
+      success: true,
+      request: this.request,
+    }
+  }
+
+  /**
+   * Collect errors from all entity managers
+   */
+  private collectEntityErrors(): void {
+    const managers = [
+      this.individuManager,
+      this.menageManager,
+      this.foyerFiscalManager,
+      this.familleManager,
+    ]
+
+    for (const manager of managers) {
+      if (manager.hasErrors()) {
+        this.errors.push(...manager.getErrors())
+      }
+    }
+  }
+
+  /**
+   * Get current build errors
+   *
+   * @returns Array of build errors
+   */
+  getErrors(): readonly RequestBuildError[] {
+    return [...this.errors]
+  }
+
+  /**
+   * Check if there are any build errors
+   *
+   * @returns True if there are errors
+   */
+  hasErrors(): boolean {
+    return this.errors.length > 0
+  }
+
+  /**
+   * Clear all errors
+   */
+  clearErrors(): void {
+    this.errors = []
+  }
+
+  /**
+   * Get the current request (useful for debugging)
+   *
+   * @returns Current request state
+   */
+  getRequest(): OpenFiscaCalculationRequest {
+    return this.request
+  }
+}

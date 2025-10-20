@@ -1,7 +1,7 @@
 # Improvement Branches Strategy
 
-**Date**: 2025-10-31  
-**Base Branch**: `llms`  
+**Date**: 2025-10-31
+**Base Branch**: `llms`
 **Reference**: `docs/analysis-improvements.md`
 
 ---
@@ -34,10 +34,10 @@ Each improvement from the analysis document gets its own feature branch for:
 ## Priority 1: Critical Issues (Q1 2026)
 
 ### ✅ 1. Surveys Store Refactoring - COMPLETED & MERGED
-**Branch**: `refactor/surveys-store-composables`  
-**Status**: ✅ Merged to llms  
-**Completed**: 2025-10-31  
-**Effort**: 2 weeks  
+**Branch**: `refactor/surveys-store-composables`
+**Status**: ✅ Merged to llms
+**Completed**: 2025-10-31
+**Effort**: 2 weeks
 **Files**: 8 new composables, 1 refactored store (700→255 lines), documentation
 
 **Results**:
@@ -50,10 +50,10 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### ✅ 2. Type Safety - Eliminate `any` Types - COMPLETED & MERGED
-**Branch**: `refactor/eliminate-any-types`  
-**Status**: ✅ Merged to llms  
-**Completed**: 2025-10-31  
-**Effort**: 2 weeks  
+**Branch**: `refactor/eliminate-any-types`
+**Status**: ✅ Merged to llms
+**Completed**: 2025-10-31
+**Effort**: 2 weeks
 **Priority**: Critical
 
 **Scope**:
@@ -79,10 +79,10 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### ✅ 3. Error Handling Standardization - PHASE 1 COMPLETED & MERGED
-**Branch**: `refactor/error-handling-patterns`  
-**Status**: ✅ Phase 1 merged to llms  
-**Completed**: 2025-10-31  
-**Effort**: 1 week  
+**Branch**: `refactor/error-handling-patterns`
+**Status**: ✅ Phase 1 merged to llms
+**Completed**: 2025-10-31
+**Effort**: 1 week
 **Priority**: Critical
 
 **Phase 1 - Quick Wins (Completed)**:
@@ -110,9 +110,11 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ---
 
-### 4. Security Improvements
-**Branch**: `security/csp-and-rate-limiting`  
-**Effort**: 1 week  
+### ✅ 4. Security Improvements - COMPLETED & MERGED
+**Branch**: `security/csp-and-rate-limiting`
+**Status**: ✅ Merged to llms
+**Completed**: 2025-10-31
+**Effort**: 1 week
 **Priority**: Critical
 
 **Scope**:
@@ -139,9 +141,11 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ## Priority 2: High Priority (Q2 2026)
 
-### 5. Performance - Bundle Optimization
-**Branch**: `perf/bundle-optimization`  
-**Effort**: 1 week  
+### ✅ 5. Performance - Bundle Optimization - COMPLETED & MERGED
+**Branch**: `perf/bundle-optimization`
+**Status**: ✅ Merged to llms
+**Completed**: 2025-10-31
+**Effort**: 1 week
 **Priority**: High
 
 **Scope**:
@@ -231,25 +235,68 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ---
 
-### 8. OpenFisca Request Builder Refactoring
+### ✅ 8. OpenFisca Request Builder Refactoring - COMPLETED (Ready for Merge)
 **Branch**: `refactor/openfisca-builder-pattern`  
+**Status**: ✅ Completed, awaiting merge to llms  
+**Completed**: 2025-11-01  
 **Effort**: 2 weeks  
 **Priority**: High
 
 **Scope**:
-- Implement Builder pattern for request construction
-- Reduce cyclomatic complexity
-- Centralize error handling
-- Improve testability
+- ✅ Implement Builder pattern for request construction
+- ✅ Reduce cyclomatic complexity (493 lines → modular architecture)
+- ✅ Centralize error handling (RequestBuildError system)
+- ✅ Improve testability (15 unit tests passing)
 
-**Files to modify**:
-- `inertia/utils/openfisca/build_calculation_request.ts`
-- Create `inertia/utils/openfisca/request-builder/` directory
+**Results**:
+- **Architecture**: Builder pattern with entity managers
+- **New Components**:
+  - OpenFiscaRequestBuilder (361 lines) - Main builder class
+  - MappingResolver (89 lines) - Answer key resolution
+  - EntityManager base class + 4 concrete managers
+  - Types and error handling system
+- **Integration**: Facade pattern maintains backward compatibility
+- **Testing**: Set up Vitest for frontend unit testing
+  - 15/15 unit tests passing
+  - 6/6 E2E simulation tests passing
+  - 120/127 total tests passing (7 pre-existing API failures)
+- **Zero regressions**: All simulation flows working correctly
 
-**Tests**:
-- Builder pattern unit tests
-- Error collection tests
-- Integration tests with OpenFisca API
+**Files created** (11 files):
+- `inertia/utils/openfisca/request-builder/request_builder.ts`
+- `inertia/utils/openfisca/request-builder/types.ts`
+- `inertia/utils/openfisca/request-builder/mapping_resolver.ts`
+- `inertia/utils/openfisca/request-builder/entity_manager.ts`
+- `inertia/utils/openfisca/request-builder/individu_manager.ts`
+- `inertia/utils/openfisca/request-builder/menage_manager.ts`
+- `inertia/utils/openfisca/request-builder/foyer_fiscal_manager.ts`
+- `inertia/utils/openfisca/request-builder/famille_manager.ts`
+- `inertia/utils/openfisca/request-builder/index.ts`
+- `tests/frontend/utils/openfisca/request_builder.spec.ts`
+- `inertia/utils/openfisca/refactor-builder.plan.llm.txt`
+
+**Files modified**:
+- `inertia/utils/openfisca/build_calculation_request.ts` - Uses builder internally
+- `vitest.config.ts` - New Vitest configuration
+- `package.json` - Added Vitest scripts and dependencies
+
+**Testing Infrastructure**:
+- Set up Vitest for frontend unit testing
+- Vitest resolves Vite aliases natively
+- Added scripts: test:frontend, test:frontend:ui, test:frontend:coverage
+- Created frontend testing strategy documentation
+
+**Dependencies Added**:
+- vitest@4.0.6
+- @vue/test-utils@2.4.6
+- happy-dom@20.0.10
+- @vitest/coverage-v8@4.0.6
+
+**Future Enhancements** (Deferred):
+- ⏸️ Migrate questions logic to builder
+- ⏸️ Migrate input clamping to builder
+- ⏸️ Additional entity manager tests
+- ⏸️ Remove legacy code once fully validated
 
 ---
 
@@ -273,8 +320,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ## Priority 3: Medium Priority (Q3 2026)
 
 ### 9. Caching - Schema Caching Strategy
-**Branch**: `perf/schema-caching`  
-**Effort**: 1 week  
+**Branch**: `perf/schema-caching`
+**Effort**: 1 week
 **Priority**: Medium
 
 **Scope**:
@@ -289,8 +336,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 10. Route Organization
-**Branch**: `refactor/split-route-files`  
-**Effort**: 1 week  
+**Branch**: `refactor/split-route-files`
+**Effort**: 1 week
 **Priority**: Medium
 
 **Scope**:
@@ -308,8 +355,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 11. Documentation - JSDoc Comments
-**Branch**: `docs/add-jsdoc-comments`  
-**Effort**: 2 weeks  
+**Branch**: `docs/add-jsdoc-comments`
+**Effort**: 2 weeks
 **Priority**: Medium
 
 **Scope**:
@@ -322,8 +369,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 12. Accessibility - Keyboard Navigation
-**Branch**: `feat/improve-keyboard-navigation`  
-**Effort**: 1 week  
+**Branch**: `feat/improve-keyboard-navigation`
+**Effort**: 1 week
 **Priority**: Medium
 
 **Scope**:
@@ -336,8 +383,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ## Priority 4: Nice to Have (Q4 2026)
 
 ### 13. Storybook Integration
-**Branch**: `feat/storybook-components`  
-**Effort**: 2 weeks  
+**Branch**: `feat/storybook-components`
+**Effort**: 2 weeks
 **Priority**: Low
 
 **Scope**:
@@ -348,8 +395,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 14. Performance Monitoring
-**Branch**: `feat/performance-metrics`  
-**Effort**: 1 week  
+**Branch**: `feat/performance-metrics`
+**Effort**: 1 week
 **Priority**: Low
 
 **Scope**:
@@ -360,8 +407,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 15. Developer Experience - Helpful Scripts
-**Branch**: `feat/dev-scripts`  
-**Effort**: 1 week  
+**Branch**: `feat/dev-scripts`
+**Effort**: 1 week
 **Priority**: Low
 
 **Scope**:

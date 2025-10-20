@@ -20,6 +20,7 @@ import {
   individusQuestionsVariables,
   menagesQuestionsVariables,
 } from '~/utils/openfisca/questions_variables'
+import { OpenFiscaRequestBuilder } from '~/utils/openfisca/request-builder'
 import {
   famillesVariables,
   foyersFiscauxVariables,
@@ -481,13 +482,48 @@ function clampInputsInRequest(request: OpenFiscaCalculationRequest) {
   return request
 }
 
+/**
+ * Build an OpenFisca calculation request from survey answers and questions
+ *
+ * This function uses the OpenFiscaRequestBuilder internally but maintains
+ * backward compatibility with the original API. It processes answers through
+ * the builder pattern for better error handling and testability, then applies
+ * legacy business logic for questions and input clamping.
+ *
+ * @param answers - Survey answers to process
+ * @param questions - Questions to add to the request (for calculation)
+ * @returns OpenFisca calculation request
+ */
 export function buildCalculationRequest(
   answers: SurveyAnswers,
   questions: string[],
 ): OpenFiscaCalculationRequest {
-  let request = initRequest()
-  request = addAnswersToRequest(request, answers) // Add user's answers to the request
-  request = addQuestionsToRequest(request, questions) // Add questions to the request
-  request = clampInputsInRequest(request) // Clamp inputs to ensure they are within expected ranges
+  // Use the new builder for answers processing
+  const builder = new OpenFiscaRequestBuilder({ allowUndefinedValues: true })
+  builder.addAnswers(answers)
+
+  const result = builder.build()
+
+  // If builder succeeded, use its request; otherwise fall back to legacy
+  let request: OpenFiscaCalculationRequest
+  if (result.success) {
+    request = result.request
+  }
+  else {
+    // Fallback to legacy method if builder fails
+    console.warn('OpenFiscaRequestBuilder failed, falling back to legacy method', result.errors)
+    request = initRequest()
+    request = addAnswersToRequest(request, answers)
+  }
+
+  // Apply legacy business logic for scholarship
+  request = addScolariteBusinessLogic(request, answers)
+
+  // Add questions (not yet migrated to builder)
+  request = addQuestionsToRequest(request, questions)
+
+  // Clamp inputs (not yet migrated to builder)
+  request = clampInputsInRequest(request)
+
   return request
 }

@@ -11,7 +11,7 @@ import {
   MENAGE_ID,
   UNDEFINED_ENTITY_ID,
 } from '../constants.js'
-import { getCurrentPeriod } from '../date_periods.js'
+import { datePeriods, getCurrentPeriod } from '../date_periods.js'
 import { FamilleManager } from './famille_manager.js'
 import { FoyerFiscalManager } from './foyer_fiscal_manager.js'
 import { IndividuManager } from './individu_manager.js'
@@ -346,6 +346,54 @@ export class OpenFiscaRequestBuilder {
     if (this.options.throwOnError) {
       throw new Error(`${error.type}: ${error.message}`)
     }
+  }
+
+  /**
+   * Apply default values and business rules to the request
+   *
+   * This method applies OpenFisca-specific business rules:
+   * - Sets default nationality to FR (France)
+   * - Sets default housing entry date to next month
+   * - Adjusts academic year based on student mobility choices
+   *
+   * Should be called before build() if these defaults are needed.
+   *
+   * @returns This builder instance for chaining
+   */
+  applyDefaultValues(): this {
+    const period = getCurrentPeriod('MONTH')
+
+    // Default nationality to France
+    if (!this.individuManager.getEntity().nationalite) {
+      this.individuManager.addVariable('nationalite', 'FR', period, 'default_nationalite')
+    }
+
+    // Default housing entry date to next month
+    if (!this.menageManager.getEntity().date_entree_logement) {
+      this.menageManager.addVariable('date_entree_logement', datePeriods.MONTH_NEXT, period, 'default_date_entree_logement')
+    }
+
+    // Academic year adjustment based on student mobility
+    const individuEntity = this.individuManager.getEntity()
+    
+    // If sortie_academie is true (Parcoursup nouvelle région)
+    if (individuEntity.sortie_academie) {
+      const sortieAcademieValue = individuEntity.sortie_academie[period]
+      if (sortieAcademieValue === true) {
+        this.individuManager.addVariable('annee_etude', 'terminale', period, 'mobility_annee_etude')
+      }
+    }
+
+    // If sortie_region_academique is true (Master nouvelle zone)
+    if (individuEntity.sortie_region_academique) {
+      const sortieRegionValue = individuEntity.sortie_region_academique[period]
+      if (sortieRegionValue === true) {
+        // Could be either 'master_1' or 'licence_3'
+        this.individuManager.addVariable('annee_etude', 'master_1', period, 'mobility_annee_etude')
+      }
+    }
+
+    return this
   }
 
   /**

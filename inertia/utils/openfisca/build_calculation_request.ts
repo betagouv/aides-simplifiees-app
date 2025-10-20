@@ -502,6 +502,9 @@ export function buildCalculationRequest(
   const builder = new OpenFiscaRequestBuilder({ allowUndefinedValues: true })
   builder.addAnswers(answers)
   builder.addQuestions(questions)
+  
+  // Apply default values and business rules
+  builder.applyDefaultValues()
 
   const result = builder.build()
 
@@ -516,13 +519,11 @@ export function buildCalculationRequest(
     request = initRequest()
     request = addAnswersToRequest(request, answers)
     request = addQuestionsToRequest(request, questions)
+    request = clampInputsInRequest(request)
   }
 
   // Apply legacy business logic for scholarship
   request = addScolariteBusinessLogic(request, answers)
-
-  // Clamp inputs (not yet migrated to builder)
-  request = clampInputsInRequest(request)
 
   return request
 }

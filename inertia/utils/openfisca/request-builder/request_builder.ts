@@ -98,7 +98,7 @@ export class OpenFiscaRequestBuilder {
    * @returns This builder instance for chaining
    */
   addAnswer(answerKey: string, answerValue: SurveyAnswerValue): this {
-    // Skip undefined/null values
+    // Skip undefined/null values first
     if (answerValue === undefined || answerValue === null) {
       if (this.options.allowUndefinedValues !== false) {
         return this
@@ -108,6 +108,23 @@ export class OpenFiscaRequestBuilder {
         message: `Undefined value for answer key: ${answerKey}`,
         answerKey,
       })
+      return this
+    }
+
+    // Resolve mapping
+    const mapping = this.resolver.resolve(answerKey)
+    if (!mapping) {
+      this.addError({
+        type: 'UNKNOWN_VARIABLE',
+        message: `No mapping found for answer key: ${answerKey}`,
+        answerKey,
+      })
+      return this
+    }
+
+    // Skip excluded mappings early (before value type validation)
+    // This allows excluded fields to have any value type (e.g., arrays for checkboxes)
+    if ('exclude' in mapping && mapping.exclude === true) {
       return this
     }
 
@@ -127,22 +144,6 @@ export class OpenFiscaRequestBuilder {
         message: `Unexpected value type for answer key: ${answerKey}`,
         answerKey,
       })
-      return this
-    }
-
-    // Resolve mapping
-    const mapping = this.resolver.resolve(answerKey)
-    if (!mapping) {
-      this.addError({
-        type: 'UNKNOWN_VARIABLE',
-        message: `No mapping found for answer key: ${answerKey}`,
-        answerKey,
-      })
-      return this
-    }
-
-    // Skip excluded mappings
-    if ('exclude' in mapping && mapping.exclude === true) {
       return this
     }
 

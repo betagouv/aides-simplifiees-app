@@ -103,9 +103,10 @@ describe('openFiscaRequestBuilder', () => {
       }
     })
 
-    it('should reject arrays as values', () => {
+    it('should reject arrays as values for non-excluded variables', () => {
       const builder = new OpenFiscaRequestBuilder()
-      builder.addAnswer('test_array', ['value1', 'value2'] as unknown as string)
+      // Use a real variable that exists but isn't excluded
+      builder.addAnswer('date-naissance', ['2000-01-01', '2001-01-01'] as unknown as string)
       const result = builder.build()
 
       expect(result.success).toBe(false)
@@ -113,6 +114,17 @@ describe('openFiscaRequestBuilder', () => {
         expect(result.errors).not.toHaveLength(0)
         expect(result.errors[0].type).toBe('UNEXPECTED_VALUE')
       }
+    })
+
+    it('should skip excluded variables even with array values', () => {
+      const builder = new OpenFiscaRequestBuilder()
+      // type-revenus is excluded and has array values (checkbox field)
+      builder.addAnswer('type-revenus', ['revenus-activite', 'revenus-chomage'])
+      const result = builder.build()
+
+      // Should succeed since the excluded variable is skipped
+      expect(result.success).toBe(true)
+      expect(builder.hasErrors()).toBe(false)
     })
   })
 

@@ -375,7 +375,7 @@ export class OpenFiscaRequestBuilder {
 
     // Academic year adjustment based on student mobility
     const individuEntity = this.individuManager.getEntity()
-    
+
     // If sortie_academie is true (Parcoursup nouvelle région)
     if (individuEntity.sortie_academie) {
       const sortieAcademieValue = individuEntity.sortie_academie[period]

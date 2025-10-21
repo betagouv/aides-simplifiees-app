@@ -502,7 +502,7 @@ export function buildCalculationRequest(
   const builder = new OpenFiscaRequestBuilder({ allowUndefinedValues: true })
   builder.addAnswers(answers)
   builder.addQuestions(questions)
-  
+
   // Apply default values and business rules
   builder.applyDefaultValues()
 

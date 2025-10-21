@@ -292,10 +292,12 @@ Each improvement from the analysis document gets its own feature branch for:
 - happy-dom@20.0.10
 - @vitest/coverage-v8@4.0.6
 
-**Future Enhancements** (Deferred):
-- ⏸️ Migrate questions logic to builder
-- ⏸️ Migrate input clamping to builder
-- ⏸️ Additional entity manager tests
+**Deferred Enhancements Completed** (2025-11-01):
+- ✅ Migrated questions logic to builder (addQuestion/addQuestions methods)
+- ✅ Migrated input clamping to builder (applyDefaultValues method)
+
+**Future Enhancements** (Still Deferred):
+- ⏸️ Additional entity manager tests (can be added incrementally)
 - ⏸️ Remove legacy code once fully validated
 
 ---

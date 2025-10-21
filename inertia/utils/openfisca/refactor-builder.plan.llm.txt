@@ -20,14 +20,16 @@ The `build_calculation_request.ts` file (493 lines) has high cyclomatic complexi
 - No clear separation between entity types
 
 ## Objectives
-- [ ] Design Builder pattern architecture
-- [ ] Create request builder class with chainable API
-- [ ] Extract entity managers (individu, menage, foyer_fiscal, famille)
-- [ ] Centralize error collection
-- [ ] Implement mapping resolver
-- [ ] Add comprehensive unit tests
-- [ ] Update existing usages
-- [ ] Update documentation
+- [x] Design Builder pattern architecture
+- [x] Create request builder class with chainable API
+- [x] Extract entity managers (individu, menage, foyer_fiscal, famille)
+- [x] Centralize error collection
+- [x] Implement mapping resolver
+- [x] Add comprehensive unit tests (15 tests passing)
+- [x] Update existing usages (integrated into buildCalculationRequest)
+- [x] Migrate questions logic to builder
+- [x] Migrate input clamping to builder
+- [ ] Update documentation (in progress)
 
 ## Implementation Steps
 
@@ -238,5 +240,32 @@ After user validation:
   * **All 15 frontend unit tests passing** ✅
   * Zero regressions - backward compatible
   * Production ready!
+
+## Phase 7: Deferred Enhancements (2025-11-01)
+
+### 7.1 Migrate Questions Logic ✅
+- Added `addQuestion(questionKey: string)` method to RequestBuilder
+- Added `addQuestions(questions: string[])` method for bulk addition
+- Updated EntityManager to accept `null` values for questions (VariableToCalculateOnPeriod)
+- Updated all entity managers (Individu, Menage, Famille, FoyerFiscal) to handle questions
+- Integrated `builder.addQuestions()` into buildCalculationRequest()
+- Questions now processed through builder pattern
+- Legacy addQuestionsToRequest() kept as fallback
+
+### 7.2 Migrate Input Clamping ✅
+- Added `applyDefaultValues()` method to RequestBuilder
+- Migrated all clamping logic from clampInputsInRequest():
+  - Default nationality (FR)
+  - Default housing entry date (next month)
+  - Academic year adjustments based on student mobility
+- Chainable API - call before build()
+- Integrated into buildCalculationRequest()
+- Legacy clampInputsInRequest() only used in fallback path
+
+### 7.3 Status Summary
+- ✅ Questions logic migrated to builder
+- ✅ Input clamping migrated to builder
+- ⏸️ Entity manager tests (deferred - can be added incrementally)
+- ⏸️ Legacy code removal (deferred - waiting for validation period)
 
 ```

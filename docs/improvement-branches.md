@@ -237,7 +237,7 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ### ✅ 8. OpenFisca Request Builder Refactoring - COMPLETED (Ready for Merge)
 **Branch**: `refactor/openfisca-builder-pattern`  
-**Status**: ✅ Completed, awaiting merge to llms  
+**Status**: ✅ Fully Completed, awaiting merge to llms  
 **Completed**: 2025-11-01  
 **Effort**: 2 weeks  
 **Priority**: High
@@ -246,23 +246,27 @@ Each improvement from the analysis document gets its own feature branch for:
 - ✅ Implement Builder pattern for request construction
 - ✅ Reduce cyclomatic complexity (493 lines → modular architecture)
 - ✅ Centralize error handling (RequestBuildError system)
-- ✅ Improve testability (15 unit tests passing)
+- ✅ Improve testability (50 unit tests passing)
+- ✅ Remove all legacy code (86% file reduction)
 
 **Results**:
-- **Architecture**: Builder pattern with entity managers
+- **Architecture**: Pure builder pattern with entity managers
 - **New Components**:
   - OpenFiscaRequestBuilder (361 lines) - Main builder class
   - MappingResolver (89 lines) - Answer key resolution
   - EntityManager base class + 4 concrete managers
   - Types and error handling system
-- **Integration**: Facade pattern maintains backward compatibility
+- **Legacy Code Removal**: 
+  - build_calculation_request.ts reduced from 554 → 79 lines (-86%)
+  - Removed 12 legacy functions
+  - Pure builder pattern (no fallback)
 - **Testing**: Set up Vitest for frontend unit testing
-  - 15/15 unit tests passing
+  - 50/50 unit tests passing (15 builder + 35 entity managers)
   - 6/6 E2E simulation tests passing
   - 120/127 total tests passing (7 pre-existing API failures)
 - **Zero regressions**: All simulation flows working correctly
 
-**Files created** (11 files):
+**Files created** (12 files):
 - `inertia/utils/openfisca/request-builder/request_builder.ts`
 - `inertia/utils/openfisca/request-builder/types.ts`
 - `inertia/utils/openfisca/request-builder/mapping_resolver.ts`
@@ -273,10 +277,11 @@ Each improvement from the analysis document gets its own feature branch for:
 - `inertia/utils/openfisca/request-builder/famille_manager.ts`
 - `inertia/utils/openfisca/request-builder/index.ts`
 - `tests/frontend/utils/openfisca/request_builder.spec.ts`
+- `tests/frontend/utils/openfisca/entity_managers.spec.ts`
 - `inertia/utils/openfisca/refactor-builder.plan.llm.txt`
 
 **Files modified**:
-- `inertia/utils/openfisca/build_calculation_request.ts` - Uses builder internally
+- `inertia/utils/openfisca/build_calculation_request.ts` - Cleaned to 79 lines, pure builder
 - `vitest.config.ts` - New Vitest configuration
 - `package.json` - Added Vitest scripts and dependencies
 
@@ -295,10 +300,10 @@ Each improvement from the analysis document gets its own feature branch for:
 **Deferred Enhancements Completed** (2025-11-01):
 - ✅ Migrated questions logic to builder (addQuestion/addQuestions methods)
 - ✅ Migrated input clamping to builder (applyDefaultValues method)
+- ✅ Added comprehensive entity manager tests (35 tests)
+- ✅ Removed all legacy code (86% file size reduction)
 
-**Future Enhancements** (Still Deferred):
-- ⏸️ Additional entity manager tests (can be added incrementally)
-- ⏸️ Remove legacy code once fully validated
+**All Tasks Completed** ✅ - Branch ready for merge!
 
 ---
 

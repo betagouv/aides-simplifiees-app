@@ -323,7 +323,7 @@ describe('entity Managers', () => {
 
     it('should track answer keys in errors', () => {
       const manager = new IndividuManager(INDIVIDU_ID)
-      
+
       manager.addVariable('age', 25, '2025-10', 'age-from-question-1')
       manager.addVariable('age', 30, '2025-10', 'age-from-question-2')
 

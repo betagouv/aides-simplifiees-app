@@ -25,11 +25,13 @@ The `build_calculation_request.ts` file (493 lines) has high cyclomatic complexi
 - [x] Extract entity managers (individu, menage, foyer_fiscal, famille)
 - [x] Centralize error collection
 - [x] Implement mapping resolver
-- [x] Add comprehensive unit tests (15 tests passing)
+- [x] Add comprehensive unit tests (50 tests passing)
 - [x] Update existing usages (integrated into buildCalculationRequest)
 - [x] Migrate questions logic to builder
 - [x] Migrate input clamping to builder
-- [ ] Update documentation (in progress)
+- [x] Add entity manager tests (35 tests)
+- [x] Remove all legacy code (86% reduction)
+- [x] Update documentation (completed)
 
 ## Implementation Steps
 
@@ -262,10 +264,64 @@ After user validation:
 - Integrated into buildCalculationRequest()
 - Legacy clampInputsInRequest() only used in fallback path
 
-### 7.3 Status Summary
+### 7.3 Entity Manager Tests ✅
+- Created `tests/frontend/utils/openfisca/entity_managers.spec.ts` (336 lines)
+- **35 tests passing** covering all 4 entity managers:
+  - IndividuManager (8 tests)
+  - MenageManager (9 tests)
+  - FamilleManager (8 tests)
+  - FoyerFiscalManager (8 tests)
+  - Error Handling (2 tests)
+- Test coverage:
+  - Variable addition with values
+  - Questions (null values)
+  - Member list management
+  - Conflict detection
+  - Special business rules (demenagement)
+  - Reset functionality
+  - Error tracking
+- **Total: 50/50 frontend tests passing** (15 builder + 35 entity managers)
+
+### 7.4 Legacy Code Removal ✅
+- Removed all legacy functions from `build_calculation_request.ts`
+- **File size reduction: 554 → 79 lines (-86%, -475 lines)**
+- Removed 12 unused functions:
+  * initRequest()
+  * shouldUpdateExistingVariable()
+  * processDispatchMapping()
+  * processDirectMapping()
+  * updateRequestWithAnswer()
+  * getEntityId()
+  * addSurveyAnswerToRequest()
+  * addSurveyQuestionToRequest()
+  * processSurveyAnswer()
+  * addAnswersToRequest()
+  * addQuestionsToRequest()
+  * clampInputsInRequest()
+- Kept only builder-based implementation:
+  * applyScholarshipBusinessLogic() - uses builder.addAnswer()
+  * buildCalculationRequest() - pure builder pattern
+- No fallback logic - builder is the only path
+- Throws Error on failure instead of falling back
+
+### 7.5 Status Summary
 - ✅ Questions logic migrated to builder
 - ✅ Input clamping migrated to builder
-- ⏸️ Entity manager tests (deferred - can be added incrementally)
-- ⏸️ Legacy code removal (deferred - waiting for validation period)
+- ✅ Entity manager tests (35 tests, all passing)
+- ✅ Legacy code removal (86% reduction, pure builder pattern)
+- **ALL DEFERRED ENHANCEMENTS COMPLETED** ✅
+
+## Final Commit History
+1. Commit 579199d: "feat(builder): migrate questions logic to builder"
+2. Commit 1f3537f: "feat(builder): migrate input clamping to builder"
+3. Commit 20e4b53: "test(builder): add comprehensive entity manager tests"
+4. Commit 9ad6173: "docs(builder): update plan with tasks 3&4 completion"
+5. Commit c80fa26: "refactor(builder): remove all legacy code from build_calculation_request"
+
+**Branch Ready for Merge** ✅
+
+```
+
+````
 
 ```

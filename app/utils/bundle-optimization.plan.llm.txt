@@ -14,12 +14,12 @@ This impacts initial load time and user experience, especially on slower connect
 - Admin routes loaded for all users
 
 ## Objectives
-- [ ] Implement code splitting for routes
-- [ ] Add dynamic imports for heavy components
-- [ ] Split vendor chunks strategically
-- [ ] Lazy load admin routes
-- [ ] Measure bundle size improvements
-- [ ] Update documentation
+- [x] Implement code splitting for routes
+- [x] Add dynamic imports for heavy components
+- [x] Split vendor chunks strategically
+- [x] Lazy load admin routes (automatic via Inertia)
+- [x] Measure bundle size improvements
+- [ ] Update documentation (after user validation)
 
 ## Implementation Steps
 
@@ -86,3 +86,10 @@ After user validation:
 
 ## History
 - 2025-10-31: Created plan file
+- 2025-10-31: Implemented bundle optimization
+  - Added manual chunking strategy in vite.config.ts
+  - Split vendors into strategic chunks (vue-core, vue-ecosystem, dsfr, publicodes, vueuse)
+  - Converted PublicodesSurvey to async component
+  - Build results: 1.3MB vendor code split into 6 optimized chunks
+  - Charts already lazy loaded
+  - Admin pages split automatically by Inertia

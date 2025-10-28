@@ -49,4 +49,53 @@ export default defineConfig({
       },
     },
   },
+
+  /**
+   * Bundle optimization configuration
+   * Split vendor chunks strategically for better caching
+   */
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Vue core framework - stable, rarely changes
+          if (id.includes('node_modules/vue/') || id.includes('node_modules/@vue/')) {
+            return 'vue-core'
+          }
+
+          // Vue ecosystem - changes occasionally
+          if (id.includes('node_modules/@inertiajs/') || id.includes('node_modules/pinia/')) {
+            return 'vue-ecosystem'
+          }
+
+          // DSFR design system - large, stable
+          if (id.includes('node_modules/@gouvminint/vue-dsfr/')) {
+            return 'dsfr'
+          }
+
+          // Publicodes calculation engine - large, rarely changes
+          if (
+            id.includes('node_modules/publicodes/')
+            || id.includes('node_modules/@publicodes/')
+          ) {
+            return 'publicodes'
+          }
+
+          // VueUse utilities
+          if (id.includes('node_modules/@vueuse/')) {
+            return 'vueuse'
+          }
+
+          // Other vendor libraries
+          if (id.includes('node_modules/')) {
+            return 'vendor'
+          }
+        },
+      },
+    },
+
+    // Increase chunk size warning limit (default is 500kb)
+    // Our app is complex and some chunks will be larger
+    chunkSizeWarningLimit: 600,
+  },
 })

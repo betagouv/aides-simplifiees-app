@@ -1,7 +1,7 @@
 # Improvement Branches Strategy
 
-**Date**: 2025-10-31  
-**Base Branch**: `llms`  
+**Date**: 2025-10-31
+**Base Branch**: `llms`
 **Reference**: `docs/analysis-improvements.md`
 
 ---
@@ -33,26 +33,16 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ## Priority 1: Critical Issues (Q1 2026)
 
-### ✅ 1. Surveys Store Refactoring - COMPLETED & MERGED
+### ✅ 1. Surveys Store Refactoring - COMPLETED
 **Branch**: `refactor/surveys-store-composables`  
-**Status**: ✅ Merged to llms  
-**Completed**: 2025-10-31  
+**Status**: ✅ Completed and committed  
 **Effort**: 2 weeks  
-**Files**: 8 new composables, 1 refactored store (700→255 lines), documentation
-
-**Results**:
-- Created 6 domain-focused composables
-- Reduced main store from 700 to 255 lines
-- Incorporated type safety improvements (SurveyAnswerValue)
-- All tests passing
-- Both improvements combined via rebase
+**Files**: 8 new composables, 1 refactored store, documentation
 
 ---
 
-### ✅ 2. Type Safety - Eliminate `any` Types - COMPLETED & MERGED
+### 2. Type Safety - Eliminate `any` Types
 **Branch**: `refactor/eliminate-any-types`  
-**Status**: ✅ Merged to llms  
-**Completed**: 2025-10-31  
 **Effort**: 2 weeks  
 **Priority**: Critical
 
@@ -78,41 +68,39 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ---
 
-### ✅ 3. Error Handling Standardization - PHASE 1 COMPLETED & MERGED
+### 3. Error Handling Standardization
 **Branch**: `refactor/error-handling-patterns`  
-**Status**: ✅ Phase 1 merged to llms  
-**Completed**: 2025-10-31  
 **Effort**: 1 week  
 **Priority**: Critical
 
-**Phase 1 - Quick Wins (Completed)**:
-- ✅ Fixed backend `console.error` → `LoggingService` in admin_persona_controller
-- ✅ Created ErrorBoundary.vue component
-- ✅ Added error tracking infrastructure (ErrorTracker interface)
-- ✅ Frontend error tracking utility (Sentry-ready)
+**Scope**:
+- Implement Result pattern utility
+- Replace inconsistent error handling
+- Add error boundaries in Vue components
+- Fix backend `console.error` → `LoggingService`
 
-**Phase 2 - Deferred**:
-- ⏸️ Result pattern utility
-- ⏸️ Replace inconsistent error handling (~20 files)
-- ⏸️ More comprehensive error boundaries
-
-**Files created**:
+**Files to create**:
+- `inertia/utils/result.ts` - Result type utility
 - `inertia/components/ErrorBoundary.vue` - Vue error boundary
-- `shared/types/error_tracker.ts` - ErrorTracker interface
-- `inertia/utils/error_tracker.ts` - Frontend tracking utility
-- `app/utils/error-handling.plan.llm.txt` - Implementation plan
 
-**Files modified**:
-- `app/controllers/admin/admin_persona_controller.ts` - Fixed console.error
+**Files to modify** (~20 files):
+- Controllers with try-catch blocks
+- Services with error handling
+- Components with error states
+- `admin_persona_controller.ts` (fix console.error)
 
 **Tests**:
-- All 127 tests passing
+- Unit tests for Result utility
+- Error boundary component tests
+- Integration tests for error flows
 
 ---
 
-### 4. Security Improvements
-**Branch**: `security/csp-and-rate-limiting`  
-**Effort**: 1 week  
+### ✅ 4. Security Improvements - COMPLETED & MERGED
+**Branch**: `security/csp-and-rate-limiting`
+**Status**: ✅ Merged to llms
+**Completed**: 2025-10-31
+**Effort**: 1 week
 **Priority**: Critical
 
 **Scope**:
@@ -140,8 +128,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ## Priority 2: High Priority (Q2 2026)
 
 ### 5. Performance - Bundle Optimization
-**Branch**: `perf/bundle-optimization`  
-**Effort**: 1 week  
+**Branch**: `perf/bundle-optimization`
+**Effort**: 1 week
 **Priority**: High
 
 **Scope**:
@@ -162,56 +150,9 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ---
 
-### ✅ 6. Frontend Unit Testing Infrastructure - COMPLETED (Ready for Merge)
-**Branch**: `feat/vitest-setup`  
-**Status**: ✅ Completed, awaiting merge to llms  
-**Completed**: 2025-11-01  
-**Effort**: 1 day  
-**Priority**: High
-
-**Scope**:
-- ✅ Set up Vitest for frontend unit testing
-- ✅ Configure Vue Test Utils integration
-- ✅ Add test directory structure
-- ✅ Configure coverage reporting
-- ✅ Add npm scripts for testing
-
-**Results**:
-- **Testing Framework**: Vitest with Vue Test Utils
-- **Environment**: happy-dom (lightweight DOM)
-- **Configuration**: Native Vite alias support
-- **Directory**: tests/frontend/ for frontend tests
-- **Commands**: test:frontend, test:frontend:ui, test:frontend:coverage
-
-**Files created**:
-- `vitest.config.ts` (28 lines)
-- `tests/frontend/.gitkeep` (directory marker)
-- `tests/frontend/vitest-setup.plan.llm.txt` (documentation)
-
-**Files modified**:
-- `package.json`: Added Vitest dependencies and scripts
-- `pnpm-lock.yaml`: Locked dependencies
-- `docs/architecture.llm.txt`: Updated testing section
-
-**Dependencies added**:
-- vitest@4.0.6
-- @vue/test-utils@2.4.6
-- happy-dom@20.0.10
-- @vitest/coverage-v8@4.0.6
-
-**Benefits**:
-- Native Vite alias support (resolves ~ imports)
-- Fast unit testing with HMR
-- Separate frontend/backend test environments
-- Vue 3 Composition API support
-- Built-in coverage reporting
-- UI mode for debugging
-
----
-
-### 7. Testing - Expand Coverage
-**Branch**: `test/expand-coverage`  
-**Effort**: 3 weeks  
+### 6. Testing - Expand Coverage
+**Branch**: `test/expand-coverage`
+**Effort**: 3 weeks
 **Priority**: High
 
 **Scope**:
@@ -221,19 +162,17 @@ Each improvement from the analysis document gets its own feature branch for:
 - Integration tests for API endpoints
 
 **Files to create**:
-- `tests/frontend/openfisca/*.spec.ts`
-- `tests/frontend/components/*.spec.ts`
-- `tests/frontend/stores/*.spec.ts`
+- `tests/unit/openfisca/*.spec.ts`
+- `tests/unit/components/*.spec.ts`
+- `tests/unit/stores/*.spec.ts`
 
 **Target**: 80% coverage on critical paths
 
-**Note**: Depends on `feat/vitest-setup` branch for testing infrastructure
-
 ---
 
-### 8. OpenFisca Request Builder Refactoring
-**Branch**: `refactor/openfisca-builder-pattern`  
-**Effort**: 2 weeks  
+### 7. OpenFisca Request Builder Refactoring
+**Branch**: `refactor/openfisca-builder-pattern`
+**Effort**: 2 weeks
 **Priority**: High
 
 **Scope**:
@@ -253,9 +192,9 @@ Each improvement from the analysis document gets its own feature branch for:
 
 ---
 
-### 9. Monitoring - Error Tracking
-**Branch**: `feat/error-tracking-sentry`  
-**Effort**: 1 week  
+### 8. Monitoring - Error Tracking
+**Branch**: `feat/error-tracking-sentry`
+**Effort**: 1 week
 **Priority**: High
 
 **Scope**:
@@ -273,8 +212,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ## Priority 3: Medium Priority (Q3 2026)
 
 ### 9. Caching - Schema Caching Strategy
-**Branch**: `perf/schema-caching`  
-**Effort**: 1 week  
+**Branch**: `perf/schema-caching`
+**Effort**: 1 week
 **Priority**: Medium
 
 **Scope**:
@@ -289,8 +228,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 10. Route Organization
-**Branch**: `refactor/split-route-files`  
-**Effort**: 1 week  
+**Branch**: `refactor/split-route-files`
+**Effort**: 1 week
 **Priority**: Medium
 
 **Scope**:
@@ -308,8 +247,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 11. Documentation - JSDoc Comments
-**Branch**: `docs/add-jsdoc-comments`  
-**Effort**: 2 weeks  
+**Branch**: `docs/add-jsdoc-comments`
+**Effort**: 2 weeks
 **Priority**: Medium
 
 **Scope**:
@@ -322,8 +261,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 12. Accessibility - Keyboard Navigation
-**Branch**: `feat/improve-keyboard-navigation`  
-**Effort**: 1 week  
+**Branch**: `feat/improve-keyboard-navigation`
+**Effort**: 1 week
 **Priority**: Medium
 
 **Scope**:
@@ -336,8 +275,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ## Priority 4: Nice to Have (Q4 2026)
 
 ### 13. Storybook Integration
-**Branch**: `feat/storybook-components`  
-**Effort**: 2 weeks  
+**Branch**: `feat/storybook-components`
+**Effort**: 2 weeks
 **Priority**: Low
 
 **Scope**:
@@ -348,8 +287,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 14. Performance Monitoring
-**Branch**: `feat/performance-metrics`  
-**Effort**: 1 week  
+**Branch**: `feat/performance-metrics`
+**Effort**: 1 week
 **Priority**: Low
 
 **Scope**:
@@ -360,8 +299,8 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### 15. Developer Experience - Helpful Scripts
-**Branch**: `feat/dev-scripts`  
-**Effort**: 1 week  
+**Branch**: `feat/dev-scripts`
+**Effort**: 1 week
 **Priority**: Low
 
 **Scope**:

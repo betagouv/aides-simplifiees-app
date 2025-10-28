@@ -75,8 +75,8 @@ export default defineConfig({
 
           // Publicodes calculation engine - large, rarely changes
           if (
-            id.includes('node_modules/publicodes/') ||
-            id.includes('node_modules/@publicodes/')
+            id.includes('node_modules/publicodes/')
+            || id.includes('node_modules/@publicodes/')
           ) {
             return 'publicodes'
           }

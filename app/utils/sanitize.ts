@@ -72,22 +72,22 @@ const PLAIN_TEXT_CONFIG: SanitizeConfig = {
 
 /**
  * Sanitize HTML content to prevent XSS attacks
- * 
+ *
  * Uses DOMPurify to remove potentially dangerous HTML/JavaScript
  * while preserving safe formatting tags.
- * 
+ *
  * @param dirty - Untrusted HTML string
  * @param config - Sanitization configuration (defaults to RICH_TEXT_CONFIG)
  * @returns Sanitized HTML string safe for rendering
- * 
+ *
  * @example
  * ```typescript
  * // Sanitize CMS content
  * const clean = sanitizeHtml(cmsContent)
- * 
+ *
  * // Sanitize with custom config
  * const clean = sanitizeHtml(userInput, PLAIN_TEXT_CONFIG)
- * 
+ *
  * // Sanitize in Vue template
  * <div v-html="sanitizeHtml(content)" />
  * ```
@@ -102,10 +102,10 @@ export function sanitizeHtml(dirty: string, config: SanitizeConfig = RICH_TEXT_C
 
 /**
  * Sanitize plain text content with minimal formatting
- * 
+ *
  * Allows only basic text formatting (bold, italic, paragraphs)
  * and strips everything else including links and images.
- * 
+ *
  * @param dirty - Untrusted HTML string
  * @returns Sanitized HTML string with minimal formatting
  */
@@ -115,12 +115,12 @@ export function sanitizePlainText(dirty: string): string {
 
 /**
  * Strip all HTML tags and return plain text only
- * 
+ *
  * Useful for:
  * - Meta descriptions
  * - Email subject lines
  * - Plain text previews
- * 
+ *
  * @param html - HTML string
  * @returns Plain text without any HTML tags
  */
@@ -137,9 +137,9 @@ export function stripHtml(html: string): string {
 
 /**
  * Sanitize URL to ensure it's safe
- * 
+ *
  * Blocks javascript:, data:, and other dangerous protocols
- * 
+ *
  * @param url - URL string to sanitize
  * @returns Sanitized URL or empty string if dangerous
  */
@@ -160,12 +160,12 @@ export function sanitizeUrl(url: string): string {
 
   // Allow only http, https, mailto, tel, and relative URLs
   if (
-    normalizedUrl.startsWith('http://') ||
-    normalizedUrl.startsWith('https://') ||
-    normalizedUrl.startsWith('mailto:') ||
-    normalizedUrl.startsWith('tel:') ||
-    normalizedUrl.startsWith('/') ||
-    normalizedUrl.startsWith('#')
+    normalizedUrl.startsWith('http://')
+    || normalizedUrl.startsWith('https://')
+    || normalizedUrl.startsWith('mailto:')
+    || normalizedUrl.startsWith('tel:')
+    || normalizedUrl.startsWith('/')
+    || normalizedUrl.startsWith('#')
   ) {
     return url
   }

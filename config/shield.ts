@@ -8,40 +8,40 @@ const shieldConfig = defineConfig({
   csp: {
     enabled: true,
     directives: {
-      defaultSrc: ["'self'"],
+      defaultSrc: ['\'self\''],
       scriptSrc: [
-        "'self'",
-        "'unsafe-inline'", // Required for Vite HMR in dev and inline scripts
-        "'unsafe-eval'", // Required for Vue in dev mode
+        '\'self\'',
+        '\'unsafe-inline\'', // Required for Vite HMR in dev and inline scripts
+        '\'unsafe-eval\'', // Required for Vue in dev mode
         'https://cdn.jsdelivr.net', // For DSFR icons
         'https://stats.data.gouv.fr', // Matomo analytics
       ],
       styleSrc: [
-        "'self'",
-        "'unsafe-inline'", // Required for DSFR inline styles
+        '\'self\'',
+        '\'unsafe-inline\'', // Required for DSFR inline styles
         'https://cdn.jsdelivr.net', // For DSFR styles
       ],
       imgSrc: [
-        "'self'",
+        '\'self\'',
         'data:', // For inline images
         'https:', // Allow all HTTPS images (for external logos, etc.)
       ],
       fontSrc: [
-        "'self'",
+        '\'self\'',
         'data:',
         'https://cdn.jsdelivr.net', // For DSFR fonts
       ],
       connectSrc: [
-        "'self'",
+        '\'self\'',
         'https://stats.data.gouv.fr', // Matomo analytics
         'https://geo.api.gouv.fr', // Address autocomplete
         'https://api-adresse.data.gouv.fr', // Address autocomplete
       ],
-      frameSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      baseUri: ["'self'"],
-      formAction: ["'self'"],
-      frameAncestors: ["'self'", 'https:', 'http:'], // Allow embedding in iframes
+      frameSrc: ['\'self\''],
+      objectSrc: ['\'none\''],
+      baseUri: ['\'self\''],
+      formAction: ['\'self\''],
+      frameAncestors: ['\'self\'', 'https:', 'http:'], // Allow embedding in iframes
     },
     reportOnly: false,
   },

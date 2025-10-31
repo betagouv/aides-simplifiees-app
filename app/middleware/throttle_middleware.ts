@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
+import app from '@adonisjs/core/services/app'
 import { RateLimiter } from 'limiter'
 
 /**
@@ -44,10 +45,10 @@ const limiters = new Map<string, RateLimiter>()
 
 /**
  * Middleware to throttle requests based on IP address
- * 
+ *
  * Prevents abuse by limiting the number of requests from a single IP
  * in a given time window.
- * 
+ *
  * Example usage in routes:
  * ```typescript
  * router.post('/api/calculate', [OpenFiscaController, 'calculate'])
@@ -58,6 +59,11 @@ export default function throttleMiddleware(config: Partial<ThrottleConfig> = {})
   const finalConfig: ThrottleConfig = { ...DEFAULT_CONFIG, ...config }
 
   return async ({ request, response }: HttpContext, next: NextFn) => {
+    // Skip rate limiting in test environment
+    if (app.inTest) {
+      return next()
+    }
+
     // Get client IP address
     const ip = request.ip()
 
@@ -88,7 +94,7 @@ export default function throttleMiddleware(config: Partial<ThrottleConfig> = {})
     response.header('X-RateLimit-Remaining', String(Math.floor(limiter.getTokensRemaining())))
     response.header(
       'X-RateLimit-Reset',
-      String(Date.now() + finalConfig.windowMs)
+      String(Date.now() + finalConfig.windowMs),
     )
 
     await next()

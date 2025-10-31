@@ -1,0 +1,77 @@
+# Plan: Security Improvements - CSP and Rate Limiting
+
+## Date
+Created: 2025-10-31
+
+## Context
+The application currently lacks important security features:
+- No Content Security Policy (CSP) headers
+- No rate limiting on API endpoints
+- No input sanitization for user-generated content
+
+These are critical security measures to protect against:
+- XSS attacks (CSP)
+- DDoS/brute force attacks (rate limiting)
+- Code injection (input sanitization)
+
+## Objectives
+- [ ] Implement Content Security Policy middleware
+- [ ] Add rate limiting to API endpoints
+- [ ] Create input sanitization utility
+- [ ] Add tests for security features
+- [ ] Update documentation
+
+## Implementation Steps
+
+### Phase 1: Content Security Policy
+1. [ ] Create CSP middleware
+2. [ ] Configure CSP directives for app needs
+3. [ ] Test CSP headers in development
+4. [ ] Add unit tests
+
+### Phase 2: Rate Limiting
+1. [ ] Create throttle middleware with configurable limits
+2. [ ] Apply to API endpoints (OpenFisca, form submissions)
+3. [ ] Add Redis support for distributed rate limiting (optional)
+4. [ ] Test rate limit behavior
+5. [ ] Add appropriate error responses
+
+### Phase 3: Input Sanitization
+1. [ ] Add DOMPurify dependency
+2. [ ] Create sanitization utility
+3. [ ] Apply to CMS content rendering
+4. [ ] Add unit tests
+
+## Files to Create
+- `app/middleware/csp_middleware.ts` - Content Security Policy
+- `app/middleware/throttle_middleware.ts` - Rate limiting
+- `app/utils/sanitize.ts` - Input sanitization
+- `tests/unit/middleware/csp_middleware.spec.ts` - CSP tests
+- `tests/unit/middleware/throttle_middleware.spec.ts` - Rate limit tests
+- `tests/unit/utils/sanitize.spec.ts` - Sanitization tests
+
+## Files to Modify
+- `start/kernel.ts` - Register CSP middleware globally
+- `start/routes.ts` - Apply throttle to API routes
+- `config/shield.ts` - CSP configuration
+- Templates using v-html - Apply sanitization
+
+## Security Considerations
+- CSP: Must allow inline styles/scripts only where necessary
+- Rate limiting: Configure appropriate limits per endpoint
+- Sanitization: Must preserve safe HTML while blocking XSS
+
+## Testing Strategy
+- Unit tests for each middleware
+- Integration tests for rate limiting behavior
+- E2E tests to verify CSP doesn't break functionality
+- Security audit with OWASP guidelines
+
+## Documentation to Update
+After user validation:
+- `docs/domains/security.llm.txt` (new)
+- `app/middleware/csp_middleware.llm.txt` (new)
+- `app/middleware/throttle_middleware.llm.txt` (new)
+
+## History
+- 2025-10-31: Created plan file

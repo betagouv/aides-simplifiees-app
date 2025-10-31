@@ -28,6 +28,8 @@ export default class AideController {
           : null,
         description: this.aide.description,
         metaDescription: this.aide.metaDescription,
+        dsEnabled: this.aide.dsEnabled,
+        dsDemarcheId: this.aide.dsDemarcheId,
       }
     }
   }

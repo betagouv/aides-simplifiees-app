@@ -2,6 +2,7 @@
 import type AideController from '#controllers/content/aide_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
+import DemarchesSimplifiedButton from '~/components/aides/DemarchesSimplifiedButton.vue'
 import DsfrLink from '~/components/DsfrLink.vue'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
 
@@ -39,6 +40,16 @@ setBreadcrumbs([
         :icon="{ name: 'ri:arrow-left-line', ssr: true }"
       />
     </header>
+
+    <!-- Démarches Simplifiées integration -->
+    <DemarchesSimplifiedButton
+      v-if="aide.dsEnabled"
+      :aide-slug="aide.slug"
+      :submission-hash="hash"
+      :ds-enabled="aide.dsEnabled"
+      :ds-demarche-id="aide.dsDemarcheId"
+    />
+
     <div class="fr-card fr-p-3w">
       <div v-html="html" />
     </div>

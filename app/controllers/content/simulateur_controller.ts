@@ -246,11 +246,14 @@ export default class SimulateurController {
           eligibilite: rawAide.eligibilite,
           // Data from database content source
           title: aideDetails.title || `Aide ${rawAide.id}`,
+          slug: aideDetails.slug,
           description: aideDetails.description || '',
           textesLoi: aideDetails.textesLoi || [],
           instructeur: aideDetails.instructeur || '',
           typeAide: aideDetails.typeAide,
           usage: aideDetails.usage || 'frais-installation-logement',
+          dsEnabled: aideDetails.dsEnabled || false,
+          dsDemarcheId: aideDetails.dsDemarcheId || null,
         }
 
         allAides.push(richAide)

@@ -27,6 +27,9 @@ export default class AdminAideController {
         usage: this.aide.usage,
         instructeur: this.aide.instructeur,
         textesLoi: this.aide.textesLoi,
+        dsEnabled: this.aide.dsEnabled,
+        dsDemarcheId: this.aide.dsDemarcheId,
+        dsFieldMapping: this.aide.dsFieldMapping,
       }
     }
   }
@@ -67,6 +70,9 @@ export default class AdminAideController {
     'usage',
     'instructeur',
     'textesLoi',
+    'dsEnabled',
+    'dsDemarcheId',
+    'dsFieldMapping',
   ]
 
   /**
@@ -129,6 +135,12 @@ export default class AdminAideController {
       // Générer un slug à partir du titre
       data.slug = string.slug(data.title, { strict: true, lower: true })
     }
+
+    // Convert dsEnabled string to boolean
+    if (typeof data.dsEnabled === 'string') {
+      data.dsEnabled = data.dsEnabled === 'true'
+    }
+
     await Aide.create(data)
 
     return response.redirect().toRoute('/admin/aides')
@@ -145,6 +157,11 @@ export default class AdminAideController {
     }
 
     const data = request.only(AdminAideController.allowedFields)
+
+    // Convert dsEnabled string to boolean
+    if (typeof data.dsEnabled === 'string') {
+      data.dsEnabled = data.dsEnabled === 'true'
+    }
 
     aide.merge(data)
     await aide.save()

@@ -50,4 +50,17 @@ export default class Aide extends BaseModel {
     consume: value => (typeof value === 'string' ? JSON.parse(value) : value),
   })
   declare textesLoi: TexteLoi[]
+
+  @column()
+  declare dsEnabled: boolean
+
+  @column({ columnName: 'ds_demarche_id' })
+  declare dsDemarcheId: string | null
+
+  @column({
+    columnName: 'ds_field_mapping',
+    prepare: value => (typeof value === 'string' ? value : JSON.stringify(value)),
+    consume: value => (typeof value === 'string' ? JSON.parse(value) : value),
+  })
+  declare dsFieldMapping: Record<string, string> | null
 }

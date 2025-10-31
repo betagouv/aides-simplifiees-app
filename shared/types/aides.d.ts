@@ -20,6 +20,7 @@ declare global {
     id: string
     link: string
     title: string
+    slug: string
     description: string
     eligibilite: boolean
     instructeur: string
@@ -27,7 +28,8 @@ declare global {
     usage: UsageAide
     typeAide: TypeAide
     textesLoi: TexteLoi[]
-    description: string
+    dsEnabled: boolean
+    dsDemarcheId: string | null
   }
 
   interface RichMontant {

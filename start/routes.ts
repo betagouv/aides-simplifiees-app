@@ -25,6 +25,7 @@ const StatisticsController = () => import('#controllers/api/statistics_controlle
 const GeoApiController = () => import('#controllers/api/geo_api_controller')
 const OpenFiscaController = () => import('#controllers/api/openfisca_controller')
 const FormSubmissionController = () => import('#controllers/api/form_submission_controller')
+const DemarchesSimplifiedController = () => import('#controllers/api/demarches_simplifiees_controller')
 
 /**
  * Static pages controllers
@@ -97,6 +98,7 @@ router.get('/api/autocomplete/communes', [GeoApiController, 'autocompleteCommune
 router.post('/api/calculate', [OpenFiscaController, 'calculate'])
 router.post('/api/form-submissions', [FormSubmissionController, 'store'])
 router.get('/api/form-submissions/:hash', [FormSubmissionController, 'show'])
+router.post('/api/demarches-simplifiees/prefill', [DemarchesSimplifiedController, 'createPrefilledDossier'])
 
 /**
  * Assets

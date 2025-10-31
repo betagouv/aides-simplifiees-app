@@ -111,31 +111,40 @@ Each improvement from the analysis document gets its own feature branch for:
 ---
 
 ### ✅ 4. Security Improvements - COMPLETED & MERGED
-**Branch**: `security/csp-and-rate-limiting`
-**Status**: ✅ Merged to llms
-**Completed**: 2025-10-31
-**Effort**: 1 week
+**Branch**: `security/csp-and-rate-limiting`  
+**Status**: ✅ Merged to llms  
+**Completed**: 2025-10-31  
+**Effort**: 1 week  
 **Priority**: Critical
 
 **Scope**:
-- Add Content Security Policy middleware
-- Implement rate limiting on API endpoints
-- Add input sanitization for CMS content
+- ✅ Add Content Security Policy (enabled in shield.ts)
+- ✅ Implement rate limiting on API endpoints
+- ✅ Add input sanitization utility
 
-**Files to create**:
-- `app/middleware/csp_middleware.ts`
-- `app/middleware/throttle_middleware.ts`
-- `app/utils/sanitize.ts`
+**Files created**:
+- `app/middleware/throttle_middleware.ts` - Rate limiting with configurable limits
+- `app/utils/sanitize.ts` - HTML sanitization with DOMPurify
+- `app/utils/security-improvements.plan.llm.txt` - Implementation plan
 
-**Files to modify**:
-- `start/kernel.ts` - Register middlewares
-- API route definitions
-- CMS content rendering
+**Files modified**:
+- `config/shield.ts` - Enabled CSP with appropriate directives
+- `start/routes.ts` - Applied rate limiting to API routes (10-100 req/min)
 
-**Tests**:
-- CSP header verification
-- Rate limit behavior tests
-- Sanitization unit tests
+**Rate Limits Applied**:
+- /api/calculate: 20 req/min (expensive operation)
+- /api/form-submissions: 10 req/min (prevent spam)
+- /api/autocomplete: 60 req/min
+- /api/statistics: 100 req/min
+
+**Dependencies Added**:
+- limiter@3.0.0 - Rate limiting
+- isomorphic-dompurify@2.30.1 - HTML sanitization
+
+**Phase 2 - Deferred**:
+- ⏸️ Unit tests for security features
+- ⏸️ Apply sanitization to CMS content rendering
+- ⏸️ Redis support for distributed rate limiting
 
 ---
 
@@ -491,7 +500,7 @@ git push origin <branch-name>
 | P1 | `refactor/surveys-store-composables` | ✅ Complete | 2 weeks | - |
 | P1 | `refactor/eliminate-any-types` | ✅ Complete | 2 weeks | - |
 | P1 | `refactor/error-handling-patterns` | ✅ Complete (Phase 1) | 1 week | - |
-| P1 | `security/csp-and-rate-limiting` | 📋 Ready | 1 week | - |
+| P1 | `security/csp-and-rate-limiting` | ✅ Complete | 1 week | - |
 | P2 | `perf/bundle-optimization` | 📋 Ready | 1 week | - |
 | P2 | `test/expand-coverage` | 📋 Ready | 3 weeks | - |
 | P2 | `refactor/openfisca-builder-pattern` | 📋 Ready | 2 weeks | - |

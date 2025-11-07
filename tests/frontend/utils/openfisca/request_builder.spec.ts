@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { Entites, INDIVIDU_ID } from '~/utils/openfisca/constants'
-import { OpenFiscaRequestBuilder } from '~/utils/openfisca/request-builder'
+import { Entites, INDIVIDU_ID } from '~/services/openfisca/constants'
+import { OpenFiscaRequestBuilder } from '~/services/openfisca/request-builder'
 
 describe('openFiscaRequestBuilder', () => {
   describe('initialization', () => {

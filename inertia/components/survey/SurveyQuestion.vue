@@ -12,7 +12,7 @@ import UnkownQuestionType from '~/components/survey/UnkownQuestionType.vue'
 import {
   autocompleteConfigs,
   autocompleteFunctions,
-} from '~/utils/autocomplete_functions'
+} from '~/services/autocomplete_service'
 
 const props = withDefaults(
   defineProps<{

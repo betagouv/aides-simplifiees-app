@@ -1,9 +1,6 @@
 export { useSurveyAnswers } from './use_survey_answers'
 export type { UseSurveyAnswersOptions } from './use_survey_answers'
 
-export { useSurveyFormatting } from './use_survey_formatting'
-export type { UseSurveyFormattingOptions } from './use_survey_formatting'
-
 export { useSurveyNavigation } from './use_survey_navigation'
 export type { UseSurveyNavigationOptions } from './use_survey_navigation'
 

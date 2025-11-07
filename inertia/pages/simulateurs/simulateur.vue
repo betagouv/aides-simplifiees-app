@@ -6,8 +6,8 @@ import { useAsyncState } from '@vueuse/core'
 import { defineAsyncComponent, onMounted } from 'vue'
 import Survey from '~/components/survey/Survey.vue'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
+import { getPublicodesRules } from '~/services/publicodes_loader_service'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-import { getPublicodesRules } from '~/utils/get_publicodes_rules'
 
 // Lazy load heavy Publicodes component (only needed for publicodes forms)
 const PublicodesSurvey = defineAsyncComponent(

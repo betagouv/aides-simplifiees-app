@@ -4,15 +4,15 @@ import {
   FOYER_FISCAL_ID,
   INDIVIDU_ID,
   MENAGE_ID,
-} from '~/utils/openfisca/constants'
-import { getCurrentPeriod } from '~/utils/openfisca/date_periods'
-import { UnknownVariableError } from '~/utils/openfisca/errors'
+} from '~/services/openfisca/constants'
+import { getCurrentPeriod } from '~/services/openfisca/date_periods'
+import { UnknownVariableError } from '~/services/openfisca/errors'
 import {
   famillesQuestionsVariables,
   foyersFiscauxQuestionsVariables,
   individusQuestionsVariables,
   menagesQuestionsVariables,
-} from '~/utils/openfisca/questions_variables'
+} from '~/services/openfisca/questions_variables'
 
 /**
  * Add deduced results based on calculated values

@@ -1,12 +1,12 @@
 import type { Ref } from 'vue'
-import type { useMatomoTracking } from '~/composables/use_matomo_tracking'
+import type * as MatomoService from '~/services/matomo_service'
 import { useSurveyDebugStore } from '~/stores/survey_debug'
 
 export interface UseSurveyAnswersOptions {
   answers: Ref<{ [simulateurSlug: string]: SurveyAnswers }>
   findQuestionById: (simulateurSlug: string, questionId: string) => SurveyQuestionData | null
   isQuestionVisible: (simulateurSlug: string, questionId: string) => boolean
-  matomo?: ReturnType<typeof useMatomoTracking> | null
+  matomo?: typeof MatomoService | null
 }
 
 export function useSurveyAnswers(options: UseSurveyAnswersOptions) {

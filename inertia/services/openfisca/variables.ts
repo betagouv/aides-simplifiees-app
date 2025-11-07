@@ -9,7 +9,7 @@ import {
   dispatchSituationLogement,
   dispatchSituationProfessionnelle,
   dispatchTypeLogement,
-} from '~/utils/openfisca/dispatchers'
+} from '~/services/openfisca/dispatchers'
 
 export const individusVariables: { [aidesSimplifieesKey: string]: AidesSimplifieesMapping } = {
   'date-naissance': {

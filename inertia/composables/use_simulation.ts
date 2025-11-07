@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { ref } from 'vue'
-import { useEligibilityService } from '~/composables/use_eligibility_service'
-import { extractAidesResults } from '~/utils/openfisca/beautify_results'
-import { buildCalculationRequest } from '~/utils/openfisca/build_calculation_request'
-import { standardizeBirthDate } from '~/utils/openfisca/standardize_birth_date'
+import * as EligibilityService from '~/services/eligibility_service'
+import { extractAidesResults } from '~/services/openfisca/beautify_results'
+import { buildCalculationRequest } from '~/services/openfisca/build_calculation_request'
+import { standardizeBirthDate } from '~/services/openfisca/standardize_birth_date'
 
 /**
  * Composable for handling simulation logic with OpenFisca or Publicodes
@@ -25,8 +25,7 @@ export function useSimulation() {
       error.value = null
       if (schema.engine === 'publicodes') {
         const aidesToEvaluate = schema.dispositifs ?? []
-        const { calculateEligibility } = useEligibilityService()
-        const { aidesResults } = await calculateEligibility(schema.id, answers, aidesToEvaluate)
+        const { aidesResults } = await EligibilityService.calculateEligibility(schema.id, answers, aidesToEvaluate)
         results.value = aidesResults
         status.value = 'success'
       }

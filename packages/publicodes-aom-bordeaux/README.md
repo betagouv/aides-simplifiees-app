@@ -11,8 +11,8 @@ npm install @betagouv/publicodes-aom-bordeaux publicodes
 ## Usage
 
 ```typescript
-import Engine from 'publicodes'
 import rules from '@betagouv/publicodes-aom-bordeaux'
+import Engine from 'publicodes'
 
 const engine = new Engine(rules)
 
@@ -39,8 +39,6 @@ npm install
 
 // Compile the Publicodes rules
 npm run compile
-
-
 
 // Run the documentation server
 npm run doc

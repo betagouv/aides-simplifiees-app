@@ -1,4 +1,4 @@
-import { isAnswerValid } from '~/utils/form_validation'
+import { isAnswerValid } from '~/services/validation_service'
 
 export interface UseSurveyValidationOptions {
   getAnswer: (simulateurSlug: string, questionId: string) => any

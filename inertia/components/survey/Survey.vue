@@ -11,8 +11,8 @@ import SurveyNavigation from '~/components/survey/SurveyNavigation.vue'
 import SurveyWelcomeScreen from '~/components/survey/SurveyWelcomeScreen.vue'
 import { useFormSubmission } from '~/composables/use_form_submission'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
-import { useMatomoTracking } from '~/composables/use_matomo_tracking'
 import { useSimulation } from '~/composables/use_simulation'
+import * as MatomoService from '~/services/matomo_service'
 import { useSurveysStore } from '~/stores/surveys'
 import { scrollToAnchor } from '~/utils/dom'
 import { getParam } from '~/utils/url'
@@ -52,7 +52,7 @@ else {
 // Full survey initialization, including Matomo tracking
 function initSurvey() {
   // Track form start in Matomo
-  useMatomoTracking().trackSurveyStart(simulateur.slug)
+  MatomoService.trackSurveyStart(simulateur.slug)
   // Show the choice screen if there are answers
   if (hasAnswers.value) {
     surveysStore.setShowChoiceScreen(simulateur.slug, true)

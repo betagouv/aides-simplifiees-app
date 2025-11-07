@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { AutocompleteFn } from '~/utils/autocomplete_functions'
+import type { AutocompleteFn } from '~/services/autocomplete_service'
 import { DsfrAlert, DsfrButton, DsfrInput } from '@gouvminint/vue-dsfr'
 import { useAsyncState, useDebounceFn } from '@vueuse/core'
 import { nextTick, ref, watch } from 'vue'

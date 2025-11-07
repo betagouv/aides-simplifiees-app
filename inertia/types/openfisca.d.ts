@@ -1,6 +1,6 @@
 import type {
   Entites,
-} from '~/utils/openfisca/constants'
+} from '~/services/openfisca/constants'
 
 declare global {
 

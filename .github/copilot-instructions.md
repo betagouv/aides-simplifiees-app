@@ -17,26 +17,26 @@ description: Detailed Copilot instructions for aides-simplifiees-app
   - Lucid ORM for PostgreSQL
   - Built-in authentication system
   - Middleware for request handling
-  
+
 - **Frontend**: Vue.js 3 + Inertia.js
   - Inertia.js: framework for building SPAs with server-side rendering
   - VueDsfr: Vue implementation of the French State Design System
   - Vue 3 Composition API
   - Strict TypeScript
-  
+
 - **Build Tools**:
   - Vite: bundler and development server
   - Multi-build configuration (main app + iframe integration)
-  
+
 - **Database**: PostgreSQL
   - Migrations with Lucid
   - Seeders for test data
-  
+
 - **Testing**:
   - Japa: AdonisJS test framework
   - E2E tests with Playwright
   - Accessibility tests (RGAA 4.1)
-  
+
 - **Calculation Engine**: Publicodes
   - Calculation rules in `publicodes/`
   - Form generation with `@publicodes/forms`
@@ -177,7 +177,7 @@ export default class ExampleController {
     // Return an Inertia page
     return inertia.render('Domain/Page', { data })
   }
-  
+
   async store({ request, response }: HttpContext) {
     // Create a resource
   }
@@ -199,10 +199,10 @@ export default class ExampleService {
 #### Models
 
 ```typescript
+import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
 // app/models/<name>.ts
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
-import type { HasMany } from '@adonisjs/lucid/types/relations'
 
 export default class Example extends BaseModel {
   @column({ isPrimary: true })
@@ -223,8 +223,8 @@ export default class Example extends BaseModel {
 ```vue
 <!-- inertia/pages/<Domain>/<Name>.vue -->
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Head } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
 // Typed props
 interface Props {

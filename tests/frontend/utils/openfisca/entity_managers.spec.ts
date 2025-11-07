@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { FAMILLE_ID, FOYER_FISCAL_ID, INDIVIDU_ID, MENAGE_ID } from '~/utils/openfisca/constants'
-import { FamilleManager } from '~/utils/openfisca/request-builder/famille_manager'
-import { FoyerFiscalManager } from '~/utils/openfisca/request-builder/foyer_fiscal_manager'
-import { IndividuManager } from '~/utils/openfisca/request-builder/individu_manager'
-import { MenageManager } from '~/utils/openfisca/request-builder/menage_manager'
+import { FAMILLE_ID, FOYER_FISCAL_ID, INDIVIDU_ID, MENAGE_ID } from '~/services/openfisca/constants'
+import { FamilleManager } from '~/services/openfisca/request-builder/famille_manager'
+import { FoyerFiscalManager } from '~/services/openfisca/request-builder/foyer_fiscal_manager'
+import { IndividuManager } from '~/services/openfisca/request-builder/individu_manager'
+import { MenageManager } from '~/services/openfisca/request-builder/menage_manager'
 
 describe('entity Managers', () => {
   describe('individuManager', () => {

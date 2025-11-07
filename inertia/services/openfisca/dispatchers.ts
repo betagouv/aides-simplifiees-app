@@ -3,13 +3,13 @@ import {
   FORM_VALUES,
   LOGEMENT_STATUS,
   UNDEFINED_PERIOD_TYPE,
-} from '~/utils/openfisca/constants'
-import { getCurrentPeriod } from '~/utils/openfisca/date_periods'
-import { UnexpectedValueError, UnknownPeriodError } from '~/utils/openfisca/errors'
+} from '~/services/openfisca/constants'
+import { getCurrentPeriod } from '~/services/openfisca/date_periods'
+import { UnexpectedValueError, UnknownPeriodError } from '~/services/openfisca/errors'
 /**
  * Dispatch utilities for mapping form values to OpenFisca variables
  */
-import { formatSurveyAnswerToRequest } from '~/utils/openfisca/formatters'
+import { formatSurveyAnswerToRequest } from '~/services/openfisca/formatters'
 
 /**
  * Dispatch professional situation values to OpenFisca variables

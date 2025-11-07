@@ -1,0 +1,44 @@
+jec:
+  titre: Jeune Entreprise de Croissance
+
+jec . eligibilite:
+  titre: Éligibilité au statut JEC
+  toutes ces conditions:
+    - estUnePME
+    - jec . conditionAge
+    - jec . critereRD
+    - effectifAugmente
+    - depensesStables
+    - capitalDetenu . eligibilite
+    - activiteNouvelle
+
+jec . eligibilite . explications:
+  applicable si: eligibilite = non
+  texte: |
+    {{ estUnePME . explications }}
+    {{ jec . conditionAge . explications }}
+    {{ jec . critereRD . explications }}
+    {{ effectifAugmente . explications }}
+    {{ depensesStables . explications }}
+    {{ capitalDetenu . eligibilite . explications }}
+    {{ activiteNouvelle . explications }}
+
+jec . conditionAge:
+  titre: L'entreprise est suffisamment jeune pour bénéficier des avantages du statut JEC
+  valeur: ageEntreprise < jec . conditionAge . age limite
+jec . conditionAge . age limite: 8 an
+jec . conditionAge . explications:
+  applicable si: conditionAge = non
+  texte: |
+    Votre entreprise doit être créée depuis moins de {{jec . conditionAge . age limite}}.
+
+jec . critereRD:
+  toutes ces conditions:
+    - pourcentageRd >= jec . critereRD . tauxMinimum
+    - pourcentageRd < jec . critereRD . tauxMaximum
+jec . critereRD . tauxMinimum: 5
+jec . critereRD . tauxMaximum: 20
+jec . critereRD . explications:
+  applicable si: critereRD = non
+  texte: |
+    Le taux de dépense R&D doit être compris entre {{ jec . critereRD . tauxMinimum }}% et {{ jec . critereRD . tauxMaximum }}%.

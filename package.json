@@ -20,7 +20,7 @@
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
     "#config/*": "./config/*.js",
-    "#publicodes/*": "./publicodes/"
+    "#packages/*": "./packages/"
   },
   "scripts": {
     "start": "node bin/server.js",

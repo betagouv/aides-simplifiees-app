@@ -9,16 +9,16 @@ import { BuildLogger } from './build_logger.js'
 const logger = new BuildLogger('PUBLICODES')
 
 const publicodesPackages = [
-  'aom-bordeaux',
-  'aom-rennes',
-  // 'entreprise-innovation',
+  'publicodes-aom-bordeaux',
+  'publicodes-aom-rennes',
+  'publicodes-entreprise-innovation',
 ]
 
 // TODO: Remove this build script once packages are published to npm
 // and consumed as dependencies instead of local packages
 
 function buildPackage(packageName) {
-  const packagePath = path.join('publicodes', packageName)
+  const packagePath = path.join('packages', packageName)
 
   if (!existsSync(packagePath)) {
     logger.error(`Package ${packageName} not found at ${packagePath}`)

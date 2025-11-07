@@ -1,0 +1,29 @@
+{
+  "name": "@betagouv/publicodes-aom-bordeaux",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Modèle publicodes de tarification de l'AOM de Bordeaux Métropole",
+  "author": "Lucas Poulain (ShallowRed) <lucaspoulain2@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/betagouv/publicodes-aom-bordeaux",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/betagouv/publicodes-aom-bordeaux.git"
+  },
+  "keywords": ["publicodes", "transport", "tarification", "bordeaux", "aom"],
+  "main": "publicodes-build/index.js",
+  "types": "publicodes-build/index.d.ts",
+  "files": [
+    "publicodes-build"
+  ],
+  "scripts": {
+    "compile": "publicodes compile",
+    "dev": "publicodes dev"
+  },
+  "peerDependencies": {
+    "publicodes": "^1.9.0"
+  },
+  "devDependencies": {
+    "@publicodes/tools": "^1.7.2"
+  }
+}

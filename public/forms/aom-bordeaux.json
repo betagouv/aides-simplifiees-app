@@ -2,8 +2,8 @@
   "version": "1.0.0",
   "forceRefresh": false,
   "id": "aom-bordeaux",
-  "title": "AOM Lille",
-  "description": "Répondez à ces questions pour découvrir les dispositifs d'innovation et de recherche auxquels votre entreprise pourrait être éligible (CIR, CII, CICo, JEI, JEU, JEC)",
+  "title": "Tarifs TBM Bordeaux Métropole",
+  "description": "Découvrez les tarifs des transports en commun de Bordeaux Métropole (TBM) adaptés à votre situation",
   "engine": "publicodes",
   "dispositifs": [
     {
@@ -47,7 +47,7 @@
               "type": "boolean"
             },
             {
-              "id": "famille-nombreuse",
+              "id": "familleNombreuse",
               "title": "Avez-vous le statut de famille nombreuse ?",
               "description": "",
               "type": "boolean"
@@ -59,13 +59,13 @@
               "type": "boolean"
             },
             {
-              "id": "carte-combattant",
+              "id": "carteCombattant",
               "title": "Avez-vous la carte de combattant ?",
               "description": "",
               "type": "boolean"
             },
             {
-              "id": "service-civique",
+              "id": "serviceCivique",
               "title": "Etes-vous en service civique ?",
               "description": "",
               "type": "boolean"
@@ -77,23 +77,23 @@
               "type": "number"
             },
             {
-              "id": "quotient-familial",
+              "id": "quotientFamilial",
               "title": "Quel est votre quotient familial ?",
               "description": "",
               "type": "number"
             },
             {
-              "id": "salarie-entreprise-partenaire",
+              "id": "salarieEntreprisePartenaire",
               "title": "Êtes-vous salarié d'une entreprise partenaire TBM",
               "description": "",
               "type": "boolean"
             },
             {
-              "id": "situation-de-handicap",
-              "title": "Quel est votre taux d'incapacité (handicap) ?",
-              "description": "Taux d'incapacité en pourcentage (0 si aucun handicap) ? ",
-              "type": "number",
-              "default": 0
+              "id": "situationDeHandicap",
+              "title": "Êtes-vous en situation de handicap ?",
+              "description": "Pour bénéficier de la gratuité, vous devez être en situation de handicap avec un taux d'invalidité supérieur à 50%",
+              "type": "boolean",
+              "default": false
             }
           ]
         }

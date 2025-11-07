@@ -1,0 +1,5 @@
+Cico contratOrdc non eligible:
+  contexte:
+    contratOrdc: non
+    natureActivite . industrielle: oui
+    regimeFiscalEstReel: oui

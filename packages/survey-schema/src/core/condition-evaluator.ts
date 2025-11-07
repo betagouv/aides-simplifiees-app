@@ -193,8 +193,18 @@ export class ConditionEvaluator {
    */
   private evaluateComparison(expression: string, answers: SurveyAnswers): boolean {
     const comparisonOperators = ['>=', '<=', '!=', '>', '<', '=']
+    
+    // Include custom operators in the search
+    const allOperators = [
+      ...comparisonOperators,
+      ...Object.keys(this.options.customOperators || {}),
+    ]
+    
+    // Sort operators by length (longest first) to match multi-char operators before single-char
+    // This prevents '~=' from matching '=' first
+    allOperators.sort((a, b) => b.length - a.length)
 
-    for (const operator of comparisonOperators) {
+    for (const operator of allOperators) {
       if (expression.includes(operator)) {
         const parts = expression.split(operator)
         if (parts.length !== 2) {

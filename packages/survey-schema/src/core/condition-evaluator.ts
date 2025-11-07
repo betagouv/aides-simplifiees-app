@@ -73,7 +73,8 @@ export class ConditionEvaluator {
 
     try {
       return this.evaluateExpression(conditionStr.trim(), answers)
-    } catch (error) {
+    }
+    catch (error) {
       if (this.options.strict) {
         throw error
       }
@@ -89,14 +90,14 @@ export class ConditionEvaluator {
   private evaluateExpression(expression: string, answers: SurveyAnswers): boolean {
     // Handle logical OR conditions by splitting and evaluating each part
     if (expression.includes('||')) {
-      const orConditions = expression.split('||').map((c) => c.trim())
-      return orConditions.some((condition) => this.evaluateExpression(condition, answers))
+      const orConditions = expression.split('||').map(c => c.trim())
+      return orConditions.some(condition => this.evaluateExpression(condition, answers))
     }
 
     // Handle logical AND conditions
     if (expression.includes('&&')) {
-      const andConditions = expression.split('&&').map((c) => c.trim())
-      return andConditions.every((condition) => this.evaluateExpression(condition, answers))
+      const andConditions = expression.split('&&').map(c => c.trim())
+      return andConditions.every(condition => this.evaluateExpression(condition, answers))
     }
 
     // Handle includes syntax for arrays
@@ -140,7 +141,7 @@ export class ConditionEvaluator {
 
     // For multiple values (checkboxes), check if at least one value is in the selected values
     if (Array.isArray(selectedValues)) {
-      return valuesToCheck.some((v) => selectedValues.includes(v))
+      return valuesToCheck.some(v => selectedValues.includes(v))
     }
 
     return false
@@ -171,7 +172,7 @@ export class ConditionEvaluator {
 
     // For multiple values (checkboxes), check if NONE of the values are in the selected values
     if (Array.isArray(selectedValues)) {
-      return !valuesToCheck.some((v) => selectedValues.includes(v))
+      return !valuesToCheck.some(v => selectedValues.includes(v))
     }
 
     return true
@@ -183,8 +184,8 @@ export class ConditionEvaluator {
   private parseListArgument(arg: string): string[] {
     return arg
       .split(',')
-      .map((v) => v.trim())
-      .map((v) => v.replace(/^["'](.+)["']$/, '$1')) // Remove quotes
+      .map(v => v.trim())
+      .map(v => v.replace(/^["'](.+)["']$/, '$1')) // Remove quotes
   }
 
   /**
@@ -239,8 +240,10 @@ export class ConditionEvaluator {
     }
 
     // Try to parse as boolean
-    if (trimmed === 'true') return true
-    if (trimmed === 'false') return false
+    if (trimmed === 'true')
+      return true
+    if (trimmed === 'false')
+      return false
 
     // Return as string
     return trimmed

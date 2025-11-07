@@ -5,12 +5,14 @@ description: Detailed Copilot instructions for aides-simplifiees-app
 # Copilot Instructions - Aides Simplifiées
 
 > **Note**: For a quick checklist, see `.github/copilot-critical-rules.md`
+> For a comprehensive overview, see `docs/architecture.llm.txt` as the starting point of every task.
 
 ## Project Overview
 
 **Aides Simplifiées** is a platform for simulating eligibility for multiple financial aids. The application uses a modern stack with AdonisJS for the backend and Vue.js/Inertia.js for the frontend.
 
 ### Technology Stack
+
 
 - **Backend**: AdonisJS v6 (TypeScript)
   - Full-stack Node.js framework with MVC structure

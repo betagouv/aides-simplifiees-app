@@ -1,0 +1,68 @@
+{
+  "name": "@betagouv/survey-schema",
+  "version": "2.0.0",
+  "description": "Framework-agnostic survey schema definition and management library for French public sector digital services",
+  "keywords": [
+    "survey",
+    "form",
+    "schema",
+    "validation",
+    "conditional-logic",
+    "publicodes",
+    "openfisca",
+    "betagouv"
+  ],
+  "license": "MIT",
+  "author": "BetaGouv",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/betagouv/aides-simplifiees-app.git",
+    "directory": "packages/survey-schema"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./schemas/*": "./src/validation/schemas/*.json"
+  },
+  "files": [
+    "dist",
+    "src/validation/schemas",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "validate-schemas": "ajv compile -s 'src/validation/schemas/*.json'"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ajv-cli": "^5.0.0",
+    "eslint": "^8.55.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4",
+    "@vitest/coverage-v8": "^1.0.4"
+  },
+  "peerDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

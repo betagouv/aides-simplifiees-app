@@ -1,0 +1,369 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://betagouv.github.io/survey-schema/v2.0.0/schema.json",
+  "title": "BetaGouv Survey Schema",
+  "description": "JSON Schema for BetaGouv Survey Definition Format v2.0.0",
+  "type": "object",
+  "required": ["version", "id", "title", "engine", "steps"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of this survey instance"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "const": "2.0.0",
+      "description": "Version of the survey schema format"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique identifier for this survey (kebab-case)"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Survey title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Survey description"
+    },
+    "forceRefresh": {
+      "type": "boolean",
+      "default": false,
+      "description": "Force refresh of survey data when schema loads"
+    },
+    "engine": {
+      "type": "string",
+      "enum": ["openfisca", "publicodes"],
+      "description": "Calculation engine type"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/step"
+      },
+      "description": "Steps in the survey"
+    },
+    "questionsToApi": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Question IDs to send to OpenFisca API (OpenFisca engine only)"
+    },
+    "dispositifs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/dispositif"
+      },
+      "description": "Available dispositifs (Publicodes engine only)"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "engine": { "const": "openfisca" } }
+      },
+      "then": {
+        "required": ["questionsToApi"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "engine": { "const": "publicodes" } }
+      },
+      "then": {
+        "required": ["dispositifs"]
+      }
+    }
+  ],
+  "definitions": {
+    "step": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Unique identifier for this step"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Step title shown in navigation"
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/page"
+          },
+          "description": "Pages within this step"
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/question"
+          },
+          "description": "Questions directly in step (legacy format)"
+        }
+      },
+      "oneOf": [
+        { "required": ["pages"] },
+        { "required": ["questions"] }
+      ]
+    },
+    "page": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-_]+$",
+          "description": "Unique identifier for this page"
+        },
+        "title": {
+          "type": "string",
+          "description": "Optional page title"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "type": {
+              "const": "intermediary-results"
+            },
+            "description": {
+              "type": "string",
+              "description": "Results description"
+            },
+            "dispositifs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Dispositif IDs to display"
+            }
+          },
+          "required": ["type", "description", "dispositifs"]
+        },
+        {
+          "properties": {
+            "questions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/question"
+              },
+              "minItems": 1
+            }
+          },
+          "required": ["questions"]
+        }
+      ]
+    },
+    "question": {
+      "type": "object",
+      "required": ["id", "title", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Unique identifier for this question"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Question text"
+        },
+        "description": {
+          "type": "string",
+          "description": "Additional help text"
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Placeholder text for input"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["radio", "checkbox", "number", "date", "combobox", "boolean"],
+          "description": "Question type"
+        },
+        "required": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether answer is required"
+        },
+        "visibleWhen": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Condition string for visibility"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of conditions (AND logic)"
+            }
+          ]
+        },
+        "default": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "number" },
+            { "type": "boolean" }
+          ],
+          "description": "Default value"
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/choice"
+          },
+          "description": "Available choices (radio/checkbox)"
+        },
+        "min": {
+          "type": "number",
+          "description": "Minimum value (number)"
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum value (number)"
+        },
+        "step": {
+          "type": "number",
+          "description": "Step increment (number)"
+        },
+        "autocompleteFunction": {
+          "type": "string",
+          "description": "Autocomplete function name (combobox)"
+        },
+        "autocompleteConfig": {
+          "$ref": "#/definitions/autocompleteConfig"
+        },
+        "tooltip": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "buttonLabel": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              },
+              "required": ["content"]
+            }
+          ]
+        },
+        "notion": {
+          "type": "object",
+          "required": ["id", "buttonLabel"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Notion page ID"
+            },
+            "buttonLabel": {
+              "type": "string",
+              "description": "Button label"
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": ["radio", "checkbox"]
+              }
+            }
+          },
+          "then": {
+            "required": ["choices"]
+          }
+        }
+      ],
+      "not": {
+        "required": ["tooltip", "notion"]
+      }
+    },
+    "choice": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Choice identifier"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Choice label"
+        },
+        "tooltip": {
+          "type": "string",
+          "description": "Choice tooltip"
+        },
+        "exclusive": {
+          "type": "boolean",
+          "description": "Exclusive choice (checkbox)"
+        }
+      }
+    },
+    "autocompleteConfig": {
+      "type": "object",
+      "properties": {
+        "placeholder": {
+          "type": "string"
+        },
+        "loadingText": {
+          "type": "string"
+        },
+        "noResultsText": {
+          "type": "string"
+        },
+        "errorTitle": {
+          "type": "string"
+        },
+        "errorDescription": {
+          "type": "string"
+        },
+        "minSearchLength": {
+          "type": "number",
+          "minimum": 1
+        }
+      }
+    },
+    "dispositif": {
+      "type": "object",
+      "required": ["id", "title", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Dispositif identifier"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dispositif title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Dispositif description"
+        }
+      }
+    }
+  }
+}

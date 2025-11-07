@@ -1,4 +1,4 @@
-import { evaluateCondition } from '~/utils/evaluate_conditions'
+import { evaluateCondition } from '~/services/condition_service'
 
 export interface UseSurveyVisibilityOptions {
   getAnswers: (simulateurSlug: string) => SurveyAnswers

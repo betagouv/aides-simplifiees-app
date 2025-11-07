@@ -1,6 +1,6 @@
 import Engine from 'publicodes'
+import { getPublicodesRules } from '~/services/publicodes_loader_service'
 import { useSurveysStore } from '~/stores/surveys'
-import { getPublicodesRules } from '~/utils/get_publicodes_rules'
 
 export interface DispositifDetail {
   id: string

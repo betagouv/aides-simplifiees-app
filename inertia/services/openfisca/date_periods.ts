@@ -2,7 +2,7 @@
  * Date utilities for OpenFisca calculations
  */
 
-import { ETERNITY_PERIOD, UNDEFINED_PERIOD_TYPE } from '~/utils/openfisca/constants'
+import { ETERNITY_PERIOD, UNDEFINED_PERIOD_TYPE } from '~/services/openfisca/constants'
 
 /**
  * Initialize date periods based on current date

@@ -1,5 +1,5 @@
-import { OpenFiscaRequestBuilder } from '~/utils/openfisca/request-builder'
-import { famillesVariables } from '~/utils/openfisca/variables'
+import { OpenFiscaRequestBuilder } from '~/services/openfisca/request-builder'
+import { famillesVariables } from '~/services/openfisca/variables'
 
 /**
  * OpenFisca request builder and business logic

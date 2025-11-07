@@ -4,7 +4,7 @@ import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrAlert, DsfrCallout } from '@gouvminint/vue-dsfr'
 import { usePage } from '@inertiajs/vue3'
 import { useDynamicEligibility } from '~/composables/use_dynamic_eligibility'
-import { useMatomoTracking } from '~/composables/use_matomo_tracking'
+import * as MatomoService from '~/services/matomo_service'
 
 const {
   props: {
@@ -13,7 +13,7 @@ const {
 } = usePage<InferPageProps<SimulateurController, 'show'>>()
 
 // Track view in Matomo
-useMatomoTracking().trackEvent('Simulateur', 'IntermediaryResults', simulateur.slug)
+MatomoService.trackEvent('Simulateur', 'IntermediaryResults', simulateur.slug)
 
 const {
   aidesToEvaluate,

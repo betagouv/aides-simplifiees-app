@@ -1,12 +1,11 @@
-import type { EligibilityResults } from '~/composables/use_eligibility_service'
+import type { EligibilityResults } from '~/services/eligibility_service'
 import { computed, ref, watch } from 'vue'
-import { useEligibilityService } from '~/composables/use_eligibility_service'
+import * as EligibilityService from '~/services/eligibility_service'
 import { useSurveysStore } from '~/stores/surveys'
 
 export function useDynamicEligibility(simulateurSlug: string) {
   // Access the survey store
   const surveysStore = useSurveysStore()
-  const { calculateEligibility } = useEligibilityService()
 
   // Get answers from the survey
   const surveyAnswers = computed(() => surveysStore.getAnswersForCalculation(simulateurSlug))
@@ -42,7 +41,7 @@ export function useDynamicEligibility(simulateurSlug: string) {
     }
 
     try {
-      calculatedResults.value = await calculateEligibility(
+      calculatedResults.value = await EligibilityService.calculateEligibility(
         simulateurSlug,
         surveyAnswers.value,
         aidesToEvaluate.value,

@@ -1,12 +1,12 @@
 import { ref } from 'vue'
 import { useSurveyAnswers } from '~/composables/surveys/use_survey_answers'
-import { useSurveyFormatting } from '~/composables/surveys/use_survey_formatting'
 import { useSurveyNavigation } from '~/composables/surveys/use_survey_navigation'
 import { useSurveyQuestions } from '~/composables/surveys/use_survey_questions'
 import { useSurveyValidation } from '~/composables/surveys/use_survey_validation'
 import { useSurveyVisibility } from '~/composables/surveys/use_survey_visibility'
-import { useMatomoTracking } from '~/composables/use_matomo_tracking'
 import { useSurveySchemaManager } from '~/composables/use_survey_schema_manager'
+import * as FormattingService from '~/services/formatting_service'
+import * as MatomoService from '~/services/matomo_service'
 import { useSurveyDebugStore } from '~/stores/survey_debug'
 
 export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
@@ -20,7 +20,7 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
     /**
      * Composables
      */
-    const matomo = enableMatomo ? useMatomoTracking() : null
+    const matomo = enableMatomo ? MatomoService : null
     const { debug } = useSurveyDebugStore()
 
     const {
@@ -66,12 +66,9 @@ export function useSurveysStoreDefiner({ enableMatomo = false } = {}) {
       setAnswer,
     } = answersComposable
 
-    // Extract formatting (depends on getAnswer, findQuestionById)
-    const formattingComposable = useSurveyFormatting({
-      getAnswer,
-      findQuestionById,
-    })
-    const { formatAnswer } = formattingComposable
+    // Formatting function (uses service directly)
+    const formatAnswer = (simulateurSlug: string, questionId: string, value: SurveyAnswerValue) =>
+      FormattingService.formatAnswer(simulateurSlug, questionId, value, getAnswer, findQuestionById)
 
     // Extract navigation (depends on multiple composables)
     const navigationComposable = useSurveyNavigation({

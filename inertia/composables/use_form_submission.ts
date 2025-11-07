@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { ref } from 'vue'
-import { useMatomoTracking } from '~/composables/use_matomo_tracking'
+import * as MatomoService from '~/services/matomo_service'
 import { useSurveyDebugStore } from '~/stores/survey_debug'
 
 export function useFormSubmission() {
@@ -18,8 +18,7 @@ export function useFormSubmission() {
       status.value = 'pending'
 
       // Track form submission in Matomo
-      const matomo = useMatomoTracking()
-      matomo.trackSurveySubmit(simulateurSlug)
+      MatomoService.trackSurveySubmit(simulateurSlug)
 
       // Store form data and results
       try {

@@ -74,7 +74,8 @@ const result = validator.validate(schema)
 
 if (!result.valid) {
   console.error('Schema validation failed:', result.errors)
-} else {
+}
+else {
   console.log('Schema is valid!')
 }
 ```

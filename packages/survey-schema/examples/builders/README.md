@@ -109,7 +109,8 @@ All builders validate required fields and constraints:
 ```typescript
 try {
   const invalid = new StepBuilder('step1').build() // Error: Step must have a title
-} catch (error) {
+}
+catch (error) {
   console.error(error.message)
 }
 ```

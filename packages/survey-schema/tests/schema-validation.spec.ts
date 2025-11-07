@@ -169,7 +169,7 @@ describe('schema validator', () => {
 
       const result = validator.validate(schema)
       expect(result.valid).toBe(false)
-      expect(result.errors?.some((e) => e.keyword === 'pattern')).toBe(true)
+      expect(result.errors?.some(e => e.keyword === 'pattern')).toBe(true)
     })
 
     it('should reject schema with invalid version format', () => {
@@ -197,7 +197,7 @@ describe('schema validator', () => {
 
       const result = validator.validate(schema)
       expect(result.valid).toBe(false)
-      expect(result.errors?.some((e) => e.keyword === 'enum')).toBe(true)
+      expect(result.errors?.some(e => e.keyword === 'enum')).toBe(true)
     })
 
     it('should require questionsToApi for openfisca engine', () => {

@@ -31,14 +31,14 @@ export interface ComboboxAnswer {
  * - combobox → ComboboxAnswer
  * - unanswered → null | undefined
  */
-export type SurveyAnswerValue =
-  | string
-  | number
-  | boolean
-  | string[]
-  | ComboboxAnswer
-  | null
-  | undefined
+export type SurveyAnswerValue
+  = | string
+    | number
+    | boolean
+    | string[]
+    | ComboboxAnswer
+    | null
+    | undefined
 
 /**
  * Complete set of answers for a survey
@@ -51,11 +51,11 @@ export type SurveyAnswers = Record<string, SurveyAnswerValue>
  */
 export function isComboboxAnswer(value: SurveyAnswerValue): value is ComboboxAnswer {
   return (
-    value !== null &&
-    value !== undefined &&
-    typeof value === 'object' &&
-    'text' in value &&
-    'value' in value
+    value !== null
+    && value !== undefined
+    && typeof value === 'object'
+    && 'text' in value
+    && 'value' in value
   )
 }
 

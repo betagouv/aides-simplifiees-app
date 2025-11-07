@@ -27,8 +27,10 @@ export function compareVersions(version1: string, version2: string): number {
     const v1Part = v1Parts[i] || 0
     const v2Part = v2Parts[i] || 0
 
-    if (v1Part > v2Part) return 1
-    if (v1Part < v2Part) return -1
+    if (v1Part > v2Part)
+      return 1
+    if (v1Part < v2Part)
+      return -1
   }
 
   return 0
@@ -73,7 +75,7 @@ export function isVersionLessOrEqual(version1: string, version2: string): boolea
  * Validate if a string is a valid semantic version
  */
 export function isValidVersion(version: string): boolean {
-  const semverRegex = /^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$/
+  const semverRegex = /^\d+\.\d+\.\d+(-[a-z0-9.-]+)?(\+[a-z0-9.-]+)?$/i
   return semverRegex.test(version)
 }
 
@@ -87,8 +89,8 @@ export function parseVersion(version: string): {
   prerelease?: string
   build?: string
 } | null {
-  const match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.-]+))?(?:\+([a-zA-Z0-9.-]+))?$/)
-  
+  const match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-([a-z0-9.-]+))?(?:\+([a-z0-9.-]+))?$/i)
+
   if (!match) {
     return null
   }

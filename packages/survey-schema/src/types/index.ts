@@ -6,8 +6,8 @@
 // Answer types
 export type {
   ComboboxAnswer,
-  SurveyAnswerValue,
   SurveyAnswers,
+  SurveyAnswerValue,
 } from './answer.js'
 
 export {

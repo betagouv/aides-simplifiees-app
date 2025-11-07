@@ -215,7 +215,7 @@ export class AnswerValidator {
 
     // Check if answer is one of the valid choices
     if ('choices' in question && question.choices) {
-      const validChoiceIds = question.choices.map((c) => c.id)
+      const validChoiceIds = question.choices.map(c => c.id)
       if (!validChoiceIds.includes(answer)) {
         return {
           valid: false,
@@ -256,8 +256,8 @@ export class AnswerValidator {
 
     // Check if all answers are valid choices
     if ('choices' in question && question.choices) {
-      const validChoiceIds = question.choices.map((c) => c.id)
-      const invalidChoices = answer.filter((a) => !validChoiceIds.includes(a))
+      const validChoiceIds = question.choices.map(c => c.id)
+      const invalidChoices = answer.filter(a => !validChoiceIds.includes(a))
       if (invalidChoices.length > 0) {
         return {
           valid: false,

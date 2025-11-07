@@ -144,13 +144,13 @@ export type SurveyQuestionData = (
   | SurveyQuestionBoolean
 ) & (
   | {
-      notion?: SurveyQuestionNotion
-      tooltip?: never
-    }
+    notion?: SurveyQuestionNotion
+    tooltip?: never
+  }
   | {
-      notion?: never
-      tooltip?: string | SurveyQuestionTooltip
-    }
+    notion?: never
+    tooltip?: string | SurveyQuestionTooltip
+  }
 )
 
 /**

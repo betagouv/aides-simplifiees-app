@@ -2,14 +2,14 @@
  * Tests for ConditionEvaluator
  */
 
+import type { SurveyAnswers } from '../src/types/answer'
 import { describe, expect, it } from 'vitest'
 import { ConditionEvaluator } from '../src/core/condition-evaluator'
-import type { SurveyAnswers } from '../src/types/answer'
 
-describe('ConditionEvaluator', () => {
+describe('conditionEvaluator', () => {
   const evaluator = new ConditionEvaluator()
 
-  describe('Basic equality', () => {
+  describe('basic equality', () => {
     it('should evaluate simple equality', () => {
       const answers: SurveyAnswers = { status: 'student' }
       expect(evaluator.evaluate('status=student', answers)).toBe(true)
@@ -28,7 +28,7 @@ describe('ConditionEvaluator', () => {
     })
   })
 
-  describe('Numeric comparisons', () => {
+  describe('numeric comparisons', () => {
     it('should evaluate greater than', () => {
       const answers: SurveyAnswers = { age: 25 }
       expect(evaluator.evaluate('age>18', answers)).toBe(true)
@@ -54,7 +54,7 @@ describe('ConditionEvaluator', () => {
     })
   })
 
-  describe('Logical operators', () => {
+  describe('logical operators', () => {
     it('should evaluate AND conditions', () => {
       const answers: SurveyAnswers = { age: 25, status: 'student' }
       expect(evaluator.evaluate('age>=18&&status=student', answers)).toBe(true)
@@ -75,7 +75,7 @@ describe('ConditionEvaluator', () => {
     })
   })
 
-  describe('Array operations', () => {
+  describe('array operations', () => {
     it('should evaluate includes with single value', () => {
       const answers: SurveyAnswers = { interests: ['sports', 'music'] }
       expect(evaluator.evaluate('interests.includes("sports")', answers)).toBe(true)
@@ -112,7 +112,7 @@ describe('ConditionEvaluator', () => {
     })
   })
 
-  describe('Edge cases', () => {
+  describe('edge cases', () => {
     it('should return true for empty condition', () => {
       const answers: SurveyAnswers = {}
       expect(evaluator.evaluate('', answers)).toBe(true)
@@ -132,7 +132,7 @@ describe('ConditionEvaluator', () => {
     })
   })
 
-  describe('Custom operators', () => {
+  describe('custom operators', () => {
     it('should support custom operators', () => {
       const customEvaluator = new ConditionEvaluator({
         customOperators: {
@@ -150,7 +150,7 @@ describe('ConditionEvaluator', () => {
     })
   })
 
-  describe('Strict mode', () => {
+  describe('strict mode', () => {
     it('should throw errors in strict mode for invalid expressions', () => {
       const strictEvaluator = new ConditionEvaluator({ strict: true })
       const answers: SurveyAnswers = {}

@@ -200,7 +200,8 @@ Validate and throw if invalid.
 try {
   validator.validateOrThrow(mySchema)
   console.log('Schema is valid!')
-} catch (error) {
+}
+catch (error) {
   console.error(error.message)
 }
 ```
@@ -316,7 +317,7 @@ evaluator.evaluate('hobbies.excludes(music,gaming)', answers) // true
 const evaluator = new ConditionEvaluator({
   customOperators: {
     '~=': {
-      evaluate: (left, right) => 
+      evaluate: (left, right) =>
         String(left).toLowerCase() === String(right).toLowerCase()
     }
   }
@@ -428,7 +429,8 @@ try {
     .title('Test')
     // Missing dispositifs
     .build()
-} catch (error) {
+}
+catch (error) {
   console.error(error.message) // 'Publicodes schema must have dispositifs array'
 }
 ```
@@ -438,7 +440,7 @@ Validators return structured error objects:
 ```typescript
 const result = validator.validate(invalidSchema)
 if (!result.valid) {
-  result.errors.forEach(error => {
+  result.errors.forEach((error) => {
     console.log(`${error.instancePath}: ${error.message}`)
   })
 }

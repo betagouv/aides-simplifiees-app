@@ -2,14 +2,14 @@
  * Tests for AnswerValidator
  */
 
+import type { SurveyQuestionData } from '../src/types/question'
 import { describe, expect, it } from 'vitest'
 import { AnswerValidator } from '../src/core/answer-validator'
-import type { SurveyQuestionData } from '../src/types/question'
 
-describe('AnswerValidator', () => {
+describe('answerValidator', () => {
   const validator = new AnswerValidator()
 
-  describe('Radio questions', () => {
+  describe('radio questions', () => {
     const question: SurveyQuestionData = {
       id: 'status',
       title: 'Employment Status',
@@ -53,7 +53,7 @@ describe('AnswerValidator', () => {
     })
   })
 
-  describe('Checkbox questions', () => {
+  describe('checkbox questions', () => {
     const question: SurveyQuestionData = {
       id: 'interests',
       title: 'Interests',
@@ -89,7 +89,7 @@ describe('AnswerValidator', () => {
     })
   })
 
-  describe('Number questions', () => {
+  describe('number questions', () => {
     const question: SurveyQuestionData = {
       id: 'age',
       title: 'Age',
@@ -132,7 +132,7 @@ describe('AnswerValidator', () => {
     })
   })
 
-  describe('Date questions', () => {
+  describe('date questions', () => {
     const question: SurveyQuestionData = {
       id: 'birthdate',
       title: 'Birth Date',
@@ -162,7 +162,7 @@ describe('AnswerValidator', () => {
     })
   })
 
-  describe('Boolean questions', () => {
+  describe('boolean questions', () => {
     const question: SurveyQuestionData = {
       id: 'isStudent',
       title: 'Are you a student?',
@@ -186,7 +186,7 @@ describe('AnswerValidator', () => {
     })
   })
 
-  describe('Combobox questions', () => {
+  describe('combobox questions', () => {
     const question: SurveyQuestionData = {
       id: 'city',
       title: 'City',
@@ -240,12 +240,12 @@ describe('AnswerValidator', () => {
     })
   })
 
-  describe('Custom validators', () => {
+  describe('custom validators', () => {
     it('should use custom validator when provided', () => {
       const customValidator = new AnswerValidator({
         customValidators: {
           email: (question, answer) => {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
             if (typeof answer === 'string' && emailRegex.test(answer)) {
               return { valid: true }
             }

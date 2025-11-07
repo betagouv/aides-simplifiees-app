@@ -1,0 +1,86 @@
+{
+  "id": "basic-example",
+  "version": "1.0.0",
+  "schemaVersion": "2.0.0",
+  "title": "Basic Survey Example",
+  "description": "A simple survey to demonstrate basic features",
+  "engine": "publicodes",
+  "forceRefresh": false,
+  "dispositifs": [
+    {
+      "id": "student-aid",
+      "title": "Student Financial Aid",
+      "description": "Aid available for students"
+    }
+  ],
+  "steps": [
+    {
+      "id": "profile",
+      "title": "Your Profile",
+      "pages": [
+        {
+          "id": "basic-info",
+          "questions": [
+            {
+              "id": "age",
+              "title": "What is your age?",
+              "description": "Enter your age in years",
+              "type": "number",
+              "min": 0,
+              "max": 120,
+              "required": true
+            },
+            {
+              "id": "status",
+              "title": "Employment status",
+              "type": "radio",
+              "required": true,
+              "choices": [
+                { "id": "student", "title": "Student" },
+                { "id": "employed", "title": "Employed" },
+                { "id": "unemployed", "title": "Unemployed" }
+              ]
+            },
+            {
+              "id": "student-id",
+              "title": "Student ID",
+              "type": "combobox",
+              "visibleWhen": "status=student",
+              "required": false,
+              "placeholder": "Enter your student ID"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "preferences",
+      "title": "Your Preferences",
+      "pages": [
+        {
+          "id": "interests",
+          "questions": [
+            {
+              "id": "interests",
+              "title": "What are your interests?",
+              "type": "checkbox",
+              "required": false,
+              "choices": [
+                { "id": "sports", "title": "Sports" },
+                { "id": "music", "title": "Music" },
+                { "id": "arts", "title": "Arts" },
+                { "id": "technology", "title": "Technology" }
+              ]
+            },
+            {
+              "id": "newsletter",
+              "title": "Would you like to receive our newsletter?",
+              "type": "boolean",
+              "required": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

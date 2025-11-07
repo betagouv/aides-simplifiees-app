@@ -33,7 +33,8 @@ export function usePublicodesForm(config: PublicodesFormConfig) {
   // Computed properties
   const currentPage = computed(() => {
     try {
-      return formBuilder.currentPage(formState.value)
+      const page = formBuilder.currentPage(formState.value)
+      return page.elements || []
     }
     catch (e) {
       console.error('Error getting current page:', e)

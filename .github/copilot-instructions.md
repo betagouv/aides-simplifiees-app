@@ -5,6 +5,7 @@ description: Detailed Copilot instructions for aides-simplifiees-app
 # Copilot Instructions - Aides Simplifiées
 
 > **Note**: For a quick checklist, see `.github/copilot-critical-rules.md`
+> For a comprehensive overview, see `docs/architecture.llm.txt` as the starting point of every task.
 
 ## Context & Architecture
 

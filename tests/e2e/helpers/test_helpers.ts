@@ -1,9 +1,484 @@
 import type { Locator, Page } from 'playwright'
+
+import fs from 'node:fs'
+import path from 'node:path'
+import process from 'node:process'
+
 import { TestLogger } from '../test_logger.js'
 
 const logger = new TestLogger({ prefix: 'TEST', timestamp: false })
 
-export async function startSurvey(page: Page): Promise<void> {
+/**
+ * Interface for persona test data structure
+ */
+export interface PersonaTestData {
+  name: string
+  description: string
+  test_data: Record<string, any>
+  status: string
+}
+
+/**
+ * Load personas data from JSON file
+ */
+export async function loadPersonasData(simulateurSlug: string): Promise<PersonaTestData[]> {
+  try {
+    const personasFilePath = path.resolve(process.cwd(), 'database', 'data', `personas-${simulateurSlug}.json`)
+
+    if (!fs.existsSync(personasFilePath)) {
+      logger.error(`Personas file not found: ${personasFilePath}`)
+      return []
+    }
+
+    const personasContent = fs.readFileSync(personasFilePath, 'utf-8')
+    const personasData: PersonaTestData[] = JSON.parse(personasContent)
+
+    return personasData.filter(persona => persona.status === 'active')
+  }
+  catch (error) {
+    logger.error(`Error loading personas data: ${error}`)
+    return []
+  }
+}
+
+/**
+ * Answer a specific question using persona data
+ */
+export async function answerQuestionWithPersonaData(
+  page: Page,
+  questionContainer: Locator,
+  questionId: string,
+  personaData: Record<string, any>,
+): Promise<boolean> {
+  try {
+    const questionValue = personaData[questionId]
+
+    if (questionValue === undefined || questionValue === null) {
+      // Fall back to generic answer if no persona data
+      logger.info(`No persona data for ${questionId}, using generic answer`)
+      return await answerQuestionGeneric(questionContainer)
+    }
+
+    // Check question types and handle accordingly
+    const radioCount = await questionContainer.locator('input[type="radio"]').count()
+    const checkboxCount = await questionContainer.locator('input[type="checkbox"]').count()
+    const numberCount = await questionContainer.locator('input[type="number"]').count()
+    const dateCount = await questionContainer.locator('input[type="date"]').count()
+    const comboboxCount = await questionContainer.getByTestId('combobox').count()
+    const textCount = await questionContainer.locator('input[type="text"]').count()
+
+    // Check for the actual Vue combobox implementation patterns
+    const comboboxRole = await questionContainer.locator('input[role="combobox"]').count()
+    const searchWrapper = await questionContainer.locator('[role="search"]').count()
+    const datalistCount = await questionContainer.locator('datalist').count()
+
+    logger.info(`Question ${questionId} element counts: radio=${radioCount}, checkbox=${checkboxCount}, number=${numberCount}, date=${dateCount}, combobox=${comboboxCount}, text=${textCount}`)
+    logger.info(`Question ${questionId} combobox patterns: comboboxRole=${comboboxRole}, searchWrapper=${searchWrapper}, datalist=${datalistCount}`)
+
+    // Handle different question types based on persona data
+    if (radioCount > 0) {
+      logger.info(`Handling ${questionId} as radio question`)
+      return await selectRadioOption(questionContainer, questionValue)
+    }
+    else if (checkboxCount > 0) {
+      logger.info(`Handling ${questionId} as checkbox question`)
+      return await selectCheckboxOptions(questionContainer, questionValue)
+    }
+    else if (numberCount > 0) {
+      logger.info(`Handling ${questionId} as number question`)
+      return await fillNumberInput(questionContainer, questionValue)
+    }
+    else if (dateCount > 0) {
+      logger.info(`Handling ${questionId} as date question`)
+      return await fillDateInput(questionContainer, questionValue)
+    }
+    else if (comboboxCount > 0 || comboboxRole > 0 || searchWrapper > 0 || datalistCount > 0) {
+      logger.info(`Handling ${questionId} as combobox question`)
+      return await fillCombobox(page, questionContainer, questionValue)
+    }
+    else if (textCount > 0) {
+      logger.info(`Handling ${questionId} as text question`)
+      return await fillTextInput(questionContainer, questionValue)
+    }
+
+    logger.error(`Unknown question type for ${questionId}`)
+    return false
+  }
+  catch (error) {
+    logger.error(`Error answering question ${questionId} with persona data: ${error}`)
+    return await answerQuestionGeneric(questionContainer)
+  }
+}/**
+  * Select radio option based on persona value
+  */
+async function selectRadioOption(questionContainer: Locator, value: any): Promise<boolean> {
+  try {
+    // First try to find radio input with matching value
+    const radioWithValue = questionContainer.locator(`input[type="radio"][value="${value}"]`)
+    if (await radioWithValue.count() > 0) {
+      const label = radioWithValue.locator('..').locator('label')
+      if (await label.count() > 0) {
+        await label.click()
+        return true
+      }
+    }
+
+    // If no exact value match, try to find by text content
+    const radioLabels = questionContainer.locator('.fr-radio-group label')
+    const labelCount = await radioLabels.count()
+
+    for (let i = 0; i < labelCount; i++) {
+      const label = radioLabels.nth(i)
+      const labelText = await label.textContent()
+      if (labelText && labelText.toLowerCase().includes(value.toString().toLowerCase())) {
+        await label.click()
+        return true
+      }
+    }
+
+    // Fall back to first option
+    const firstLabel = questionContainer.locator('.fr-radio-group label').first()
+    if (await firstLabel.count() > 0) {
+      await firstLabel.click()
+      return true
+    }
+
+    return false
+  }
+  catch {
+    return false
+  }
+}
+
+/**
+ * Select checkbox options based on persona value (can be array or single value)
+ */
+async function selectCheckboxOptions(questionContainer: Locator, value: any): Promise<boolean> {
+  try {
+    const values = Array.isArray(value) ? value : [value]
+    let selectedAny = false
+
+    for (const val of values) {
+      // Try to find checkbox with matching value
+      const checkboxWithValue = questionContainer.locator(`input[type="checkbox"][value="${val}"]`)
+      if (await checkboxWithValue.count() > 0) {
+        const label = checkboxWithValue.locator('..').locator('label')
+        if (await label.count() > 0) {
+          await label.click()
+          selectedAny = true
+          continue
+        }
+      }
+
+      // If no exact value match, try to find by text content
+      const checkboxLabels = questionContainer.locator('.fr-checkbox-group label')
+      const labelCount = await checkboxLabels.count()
+
+      for (let i = 0; i < labelCount; i++) {
+        const label = checkboxLabels.nth(i)
+        const labelText = await label.textContent()
+        if (labelText && labelText.toLowerCase().includes(val.toString().toLowerCase())) {
+          await label.click()
+          selectedAny = true
+          break
+        }
+      }
+    }
+
+    // If no matches found, select first checkbox
+    if (!selectedAny) {
+      const firstLabel = questionContainer.locator('.fr-checkbox-group label').first()
+      if (await firstLabel.count() > 0) {
+        await firstLabel.click()
+        return true
+      }
+    }
+
+    return selectedAny
+  }
+  catch {
+    return false
+  }
+}
+
+/**
+ * Fill number input with persona value
+ */
+async function fillNumberInput(questionContainer: Locator, value: any): Promise<boolean> {
+  try {
+    const numberInput = questionContainer.locator('input[type="number"]').first()
+    await numberInput.fill(value.toString())
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+/**
+ * Fill date input with persona value
+ */
+async function fillDateInput(questionContainer: Locator, value: any): Promise<boolean> {
+  try {
+    const dateInput = questionContainer.locator('input[type="date"]').first()
+    // Ensure date is in YYYY-MM-DD format
+    const dateValue = value.toString()
+    if (dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      await dateInput.fill(dateValue)
+      return true
+    }
+    return false
+  }
+  catch {
+    return false
+  }
+}
+
+/**
+ * Fill combobox with persona value
+ */
+async function fillCombobox(page: Page, questionContainer: Locator, value: any): Promise<boolean> {
+  try {
+    // Handle JSON-like value format: {"value":"75101","text":"75001 - Paris 1er Arrondissement"}
+    let searchValue = value
+    let selectValue = value
+
+    if (typeof value === 'object' && value.text && value.value) {
+      searchValue = value.text
+      selectValue = value.value
+    }
+    else if (typeof value === 'string' && value.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(value)
+        searchValue = parsed.text || parsed.value
+        selectValue = parsed.value
+      }
+      catch {
+        searchValue = value
+        selectValue = value
+      }
+    }
+
+    logger.info(`Combobox: searching for "${searchValue}", selecting "${selectValue}"`)
+
+    // The Vue component uses DsfrInput with role="combobox"
+    const textInput = questionContainer.locator('input[role="combobox"]').first()
+    await textInput.fill(searchValue.toString())
+
+    // Click the search button to trigger the autocomplete API call
+    const searchButton = questionContainer.locator('button[title="Rechercher"]').first()
+    await searchButton.click()
+
+    // Wait for the API call to complete and datalist to be populated
+    await page.waitForTimeout(2000)
+
+    // Check if the datalist has been populated with options
+    const datalist = questionContainer.locator('datalist').first()
+    const optionCount = await datalist.locator('option').count()
+    logger.info(`Found ${optionCount} options in datalist after search`)
+
+    if (optionCount > 0) {
+      // Try to find an option that matches our desired text or value
+      const options = datalist.locator('option')
+      let foundMatch = false
+
+      for (let i = 0; i < optionCount; i++) {
+        const option = options.nth(i)
+        const optionValue = await option.getAttribute('value')
+        const optionLabel = await option.getAttribute('label')
+
+        // Check if this option matches what we're looking for
+        const matchesText = optionValue === searchValue.toString() || optionLabel === searchValue.toString()
+        const matchesPartial = optionValue?.includes(searchValue.toString()) || optionLabel?.includes(searchValue.toString())
+
+        if (matchesText || (i === 0 && matchesPartial)) {
+          // Set the input value to match the option exactly
+          const valueToSet = optionValue || optionLabel || ''
+          await textInput.fill(valueToSet)
+
+          // Trigger the input event to let Vue know the value changed
+          await textInput.dispatchEvent('input')
+
+          // Wait a moment for Vue to process the change
+          await page.waitForTimeout(500)
+
+          foundMatch = true
+          logger.info(`Successfully selected combobox option: "${valueToSet}"`)
+          break
+        }
+      }
+
+      if (!foundMatch) {
+        // Fall back to first option if no exact match
+        const firstOption = options.first()
+        const firstValue = await firstOption.getAttribute('value')
+        const firstLabel = await firstOption.getAttribute('label')
+        const valueToSet = firstValue || firstLabel || ''
+
+        await textInput.fill(valueToSet)
+        await textInput.dispatchEvent('input')
+        await page.waitForTimeout(500)
+
+        logger.info(`Selected first combobox option as fallback: "${valueToSet}"`)
+        foundMatch = true
+      }
+
+      return foundMatch
+    }
+    else {
+      logger.error(`No options found in datalist after search`)
+      return false
+    }
+  }
+  catch (error) {
+    logger.error(`Error filling combobox: ${error}`)
+    return false
+  }
+}/**
+  * Fill text input with persona value
+  */
+async function fillTextInput(questionContainer: Locator, value: any): Promise<boolean> {
+  try {
+    const textInput = questionContainer.locator('input[type="text"]').first()
+    await textInput.fill(value.toString())
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+/**
+ * Generic answer function (fallback)
+ */
+async function answerQuestionGeneric(questionContainer: Locator): Promise<boolean> {
+  try {
+    if (await questionContainer.locator('input[type="radio"]').count() > 0) {
+      const radioLabel = questionContainer.locator('.fr-radio-group label').first()
+      await radioLabel.click()
+    }
+    else if (await questionContainer.locator('input[type="checkbox"]').count() > 0) {
+      const checkboxLabel = questionContainer.locator('.fr-checkbox-group label').first()
+      await checkboxLabel.click()
+    }
+    else if (await questionContainer.locator('input[type="number"]').count() > 0) {
+      const numberInput = questionContainer.locator('input[type="number"]').first()
+      await numberInput.fill('1000')
+    }
+    else if (await questionContainer.locator('input[type="date"]').count() > 0) {
+      const dateInput = questionContainer.locator('input[type="date"]').first()
+      await dateInput.fill('1980-01-01')
+    }
+    else if (await questionContainer.locator('input[type="text"]').count() > 0) {
+      const textInput = questionContainer.locator('input[type="text"]').first()
+      await textInput.fill('Test response')
+    }
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+/**
+ * Answer all questions in current page using persona data
+ */
+export async function answerAllQuestionsWithPersonaData(
+  page: Page,
+  personaData: Record<string, any>,
+): Promise<boolean> {
+  try {
+    await page.getByTestId('survey-page').waitFor({ state: 'visible' })
+
+    const surveyQuestions = page.getByTestId('survey-question')
+    const questionCount = await surveyQuestions.count()
+
+    logger.info(`Found ${questionCount} questions on current page`)
+
+    if (questionCount === 0) {
+      return false
+    }
+
+    for (let i = 0; i < questionCount; i++) {
+      const questionContainer = surveyQuestions.nth(i)
+      const questionId = await questionContainer.getAttribute('data-question-id')
+
+      logger.info(`Processing question ${i + 1}/${questionCount}, ID: ${questionId}`)
+
+      if (questionId) {
+        const hasPersonaData = personaData[questionId] !== undefined
+        logger.info(`Question ${questionId}: has persona data = ${hasPersonaData}, value = ${JSON.stringify(personaData[questionId])}`)
+        await answerQuestionWithPersonaData(page, questionContainer, questionId, personaData)
+      }
+      else {
+        logger.info(`Question ${i + 1} has no ID, using generic answer`)
+        await answerQuestionGeneric(questionContainer)
+      }
+    }
+
+    return true
+  }
+  catch (error) {
+    logger.error(`Error answering questions with persona data: ${error}`)
+    return false
+  }
+}
+
+/**
+ * Complete form using persona data
+ */
+export async function autoCompleteFormWithPersona(
+  page: Page,
+  personaData: Record<string, any>,
+  personaName: string = 'Unknown Persona',
+): Promise<boolean> {
+  try {
+    logger.info(`Starting form completion with persona: ${personaName}`)
+    await startSurvey(page)
+
+    let questionCount = 0
+    const maxQuestions = 20
+
+    while (questionCount < maxQuestions) {
+      logger.info(`Checking for questions (iteration ${questionCount + 1}/${maxQuestions})`)
+
+      if (!await waitForSurveyQuestion(page)) {
+        logger.info(`No more questions found`)
+        // Check if we've reached results
+        if (await isOnResultsPage(page)) {
+          logger.info(`Successfully completed form with persona: ${personaName}`)
+          return true
+        }
+
+        break
+      }
+
+      await answerAllQuestionsWithPersonaData(page, personaData)
+
+      logger.info(`Attempting to go to next page`)
+      if (!await goToNextSurveyPage(page)) {
+        logger.info(`Failed to go to next page or reached end`)
+        break
+      }
+
+      questionCount++
+    }
+
+    const success = await isOnResultsPage(page)
+    if (success) {
+      logger.info(`Successfully completed form with persona: ${personaName}`)
+    }
+    else {
+      logger.error(`Failed to complete form with persona: ${personaName}. Current URL: ${page.url()}`)
+    }
+
+    return success
+  }
+  catch (error) {
+    logger.error(`Error completing form with persona ${personaName}: ${error}`)
+    return false
+  }
+} export async function startSurvey(page: Page): Promise<void> {
   const startButton = page.getByTestId('survey-start-button')
   // Wait for the start button to be visible
   await startButton.waitFor({ state: 'visible' })
@@ -23,7 +498,13 @@ export async function waitForSurveyQuestion(page: Page): Promise<boolean> {
 }
 
 export async function isOnResultsPage(page: Page): Promise<boolean> {
-  return page.url().includes('/resultats') || page.url().includes('/recapitulatif')
+  try {
+    await page.waitForURL('**/resultats/**', { timeout: 4000 })
+    return true
+  }
+  catch {
+    return false
+  }
 }
 
 /**

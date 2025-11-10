@@ -78,7 +78,7 @@ if (simulationTiles.length < 2) {
         Pour aller plus loin, utilisez ces simulateurs pour évaluer tous vos droits
       </h2>
       <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-4 fr-col-md-6">
+        <div class="fr-col-12 fr-col-md-6">
           <DsfrCard
             :title-link-attrs="{}"
             horizontal
@@ -88,7 +88,7 @@ if (simulationTiles.length < 2) {
             title-tag="h3"
           />
         </div>
-        <div class="fr-col-4 fr-col-md-6">
+        <div class="fr-col-12 fr-col-md-6">
           <DsfrCard
             :title-link-attrs="{}"
             horizontal
@@ -100,7 +100,7 @@ if (simulationTiles.length < 2) {
         </div>
       </div>
       <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-        <div class="fr-col-6">
+        <div class="fr-col-12 fr-col-md-6">
           <DsfrCard
             :title-link-attrs="{}"
             horizontal

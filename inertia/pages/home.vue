@@ -78,7 +78,7 @@ if (simulationTiles.length < 2) {
         Pour aller plus loin, utilisez ces simulateurs pour évaluer tous vos droits
       </h2>
       <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-col-4 fr-col-md-6">
           <DsfrCard
             :title-link-attrs="{}"
             horizontal
@@ -88,7 +88,7 @@ if (simulationTiles.length < 2) {
             title-tag="h3"
           />
         </div>
-        <div class="fr-col-12 fr-col-md-6">
+        <div class="fr-col-4 fr-col-md-6">
           <DsfrCard
             :title-link-attrs="{}"
             horizontal
@@ -96,6 +96,20 @@ if (simulationTiles.length < 2) {
             description="Simulateur tout public. Évaluez vos droits à près de 60 aides."
             link="https://www.mesdroitssociaux.gouv.fr/"
             title-tag="h3"
+          />
+        </div>
+      </div>
+      <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+        <div class="fr-col-6">
+          <DsfrCard
+            :title-link-attrs="{}"
+            horizontal
+            title="BoRiS"
+            description="Testez votre éligibilité au BRS (Bail Réel Solidaire) et accédez à la propriété à prix maîtrisé."
+            link="https://boris.beta.gouv.fr/"
+            title-tag="h3"
+            img-src="/logos/boris.svg"
+            class="boris-card"
           />
         </div>
       </div>
@@ -172,5 +186,11 @@ if (simulationTiles.length < 2) {
       line-height: 1.4 !important;
     }
   }
+}
+
+.boris-card :deep(img) {
+  object-fit: contain !important;
+  padding: 1rem;
+  max-height: 200px;
 }
 </style>

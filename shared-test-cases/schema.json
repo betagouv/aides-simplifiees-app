@@ -1,0 +1,253 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Shared Test Cases Format",
+  "description": "Format JSON commun pour les cas de test entre le dépôt Node.js et le dépôt Python OpenFisca",
+  "type": "object",
+  "required": ["version", "test_cases"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Version du format de test cases",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "example": "1.0.0"
+    },
+    "test_cases": {
+      "type": "array",
+      "description": "Liste des cas de test",
+      "items": {
+        "$ref": "#/definitions/test_case"
+      }
+    }
+  },
+  "definitions": {
+    "test_case": {
+      "type": "object",
+      "required": ["id", "name", "period", "survey_answers", "openfisca_request", "openfisca_response", "expected_results"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identifiant unique du test case",
+          "pattern": "^[a-z0-9-]+$",
+          "example": "dem-log-001"
+        },
+        "name": {
+          "type": "string",
+          "description": "Nom descriptif du test case",
+          "example": "Étudiant boursier en mobilité Parcoursup"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description détaillée du cas de test",
+          "example": "Jeune de 18 ans qui commence ses études supérieures dans une nouvelle région"
+        },
+        "period": {
+          "type": "string",
+          "description": "Période législative au format YYYY-MM",
+          "pattern": "^\\d{4}-\\d{2}$",
+          "example": "2025-01"
+        },
+        "openfisca_version": {
+          "type": "string",
+          "description": "Version d'OpenFisca France utilisée pour générer les réponses attendues",
+          "pattern": "^france-\\d+\\.\\d+\\.\\d+$",
+          "example": "france-158.0.0"
+        },
+        "metadata": {
+          "$ref": "#/definitions/metadata"
+        },
+        "survey_answers": {
+          "type": "object",
+          "description": "Réponses au questionnaire du simulateur (format application Node.js)",
+          "additionalProperties": true
+        },
+        "openfisca_request": {
+          "$ref": "#/definitions/openfisca_request"
+        },
+        "openfisca_response": {
+          "$ref": "#/definitions/openfisca_response"
+        },
+        "expected_results": {
+          "$ref": "#/definitions/expected_results"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Métadonnées de validation et traçabilité",
+      "properties": {
+        "created_by": {
+          "type": "string",
+          "description": "Nom de la personne qui a créé le test case",
+          "example": "Jean Dupont"
+        },
+        "created_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Date de création du test case (YYYY-MM-DD)",
+          "example": "2025-01-15"
+        },
+        "validated_by": {
+          "type": "string",
+          "description": "Nom de l'expert qui a validé le test case",
+          "example": "Marie Martin"
+        },
+        "validation_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Date de validation par l'expert (YYYY-MM-DD)",
+          "example": "2025-01-20"
+        },
+        "real_case_source": {
+          "type": "string",
+          "description": "Référence du dossier réel si le test case est basé sur un cas réel",
+          "example": "dossier_ref_123"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Tags pour catégoriser le test case",
+          "items": {
+            "type": "string"
+          },
+          "example": ["etudiant", "mobilite", "boursier"]
+        },
+        "notes": {
+          "type": "string",
+          "description": "Notes additionnelles ou contexte",
+          "example": "Cas particulier pour les étudiants hors académie d'origine"
+        }
+      }
+    },
+    "openfisca_request": {
+      "type": "object",
+      "description": "Requête OpenFisca complète (format OpenFisca API)",
+      "required": ["individus"],
+      "properties": {
+        "individus": {
+          "type": "object",
+          "description": "Entités individus",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "menages": {
+          "type": "object",
+          "description": "Entités ménages",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "foyers_fiscaux": {
+          "type": "object",
+          "description": "Entités foyers fiscaux",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "familles": {
+          "type": "object",
+          "description": "Entités familles",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "openfisca_response": {
+      "type": "object",
+      "description": "Réponse attendue d'OpenFisca (format OpenFisca API)",
+      "properties": {
+        "individus": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "menages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "foyers_fiscaux": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "familles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "expected_results": {
+      "type": "object",
+      "description": "Résultats attendus côté application (format simplifié pour l'utilisateur)",
+      "required": ["eligible"],
+      "properties": {
+        "eligible": {
+          "type": "boolean",
+          "description": "L'utilisateur est-il éligible à au moins une aide?",
+          "example": true
+        },
+        "total_amount": {
+          "type": "number",
+          "description": "Montant total des aides (optionnel)",
+          "example": 350
+        },
+        "aids": {
+          "type": "array",
+          "description": "Liste des aides avec leurs montants",
+          "items": {
+            "type": "object",
+            "required": ["name", "amount", "period"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Nom de la variable OpenFisca",
+                "example": "aide_mobili_jeune"
+              },
+              "amount": {
+                "type": "number",
+                "description": "Montant de l'aide",
+                "example": 100
+              },
+              "period": {
+                "type": "string",
+                "description": "Période pour laquelle l'aide est calculée",
+                "pattern": "^\\d{4}-\\d{2}$",
+                "example": "2025-01"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unité de l'aide (euros, pourcentage, etc.)",
+                "example": "euros",
+                "enum": ["euros", "percentage", "boolean"]
+              }
+            }
+          }
+        },
+        "messages": {
+          "type": "array",
+          "description": "Messages à afficher à l'utilisateur",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["info", "warning", "error"],
+                "example": "info"
+              },
+              "message": {
+                "type": "string",
+                "example": "Vous êtes éligible à l'aide à la mobilité jeune"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

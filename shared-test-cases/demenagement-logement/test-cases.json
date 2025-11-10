@@ -1,0 +1,303 @@
+{
+  "version": "1.0.0",
+  "test_cases": [
+    {
+      "id": "dem-log-001",
+      "name": "Étudiant boursier en mobilité Parcoursup",
+      "description": "Jeune de 18 ans qui commence ses études supérieures dans une nouvelle région après avoir été accepté sur Parcoursup. Cas typique d'étudiant éligible à l'aide à la mobilité jeune et à l'APL.",
+      "period": "2025-01",
+      "openfisca_version": "france-158.0.0",
+      "metadata": {
+        "created_by": "Expert Métier",
+        "created_date": "2025-01-15",
+        "validated_by": "Responsable Réglementation",
+        "validation_date": "2025-01-20",
+        "real_case_source": "dossier_ref_etudiant_123",
+        "tags": ["etudiant", "mobilite", "boursier", "parcoursup"],
+        "notes": "Cas de référence pour la mobilité étudiante. Vérifie l'éligibilité à l'aide mobili-jeune et à l'APL simultanément."
+      },
+      "survey_answers": {
+        "statut-professionnel": "etudiant",
+        "situation-professionnelle": "sans-emploi",
+        "etudiant-mobilite": "parcoursup-nouvelle-region",
+        "boursier": true,
+        "date-naissance": "2007-02-15",
+        "handicap": false,
+        "statut-marital": "celibataire",
+        "code-postal-nouvelle-ville": "{\"value\":\"75101\",\"text\":\"75001 - Paris 1er Arrondissement\"}",
+        "situation-logement": "locataire",
+        "type-logement": "logement-foyer",
+        "logement-conventionne": true,
+        "colocation": false,
+        "logement-parente-proprietaire": false,
+        "loyer-montant-mensuel": 400,
+        "loyer-montant-charges": 80,
+        "type-revenus": ["aucun-revenus"],
+        "montant-bourse-superieur": 4000
+      },
+      "openfisca_request": {
+        "individus": {
+          "usager": {
+            "activite": {
+              "2025-01": "etudiant"
+            },
+            "stagiaire": {
+              "2025-01": "stage"
+            },
+            "sortie_academie": {
+              "2025-01": true
+            },
+            "boursier": {
+              "2025-01": true
+            },
+            "date_naissance": {
+              "ETERNITY": "2007-02-15"
+            },
+            "handicap": {
+              "2025-01": false
+            },
+            "statut_marital": {
+              "2025-01": "celibataire"
+            }
+          }
+        },
+        "menages": {
+          "menage_usager": {
+            "membres": ["usager"],
+            "commune_code_insee": {
+              "2025-01": "75101"
+            },
+            "situation_logement": {
+              "2025-01": "locataire"
+            },
+            "type_logement": {
+              "2025-01": "logement_foyer"
+            },
+            "logement_conventionne": {
+              "2025-01": true
+            },
+            "colocation": {
+              "2025-01": false
+            },
+            "loyer": {
+              "2025-01": 400
+            },
+            "charges_locatives": {
+              "2025-01": 80
+            }
+          }
+        },
+        "foyers_fiscaux": {
+          "foyer_fiscal_usager": {
+            "declarants": ["usager"],
+            "rfr": {
+              "2024": 0
+            }
+          }
+        },
+        "familles": {
+          "famille_usager": {
+            "parents": ["usager"],
+            "bourse_enseignement_sup": {
+              "2025-01": 4000
+            }
+          }
+        }
+      },
+      "openfisca_response": {
+        "individus": {
+          "usager": {
+            "aide_mobili_jeune": {
+              "2025-01": 100
+            },
+            "aide_mobili_jeune_eligibilite": {
+              "2025-01": true
+            }
+          }
+        },
+        "menages": {
+          "menage_usager": {
+            "apl": {
+              "2025-01": 250
+            },
+            "apl_eligible": {
+              "2025-01": true
+            }
+          }
+        }
+      },
+      "expected_results": {
+        "eligible": true,
+        "total_amount": 350,
+        "aids": [
+          {
+            "name": "aide_mobili_jeune",
+            "amount": 100,
+            "period": "2025-01",
+            "unit": "euros"
+          },
+          {
+            "name": "apl",
+            "amount": 250,
+            "period": "2025-01",
+            "unit": "euros"
+          }
+        ],
+        "messages": [
+          {
+            "type": "info",
+            "message": "Vous êtes éligible à l'aide à la mobilité jeune (100€/mois) et à l'APL (250€/mois)"
+          },
+          {
+            "type": "info",
+            "message": "En tant qu'étudiant boursier en mobilité, vous bénéficiez d'aides spécifiques pour votre logement"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dem-log-002",
+      "name": "Alternant en couple",
+      "description": "Jeune de 20 ans en alternance qui cherche un logement avec son/sa conjoint(e). Vérifie l'éligibilité à l'APL pour un couple en alternance.",
+      "period": "2025-01",
+      "openfisca_version": "france-158.0.0",
+      "metadata": {
+        "created_by": "Expert Métier",
+        "created_date": "2025-01-16",
+        "validated_by": "Responsable Réglementation",
+        "validation_date": "2025-01-22",
+        "real_case_source": "dossier_ref_alternant_456",
+        "tags": ["alternant", "couple", "apl"],
+        "notes": "Cas de référence pour les alternants en couple. Pas d'aide mobili-jeune car pas de mobilité géographique."
+      },
+      "survey_answers": {
+        "statut-professionnel": "etudiant",
+        "situation-professionnelle": "alternance",
+        "etudiant-mobilite": "pas-de-mobilite",
+        "date-naissance": "2005-06-10",
+        "handicap": false,
+        "statut-marital": "marie",
+        "code-postal-nouvelle-ville": "69381",
+        "situation-logement": "locataire",
+        "type-logement": "logement-non-meuble",
+        "logement-conventionne": true,
+        "colocation": false,
+        "logement-parente-proprietaire": false,
+        "loyer-montant-mensuel": 650,
+        "loyer-montant-charges": 100,
+        "type-revenus": ["revenus-activite"],
+        "salaire-imposable": 18000
+      },
+      "openfisca_request": {
+        "individus": {
+          "usager": {
+            "activite": {
+              "2025-01": "etudiant"
+            },
+            "stagiaire": {
+              "2025-01": "non_stage"
+            },
+            "alternant": {
+              "2025-01": true
+            },
+            "date_naissance": {
+              "ETERNITY": "2005-06-10"
+            },
+            "handicap": {
+              "2025-01": false
+            },
+            "statut_marital": {
+              "2025-01": "marie"
+            },
+            "salaire_imposable": {
+              "2024": 18000
+            }
+          }
+        },
+        "menages": {
+          "menage_usager": {
+            "membres": ["usager"],
+            "commune_code_insee": {
+              "2025-01": "69381"
+            },
+            "situation_logement": {
+              "2025-01": "locataire"
+            },
+            "type_logement": {
+              "2025-01": "appartement_non_meuble"
+            },
+            "logement_conventionne": {
+              "2025-01": true
+            },
+            "colocation": {
+              "2025-01": false
+            },
+            "loyer": {
+              "2025-01": 650
+            },
+            "charges_locatives": {
+              "2025-01": 100
+            }
+          }
+        },
+        "foyers_fiscaux": {
+          "foyer_fiscal_usager": {
+            "declarants": ["usager"],
+            "rfr": {
+              "2024": 18000
+            }
+          }
+        },
+        "familles": {
+          "famille_usager": {
+            "parents": ["usager"]
+          }
+        }
+      },
+      "openfisca_response": {
+        "individus": {
+          "usager": {
+            "aide_mobili_jeune": {
+              "2025-01": 0
+            },
+            "aide_mobili_jeune_eligibilite": {
+              "2025-01": false
+            }
+          }
+        },
+        "menages": {
+          "menage_usager": {
+            "apl": {
+              "2025-01": 180
+            },
+            "apl_eligible": {
+              "2025-01": true
+            }
+          }
+        }
+      },
+      "expected_results": {
+        "eligible": true,
+        "total_amount": 180,
+        "aids": [
+          {
+            "name": "apl",
+            "amount": 180,
+            "period": "2025-01",
+            "unit": "euros"
+          }
+        ],
+        "messages": [
+          {
+            "type": "info",
+            "message": "Vous êtes éligible à l'APL (180€/mois)"
+          },
+          {
+            "type": "info",
+            "message": "En tant qu'alternant, vos revenus d'activité sont pris en compte pour le calcul de l'APL"
+          }
+        ]
+      }
+    }
+  ]
+}

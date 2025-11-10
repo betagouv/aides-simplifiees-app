@@ -9,10 +9,11 @@ applyTo: "**"
 
 ## Before Starting ANY Task
 
-1. Read `docs/architecture.llm.txt` FIRST to understand the context
-2. Identify which domain-specific `.llm.txt` files are relevant
-3. Choose approach: Direct Edit (1-3 files) or Plan-First (4+ files)
-4. For 4+ files: Create `.plan.llm.txt` before editing code
+1. **ALWAYS** read `docs/architecture.llm.txt` FIRST to understand the context (MANDATORY - NO EXCEPTIONS)
+2. **ALWAYS** read `.github/copilot-critical-rules.md` to ensure compliance with all rules
+3. Identify which domain-specific `.llm.txt` files are relevant
+4. Choose approach: Direct Edit (1-3 files) or Plan-First (4+ files)
+5. For 4+ files: Create `.plan.llm.txt` before editing code
 
 ## During Code Changes
 

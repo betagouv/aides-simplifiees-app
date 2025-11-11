@@ -3,16 +3,12 @@ import type SimulateurController from '#controllers/content/simulateur_controlle
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { Head, usePage } from '@inertiajs/vue3'
 import { useAsyncState } from '@vueuse/core'
-import { defineAsyncComponent, onMounted } from 'vue'
+import { onMounted } from 'vue'
+import PublicodesSurvey from '~/components/survey/PublicodesSurvey.vue'
 import Survey from '~/components/survey/Survey.vue'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
 import { getPublicodesRules } from '~/services/publicodes_loader_service'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-
-// Lazy load heavy Publicodes component (only needed for publicodes forms)
-const PublicodesSurvey = defineAsyncComponent(
-  () => import('~/components/survey/PublicodesSurvey.vue'),
-)
 
 const {
   props: { simulateur },

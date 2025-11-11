@@ -57,6 +57,11 @@ const shieldConfig = defineConfig({
     },
     enableXsrfCookie: true,
     methods: ['POST', 'PUT', 'PATCH', 'DELETE'],
+    cookieOptions: {
+      httpOnly: false, // XSRF token needs to be accessible by JavaScript
+      secure: true,
+      sameSite: 'none', // Required for iframe integration
+    },
   },
 
   /**

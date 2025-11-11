@@ -26,6 +26,7 @@ const StatisticsController = () => import('#controllers/api/statistics_controlle
 const GeoApiController = () => import('#controllers/api/geo_api_controller')
 const OpenFiscaController = () => import('#controllers/api/openfisca_controller')
 const FormSubmissionController = () => import('#controllers/api/form_submission_controller')
+const DemarchesSimplifiedController = () => import('#controllers/api/demarches_simplifiees_controller')
 
 /**
  * Static pages controllers
@@ -113,6 +114,9 @@ router
 router
   .get('/api/form-submissions/:hash', [FormSubmissionController, 'show'])
   .use(throttleMiddleware({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+
+router.post('/api/demarches-simplifiees/prefill', [DemarchesSimplifiedController, 'createPrefilledDossier'])
+  .use(throttleMiddleware({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
 
 /**
  * Assets

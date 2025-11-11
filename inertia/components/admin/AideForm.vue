@@ -3,6 +3,7 @@ import type AdminAideController from '#controllers/admin/admin_aide_controller'
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrButton, DsfrInputGroup, DsfrSelect } from '@gouvminint/vue-dsfr'
 import { useForm } from '@inertiajs/vue3'
+import { ref } from 'vue'
 import AdminForm from '~/components/admin/AdminItemFormContainer.vue'
 import DsfrSlugInput from '~/components/admin/DsfrSlugInput.vue'
 import RichTextEditor from '~/components/admin/RichTextEditor.vue'
@@ -37,6 +38,9 @@ const form = useForm({
     label: texte.label,
     url: texte.url,
   })),
+  dsEnabled: props.defaultValues?.dsEnabled ? 'true' : 'false',
+  dsDemarcheId: props.defaultValues?.dsDemarcheId || '',
+  dsFieldMapping: props.defaultValues?.dsFieldMapping || {},
 })
 // Gérer les textes de loi (tableau d'objets)
 function addTexteLoi() {
@@ -45,6 +49,32 @@ function addTexteLoi() {
 
 function removeTexteLoi(index: number) {
   form.textesLoi?.splice(index, 1)
+}
+
+// Gérer les mappings DS (objet clé-valeur)
+const dsMappingEntries = ref<Array<{ dsFieldKey: string, questionId: string }>>(
+  Object.entries(props.defaultValues?.dsFieldMapping || {}).map(([dsFieldKey, questionId]) => ({
+    dsFieldKey,
+    questionId,
+  })),
+)
+
+function addDsMapping() {
+  dsMappingEntries.value.push({ dsFieldKey: '', questionId: '' })
+}
+
+function removeDsMapping(index: number) {
+  dsMappingEntries.value.splice(index, 1)
+}
+
+// Synchroniser dsMappingEntries avec form.dsFieldMapping
+function syncDsFieldMapping() {
+  form.dsFieldMapping = dsMappingEntries.value.reduce((acc: Record<string, string>, entry: { dsFieldKey: string, questionId: string }) => {
+    if (entry.dsFieldKey && entry.questionId) {
+      acc[entry.dsFieldKey] = entry.questionId
+    }
+    return acc
+  }, {} as Record<string, string>)
 }
 </script>
 
@@ -201,6 +231,101 @@ function removeTexteLoi(index: number) {
           v-model="form.content"
         />
       </div>
+    </div>
+
+    <!-- Démarches Simplifiées Integration -->
+    <div class="fr-grid-row fr-grid-row--gutters fr-mt-6w">
+      <div class="fr-col-12">
+        <h2 class="fr-h4">
+          Intégration avec Démarches Simplifiées
+        </h2>
+        <p class="fr-text--sm">
+          Activez l'intégration pour permettre aux utilisateurs de préremplir leur dossier sur Démarches Simplifiées avec les réponses du simulateur.
+        </p>
+      </div>
+
+      <div class="fr-col-12 fr-col-md-6">
+        <DsfrSelectPatch
+          v-model="form.dsEnabled"
+          label="Activer l'association avec Démarches Simplifiées"
+          :options="[
+            { value: 'false', text: 'Non' },
+            { value: 'true', text: 'Oui' },
+          ]"
+          label-visible
+          :error="form.errors.dsEnabled"
+        />
+      </div>
+
+      <template v-if="form.dsEnabled === 'true'">
+        <div class="fr-col-12 fr-col-md-6">
+          <DsfrInputGroup
+            v-model="form.dsDemarcheId"
+            label="ID de la démarche Démarches Simplifiées"
+            label-visible
+            required
+            hint="L'identifiant numérique de la démarche sur demarches-simplifiees.fr (ex: 12345)"
+            placeholder="Ex: 12345"
+            :error="form.errors.dsDemarcheId"
+          />
+        </div>
+
+        <div class="fr-col-12 fr-mt-4w">
+          <h3 class="fr-h6">
+            Mapping des champs
+          </h3>
+          <p class="fr-text--sm">
+            Associez les champs de Démarches Simplifiées (clé en base64) aux questions du simulateur (ID de question du JSON).
+          </p>
+          <DsfrButton
+            secondary
+            label="Ajouter un mapping"
+            :icon="{ name: 'ri:add-line', ssr: true }"
+            type="button"
+            @click="addDsMapping"
+          />
+        </div>
+
+        <template
+          v-for="(mapping, index) in dsMappingEntries"
+          :key="index"
+        >
+          <div class="fr-col-12 fr-mb-2w">
+            <div class="fr-card fr-p-2w">
+              <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-md-6">
+                  <DsfrInputGroup
+                    v-model="mapping.dsFieldKey"
+                    label="Clé du champ DS"
+                    label-visible
+                    placeholder="Ex: champ_Q2hhbXAtMTx0MjM2OX=="
+                    hint="La clé en base64 du champ dans Démarches Simplifiées"
+                    @blur="syncDsFieldMapping"
+                  />
+                </div>
+                <div class="fr-col-12 fr-col-md-6">
+                  <DsfrInputGroup
+                    v-model="mapping.questionId"
+                    label="ID de la question du simulateur"
+                    label-visible
+                    placeholder="Ex: statut-professionnel"
+                    hint="L'ID de la question dans le fichier JSON du formulaire"
+                    @blur="syncDsFieldMapping"
+                  />
+                </div>
+              </div>
+              <DsfrButton
+                label="Supprimer le mapping"
+                :icon="{ name: 'ri:delete-bin-2-line', ssr: true }"
+                type="button"
+                tertiary
+                no-outline
+                @click="removeDsMapping(index)"
+              />
+            </div>
+          </div>
+        </template>
+      </template>
     </div>
   </AdminForm>
 </template>

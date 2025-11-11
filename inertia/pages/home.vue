@@ -99,6 +99,20 @@ if (simulationTiles.length < 2) {
           />
         </div>
       </div>
+      <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+        <div class="fr-col-12 fr-col-md-6">
+          <DsfrCard
+            :title-link-attrs="{}"
+            horizontal
+            title="BoRiS"
+            description="Testez votre éligibilité au BRS (Bail Réel Solidaire) et accédez à la propriété à prix maîtrisé."
+            link="https://boris.beta.gouv.fr/"
+            title-tag="h3"
+            img-src="/logos/boris.svg"
+            class="boris-card"
+          />
+        </div>
+      </div>
     </SectionContainer>
   </BrandBackgroundContainer>
 
@@ -172,5 +186,11 @@ if (simulationTiles.length < 2) {
       line-height: 1.4 !important;
     }
   }
+}
+
+.boris-card :deep(img) {
+  object-fit: contain !important;
+  padding: 1rem;
+  max-height: 200px;
 }
 </style>

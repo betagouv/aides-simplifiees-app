@@ -15,6 +15,7 @@ const shieldConfig = defineConfig({
         '\'unsafe-eval\'', // Required for Vue in dev mode
         'https://cdn.jsdelivr.net', // For DSFR icons
         'https://stats.data.gouv.fr', // Matomo analytics
+        'https://stats.beta.gouv.fr', // Matomo analytics (beta instance)
       ],
       styleSrc: [
         '\'self\'',
@@ -34,6 +35,7 @@ const shieldConfig = defineConfig({
       connectSrc: [
         '\'self\'',
         'https://stats.data.gouv.fr', // Matomo analytics
+        'https://stats.beta.gouv.fr', // Matomo analytics (beta instance)
         'https://geo.api.gouv.fr', // Address autocomplete
         'https://api-adresse.data.gouv.fr', // Address autocomplete
       ],

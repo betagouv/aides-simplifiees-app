@@ -1,6 +1,28 @@
 # CHANGELOG
 
-# CHANGELOG
+# 1.6.0
+- Ajout de fonctionnalités :
+  - Intégration iframe cross-site complète (cookies session/CSRF avec sameSite: 'none', CSP pour Matomo)
+  - Intégration avec Démarches Simplifiées (champs dsEnabled, dsDemarcheId, dsFieldMapping)
+  - Redirection vers le service BoRiS
+  - Infrastructure de tests frontend avec Vitest et @vitest/ui
+  - Déplacement des packages publicodes en structure monorepo
+- Améliorations :
+  - Optimisation du bundle avec code splitting stratégique (Vue core, DSFR, Publicodes, VueUse)
+  - Sépare la logique métier en couche services
+  - Refactorise le store surveys (700 lignes) en composables par domaine
+  - Implémente le pattern Builder pour les requêtes OpenFisca
+  - Ajoute CSP, limitation de taux et sanitisation des entrées
+- Corrections :
+  - Corrige les timestamps des migrations pour respecter l'ordre chronologique d'exécution
+- Refactorisations :
+  - Supprime les types any du système de questionnaires
+  - Standardise la gestion des erreurs
+- Documentation :
+  - Créé une documentation par domaine de l'application pour LLMs
+- Technique :
+  - Met à jour iframe-resizer vers 5.5.7 (script d'intégration iframe v1.1.1)
+  - Ajoute les dépendances tinyrainbow et whatwg-mimetype
 
 # 1.4.5 [#156](https://github.com/betagouv/aides-simplifiees-app/pull/156)
 - Ajout de fonctionnalités :

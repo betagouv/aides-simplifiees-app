@@ -8,6 +8,7 @@
 */
 
 import { IFRAME_SCRIPT_LATEST_VERSION } from '#config/iframe_integration'
+import throttleMiddleware from '#middleware/throttle_middleware'
 import env from '#start/env'
 import { middleware } from '#start/kernel'
 import app from '@adonisjs/core/services/app'
@@ -25,6 +26,7 @@ const StatisticsController = () => import('#controllers/api/statistics_controlle
 const GeoApiController = () => import('#controllers/api/geo_api_controller')
 const OpenFiscaController = () => import('#controllers/api/openfisca_controller')
 const FormSubmissionController = () => import('#controllers/api/form_submission_controller')
+const DemarchesSimplifiedController = () => import('#controllers/api/demarches_simplifiees_controller')
 
 /**
  * Static pages controllers
@@ -92,11 +94,29 @@ router
     response.unauthorized({ message: 'Unauthorized access' })
   })
 
-router.get('/api/statistics', [StatisticsController, 'getStatistics'])
-router.get('/api/autocomplete/communes', [GeoApiController, 'autocompleteCommunes'])
-router.post('/api/calculate', [OpenFiscaController, 'calculate'])
-router.post('/api/form-submissions', [FormSubmissionController, 'store'])
-router.get('/api/form-submissions/:hash', [FormSubmissionController, 'show'])
+// API routes with rate limiting
+router
+  .get('/api/statistics', [StatisticsController, 'getStatistics'])
+  .use(throttleMiddleware({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+
+router
+  .get('/api/autocomplete/communes', [GeoApiController, 'autocompleteCommunes'])
+  .use(throttleMiddleware({ maxRequests: 60, windowMs: 60 * 1000 })) // 60 req/min
+
+router
+  .post('/api/calculate', [OpenFiscaController, 'calculate'])
+  .use(throttleMiddleware({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min (expensive operation)
+
+router
+  .post('/api/form-submissions', [FormSubmissionController, 'store'])
+  .use(throttleMiddleware({ maxRequests: 10, windowMs: 60 * 1000 })) // 10 req/min (prevent spam)
+
+router
+  .get('/api/form-submissions/:hash', [FormSubmissionController, 'show'])
+  .use(throttleMiddleware({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+
+router.post('/api/demarches-simplifiees/prefill', [DemarchesSimplifiedController, 'createPrefilledDossier'])
+  .use(throttleMiddleware({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
 
 /**
  * Assets

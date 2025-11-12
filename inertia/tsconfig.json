@@ -7,7 +7,7 @@
     "module": "ESNext",
     "paths": {
       "~/*": ["./*"],
-      "~publicodes/*": ["../publicodes/*"]
+      "~packages/*": ["../packages/*"]
     }
   },
   "include": ["./**/*.ts", "./**/*.vue", "../shared/**/*.ts", "../shared/**/*.vue"]

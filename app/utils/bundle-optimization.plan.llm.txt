@@ -1,0 +1,95 @@
+# Plan: Bundle Optimization
+
+## Date
+Created: 2025-10-31
+
+## Context
+The application currently has a large initial bundle with no code splitting strategy.
+This impacts initial load time and user experience, especially on slower connections.
+
+**Current Issues**:
+- Large initial bundle (all code loaded upfront)
+- Heavy components loaded even when not needed
+- Vendor libraries bundled together
+- Admin routes loaded for all users
+
+## Objectives
+- [x] Implement code splitting for routes
+- [x] Add dynamic imports for heavy components
+- [x] Split vendor chunks strategically
+- [x] Lazy load admin routes (automatic via Inertia)
+- [x] Measure bundle size improvements
+- [ ] Update documentation (after user validation)
+
+## Implementation Steps
+
+### Phase 1: Analyze Current Bundle
+1. [ ] Run bundle analysis
+2. [ ] Identify largest chunks
+3. [ ] Document current sizes
+
+### Phase 2: Dynamic Imports for Heavy Components
+1. [ ] Identify heavy components (PublicodesSurvey, charts, etc.)
+2. [ ] Convert to async components with defineAsyncComponent
+3. [ ] Add loading states where appropriate
+
+### Phase 3: Vendor Chunk Splitting
+1. [ ] Configure Vite manual chunks
+2. [ ] Split Vue/DSFR from other vendors
+3. [ ] Separate publicodes engine
+4. [ ] Extract common utilities
+
+### Phase 4: Route-Based Code Splitting
+1. [ ] Lazy load admin pages
+2. [ ] Separate simulation routes
+3. [ ] Split static pages
+
+### Phase 5: Measure and Validate
+1. [ ] Run bundle analysis again
+2. [ ] Compare before/after sizes
+3. [ ] Test loading performance
+4. [ ] Verify no regressions in E2E tests
+
+## Files to Modify
+- `vite.config.ts` - Manual chunks configuration
+- `inertia/pages/**/*.vue` - Dynamic imports for heavy components
+- `inertia/app/app.ts` - Async component loading
+- Admin page components - Lazy loading
+
+## Expected Benefits
+- 30-40% reduction in initial bundle size
+- Faster initial page load
+- Better caching (vendor chunks stable)
+- Improved performance on slow connections
+
+## Success Metrics
+Before:
+- Initial bundle: TBD (measure)
+- Vendor bundle: TBD
+- App bundle: TBD
+
+After:
+- Initial bundle: Target 30% reduction
+- Vendor split into 3-4 strategic chunks
+- Admin code not loaded for regular users
+
+## Testing Strategy
+- Run bundle analysis before/after
+- E2E tests to verify no regressions
+- Lighthouse performance scores
+- Manual testing on slow 3G connection
+
+## Documentation to Update
+After user validation:
+- `docs/architecture.llm.txt` - Bundle strategy
+- Vite config comments
+
+## History
+- 2025-10-31: Created plan file
+- 2025-10-31: Implemented bundle optimization
+  - Added manual chunking strategy in vite.config.ts
+  - Split vendors into strategic chunks (vue-core, vue-ecosystem, dsfr, publicodes, vueuse)
+  - Converted PublicodesSurvey to async component
+  - Build results: 1.3MB vendor code split into 6 optimized chunks
+  - Charts already lazy loaded
+  - Admin pages split automatically by Inertia

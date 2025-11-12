@@ -3,7 +3,7 @@
  * This file serves as a single source of truth for the iframe script version and integrity hashes
  */
 
-export const IFRAME_SCRIPT_LATEST_VERSION = '1.1.0'
+export const IFRAME_SCRIPT_LATEST_VERSION = '1.1.1'
 
 export const IFRAME_SCRIPT_INTEGRITY_LIST = [
   {
@@ -13,6 +13,10 @@ export const IFRAME_SCRIPT_INTEGRITY_LIST = [
   {
     version: '1.1.0',
     integrity: 'sha384-UH5OXyOxEP14jklD+0Cfy0rXm9vo+zVqdFFq7c3poGl1X0ytowUUlDVuHbfqTQMP',
+  },
+  {
+    version: '1.1.1',
+    integrity: 'sha384-6EeiSBtyg9A1UCcgw73Ob1noknl6xphY2US5Qp8xxfY4TypksN+e8+7HuHUefPAF',
   },
 ]
 

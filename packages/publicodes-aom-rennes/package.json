@@ -1,0 +1,29 @@
+{
+  "name": "@betagouv/publicodes-aom-rennes",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Modèle publicodes de tarification de l'AOM de Rennes Métropole",
+  "author": "Lucas Poulain (ShallowRed) <lucaspoulain2@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/betagouv/publicodes-aom-rennes",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/betagouv/publicodes-aom-rennes.git"
+  },
+  "keywords": ["publicodes", "transport", "tarification", "rennes", "aom"],
+  "main": "publicodes-build/index.js",
+  "types": "publicodes-build/index.d.ts",
+  "files": [
+    "publicodes-build"
+  ],
+  "scripts": {
+    "compile": "publicodes compile",
+    "dev": "publicodes dev"
+  },
+  "peerDependencies": {
+    "publicodes": "^1.9.0"
+  },
+  "devDependencies": {
+    "@publicodes/tools": "^1.7.2"
+  }
+}

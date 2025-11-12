@@ -1,0 +1,701 @@
+# Publicodes Domain
+
+## Overview
+
+Publicodes is an open-source, declarative calculation engine developed by the French government. In Aides Simplifiées, Publicodes enables transparent, rule-based eligibility calculations for financial aids. Instead of opaque black-box APIs, the calculation rules are defined in human-readable YAML files, making the logic auditable and understandable by non-technical stakeholders.
+
+The Publicodes domain encompasses the entire lifecycle: defining rules in YAML, compiling them to optimized JSON, dynamically generating forms from rules, executing calculations in the browser, and presenting results to users.
+
+## Package Organization
+
+### Structure
+
+Publicodes packages are organized in the `packages/` folder:
+
+```
+packages/
+├── publicodes-aom-bordeaux/      # Bordeaux transport tariffs
+├── publicodes-aom-rennes/        # Rennes transport tariffs
+├── publicodes-entreprise-innovation/  # Innovation aids (CIR, CII, JEI)
+└── publicodes-apl/               # Housing aids (incomplete)
+```
+
+Each package follows the same structure:
+```
+publicodes-<name>/
+├── package.json              # NPM package configuration
+├── src/                      # Source .publicodes files
+│   ├── variables.publicodes
+│   ├── helpers.publicodes
+│   ├── resultat.publicodes
+│   └── dispositifs/          # Individual aid types
+├── situations/               # Test scenarios
+└── publicodes-build/         # Compiled output (generated)
+    ├── index.js
+    ├── index.d.ts
+    └── <name>.model.json
+```
+
+### Package Configuration
+
+Each package contains:
+- **`name`**: NPM package identifier (e.g., `@betagouv/publicodes-aom-bordeaux`)
+- **`main`**: Entry point (`publicodes-build/index.js`)
+- **`types`**: TypeScript definitions (`publicodes-build/index.d.ts`)
+- **`files`**: Published files (`["publicodes-build"]`)
+- **`scripts.compile`**: Build command (`publicodes compile`)
+- **`peerDependencies`**: `publicodes` engine version
+- **`devDependencies`**: `@publicodes/tools` for compilation
+
+### Build System
+
+The build script (`scripts/build_publicodes.js`) handles compilation:
+
+**Process:**
+1. Reads package list from script
+2. For each package:
+   - Runs `pnpm install` in package directory
+   - Runs `pnpm run compile` (executes `publicodes compile`)
+   - Generates `publicodes-build/` folder with compiled rules
+3. Reports success/failure for each package
+
+**Command:**
+```bash
+pnpm build:publicodes  # Builds all packages
+```
+
+**Current packages built:**
+- `publicodes-aom-bordeaux`
+- `publicodes-aom-rennes`
+- `publicodes-entreprise-innovation`
+
+### Import Resolution
+
+The `getPublicodesRules()` utility maps simulateur slugs to package imports:
+
+**Location:** `inertia/utils/get_publicodes_rules.ts`
+
+**Mapping:**
+```typescript
+'entreprise-innovation' → import('~packages/publicodes-entreprise-innovation')
+'aom-rennes' → import('~packages/publicodes-aom-rennes')
+'aom-bordeaux' → import('~packages/publicodes-aom-bordeaux')
+```
+
+**Alias resolution:**
+- `~packages/` → Vite alias pointing to `./packages/` folder
+- Configured in `vite.config.ts` and `inertia/tsconfig.json`
+- Imports from local builds (not npm packages currently)
+
+### Local vs NPM Packages
+
+**Current approach (Local):**
+- Packages built locally with `pnpm build:publicodes`
+- Imported via `~packages/` alias pointing to local folders
+- No npm installation needed
+- Development-friendly for package changes
+
+**Future approach (NPM):**
+- Packages published to npm registry
+- Installed as dependencies in main `package.json`
+- Imported via package name (e.g., `@betagouv/publicodes-aom-bordeaux`)
+- Production-ready, faster builds
+- Requires switching import paths in `getPublicodesRules()`
+
+## Core Concepts
+
+### Publicodes Engine
+The calculation engine at the core of this domain:
+- **Rule-based**: Calculations defined declaratively in YAML
+- **Type-safe**: Rules specify data types and constraints
+- **Transparent**: All logic visible and auditable
+- **Client-side**: Runs entirely in browser (no server calls)
+- **Stateless**: Same inputs always produce same outputs
+- **Missing variable handling**: Can identify incomplete data
+
+### Rules Definition (YAML)
+Rules are authored in YAML files with specific syntax:
+- **Variables**: Named values (e.g., `age`, `revenu`)
+- **Formulas**: Mathematical expressions using variables
+- **Conditions**: If-then logic for eligibility
+- **Metadata**: Descriptions, tooltips, units
+- **Namespaces**: Hierarchical organization (e.g., `aide . eligibilite`)
+- **Questions**: Form field configuration (type, choices, validation)
+
+Example rule structure:
+```yaml
+aide-demenagement:
+  titre: Aide au déménagement
+  description: Aide pour les frais de déménagement
+
+aide-demenagement . eligibilite:
+  question: Êtes-vous en situation de mobilité professionnelle ?
+  valeur: mobilite-professionnelle = oui
+
+aide-demenagement . montant:
+  unité: €
+  valeur: 500
+```
+
+### @publicodes/tools Build Pipeline
+The `@publicodes/tools` package compiles YAML to optimized formats:
+- **Input**: `.publicodes` files in `packages/publicodes-<name>/src/`
+- **Output**: `publicodes-build/` directory with:
+  - `index.js`: Compiled rules as JavaScript module
+  - `index.d.ts`: TypeScript type definitions
+  - `<name>.model.json`: JSON representation of rules
+- **Process**: `pnpm run compile` in each package directory
+- **Installed as**: `devDependency` in each package (`@publicodes/tools: ^1.7.2`)
+
+### @publicodes/forms Integration
+The `@publicodes/forms` library dynamically generates form UI:
+- **Reads rules**: Extracts questions from YAML metadata
+- **Infers types**: Determines input types (radio, checkbox, number, date)
+- **Generates fields**: Creates form fields with validation
+- **Handles navigation**: Manages multi-page flows
+- **Tracks state**: Maintains answers and missing variables
+
+### Two-Mode Calculation Architecture
+
+**Publicodes Mode** (`usesPublicodesForms = true`):
+- Rules defined in `packages/publicodes-<slug>/` YAML files
+- Form dynamically generated by `@publicodes/forms`
+- Calculation happens client-side in browser
+- Real-time eligibility updates as user answers
+- No API calls to external services
+
+**Traditional Mode** (`usesPublicodesForms = false`):
+- Questions defined in database via admin CMS
+- Form rendered from `built_json` column
+- Calculation delegated to OpenFisca API
+- Results returned after form completion
+- Requires network request for calculation
+
+## Entity Relationships
+
+```
+Publicodes Package (YAML files in packages/)
+  ├─→ Compiled Rules (JS module in publicodes-build/)
+  ├─→ Form Schema (extracted from rules)
+  └─→ Calculation Logic (engine)
+
+Simulateur (usesPublicodesForms = true)
+  ├─→ Publicodes Package (by slug via getPublicodesRules())
+  └─→ FormSubmission (stores results)
+```
+
+### Package to Simulateur Mapping
+Each Publicodes simulateur corresponds to one package:
+- `aom-bordeaux` → `/simulateurs/aom-bordeaux` → `packages/publicodes-aom-bordeaux`
+- `aom-rennes` → `/simulateurs/aom-rennes` → `packages/publicodes-aom-rennes`
+- `entreprise-innovation` → `/simulateurs/entreprise-innovation` → `packages/publicodes-entreprise-innovation`
+
+Mapping defined in `getPublicodesRules()` utility in `inertia/utils/get_publicodes_rules.ts`.
+
+## User Journey / Data Flow
+
+### 1. Build-Time Compilation
+
+**Developer workflow**:
+1. Author rules in `packages/publicodes-<slug>/src/*.publicodes`
+2. Run `pnpm build:publicodes`
+3. Script iterates through all Publicodes packages
+4. Each package compiles via `pnpm run compile`
+5. Output generated in `packages/publicodes-<slug>/publicodes-build/`
+
+**Build script** (`scripts/build_publicodes.js`):
+- Installs dependencies for each package (`pnpm install` in package folder)
+- Runs `@publicodes/tools` compiler (`pnpm run compile`)
+- Generates TypeScript typings (`index.d.ts`)
+- Creates optimized JSON model (`<name>.model.json`)
+
+**Workspace integration**:
+- Packages located in `packages/` folder
+- Main app imports via alias: `~packages/publicodes-<name>`
+- Vite bundles compiled rules into main app
+- Vite alias configured in `vite.config.ts`: `'~packages/': .../packages/`
+- TypeScript paths configured in `inertia/tsconfig.json`: `"~packages/*": ["../packages/*"]`
+
+### 2. Page Load - Rule Fetching
+
+**User arrives at simulateur**:
+- URL: `/simulateurs/aom-bordeaux`
+- `SimulateurController.show()` renders page
+- Checks `simulateur.usesPublicodesForms === true`
+
+**Frontend rule loading** (`simulateur.vue`):
+```typescript
+const rules = useAsyncState(
+  () => getPublicodesRules(simulateur.slug),
+  null
+)
+```
+
+**Dynamic import** (`inertia/utils/get_publicodes_rules.ts`):
+- Matches slug to package name via switch statement
+- Performs dynamic import: `import('~packages/publicodes-aom-bordeaux')`
+- Returns compiled rules as `RawPublicodes` object
+- Lazy loading: only fetches rules for current simulateur
+
+### 3. Form Initialization
+
+**PublicodesSurvey component** receives rules:
+- Calls `usePublicodesForm({ rules })` composable
+- Initializes Publicodes engine: `new Engine(rules)`
+- Engine parses rules and builds computation graph
+- `@publicodes/forms` extracts questions from rules
+- Generates form fields with types and validation
+- Sets up pagination if multiple pages defined
+
+**Form state restoration**:
+- Checks if `useSurveysStore()` has previous answers
+- Pre-fills fields if user navigated backward
+- Maintains answer consistency across pages
+
+### 4. User Interaction - Dynamic Calculation
+
+**User answers question**:
+1. Input event fired (change, input, blur)
+2. `handleInputChange(fieldId, value)` called
+3. Answer transformed to Publicodes format:
+   - Booleans: `true → "oui"`, `false → "non"`
+   - Strings: `value → "'value'"`
+   - Dates: `YYYY-MM-DD → DD/MM/YYYY`
+   - Checkboxes: Array → multiple boolean rules
+4. Answer stored in Pinia store
+5. Engine updated: `engine.setSituation({ [fieldId]: value })`
+6. **Real-time calculation triggered**
+7. Engine evaluates all `dispositif . eligibilite` rules
+8. Results displayed immediately (no page reload)
+
+**Dynamic eligibility** (`useDynamicEligibility()`):
+- Watches answer changes reactively
+- Recalculates eligibility on every answer
+- Updates UI in real-time with eligible/potential/ineligible aides
+- Shows missing information needed for full eligibility
+
+### 5. Calculation Execution
+
+**Engine evaluation process**:
+1. User answers mapped to Publicodes variables
+2. Variable name conversion: `kebab-case → camelCase`
+3. Filter out variables not defined in rules
+4. Transform values to Publicodes syntax
+5. Set engine situation: `engine.setSituation(transformedAnswers)`
+6. Evaluate each dispositif:
+   - `engine.evaluate('aide-demenagement . eligibilite')`
+   - `engine.evaluate('aide-demenagement . montant')`
+7. Extract node values and missing variables
+8. Categorize results: eligible, potential (missing info), ineligible
+
+**Result format** (`EligibilityResults`):
+```typescript
+{
+  eligibleDispositifs: [...],        // Boolean true
+  potentialDispositifs: [...],       // null (missing variables)
+  ineligibleDispositifs: [...],      // Boolean false
+  aidesResults: {
+    "aide-demenagement-eligibilite": true,
+    "aide-demenagement": 500
+  }
+}
+```
+
+### 6. Form Submission
+
+**User completes all questions**:
+1. Final calculation performed
+2. `useFormSubmission().submit()` called with:
+   - `simulateurSlug`
+   - `answers` (all responses)
+   - `results` (calculation output)
+3. POST to `/api/form-submissions`
+4. Server stores data, returns hash
+5. Frontend redirects to results page
+
+### 7. Results Display
+
+**Results page rendering**:
+- Same flow as traditional mode
+- `SimulateurController.showResultats()` handles both modes
+- `transformSimulationResults()` enriches results with aide details
+- Displays eligible/non-eligible aides with amounts
+
+## Technical Patterns
+
+### Workspace Monorepo Structure
+```
+publicodes/
+  aom-bordeaux/
+    package.json
+    regles.yaml
+    situations/       # Test cases
+    publicodes-build/ # Generated output
+  aom-rennes/
+    (same structure)
+```
+
+Each package is:
+- Self-contained with own dependencies
+- Compiled independently
+- Imported as workspace member
+- Versionable separately
+
+### Compilation Strategy
+**Why compile?**
+- YAML parsing is slow at runtime
+- Pre-computation improves performance
+- Type safety with TypeScript definitions
+- Optimized for production bundles
+
+**Build command** (`build_publicodes.js`):
+```javascript
+for (packageName of publicodesPackages) {
+  cd publicodes/${packageName}
+  pnpm install
+  pnpm run compile
+}
+```
+
+### Form Generation Pattern
+`@publicodes/forms` extracts form schema from rules:
+- Questions declared in rule metadata
+- Types inferred from validation rules
+- Choices extracted from enum values
+- Tooltips from descriptions
+- Min/max from range constraints
+
+**Field mapping** (`PublicodesSurvey.vue`):
+- `checkbox` → SurveyQuestion type: 'checkbox'
+- `input[type=number]` → 'number'
+- `input[type=date]` → 'date'
+- `RadioGroup` with Oui/Non → 'boolean'
+- `RadioGroup` with options → 'radio' with choices
+
+### Variable Name Conventions
+**Publicodes convention**: `camelCase`
+**Survey convention**: `kebab-case`
+
+**Transformation utilities**:
+- `toCamelCase()`: Converts survey IDs to Publicodes variables
+- `toKebabCase()`: Converts Publicodes back to survey IDs
+
+**Checkbox handling**:
+- Survey: `Array<string>` (e.g., `['option1', 'option2']`)
+- Publicodes: Multiple boolean rules
+  - `question . option1: "oui"`
+  - `question . option2: "oui"`
+  - `question . option3: "non"`
+
+### Missing Variable Detection
+Publicodes tracks missing variables:
+- Engine knows which variables needed for calculation
+- `evaluation.missingVariables` contains unset variables
+- Results marked as "potential" when variables missing
+- UI can prompt user to answer missing questions
+
+### Client-Side Security Model
+Rules executed in browser:
+- No sensitive calculation logic hidden
+- Rules are public by design (transparency goal)
+- No API keys or secrets in rules
+- Eligible for offline use (PWA potential)
+
+## Integration Points
+
+### Build System
+- **pnpm workspace**: Monorepo management
+- **Vite**: Bundles compiled rules
+- **Build script**: `scripts/build_publicodes.js`
+- **CI/CD**: Automated builds on push
+
+### Frontend Components
+- **PublicodesSurvey.vue**: Form renderer
+- **usePublicodesForm()**: Form state management
+- **useEligibilityService()**: Calculation orchestration
+- **useDynamicEligibility()**: Real-time eligibility
+
+### Storage
+- **Pinia store** (`useSurveysStore`): In-memory answer storage
+- **FormSubmission**: Persistent storage after completion
+
+### Admin
+- **Simulateur model**: `usesPublicodesForms` boolean flag
+- No CMS for editing rules (YAML files edited directly)
+- Admin can toggle Publicodes mode per simulateur
+
+## Business Rules
+
+### Transparent Calculation Principle
+Publicodes aligns with government transparency requirements:
+- All rules publicly accessible
+- Human-readable YAML format
+- Version controlled in Git
+- Open-source calculation engine
+- Citizens can audit logic
+
+### Rule Immutability for Published Simulateurs
+Once published:
+- Rules should not change arbitrarily
+- Breaking changes require migration strategy
+- Old FormSubmissions may reference old rules
+- Consider versioning for major changes
+
+### Real-Time Feedback UX
+Dynamic eligibility improves user experience:
+- Users see immediate impact of answers
+- Reduces friction in form completion
+- Helps users understand requirements
+- Increases completion rates
+
+### Offline Capability Potential
+Client-side calculation enables:
+- Offline PWA functionality
+- No network dependency after load
+- Faster response times
+- Lower server load
+
+### Test-Driven Rules Development
+Publicodes packages support situation files:
+- Test cases in `situations/` directory
+- Define expected outcomes for inputs
+- Run during compilation to validate rules
+- Regression testing for rule changes
+
+## Key Code Locations
+
+### Publicodes Packages
+- `publicodes/aom-bordeaux/regles.yaml`: Bordeaux transport aid rules
+- `publicodes/aom-rennes/regles.yaml`: Rennes transport aid rules
+- `publicodes/apl/`: (Future) Housing aid rules
+
+### Build Scripts
+- `scripts/build_publicodes.js`: Build orchestration
+- `publicodes/<pkg>/package.json`: Compilation config
+
+### Compiled Output
+- `publicodes/<pkg>/publicodes-build/index.js`: Compiled rules module
+- `publicodes/<pkg>/publicodes-build/<pkg>.model.json`: JSON rules
+
+### Frontend Utilities
+- `inertia/utils/get_publicodes_rules.ts`: Dynamic rule loader, maps simulateur slugs to package imports
+- `inertia/composables/use_eligibility_service.ts`: Calculation engine wrapper
+- `inertia/composables/use_publicodes_form.ts`: Form state management
+- `inertia/composables/use_dynamic_eligibility.ts`: Real-time calculations
+
+### Frontend Components
+- `inertia/components/survey/PublicodesSurvey.vue`: Form renderer
+- `inertia/components/survey/SurveyQuestion.vue`: Question component (shared)
+- `inertia/components/survey/SurveyNavigation.vue`: Navigation (shared)
+
+### Stores
+- `inertia/stores/surveys.ts`: Answer persistence across pages
+
+### Models
+- `app/models/simulateur.ts`: `usesPublicodesForms` flag
+
+### Build Scripts
+- `scripts/build_publicodes.js`: Compiles all Publicodes packages
+- `scripts/build_logger.js`: Logging utility for build process
+
+### Tests
+- `packages/publicodes-<name>/situations/`: Test case definitions
+- `tests/e2e/02_simulation.spec.ts`: End-to-end Publicodes flow
+
+## Adding a New Publicodes Package
+
+### 1. Create Package Structure
+
+Create a new package in `packages/` folder:
+
+```bash
+mkdir -p packages/publicodes-<name>/src/dispositifs
+```
+
+### 2. Create package.json
+
+```json
+{
+  "name": "@betagouv/publicodes-<name>",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Modèle publicodes de <description>",
+  "author": "Your Name <email>",
+  "license": "MIT",
+  "main": "publicodes-build/index.js",
+  "types": "publicodes-build/index.d.ts",
+  "files": ["publicodes-build"],
+  "scripts": {
+    "compile": "publicodes compile",
+    "dev": "publicodes dev"
+  },
+  "peerDependencies": {
+    "publicodes": "^1.9.0"
+  },
+  "devDependencies": {
+    "@publicodes/tools": "^1.7.2"
+  }
+}
+```
+
+### 3. Create Publicodes Rules
+
+Create `.publicodes` files in `src/`:
+- `variables.publicodes` - Input variables
+- `helpers.publicodes` - Helper calculations
+- `resultat.publicodes` - Result formatting
+- `dispositifs/*.publicodes` - Individual aid rules
+
+### 4. Add to Build Script
+
+Edit `scripts/build_publicodes.js`:
+
+```javascript
+const publicodesPackages = [
+  'publicodes-aom-bordeaux',
+  'publicodes-aom-rennes',
+  'publicodes-entreprise-innovation',
+  'publicodes-<name>',  // Add new package
+]
+```
+
+### 5. Add to Import Map
+
+Edit `inertia/utils/get_publicodes_rules.ts`:
+
+```typescript
+switch (simulateurSlug) {
+  case '<slug>':
+    return import('~packages/publicodes-<name>').then(module => module.default)
+  // ... other cases
+}
+```
+
+### 6. Build and Test
+
+```bash
+pnpm build:publicodes        # Compile the package
+pnpm dev                     # Test in development
+```
+
+## Notes
+
+### Why Publicodes Over OpenFisca?
+
+**Publicodes advantages**:
+- Client-side execution (no API dependency)
+- Simpler rule syntax for non-technical users
+- Faster iteration (no API deployment)
+- Better French government integration
+- Transparent calculation (rules visible to citizens)
+
+**OpenFisca advantages**:
+- More mature ecosystem
+- Larger rule library
+- Complex tax calculation capabilities
+- Better for national-level calculations
+
+**Hybrid approach**:
+- Use Publicodes for local aid programs (AOM, regional aids)
+- Use OpenFisca for complex tax-benefit interactions
+
+### Package Consistency
+
+All packages follow the same conventions:
+- **devDependencies**: `@publicodes/tools` must be `^1.7.2` (not dependency)
+- **peerDependencies**: `publicodes` engine version
+- **files**: Only publish `publicodes-build/` folder
+- **scripts**: `compile` command for building
+- **structure**: Same folder organization for maintainability
+- Both modes supported in same application
+
+### Rule Versioning Strategy (Future)
+
+**Current approach**:
+- Rules compiled at build time
+- No runtime versioning
+- FormSubmissions reference rules implicitly
+
+**Future considerations**:
+- Version field in Simulateur model
+- Store rule version with FormSubmission
+- Support multiple rule versions simultaneously
+- Migration path for rule breaking changes
+
+### Performance Optimization
+
+**Compilation benefits**:
+- YAML parsing done at build time (not runtime)
+- Optimized computation graph
+- Smaller bundle size (JSON vs YAML)
+- Faster engine initialization
+
+**Lazy loading**:
+- Rules loaded only for active simulateur
+- Dynamic imports prevent bundle bloat
+- Each package ~50-200KB
+
+### Accessibility Considerations
+
+Publicodes form generation respects DSFR/RGAA:
+- `SurveyQuestion` component handles ARIA attributes
+- Form validation messages accessible
+- Error states properly announced
+- Navigation keyboard-accessible
+
+### Migration Path from Traditional to Publicodes
+
+**Steps to migrate a simulateur**:
+1. Create `publicodes/<slug>/` package
+2. Define rules in `regles.yaml`
+3. Write test situations
+4. Compile and validate
+5. Update Simulateur record: `usesPublicodesForms = true`
+6. Deploy
+
+**Backward compatibility**:
+- Traditional mode still supported
+- Can run both modes in parallel
+- No data migration needed
+
+### Rule Authoring Best Practices
+
+**Structure**:
+- Group related rules in namespaces
+- Use descriptive variable names
+- Add descriptions to all rules
+- Include units for amounts
+
+**Questions**:
+- Provide clear labels and tooltips
+- Use appropriate input types
+- Set validation constraints
+- Consider default values
+
+**Testing**:
+- Write situation files for edge cases
+- Test boundary conditions
+- Validate all calculation paths
+- Check missing variable handling
+
+### Package Publishing Strategy
+
+**Current**: Local workspace packages
+
+**Future**: Publish to npm
+- `@betagouv/publicodes-aom-bordeaux`
+- `@betagouv/publicodes-aom-rennes`
+- Enables external reuse
+- Simplifies dependency management
+- Version control for rules
+
+## Related Domains
+
+**Primary relationships**:
+- **Simulateurs**: Publicodes mode is one of two calculation engines
+- **Form Submission**: Results stored regardless of engine type
+- **Aides**: Dispositifs in Publicodes correspond to Aides in database
+
+**Secondary relationships**:
+- **Admin**: Toggle Publicodes mode per simulateur
+- **Content**: Future integration for rule documentation

@@ -7,8 +7,8 @@ import { onMounted } from 'vue'
 import PublicodesSurvey from '~/components/survey/PublicodesSurvey.vue'
 import Survey from '~/components/survey/Survey.vue'
 import { useIframeDisplay } from '~/composables/use_is_iframe'
+import { getPublicodesRules } from '~/services/publicodes_loader_service'
 import { useBreadcrumbStore } from '~/stores/breadcrumbs'
-import { getPublicodesRules } from '~/utils/get_publicodes_rules'
 
 const {
   props: { simulateur },

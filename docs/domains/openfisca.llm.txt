@@ -1,0 +1,654 @@
+# OpenFisca Domain
+
+## Overview
+
+OpenFisca is a microsimulation engine for tax-benefit systems, originally developed for modeling the French fiscal and social system. In Aides Simplifiées, OpenFisca serves as the calculation backend for complex housing and mobility aids that require precise modeling of French tax-benefit rules. Unlike Publicodes which runs client-side, OpenFisca calculations happen server-side via an external API, enabling access to comprehensive French legislative rules.
+
+The OpenFisca domain handles the complete lifecycle: building calculation requests from user answers, calling the external API, extracting relevant results, and enriching them with derived eligibility indicators.
+
+## Core Concepts
+
+### OpenFisca API
+External microsimulation service:
+- **Server-side**: Calculations performed by external API
+- **Legislative Accuracy**: Models actual French tax-benefit rules
+- **Entity-based**: Organizes data by household entities
+- **Period-based**: Values associated with time periods
+- **Variable System**: Named variables with types and formulas
+
+### Entity Model
+OpenFisca organizes household data into four entity types:
+- **Individus** (Individuals): Personal attributes (age, status, income)
+- **Ménages** (Households): Household composition and housing
+- **Foyers Fiscaux** (Tax Households): Tax-related information
+- **Familles** (Families): Family relationships for benefits
+
+Each entity has:
+- **Unique ID**: Identifier (e.g., `usager`, `menage_usager`)
+- **Variables**: Named attributes with values
+- **Roles**: Relationships (e.g., `personne_de_reference`, `enfants`)
+
+### Request Structure
+OpenFisca API expects JSON with entity-based structure:
+```json
+{
+  "individus": {
+    "usager": {
+      "date_naissance": { "2025-01": "2000-05-15" },
+      "activite": { "2025-01": "etudiant" }
+    }
+  },
+  "menages": {
+    "menage_usager": {
+      "personne_de_reference": ["usager"],
+      "loyer": { "2025-01": 600 }
+    }
+  }
+}
+```
+
+### Variable Mapping
+Translation layer between form answers and OpenFisca variables:
+- **Form ID**: User-facing question identifier (e.g., `statut-professionnel`)
+- **OpenFisca Variable**: API variable name (e.g., `activite`)
+- **Entity**: Which entity the variable belongs to
+- **Period**: Time period for the value (MONTH, YEAR, ETERNITY)
+- **Formatter**: Function to transform form value to API format
+
+### Period System
+OpenFisca uses period strings to specify when values apply:
+- **MONTH**: Current month (e.g., `2025-01`)
+- **YEAR**: Current year (e.g., `2025`)
+- **ETERNITY**: Timeless value (e.g., date of birth)
+
+Current period computed from `Date.now()`.
+
+### Result Extraction
+Reverse process of extracting specific aid amounts from API response:
+- **Variable Name**: OpenFisca variable to extract (e.g., `apl`)
+- **Entity**: Which entity contains the variable
+- **Period**: Which period to read
+- **Result Key**: Form result identifier (e.g., `aide-personnalisee-logement`)
+
+## Entity Relationships
+
+```
+Survey Schema (engine: "openfisca")
+  ├─→ Questions (form IDs)
+  ├─→ questionsToApi (result variables to extract)
+  └─→ Calculation Flow
+
+Form Answers
+  ↓ (buildCalculationRequest)
+OpenFisca Request (4 entities)
+  ↓ (POST /api/calculate)
+OpenFisca API (external)
+  ↓ (response)
+OpenFisca Response (4 entities with calculated values)
+  ↓ (extractAidesResults)
+Simulation Results (aid amounts and eligibility)
+```
+
+### Mapping Files Architecture
+```
+questions_variables.ts
+  ├─→ individusQuestionsVariables (result extraction)
+  ├─→ menagesQuestionsVariables
+  ├─→ famillesQuestionsVariables
+  └─→ foyersFiscauxQuestionsVariables
+
+variables.ts
+  ├─→ individusVariables (request building)
+  ├─→ menagesVariables
+  ├─→ famillesVariables
+  └─→ foyersFiscauxVariables
+
+dispatchers.ts
+  └─→ Complex mappings with conditional logic
+```
+
+## User Journey / Data Flow
+
+### 1. Form Completion
+User answers survey questions in UI:
+```
+Question: "Dans quelle situation professionnelle êtes-vous ?"
+Answer: "etudiant"
+→ Stored as { "statut-professionnel": "etudiant" }
+```
+
+### 2. Request Building
+`buildCalculationRequest()` transforms answers to OpenFisca format:
+
+**Step 2a**: Initialize empty request with 4 entities
+```typescript
+{
+  individus: { usager: {} },
+  menages: { menage_usager: { personne_de_reference: ["usager"] } },
+  foyers_fiscaux: { foyer_fiscal_usager: { declarants: ["usager"] } },
+  familles: { famille_usager: { parents: ["usager"] } }
+}
+```
+
+**Step 2b**: Process each answer through variable mappings
+```typescript
+// Look up mapping for "statut-professionnel"
+individusVariables["statut-professionnel"] = {
+  dispatch: dispatchStatutProfessionnel,
+  period: 'MONTH'
+}
+
+// Dispatch applies business logic
+if (answer === "etudiant") {
+  return {
+    "activite": { "2025-01": "etudiant" },
+    "statut_occupation_logement": { "2025-01": "locataire_vide" }
+  }
+}
+```
+
+**Step 2c**: Populate entity with formatted variables
+```typescript
+individus.usager["activite"] = { "2025-01": "etudiant" }
+individus.usager["statut_occupation_logement"] = { "2025-01": "locataire_vide" }
+```
+
+### 3. API Call
+`useSimulation()` posts request to backend proxy:
+```typescript
+POST /api/calculate
+Body: OpenFiscaCalculationRequest
+→ OpenFiscaController forwards to external API
+→ Returns OpenFiscaCalculationResponse
+```
+
+### 4. Result Extraction
+`extractAidesResults()` pulls relevant aid values:
+
+**Step 4a**: For each requested result in `questionsToApi`:
+```typescript
+questionsToApi: ["aide-personnalisee-logement", "locapass-eligibilite"]
+```
+
+**Step 4b**: Look up variable mapping:
+```typescript
+famillesQuestionsVariables["aide-personnalisee-logement"] = {
+  openfiscaVariableName: "apl",
+  period: "MONTH"
+}
+```
+
+**Step 4c**: Extract from response:
+```typescript
+response.familles["famille_usager"]["apl"]["2025-01"] = 250
+→ results["aide-personnalisee-logement"] = 250
+```
+
+### 5. Result Enrichment
+`addDeducedResults()` computes derived values:
+```typescript
+// If APL amount > 0, deduce eligibility
+if (results["aide-personnalisee-logement"] > 0) {
+  results["aide-personnalisee-logement-eligibilite"] = true
+}
+
+// If Locapass eligible, set fixed amount
+if (results["locapass-eligibilite"] === true) {
+  results["locapass"] = 1200
+}
+```
+
+### 6. Result Display
+Results presented to user in simulator results page:
+```
+✅ Aide Personnalisée au Logement (APL): 250 €/mois
+✅ Locapass: 1 200 € de garantie
+❌ Aide à la mobilité Master: Non éligible
+```
+
+## Technical Patterns
+
+### Request Builder Pattern
+The request building process uses a Builder pattern with entity managers to construct the complex nested OpenFisca request structure. The architecture separates concerns into specialized components:
+
+**OpenFiscaRequestBuilder**: Main builder class with fluent API
+```typescript
+const builder = new OpenFiscaRequestBuilder({ allowUndefinedValues: true })
+builder.addAnswer('statut-professionnel', 'etudiant')
+       .addAnswer('loyer', 600)
+const result = builder.build()
+```
+
+**MappingResolver**: Resolves form answer keys to OpenFisca variable mappings
+- Combines variables from all four entity types
+- Determines which entity a variable belongs to
+- Returns mapping object or null for unknown keys
+
+**EntityManager**: Base class for entity-specific logic
+- Manages variables for one entity type (individu, menage, etc.)
+- Handles variable conflicts and updates
+- Collects entity-specific errors
+- Resolves periods for variables
+
+**Concrete Entity Managers**:
+- `IndividuManager`: Manages individual entity variables
+- `MenageManager`: Manages household entity with member lists
+- `FoyerFiscalManager`: Manages tax household entity
+- `FamilleManager`: Manages family entity
+
+**Facade Integration**: `buildCalculationRequest()` uses the builder internally while maintaining backward compatibility:
+```typescript
+function buildCalculationRequest(
+  answers: SurveyAnswers,
+  questions: string[]
+): OpenFiscaCalculationRequest {
+  // Use builder for answer processing
+  const builder = new OpenFiscaRequestBuilder({ allowUndefinedValues: true })
+  builder.addAnswers(answers)
+  const result = builder.build()
+  
+  // Apply legacy business logic
+  let request = result.success ? result.request : fallbackMethod()
+  request = addScolariteBusinessLogic(request, answers)
+  request = addQuestionsToRequest(request, questions)
+  request = clampInputsInRequest(request)
+  
+  return request
+}
+```
+
+**Benefits**:
+- Modular architecture with clear separation of concerns
+- Each component independently testable
+- Centralized error collection across all entities
+- Type-safe with discriminated union result types
+- Easy to extend with new entity types or mappings
+- Backward compatible through facade pattern
+
+### Dispatcher Pattern
+Complex mappings use dispatcher functions for conditional logic:
+```typescript
+function dispatchStatutProfessionnel(
+  key: string,
+  value: string,
+  period: PeriodType
+): Record<string, VariableValueOnPeriod> {
+  const periodStr = getCurrentPeriod(period)
+
+  if (value === "etudiant") {
+    return {
+      "activite": { [periodStr]: "etudiant" },
+      "statut_occupation_logement": { [periodStr]: "locataire_vide" }
+    }
+  } else if (value === "actif") {
+    return {
+      "activite": { [periodStr]: "actif" }
+    }
+  }
+  // ... more conditions
+}
+```
+
+**Use Cases**:
+- One form answer maps to multiple OpenFisca variables
+- Conditional logic based on answer value
+- Business rules that span entities
+- Default value inference
+
+### Error Handling Strategy
+Custom error types for different failure modes:
+```typescript
+// Form variable not found in mappings
+throw new UnknownVariableError(formInputId)
+
+// Variable belongs to unknown entity
+throw new UnknownEntityError(formInputId)
+
+// Period type not recognized
+throw new UnknownPeriodError(formInputId)
+
+// User didn't provide required value
+throw new UndefinedValueError(formInputId)
+
+// Value type doesn't match expected
+throw new UnexpectedValueError(formInputId)
+
+// Attempted to overwrite existing value
+throw new UnexpectedValueUpdateError(formInputId)
+```
+
+### Date Standardization
+Birth dates normalized for consistent caching:
+```typescript
+function standardizeBirthDate(request: OpenFiscaCalculationRequest) {
+  // Find date_naissance in individus
+  for (const individu of Object.values(request.individus)) {
+    if (individu.date_naissance) {
+      for (const [period, date] of Object.entries(individu.date_naissance)) {
+        // Ensure YYYY-MM-DD format
+        individu.date_naissance[period] = normalizeDate(date)
+      }
+    }
+  }
+}
+```
+
+**Purpose**: Identical requests produce identical API calls for caching.
+
+### Formatter Functions
+Type-specific formatters handle value transformation:
+```typescript
+formatters.ts:
+- formatDateToString(): Date → "YYYY-MM-DD"
+- formatBooleanToString(): boolean → "True"/"False"
+- formatNumberToFloat(): string → number
+- formatEnumToString(): enum value → API string
+```
+
+## Integration Points
+
+### Survey Schema Integration
+Schema specifies OpenFisca usage:
+```json
+{
+  "engine": "openfisca",
+  "questionsToApi": [
+    "aide-personnalisee-logement",
+    "locapass-eligibilite",
+    "mobilite-master-1"
+  ],
+  "steps": [/* form steps */]
+}
+```
+
+**Fields**:
+- `engine: "openfisca"`: Triggers OpenFisca calculation flow
+- `questionsToApi`: Array of result variables to extract
+- No `dispositifs` field (used by Publicodes)
+
+### Backend API Proxy
+`OpenFiscaController` proxies requests:
+```typescript
+POST /api/calculate
+→ OpenFiscaController.calculate()
+→ axios.post(OPENFISCA_URL, requestBody)
+→ Returns response or error
+```
+
+**Environment Config**:
+- `OPENFISCA_URL`: External API endpoint
+- Timeout: 10 seconds
+- Headers: JSON content type
+
+### Frontend Composable
+`useSimulation()` orchestrates calculation:
+```typescript
+if (schema.engine === 'openfisca') {
+  const request = buildCalculationRequest(answers, schema.questionsToApi)
+  standardizeBirthDate(request)
+  const response = await axios.post('/api/calculate', request)
+  const results = extractAidesResults(response.data, schema.questionsToApi)
+}
+```
+
+### Form Submission Storage
+Results stored in `FormSubmission` model:
+```typescript
+{
+  simulateurSlug: "demenagement-logement",
+  answers: { /* raw form answers */ },
+  results: { /* OpenFisca calculation results */ }
+}
+```
+
+## Business Rules
+
+### Entity Initialization
+Default entity structure:
+- **Individus**: Single individual `usager`
+- **Ménages**: Household with `usager` as reference person
+- **Foyers Fiscaux**: Tax household with `usager` as declarant
+- **Familles**: Family with `usager` as parent
+
+**Current Limitation**: Only supports single-person households. No spouse, children, or roommates.
+
+### Variable Override Policy
+Most variables set once, but exceptions:
+```typescript
+// statut_occupation_logement can be updated
+if (existingValue === "locataire_vide" && newConditionMet) {
+  // Allow update from multiple questions
+  updateVariable()
+}
+```
+
+**Use Case**: Different questions refine housing status.
+
+### Period Calculation
+Current period based on execution time:
+```typescript
+MONTH: "2025-01" (current month)
+YEAR: "2025" (current year)
+ETERNITY: "ETERNITY" (for immutable values)
+```
+
+**Implication**: Same user answers may produce different API requests if run in different months.
+
+### Result Deduction Rules
+Some results derived from others:
+
+**APL Eligibility**:
+```typescript
+if (apl_amount > 0) → eligible
+```
+
+**Mobility Aid Eligibility**:
+```typescript
+if (aide_mobilite_master > 0) → eligible
+if (aide_mobilite_parcoursup > 0) → eligible
+```
+
+**Locapass Amount**:
+```typescript
+if (locapass_eligibilite === true) → 1200€
+```
+
+### Validation Strategy
+**Client-side**: Form validates inputs (required, format)
+**Mapping-side**: Throws errors for unknown/invalid mappings
+**API-side**: OpenFisca validates legislative rules
+
+## Key Code Locations
+
+### Utilities
+- `inertia/utils/openfisca/build_calculation_request.ts`: Request builder facade (uses builder internally)
+- `inertia/utils/openfisca/beautify_results.ts`: Result extraction
+- `inertia/utils/openfisca/constants.ts`: Entity IDs, enums, defaults
+- `inertia/utils/openfisca/date_periods.ts`: Period calculation
+- `inertia/utils/openfisca/errors.ts`: Custom error classes
+- `inertia/utils/openfisca/formatters.ts`: Value formatters
+- `inertia/utils/openfisca/standardize_birth_date.ts`: Date normalization
+
+### Request Builder Components
+- `inertia/utils/openfisca/request-builder/request_builder.ts`: Main builder class (361 lines)
+- `inertia/utils/openfisca/request-builder/mapping_resolver.ts`: Answer key to mapping resolution (89 lines)
+- `inertia/utils/openfisca/request-builder/entity_manager.ts`: Base class for entity managers (131 lines)
+- `inertia/utils/openfisca/request-builder/individu_manager.ts`: Individual entity manager (72 lines)
+- `inertia/utils/openfisca/request-builder/menage_manager.ts`: Household entity manager (119 lines)
+- `inertia/utils/openfisca/request-builder/foyer_fiscal_manager.ts`: Tax household entity manager (114 lines)
+- `inertia/utils/openfisca/request-builder/famille_manager.ts`: Family entity manager (112 lines)
+- `inertia/utils/openfisca/request-builder/types.ts`: Builder type definitions (59 lines)
+- `inertia/utils/openfisca/request-builder/index.ts`: Export barrel
+
+### Mappings
+- `inertia/utils/openfisca/variables.ts`: Form → API mappings (request)
+- `inertia/utils/openfisca/questions_variables.ts`: API → Result mappings (response)
+- `inertia/utils/openfisca/dispatchers.ts`: Complex conditional mappings
+
+### Composables
+- `inertia/composables/use_simulation.ts`: Orchestrates calculation flow
+
+### Controllers
+- `app/controllers/api/openfisca_controller.ts`: API proxy
+
+### Types
+- `inertia/types/survey.d.ts`: `OpenFiscaSurveySchema` type
+- `inertia/types/openfisca.d.ts`: API request/response types
+
+### Survey Schemas
+- `public/forms/demenagement-logement.json`: Housing/moving simulator (OpenFisca)
+- `public/forms/test.json`: Test simulator (OpenFisca)
+- `public/forms/comprehensive-test.json`: Comprehensive test (OpenFisca)
+- `public/forms/simple-test.json`: Simple test (OpenFisca)
+
+## Notes
+
+### OpenFisca vs Publicodes
+**When to use OpenFisca**:
+- Complex national-level benefits (APL, tax credits)
+- Need legislative accuracy with frequent rule updates
+- Calculations require comprehensive French fiscal model
+- External authority maintains the rules
+
+**When to use Publicodes**:
+- Custom local aids (AOM, municipalities)
+- Transparent client-side calculations
+- Simpler eligibility rules
+- Full control over calculation logic
+
+### Variable Naming Conventions
+**Form IDs**: kebab-case, descriptive (`statut-professionnel`)
+**OpenFisca Variables**: snake_case, legislative (`activite`, `statut_occupation_logement`)
+**Result Keys**: kebab-case, aide-prefixed (`aide-personnalisee-logement`)
+
+### API Response Caching
+Backend can cache identical requests:
+- Requests with same JSON produce same results
+- `standardizeBirthDate()` ensures date consistency
+- Cache keyed on request body hash
+- Cache invalidation based on time periods
+
+### Missing Variable Handling
+If mapping not found:
+1. Log error to console
+2. Throw `UnknownVariableError`
+3. Skip variable in request/result
+4. Continue with partial data
+
+**Implication**: Form can complete with partial eligibility checks.
+
+### Period Edge Cases
+**Month boundaries**: Calculations on Jan 1 vs Jan 31 use same period "2025-01"
+**Year boundaries**: Dec 31 2024 vs Jan 1 2025 produce different periods
+**ETERNITY values**: Birth date, nationality use "ETERNITY" period
+
+### Debugging Tools
+Enable detailed logging:
+```typescript
+console.log('OpenFisca Request:', JSON.stringify(request, null, 2))
+console.log('OpenFisca Response:', JSON.stringify(response, null, 2))
+```
+
+Check mapping coverage:
+```typescript
+// List all form questions
+const formQuestions = schema.steps.flatMap(s => s.questions.map(q => q.id))
+
+// Compare with mapped variables
+const mappedVariables = Object.keys(individusVariables)
+const unmapped = formQuestions.filter(q => !mappedVariables.includes(q))
+```
+
+### API Timeout Handling
+10-second timeout on API calls:
+- Prevents hanging requests
+- Returns error status on timeout
+- User sees error message, not infinite loading
+
+### Testing Considerations
+**Backend Tests (Japa)**: Unit tests for controllers and API integration
+**Frontend Tests (Vitest)**: Unit tests for builder components and utilities
+**E2E Tests (Playwright)**: Full simulation flows with real API calls
+**Mock API**: Use mock server for unit tests
+**Fixtures**: Store sample requests/responses
+**Validation**: Test mapping completeness
+**Edge Cases**: Test boundary values, empty inputs
+
+### Test Files
+- `tests/frontend/utils/openfisca/request_builder.spec.ts`: Builder unit tests (15 tests)
+  - Initialization and empty state
+  - Adding answers (single, multiple, chaining)
+  - Value handling (undefined, null, ComboboxAnswer, arrays)
+  - Error collection and tracking
+  - Request state inspection
+  - Options configuration
+- `tests/unit/controllers/api/openfisca_controller.spec.ts`: API controller tests
+- `tests/e2e/02_simulation.spec.ts`: End-to-end simulation flows
+
+## Related Domains
+
+- **Simulateurs**: OpenFisca simulators (`engine: "openfisca"`)
+- **API Integrations**: OpenFisca API proxy endpoint
+- **Form Submission**: Stores OpenFisca calculation results
+- **Publicodes**: Alternative calculation engine
+
+## Current OpenFisca Simulators
+
+Active simulators using OpenFisca:
+1. **demenagement-logement**: Housing and moving aids
+   - APL (Aide Personnalisée au Logement)
+   - Locapass guarantee
+   - Visale guarantee
+   - Master/Parcoursup mobility aids
+
+2. **Test simulators**: Development and QA
+   - simple-test.json
+   - test.json
+   - comprehensive-test.json
+
+## Future Considerations
+
+### Potential Enhancements
+- **Multi-person Households**: Support spouse, children, roommates
+- **Historical Periods**: Calculate for past/future months
+- **Variable Tracing**: Debug which form answer set which API variable
+- **Mapping Validation**: Automated tests for mapping completeness
+- **Client-side Preview**: Show API request before submission
+- **Response Caching**: Cache results to reduce API load
+
+### OpenFisca API Evolution
+- **Version Management**: Handle breaking changes in API
+- **New Variables**: Add mappings for new legislative variables
+- **Deprecated Variables**: Remove old variable mappings
+- **API Migration**: Prepare for API endpoint changes
+
+### Mapping Maintenance
+**Adding new aid**:
+1. Identify OpenFisca variable name
+2. Add to `questionsToApi` in schema
+3. Add mapping in `questions_variables.ts`
+4. Test extraction works correctly
+
+**Adding new question**:
+1. Identify OpenFisca variable(s) to populate
+2. Add mapping in appropriate `variables.ts` section
+3. Create dispatcher if conditional logic needed
+4. Test request building works correctly
+
+### Performance Optimization
+- **Request Batching**: Combine multiple calculations
+- **Partial Updates**: Only recalculate changed variables
+- **Response Compression**: Reduce API payload size
+- **Local Caching**: Cache results in browser storage
+
+### Validation Improvements
+- **Pre-submit Validation**: Check required variables before API call
+- **Type Checking**: Validate variable types match expectations
+- **Range Validation**: Check numeric values in acceptable ranges
+- **Legislative Consistency**: Warn about contradictory answers
+
+### Error Recovery
+- **Retry Logic**: Retry failed API calls with backoff
+- **Partial Results**: Display aids that calculated successfully
+- **Fallback Values**: Use defaults when API unavailable
+- **Error Reporting**: Send errors to monitoring service

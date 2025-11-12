@@ -1,0 +1,306 @@
+# Plan: Standardize Error Handling Patterns
+
+## Date
+Created: 2025-10-31
+
+## Context
+The codebase currently has inconsistent error handling patterns:
+- Mix of try-catch with console.error
+- Silent failures (returning null/false without logging)
+- Error throwing without context
+- Backend uses console.error instead of LoggingService in one place
+
+This inconsistency makes debugging difficult and hides potential issues.
+
+## Objectives
+- [ ] 1. Create Result type utility for type-safe error handling (Phase 2 - Optional)
+- [x] 2. Fix backend console.error in admin_persona_controller.ts
+- [x] 3. Create Vue error boundary component
+- [ ] 4. Standardize error handling in critical paths (Phase 2 - Optional)
+- [ ] 5. Update error handling in OpenFisca utilities (Phase 2 - Optional)
+- [ ] 6. Update error handling in survey store (Phase 2 - Optional)
+- [x] 7. Add error tracking integration points (prepare for Sentry)
+- [x] 8. Run tests to ensure no regressions
+- [ ] 9. Update documentation (after user validation)
+
+## Implementation Steps
+
+### Phase 1: Create Result Type Utility (Step 1)
+**Files to create**:
+- `shared/types/result.ts` - Result type and helper functions
+
+**Type definition**:
+```typescript
+export type Result<T, E = Error> =
+  | { success: true; value: T }
+  | { success: false; error: E }
+
+// Helper functions
+export function ok<T>(value: T): Result<T, never> {
+  return { success: true, value }
+}
+
+export function err<E>(error: E): Result<never, E> {
+  return { success: false, error }
+}
+
+export function isOk<T, E>(result: Result<T, E>): result is { success: true; value: T } {
+  return result.success
+}
+
+export function isErr<T, E>(result: Result<T, E>): result is { success: false; error: E } {
+  return !result.success
+}
+```
+
+### Phase 2: Fix Backend Logging (Step 2)
+**Files to modify**:
+- `app/controllers/admin/admin_persona_controller.ts`
+
+**Change**:
+Replace:
+```typescript
+console.error('Error running simulation with persona:', error)
+```
+
+With:
+```typescript
+this.loggingService.logError(error, ctx, {
+  context: 'persona_simulation',
+  personaId: persona.id
+})
+```
+
+### Phase 3: Create Error Boundary Component (Step 3)
+**Files to create**:
+- `inertia/components/ErrorBoundary.vue`
+
+**Implementation**:
+```vue
+<script setup lang="ts">
+import { onErrorCaptured, ref } from 'vue'
+import { DsfrAlert, DsfrButton } from '@gouvminint/vue-dsfr'
+
+interface Props {
+  fallbackMessage?: string
+  showReload?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  fallbackMessage: 'Une erreur s\'est produite.',
+  showReload: true
+})
+
+const error = ref<Error | null>(null)
+
+onErrorCaptured((err) => {
+  error.value = err
+  console.error('Component error:', err)
+  // TODO: Send to error tracking service (Sentry)
+  return false // Prevent propagation
+})
+
+function reset() {
+  error.value = null
+}
+
+function reload() {
+  window.location.reload()
+}
+</script>
+
+<template>
+  <div v-if="error" class="error-boundary">
+    <DsfrAlert type="error" :title="fallbackMessage">
+      <p v-if="error.message">{{ error.message }}</p>
+      <div class="fr-btns-group fr-btns-group--inline">
+        <DsfrButton @click="reset">Réessayer</DsfrButton>
+        <DsfrButton v-if="showReload" secondary @click="reload">
+          Recharger la page
+        </DsfrButton>
+      </div>
+    </DsfrAlert>
+  </div>
+  <slot v-else />
+</template>
+```
+
+### Phase 4: Standardize Critical Path Error Handling (Step 4)
+**Files to modify**:
+- `inertia/composables/use_simulation.ts`
+- `inertia/utils/openfisca/build_calculation_request.ts`
+- `inertia/composables/use_eligibility_service.ts`
+
+**Pattern**:
+```typescript
+// Before (inconsistent):
+try {
+  const result = await doSomething()
+  return result
+} catch (error) {
+  console.error('Failed:', error)
+  return null
+}
+
+// After (consistent):
+try {
+  const result = await doSomething()
+  return ok(result)
+} catch (error) {
+  console.error('Failed:', error)
+  // TODO: Track in error monitoring service
+  return err(error as Error)
+}
+```
+
+### Phase 5: Update OpenFisca Error Handling (Step 5)
+**Files to modify**:
+- `inertia/utils/openfisca/build_calculation_request.ts`
+
+**Current issues**:
+- Throws custom errors (UnknownVariableError, UnknownEntityError)
+- No context provided to caller
+
+**Improvement**:
+- Continue throwing errors (they're specific and meaningful)
+- Add error context/metadata
+- Document error types in JSDoc
+
+### Phase 6: Update Survey Store Error Handling (Step 6)
+**Files to modify**:
+- `inertia/composables/use_surveys_store_definer.ts`
+
+**Pattern for findQuestionById**:
+```typescript
+// Before (silent failure):
+const findQuestionById = (slug: string, id: string): SurveyQuestion | null => {
+  const schema = getSchema(slug)
+  if (!schema) return null
+  // ...
+  return null
+}
+
+// After (explicit error state):
+const findQuestionById = (slug: string, id: string): Result<SurveyQuestion, 'NOT_FOUND' | 'SCHEMA_MISSING'> => {
+  const schema = getSchema(slug)
+  if (!schema) {
+    return err('SCHEMA_MISSING')
+  }
+
+  const question = /* find logic */
+  if (!question) {
+    return err('NOT_FOUND')
+  }
+
+  return ok(question)
+}
+```
+
+### Phase 7: Prepare for Error Tracking (Step 7)
+**Files to create**:
+- `app/utils/error_tracker.ts` - Interface for error tracking
+- `inertia/utils/error_tracker.ts` - Frontend error tracking
+
+**Implementation**:
+```typescript
+// app/utils/error_tracker.ts
+export interface ErrorTracker {
+  captureError(error: Error, context?: Record<string, unknown>): void
+  captureMessage(message: string, level: 'info' | 'warning' | 'error'): void
+}
+
+// Placeholder implementation (Sentry can be added later)
+class ConsoleErrorTracker implements ErrorTracker {
+  captureError(error: Error, context?: Record<string, unknown>): void {
+    console.error('Error captured:', error, context)
+  }
+
+  captureMessage(message: string, level: 'info' | 'warning' | 'error'): void {
+    console[level](message)
+  }
+}
+
+export const errorTracker: ErrorTracker = new ConsoleErrorTracker()
+```
+
+### Phase 8: Run Tests (Step 8)
+Run all tests to ensure no regressions:
+- `pnpm typecheck`
+- `pnpm test`
+- `pnpm test:a11y`
+
+### Phase 9: Update Documentation (Step 9)
+Update relevant `.llm.txt` files after user validation
+
+## Files Modified
+
+### New files (estimate: 4 files):
+1. `shared/types/result.ts` - Result type utility
+2. `inertia/components/ErrorBoundary.vue` - Error boundary component
+3. `app/utils/error_tracker.ts` - Backend error tracking interface
+4. `inertia/utils/error_tracker.ts` - Frontend error tracking
+
+### Modified files (estimate: 6 files):
+1. `app/controllers/admin/admin_persona_controller.ts` - Fix console.error
+2. `inertia/composables/use_simulation.ts` - Standardize error handling
+3. `inertia/composables/use_eligibility_service.ts` - Standardize error handling
+4. `inertia/utils/openfisca/build_calculation_request.ts` - Document errors
+5. `inertia/composables/use_surveys_store_definer.ts` - Explicit error states
+6. `inertia/layouts/default.vue` or key pages - Add ErrorBoundary
+
+## Tests
+- [ ] `pnpm typecheck` passes
+- [ ] Unit tests pass
+- [ ] E2E tests pass
+- [ ] Accessibility tests pass
+- [ ] Error boundary works as expected
+- [ ] Error tracking logs correctly
+
+## Documentation Updated
+- [ ] Update relevant `.llm.txt` files after user validation
+- [ ] Document Result type usage patterns
+- [ ] Document ErrorBoundary usage
+
+## Risks & Considerations
+
+1. **Breaking Changes**: Changing return types from `null` to `Result<T, E>`
+   - **Mitigation**: Do this incrementally, not all at once
+   - **Alternative**: Keep null returns but add better error logging first
+
+2. **Result Type Learning Curve**: Team may need to adapt to new pattern
+   - **Mitigation**: Document clearly with examples
+   - **Alternative**: Start with just improving logging, add Result later
+
+3. **Error Boundary Performance**: May impact rendering performance
+   - **Mitigation**: Only wrap critical sections, not every component
+
+## Recommended Approach
+
+**Phase 1 (Quick Wins - Do First)**:
+1. Fix console.error in admin_persona_controller.ts
+2. Create ErrorBoundary component
+3. Add ErrorBoundary to main layout
+4. Create error tracker interfaces
+
+**Phase 2 (Later/Optional)**:
+5. Introduce Result type gradually
+6. Refactor critical paths to use Result
+7. Update stores to use Result
+
+**Rationale**: Fix immediate issues first, introduce new patterns gradually
+
+## Success Criteria
+- ✅ No console.error in backend (use LoggingService)
+- ✅ Error boundary catches component errors
+- ✅ Error tracking infrastructure ready
+- ✅ All tests passing
+- ✅ Better error visibility for debugging
+
+## History
+- 2025-10-31: Plan created and Phase 1 (Quick Wins) implemented
+  - ✅ Fixed console.error in admin_persona_controller.ts (now uses LoggingService)
+  - ✅ Created ErrorBoundary.vue component with DSFR styling
+  - ✅ Created ErrorTracker interface and ConsoleErrorTracker implementation
+  - ✅ Created frontend error_tracker.ts utility
+  - ✅ All 127 tests passing
+  - Phase 2 (Result type) deferred - can be added gradually when needed

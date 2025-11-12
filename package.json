@@ -1,7 +1,7 @@
 {
   "name": "aides-simplifiees-app",
   "type": "module",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "license": "AGPL-3.0-only",
   "imports": {
     "#controllers/*": "./app/controllers/*.js",
@@ -20,7 +20,7 @@
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
     "#config/*": "./config/*.js",
-    "#publicodes/*": "./publicodes/"
+    "#packages/*": "./packages/"
   },
   "scripts": {
     "start": "node bin/server.js",
@@ -40,6 +40,10 @@
     "typecheck:e2e-tests": "tsc --noEmit -p tests/e2e/tsconfig.json",
     "detect_icons": "node scripts/detect_icons.js",
     "test": "node ace test",
+    "test:frontend": "vitest --run",
+    "test:frontend:ui": "vitest --ui",
+    "test:frontend:coverage": "vitest --coverage",
+    "test:all": "pnpm test && pnpm test:frontend",
     "test:a11y": "node ace test --files e2e/03_a11y",
     "postinstall": "playwright install --with-deps chromium",
     "clear:a11y": "rm -rf reports/accessibility",
@@ -79,6 +83,8 @@
     "crypto-js": "^4.2.0",
     "d3": "^7.9.0",
     "edge.js": "^6.3.0",
+    "isomorphic-dompurify": "^2.30.1",
+    "limiter": "^3.0.0",
     "luxon": "^3.7.2",
     "marked": "^16.3.0",
     "pg": "^8.16.3",
@@ -119,10 +125,14 @@
     "@types/luxon": "^3.7.1",
     "@types/node": "^24.6.0",
     "@types/sinon": "^17.0.4",
+    "@vitest/coverage-v8": "^4.0.6",
+    "@vitest/ui": "4.0.6",
+    "@vue/test-utils": "^2.4.6",
     "axe-core": "^4.10.3",
     "c8": "^10.1.3",
     "eslint": "^9.36.0",
     "eslint-plugin-vue": "^10.5.0",
+    "happy-dom": "^20.0.10",
     "hot-hook": "^0.4.0",
     "husky": "^9.1.7",
     "pino-pretty": "^13.1.1",
@@ -132,7 +142,8 @@
     "sinon": "^21.0.0",
     "ts-node-maintained": "^10.9.6",
     "typescript": "~5.9.2",
-    "vite": "^7.1.7"
+    "vite": "^7.1.7",
+    "vitest": "^4.0.6"
   },
   "hotHook": {
     "boundaries": [

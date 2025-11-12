@@ -65,6 +65,7 @@ createInertiaApp({
       })
 
       if (import.meta.env.MODE === 'production') {
+        // Type assertion needed: Matomo's _paq is an external library without TypeScript definitions
         ;(window as any)._paq.push(['setCookieSameSite', 'None'])
       }
     }

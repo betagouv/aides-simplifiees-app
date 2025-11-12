@@ -1,5 +1,4 @@
 import env from '#start/env'
-import app from '@adonisjs/core/services/app'
 import { defineConfig, stores } from '@adonisjs/session'
 
 const sessionConfig = defineConfig({
@@ -25,8 +24,12 @@ const sessionConfig = defineConfig({
   cookie: {
     path: '/',
     httpOnly: true,
-    secure: app.inProduction,
-    sameSite: 'lax',
+    // sameSite: 'none' REQUIRES secure: true (browsers reject it otherwise)
+    // We force secure: true here for iframe integration to work
+    secure: true,
+    // Use 'none' to allow cookies in cross-site iframe contexts
+    // This is required for iframe integration to work on external sites
+    sameSite: 'none',
   },
 
   /**

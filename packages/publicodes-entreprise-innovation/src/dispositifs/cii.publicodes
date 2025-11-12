@@ -1,0 +1,254 @@
+cii:
+  titre: Crédit d'impôt Innovation
+
+cii . eligibilite:
+  titre: Eligibilité au CII
+  toutes ces conditions:
+    - estUnePME
+    - natureActivite . commercialeIndustrielleAgricole
+    - regimeFiscalReelOuConditionDExoneration
+    - prototypeDestination = 'modele'
+    - produitMisMarche = non
+    - performancesSuperieuresOui
+    - entrepriseEnDifficulte = non
+
+cii . eligibilite . explications:
+  applicable si: eligibilite = non
+  texte: |
+    {{ estUnePME . explications }}
+    {{ natureActivite . commercialeIndustrielleAgricole . explications }}
+    {{ regimeFiscalReelOuConditionDExoneration . explications }}
+    {{ prototypeDestination . explications }}
+    {{ produitMisMarche . explications }}
+    {{ performancesSuperieuresOui . explications }}
+    {{ entrepriseEnDifficulte . explicationsCII }}
+
+entrepriseEnDifficulte . explicationsCII:
+  applicable si: entrepriseEnDifficulte = oui
+  texte: |
+    Une entreprise en difficulté au sens de la réglementation européenne ne peut pas bénéficier du CII.
+
+
+prototypeDestination . explications:
+  applicable si: prototypeDestination = 'marche'
+  texte: |
+    Le CII s'applique pour les prototypes utilisés comme modèle pour la réalisation d'un nouveau produit.
+
+produitMisMarche . explications:
+  applicable si: produitMisMarche = oui
+  texte: |
+    Le CII s'applique seulement si le produit final n'a pas déjà été mis à disposition sur le marché.
+
+cii . montant:
+  titre: Montant du Crédit d'Impôt Innovation
+  unité: €
+  applicable si: cii . eligibilite
+  valeur:
+    le maximum de:
+      - 0
+      - cii . montantPlafonne
+
+cii . montantPlafonne:
+  unité: €
+  valeur:
+    somme:
+      - cii . montantDOM
+      - cii . montantCorse
+      - cii . montantMetropole
+      - (-cii . deductions)
+      - depensesPrototypeRemboursementsSubventions
+
+cii . montantDOM:
+  produit:
+    - 60%
+    - le minimum de:
+      - 400000€
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisationsAvecTraitementDom
+          - depensesPrototypeChercheursTechniciensDom
+          - depensesPrototypeAmortissementsBrevetsDom
+          - depensesPrototypeFraisDepotDessinsDom
+          - depensesPrototypeDepensesSousTraitanceDom
+
+cii . montantCorse:
+  valeur:
+    produit:
+      - cii . tauxCorse
+      - le minimum de:
+        - cii . montantCorseMax
+        - somme:
+            - depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorse
+            - depensesPrototypeChercheursTechniciensCorse
+            - depensesPrototypeAmortissementsBrevetsCorse
+            - depensesPrototypeFraisDepotDessinsCorse
+            - depensesPrototypeDepensesSousTraitanceCorse
+
+
+cii . montantCorseMax:
+  le maximum de:
+      - 0
+      - somme:
+          - 400000€
+          - (-cii . montantDOM)
+
+cii . montantMetropole:
+  valeur:
+    produit:
+      - 20%
+      - le minimum de:
+        - cii . montantMetropoleMax
+        - somme:
+            - somme :
+              - depensesPrototypeAmortissementsImmobilisationsAvecTraitement
+              - (-depensesPrototypeAmortissementsImmobilisationsAvecTraitementDom)
+              - (-depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorse)
+            - somme:
+              - depensesPrototypeChercheursTechniciens
+              - (-depensesPrototypeChercheursTechniciensDom)
+              - (-depensesPrototypeChercheursTechniciensCorse)
+            - somme:
+              - depensesPrototypeAmortissementsBrevets
+              - (-depensesPrototypeAmortissementsBrevetsDom)
+              - (-depensesPrototypeAmortissementsBrevetsCorse)
+            - somme:
+              - depensesPrototypeFraisDepotDessins
+              - (-depensesPrototypeFraisDepotDessinsDom)
+              - (-depensesPrototypeFraisDepotDessinsCorse)
+            - somme:
+              - depensesPrototypeDepensesSousTraitance
+              - (-depensesPrototypeDepensesSousTraitanceDom)
+              - (-depensesPrototypeDepensesSousTraitanceCorse)
+
+cii . montantMetropoleMax:
+  le maximum de:
+      - 0
+      - somme:
+          - 400000€
+          - (-cii . montantDOM)
+          - (-cii . montantCorse)
+
+
+cii . tauxCorse:
+  valeur:
+    variations:
+      - si:
+          toutes ces conditions:
+            - effectifTotalN < 50
+            - une de ces conditions:
+                - chiffreAffairesN <= 10000000
+                - bilanTotalN <= 10000000
+        alors: 40%
+      - sinon: 35%
+
+cii . deductions:
+  valeur:
+    somme:
+      - depensesPrototypeSubventionsPubliques
+      - depensesPrototypeDepensesConseil
+      - depensesPrototypeDepensesTiersCii
+
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitement:
+  le minimum de:
+    - somme:
+      - depensesPrototypeAmortissementsImmobilisations
+      - (-depensesPrototypeAmortissementsImmobilisationsDom)
+      - (-depensesPrototypeAmortissementsImmobilisationsCorse)
+    - depensesPrototypeAmortissementsImmobilisationsAvecTraitementMax
+
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisations
+          - depensesPrototypeChercheursTechniciens
+          - depensesPrototypeAmortissementsBrevets
+          - depensesPrototypeFraisDepotDessins
+          - depensesPrototypeDepensesSousTraitance
+          - depensesPrototypeRemboursementsSubventions
+          - (-depensesPrototypeSubventionsPubliques)
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementDom:
+  le minimum de:
+    - depensesPrototypeAmortissementsImmobilisationsDom
+    - depensesPrototypeAmortissementsImmobilisationsAvecTraitementDomMax
+
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementDomMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+            - depensesPrototypeAmortissementsImmobilisationsDom
+            - depensesPrototypeChercheursTechniciensDom
+            - depensesPrototypeAmortissementsBrevetsDom
+            - depensesPrototypeFraisDepotDessinsDom
+            - depensesPrototypeDepensesSousTraitanceDom
+            #- depensesPrototypeRemboursementsSubventionsDom
+            #- (-depensesPrototypeSubventionsPubliquesDom)
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorse:
+  le minimum de:
+    - depensesPrototypeAmortissementsImmobilisationsCorse
+    - depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorseMax
+
+depensesPrototypeAmortissementsImmobilisationsAvecTraitementCorseMax:
+  le maximum de:
+    - 15000
+    - produit:
+      - 0.05
+      - somme:
+          - depensesPrototypeAmortissementsImmobilisationsCorse
+          - depensesPrototypeChercheursTechniciensCorse
+          - depensesPrototypeAmortissementsBrevetsCorse
+          - depensesPrototypeFraisDepotDessinsCorse
+          - depensesPrototypeDepensesSousTraitanceCorse
+          #- depensesPrototypeRemboursementsSubventionsCorse
+          #- (-depensesPrototypeSubventionsPubliquesCorse)
+
+cii . depassementEffectifN:
+  valeur: effectifTotalN >= 250
+
+cii . depassementEffectifN1:
+  valeur: effectifTotalN1 >= 250
+
+cii . depassementEffectifN2:
+  valeur: effectifTotalN2 >= 250
+
+cii . depassementFinancierN:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffairesN > 50000000
+      - bilanTotalN > 43000000
+
+cii . depassementFinancierN1:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffairesN1 > 50000000
+      - bilanTotalN1 > 43000000
+
+cii . depassementFinancierN2:
+  valeur:
+    toutes ces conditions:
+      - chiffreAffairesN2 > 50000000
+      - bilanTotalN2 > 43000000
+
+cii . depassementConsecutif:
+  valeur:
+    une de ces conditions:
+      - toutes ces conditions:
+          - cii . depassementEffectifN
+          - cii . depassementEffectifN1
+      - toutes ces conditions:
+          - cii . depassementEffectifN1
+          - cii . depassementEffectifN2
+      - toutes ces conditions:
+          - cii . depassementFinancierN
+          - cii . depassementFinancierN1
+      - toutes ces conditions:
+          - cii . depassementFinancierN1
+          - cii . depassementFinancierN2

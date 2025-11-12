@@ -1,6 +1,6 @@
 import Engine from 'publicodes'
+import { getPublicodesRules } from '~/services/publicodes_loader_service'
 import { useSurveysStore } from '~/stores/surveys'
-import { getPublicodesRules } from '~/utils/get_publicodes_rules'
 
 export interface DispositifDetail {
   id: string
@@ -12,7 +12,7 @@ export interface DispositifEligibilityInfo {
   id: string
   title: string
   description: string
-  value: boolean | null | any
+  value: boolean | null | string | number
   status: 'eligible' | 'ineligible' | 'potential' | 'error'
   reason?: string
   missingInfo?: string[]
@@ -47,9 +47,9 @@ function convertDateToFrenchFormat(dateStr: string): string {
 
 // Automatic mapping: map survey answers to publicodes variables by casting ids
 function autoMapAnswersToPublicodesVariables(
-  answers: Record<string, any>,
-): Record<string, any> {
-  const mapped: Record<string, any> = {}
+  answers: SurveyAnswers,
+): Record<string, SurveyAnswerValue> {
+  const mapped: Record<string, SurveyAnswerValue> = {}
   for (const [key, value] of Object.entries(answers)) {
     mapped[toCamelCase(key)] = value
   }
@@ -59,7 +59,7 @@ function autoMapAnswersToPublicodesVariables(
 export function useEligibilityService() {
   async function calculateEligibility(
     surveyId: string,
-    answers: Record<string, any>,
+    answers: SurveyAnswers,
     dispositifsToEvaluate: DispositifDetail[],
   ): Promise<EligibilityResults> {
     const sourceRules = await getPublicodesRules(surveyId)
@@ -75,12 +75,12 @@ export function useEligibilityService() {
     const mappedAnswers = autoMapAnswersToPublicodesVariables(answers)
 
     // 1. Filter out keys that don't exist in the publicodes model
-    const validMappedAnswers: Record<string, any> = {}
+    const validMappedAnswers: Record<string, SurveyAnswerValue> = {}
     const missingKeys: string[] = []
 
     Object.keys(mappedAnswers).forEach((key) => {
       try {
-        // Use type assertion to handle dynamic rule names
+        // Type assertion needed: Publicodes doesn't export proper types for dynamic rule names
         engine.getRule(key as any)
         validMappedAnswers[key] = mappedAnswers[key]
       }
@@ -95,7 +95,7 @@ export function useEligibilityService() {
     }
 
     // 2. Transform values to publicodes format
-    const transformedAnswers: Record<string, any> = {}
+    const transformedAnswers: Record<string, string | number | boolean> = {}
 
     Object.entries(validMappedAnswers).forEach(([key, value]) => {
       const question = surveysStore.findQuestionById(
@@ -114,7 +114,7 @@ export function useEligibilityService() {
       }
       else {
         // For non-checkbox questions, transform the value based on its type
-        let transformedValue = value
+        let transformedValue: string | number | boolean
         if (value === true) {
           transformedValue = 'oui'
         }
@@ -131,11 +131,19 @@ export function useEligibilityService() {
             transformedValue = `"${value}"`
           }
         }
+        else if (typeof value === 'number') {
+          transformedValue = value
+        }
+        else {
+          // Skip null, undefined, arrays, or objects
+          return
+        }
         transformedAnswers[key] = transformedValue
       }
     })
 
-    engine.setSituation(transformedAnswers)
+    // Type assertion needed: Publicodes accepts these primitive types but has complex internal types
+    engine.setSituation(transformedAnswers as any)
 
     const results: EligibilityResults = {
       eligibleDispositifs: [],
@@ -147,7 +155,7 @@ export function useEligibilityService() {
     for (const dispositif of dispositifsToEvaluate) {
       try {
         const evaluation = engine.evaluate(`${dispositif.id} . eligibilite`)
-        const value = evaluation.nodeValue
+        const value = evaluation.nodeValue as boolean | null | string | number
         const baseResult = {
           id: dispositif.id,
           title: dispositif.title || dispositif.id,

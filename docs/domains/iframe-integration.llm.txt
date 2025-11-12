@@ -1,0 +1,270 @@
+# Iframe Integration Domain
+
+## Overview
+
+The Iframe Integration domain enables external partners to embed Aides Simplifiées simulators on their own websites. This system provides a versioned JavaScript integration script with SRI (Subresource Integrity) hashes for security, automatic iframe resizing, and bidirectional communication.
+
+## Core Concepts
+
+### Integration Script
+- **Versioned Asset**: Script built as `iframe-integration@{version}.js`
+- **SRI Protection**: Each version has unique integrity hash for security
+- **Auto-resizing**: Uses @iframe-resizer library for dynamic height adjustment
+- **Configuration**: Data attributes control simulator selection and behavior
+
+### Iframe Mode
+- **Query Parameter**: `?iframe=true` activates iframe-specific UI
+- **Parameter Preservation**: Middleware ensures iframe mode persists across navigation
+- **UTM Tracking**: Automatic tracking of iframe source and location
+
+### Security Model
+- **CORS**: Special CORS rules for iframe integration assets
+- **SRI Hashes**: Subresource Integrity prevents tampering
+- **Version Control**: Explicit version management prevents breaking changes
+
+## Entity Relationships
+
+```
+Integration Script (1) → Simulator Page (1)
+  └─ embeds via iframe with iframe=true parameter
+
+Script Version (1) ─ SRI Hash (1)
+  └─ tracked in config/iframe_integration.ts
+
+Iframe Request → PreserveIframeParamMiddleware
+  └─ maintains iframe=true across navigation
+```
+
+## User Journey / Data Flow
+
+### Partner Integration Flow
+1. Partner includes versioned script tag on their website
+2. Script loads from `/assets/iframe-integration@{version}.js`
+3. Script creates iframe pointing to simulator with `?iframe=true`
+4. Iframe loads simulator in iframe-optimized mode
+5. Auto-resizer adjusts iframe height based on content
+6. User completes simulator within iframe
+7. Results displayed within iframe context
+
+### Parameter Preservation Flow
+1. User navigates within iframe (e.g., form step to step)
+2. `PreserveIframeParamMiddleware` checks referer URL
+3. If referer had `iframe=true` but current URL doesn't:
+   - Redirect to current URL with `iframe=true` added
+4. Iframe mode maintained throughout user session
+
+### Communication Flow
+```
+Partner Website
+    ↓ (loads script)
+Integration Script (src/assets/iframe-integration.js)
+    ↓ (creates iframe)
+Iframe Element
+    ↓ (loads simulator with ?iframe=true)
+Simulator Page (iframe mode)
+    ↓ (bidirectional messages)
+@iframe-resizer/parent ↔ @iframe-resizer/child
+    ↓ (events)
+Partner Website (CustomEvents: 'aides-simplifiees-ready', 'aides-simplifiees-message')
+```
+
+## Technical Patterns
+
+### Build Process
+1. Source: `src/assets/iframe-integration.js`
+2. Vite builds with special config: `vite.iframe-integration.config.ts`
+3. Output: `public/assets/iframe-integration@{version}.js`
+4. Script `scripts/generate_sri_hash.js` computes SHA-384 hash
+5. Hash saved to `config/iframe_integration.ts`
+
+**Build Command**: `pnpm build:iframe-integration`
+
+### Version Management
+- **Manual Versioning**: Version defined in `config/iframe_integration.ts`
+- **No Auto-Increment**: Prevents accidental breaking changes
+- **Version History**: Array of versions with integrity hashes
+- **Latest Version**: `IFRAME_SCRIPT_LATEST_VERSION` constant
+
+### Script Configuration (Data Attributes)
+
+Partners configure integration via data attributes:
+```html
+<script
+  src="https://aides-simplifiees.fr/assets/iframe-integration@1.1.0.js"
+  integrity="sha384-UH5OXyOxEP14jklD+0Cfy0rXm9vo+zVqdFFq7c3poGl1X0ytowUUlDVuHbfqTQMP"
+  crossorigin="anonymous"
+  data-simulateur="demenagement-logement"
+  data-height="600px"
+  data-log="false"
+  data-wait-for-load="true"
+  data-container-id="aides-simplifiees-iframe-container"
+></script>
+```
+
+**Attributes**:
+- `data-simulateur`: Simulator slug to embed (required)
+- `data-height`: Initial iframe height (default: "600px")
+- `data-log`: Enable console logging (default: false)
+- `data-wait-for-load`: Wait for full load before showing (default: true)
+- `data-container-id`: Target container ID (default: "aides-simplifiees-iframe-container")
+
+### Iframe Container Placement
+1. **Priority**: Look for element with ID from `data-container-id`
+2. **Fallback (HEAD)**: If script in `<head>`, create container in `<body>`
+3. **Fallback (BODY)**: If script in `<body>`, insert iframe after script tag
+
+### Auto-Resizing Configuration
+```javascript
+iframeResize({
+  license: 'GPLv3',
+  log: false, // or 'collapsed' if data-log="true"
+  checkOrigin: false,
+  scrolling: 'auto',
+  inPageLinks: true,
+  waitForLoad: true,
+  onMessage(message) { /* custom message handling */ },
+  onReady() { /* iframe fully loaded */ }
+}, iframe)
+```
+
+### Custom Events
+
+**aides-simplifiees-ready**: Fired when iframe fully loaded
+```javascript
+window.addEventListener('aides-simplifiees-ready', () => {
+  console.log('Simulator iframe is ready')
+})
+```
+
+**aides-simplifiees-message**: Fired on iframe-to-parent messages
+```javascript
+window.addEventListener('aides-simplifiees-message', (event) => {
+  console.log('Message from iframe:', event.detail)
+})
+```
+
+## Integration Points
+
+### Backend Integration
+- **Static CORS Middleware**: `static_cors_middleware.ts`
+  - Allows all origins for `/assets/iframe-integration*` files
+  - Enables cross-origin embedding
+  
+- **Preserve Iframe Middleware**: `preserve_iframe_param_middleware.ts`
+  - Checks referer for `iframe=true` parameter
+  - Redirects to preserve iframe mode across navigation
+  - Applied globally to all routes
+
+- **Configuration**: `config/iframe_integration.ts`
+  - Version management
+  - SRI hash lookup functions
+  - Single source of truth for integration config
+
+### Frontend Integration
+- **Iframe Detection**: Check `route().query.iframe === 'true'`
+- **UI Adaptation**: Hide header/footer, adjust layout for embedding
+- **@iframe-resizer**: Child component installed in simulator pages
+
+### Build Integration
+- **Vite Config**: `vite.iframe-integration.config.ts`
+  - Entry: `src/assets/iframe-integration.js`
+  - Output: Versioned filename with hash
+  - Bundle @iframe-resizer/parent library
+
+- **Build Scripts**:
+  - `scripts/build_iframe_integration.js`: Orchestrates build + SRI
+  - `scripts/generate_sri_hash.js`: Computes and validates hashes
+
+## Business Rules
+
+### Versioning Policy
+- **Semantic Versioning**: Major.Minor.Patch format
+- **Breaking Changes**: Require major version bump
+- **Backward Compatibility**: Old versions remain available
+- **Deprecation**: Announce before removing old versions
+
+### Security Requirements
+- **SRI Mandatory**: All integrations must include integrity hash
+- **CORS Allow-All**: Integration scripts accessible from any origin
+- **HTTPS Only**: Integration only supported over secure connections
+- **No Auth Required**: Embedded simulators work without authentication
+
+### Partner Support
+- **Documentation**: Clear integration guide with examples
+- **Version History**: Maintain changelog for integration script
+- **Migration Guides**: Help partners upgrade versions
+- **Test Environment**: Provide staging URL for testing
+
+## Key Code Locations
+
+### Configuration
+- `config/iframe_integration.ts`: Version and SRI hash management
+- `vite.iframe-integration.config.ts`: Build configuration
+
+### Source Code
+- `src/assets/iframe-integration.js`: Integration script source
+
+### Middleware
+- `app/middleware/static_cors_middleware.ts`: CORS for integration assets
+- `app/middleware/preserve_iframe_param_middleware.ts`: Iframe mode persistence
+
+### Build Scripts
+- `scripts/build_iframe_integration.js`: Build orchestration
+- `scripts/generate_sri_hash.js`: SRI hash generation and validation
+
+### Documentation
+- `docs/iframe_integration_sri.md`: SRI implementation details
+
+### Output
+- `public/assets/iframe-integration@{version}.js`: Built integration scripts
+
+## Notes
+
+### SRI Hash Generation
+The SRI hash uses SHA-384 algorithm computed from the built file contents. Each version has a unique hash that must be included in the script tag for security.
+
+### CORS Configuration
+The static CORS middleware allows all origins specifically for iframe integration scripts. This is intentional to enable embedding from any partner website. Main application routes maintain standard CORS restrictions.
+
+### Iframe Mode Detection
+Frontend components detect iframe mode via the query parameter `iframe=true`. This enables conditional rendering (hiding navigation, adjusting layout) without changing route structure.
+
+### Browser Compatibility
+The integration script uses modern JavaScript (ES modules, CustomEvents) and requires:
+- Modern browser with iframe support
+- JavaScript enabled
+- Cookies enabled (for session persistence)
+
+### Performance Considerations
+- **Lazy Loading**: Iframe has `loading="lazy"` attribute
+- **Opacity Transition**: Iframe hidden until fully loaded (opacity: 0 → 1)
+- **Wait For Load**: Optional immediate display if `data-wait-for-load="false"`
+
+### Partner Integration Checklist
+1. Include script tag with correct version and integrity hash
+2. Add container element with matching ID (optional but recommended)
+3. Set `data-simulateur` to desired simulator slug
+4. Test in staging environment first
+5. Monitor console for errors if `data-log="true"`
+6. Listen to custom events for advanced integration
+
+## Related Domains
+
+- **Simulateurs**: Simulators rendered in iframe mode
+- **Form Submission**: Results shareable from embedded simulators
+- **Content**: Static pages may embed simulators via iframe
+
+## Future Considerations
+
+### Potential Enhancements
+- **Auto-Update**: Mechanism to notify partners of new versions
+- **Analytics Integration**: Track usage by partner
+- **Customization API**: Allow partners to customize colors/themes
+- **Multiple Simulators**: Support embedding multiple simulators on one page
+- **Error Reporting**: Automatic error reporting from iframe to partner
+
+### Security Improvements
+- **Origin Whitelist**: Optional origin restrictions per partner
+- **Rate Limiting**: Prevent abuse of embedded simulators
+- **CSP Headers**: Content Security Policy for iframe content
+- **Integrity Monitoring**: Alert on unexpected script modifications

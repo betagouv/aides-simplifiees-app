@@ -10,6 +10,7 @@ export const useSurveyDebugStore = defineStore('survey-debug', () => {
     return getParam(page.url, 'debug') === 'true'
   })
 
+  // Type kept as any: console methods accept any types for flexible logging
   const debug = {
     log: (...messages: any[]) => {
       if (debugMode.value) {

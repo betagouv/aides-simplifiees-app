@@ -7,10 +7,10 @@ export default class extends BaseSchema {
     this.schema.alterTable(this.tableName, (table) => {
       // Flag to enable/disable DS integration
       table.boolean('ds_enabled').defaultTo(false).notNullable()
-      
+
       // Demarches Simplifiees procedure ID
       table.string('ds_demarche_id').nullable()
-      
+
       // Mapping between DS field keys and survey question IDs (stored as JSON)
       // Format: { "champ_Q2hhbXA...": "question-id", ... }
       table.json('ds_field_mapping').nullable()
@@ -25,4 +25,3 @@ export default class extends BaseSchema {
     })
   }
 }
-

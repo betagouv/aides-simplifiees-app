@@ -41,6 +41,7 @@ export default class OpenFiscaController {
         },
         timeout: 10000, // 10 seconds timeout for calculations
       })
+      console.log('OpenFisca API response received', apiResponse.data)
 
       // Log successful calculation
       this.loggingService.logExternalApiCall('openfisca', 'calculate', 'POST', {

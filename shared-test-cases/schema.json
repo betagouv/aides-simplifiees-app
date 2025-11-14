@@ -22,7 +22,7 @@
   "definitions": {
     "test_case": {
       "type": "object",
-      "required": ["id", "name", "period", "survey_answers", "openfisca_request", "openfisca_response", "expected_results"],
+      "required": ["id", "name", "period", "survey_answers", "openfisca_request", "openfisca_response", "expected_simulation_results"],
       "properties": {
         "id": {
           "type": "string",
@@ -66,8 +66,22 @@
         "openfisca_response": {
           "$ref": "#/definitions/openfisca_response"
         },
-        "expected_results": {
-          "$ref": "#/definitions/expected_results"
+        "expected_simulation_results": {
+          "type": "object",
+          "description": "Résultats attendus au format SimulationResultsAides (format interne de l'application Node.js). Clés en kebab-case, valeurs boolean ou number. Chaque aide a deux clés: '{slug}' (montant) et '{slug}-eligibilite' (boolean).",
+          "additionalProperties": {
+            "type": ["boolean", "number"]
+          },
+          "examples": [
+            {
+              "aide-mobili-jeune": 100,
+              "aide-mobili-jeune-eligibilite": true,
+              "aide-personnalisee-logement": 250,
+              "aide-personnalisee-logement-eligibilite": true,
+              "locapass": 0,
+              "locapass-eligibilite": false
+            }
+          ]
         }
       }
     },
@@ -178,73 +192,6 @@
           "type": "object",
           "additionalProperties": {
             "type": "object"
-          }
-        }
-      }
-    },
-    "expected_results": {
-      "type": "object",
-      "description": "Résultats attendus côté application (format simplifié pour l'utilisateur)",
-      "required": ["eligible"],
-      "properties": {
-        "eligible": {
-          "type": "boolean",
-          "description": "L'utilisateur est-il éligible à au moins une aide?",
-          "example": true
-        },
-        "total_amount": {
-          "type": "number",
-          "description": "Montant total des aides (optionnel)",
-          "example": 350
-        },
-        "aids": {
-          "type": "array",
-          "description": "Liste des aides avec leurs montants",
-          "items": {
-            "type": "object",
-            "required": ["name", "amount", "period"],
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "Nom de la variable OpenFisca",
-                "example": "aide_mobili_jeune"
-              },
-              "amount": {
-                "type": "number",
-                "description": "Montant de l'aide",
-                "example": 100
-              },
-              "period": {
-                "type": "string",
-                "description": "Période pour laquelle l'aide est calculée",
-                "pattern": "^\\d{4}-\\d{2}$",
-                "example": "2025-01"
-              },
-              "unit": {
-                "type": "string",
-                "description": "Unité de l'aide (euros, pourcentage, etc.)",
-                "example": "euros",
-                "enum": ["euros", "percentage", "boolean"]
-              }
-            }
-          }
-        },
-        "messages": {
-          "type": "array",
-          "description": "Messages à afficher à l'utilisateur",
-          "items": {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": ["info", "warning", "error"],
-                "example": "info"
-              },
-              "message": {
-                "type": "string",
-                "example": "Vous êtes éligible à l'aide à la mobilité jeune"
-              }
-            }
           }
         }
       }

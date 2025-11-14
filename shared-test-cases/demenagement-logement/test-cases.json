@@ -126,33 +126,11 @@
           }
         }
       },
-      "expected_results": {
-        "eligible": true,
-        "total_amount": 350,
-        "aids": [
-          {
-            "name": "aide_mobili_jeune",
-            "amount": 100,
-            "period": "2025-01",
-            "unit": "euros"
-          },
-          {
-            "name": "apl",
-            "amount": 250,
-            "period": "2025-01",
-            "unit": "euros"
-          }
-        ],
-        "messages": [
-          {
-            "type": "info",
-            "message": "Vous êtes éligible à l'aide à la mobilité jeune (100€/mois) et à l'APL (250€/mois)"
-          },
-          {
-            "type": "info",
-            "message": "En tant qu'étudiant boursier en mobilité, vous bénéficiez d'aides spécifiques pour votre logement"
-          }
-        ]
+      "expected_simulation_results": {
+        "aide-mobili-jeune": 100,
+        "aide-mobili-jeune-eligibilite": true,
+        "aide-personnalisee-logement": 250,
+        "aide-personnalisee-logement-eligibilite": true
       }
     },
     {
@@ -276,27 +254,11 @@
           }
         }
       },
-      "expected_results": {
-        "eligible": true,
-        "total_amount": 180,
-        "aids": [
-          {
-            "name": "apl",
-            "amount": 180,
-            "period": "2025-01",
-            "unit": "euros"
-          }
-        ],
-        "messages": [
-          {
-            "type": "info",
-            "message": "Vous êtes éligible à l'APL (180€/mois)"
-          },
-          {
-            "type": "info",
-            "message": "En tant qu'alternant, vos revenus d'activité sont pris en compte pour le calcul de l'APL"
-          }
-        ]
+      "expected_simulation_results": {
+        "aide-mobili-jeune": 0,
+        "aide-mobili-jeune-eligibilite": false,
+        "aide-personnalisee-logement": 180,
+        "aide-personnalisee-logement-eligibilite": true
       }
     }
   ]

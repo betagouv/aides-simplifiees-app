@@ -89,23 +89,19 @@ Réponse attendue de l'API OpenFisca :
 }
 ```
 
-### 4. Expected Results (Résultats attendus)
+### 4. Expected Simulation Results (Résultats de simulation attendus)
 
-Format simplifié pour l'affichage à l'utilisateur :
+Format `SimulationResultsAides` utilisé par l'application Node.js (après transformation d'OpenFisca) :
 
 ```json
 {
-  "expected_results": {
-    "eligible": true,
-    "total_amount": 350,
-    "aids": [
-      {
-        "name": "aide_mobili_jeune",
-        "amount": 100,
-        "period": "2025-01",
-        "unit": "euros"
-      }
-    ]
+  "expected_simulation_results": {
+    "aide-mobili-jeune": 100,
+    "aide-mobili-jeune-eligibilite": true,
+    "aide-personnalisee-logement": 250,
+    "aide-personnalisee-logement-eligibilite": true,
+    "locapass": 0,
+    "locapass-eligibilite": false
   }
 }
 ```
@@ -263,6 +259,151 @@ Un test case est considéré obsolète si :
 - La version d'OpenFisca n'est plus supportée
 
 L'interface admin affiche un **warning** pour les test cases obsolètes.
+
+## Conversion de formats (OpenFisca ↔ Application)
+
+### Différences de nommage
+
+Les variables OpenFisca et les slugs de l'application utilisent des conventions de nommage différentes :
+
+| Contexte | Format | Exemple |
+|----------|--------|---------|
+| **OpenFisca** (Python) | `snake_case` | `aide_mobili_jeune` |
+| **Application** (Node.js) | `kebab-case` | `aide-mobili-jeune` |
+| **openfisca_response variables** | `snake_case` | `aide_mobili_jeune` |
+| **expected_simulation_results keys** | `kebab-case` | `aide-mobili-jeune` |
+| **survey_answers keys** | `kebab-case` | `statut-professionnel` |
+
+### Fonctions de conversion
+
+#### TypeScript (Application Node.js)
+
+```typescript
+/**
+ * Convertit un nom de variable OpenFisca en slug d'application
+ * @example toApplicationSlug('aide_mobili_jeune') → 'aide-mobili-jeune'
+ */
+export function toApplicationSlug(openfiscaVariable: string): string {
+  return openfiscaVariable.replace(/_/g, '-')
+}
+
+/**
+ * Convertit un slug d'application en nom de variable OpenFisca
+ * @example toOpenfiscaVariable('aide-mobili-jeune') → 'aide_mobili_jeune'
+ */
+export function toOpenfiscaVariable(applicationSlug: string): string {
+  return applicationSlug.replace(/-/g, '_')
+}
+```
+
+#### Python (Dépôt OpenFisca)
+
+```python
+def to_application_slug(openfisca_variable: str) -> str:
+    """
+    Convertit un nom de variable OpenFisca en slug d'application.
+
+    Args:
+        openfisca_variable: Nom de variable OpenFisca (snake_case)
+
+    Returns:
+        Slug de l'application (kebab-case)
+
+    Example:
+        >>> to_application_slug('aide_mobili_jeune')
+        'aide-mobili-jeune'
+    """
+    return openfisca_variable.replace('_', '-')
+
+def to_openfisca_variable(application_slug: str) -> str:
+    """
+    Convertit un slug d'application en nom de variable OpenFisca.
+
+    Args:
+        application_slug: Slug de l'application (kebab-case)
+
+    Returns:
+        Nom de variable OpenFisca (snake_case)
+
+    Example:
+        >>> to_openfisca_variable('aide-mobili-jeune')
+        'aide_mobili_jeune'
+    """
+    return application_slug.replace('-', '_')
+```
+
+### Utilisation dans les tests
+
+#### Validation côté Node.js
+
+```typescript
+import testCases from '@/shared-test-cases/demenagement-logement/test-cases.json'
+import { toApplicationSlug } from '@/shared-test-cases/utils/format-conversion'
+
+const testCase = testCases.test_cases[0]
+
+// Validation du format SimulationResultsAides
+const expected = testCase.expected_simulation_results
+
+expect(simulationResults['aide-mobili-jeune']).toBe(expected['aide-mobili-jeune'])
+expect(simulationResults['aide-mobili-jeune-eligibilite']).toBe(expected['aide-mobili-jeune-eligibilite'])
+```
+
+#### Validation côté Python
+
+```python
+import json
+
+with open('shared-test-cases/demenagement-logement/test-cases.json') as f:
+    test_cases = json.load(f)
+
+test_case = test_cases['test_cases'][0]
+
+# Valider la réponse OpenFisca directement
+result = openfisca_api.calculate(
+    test_case['openfisca_request'],
+    period=test_case['period']
+)
+
+assert result == test_case['openfisca_response']
+```
+
+### Exemple complet de test case
+
+```json
+{
+  "id": "dem-log-001",
+  "name": "Étudiant boursier en mobilité Parcoursup",
+  "period": "2025-01",
+
+  "survey_answers": {
+    "statut-professionnel": "etudiant"
+  },
+
+  "openfisca_request": {
+    "individus": {
+      "usager": {
+        "activite": { "2025-01": "etudiant" }
+      }
+    }
+  },
+
+  "openfisca_response": {
+    "individus": {
+      "usager": {
+        "aide_mobili_jeune": { "2025-01": 100 }
+      }
+    }
+  },
+
+  "expected_simulation_results": {
+    "aide-mobili-jeune": 100,
+    "aide-mobili-jeune-eligibilite": true,
+    "aide-personnalisee-logement": 250,
+    "aide-personnalisee-logement-eligibilite": true
+  }
+}
+```
 
 ## Bonnes pratiques
 

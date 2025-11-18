@@ -3,7 +3,7 @@ import type SimulateurController from '#controllers/content/simulateur_controlle
 import type { InferPageProps } from '@adonisjs/inertia/types'
 import { DsfrAlert, DsfrBadge } from '@gouvminint/vue-dsfr'
 import { router, usePage } from '@inertiajs/vue3'
-import { computed, onBeforeUnmount, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
 import LoadingSpinner from '~/components/LoadingSpinner.vue'
 import SurveyChoiceScreen from '~/components/survey/SurveyChoiceScreen.vue'
 import SurveyForm from '~/components/survey/SurveyForm.vue'
@@ -41,13 +41,18 @@ const forceResume = getParam(url, 'resume') === 'true'
 // Fetch the survey schema
 surveysStore.loadSchema(simulateur.slug)
 
-if (forceResume && hasAnswers.value) {
-  // Resume the form if the query parameter is present
-  resumeForm()
-}
-else {
-  initSurvey()
-}
+// Watch for schema loading completion to initialize survey
+watch(schemaStatus, (status) => {
+  if (status === 'success') {
+    if (forceResume && hasAnswers.value) {
+      // Resume the form if the query parameter is present
+      resumeForm()
+    }
+    else {
+      initSurvey()
+    }
+  }
+}, { immediate: true })
 
 // Full survey initialization, including Matomo tracking
 function initSurvey() {

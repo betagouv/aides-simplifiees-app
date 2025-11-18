@@ -1,7 +1,7 @@
 {
   "name": "aides-simplifiees-app",
   "type": "module",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "license": "AGPL-3.0-only",
   "imports": {
     "#controllers/*": "./app/controllers/*.js",

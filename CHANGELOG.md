@@ -1,5 +1,14 @@
 # CHANGELOG
 
+### 1.6.1
+- Corrections :
+  - Corrige l'affichage de l'écran de choix lors de l'incrémentation de version du schéma
+  - Ajoute un watch sur le statut de chargement du schéma pour éviter les conditions de course
+- Tests :
+  - Ajoute une suite complète de tests e2e pour la fonctionnalité de reprise/redémarrage de simulation
+  - Tests de l'affichage de l'écran de choix avec réponses existantes
+  - Tests de la réinitialisation lors d'une montée de version et avec le flag forceRefresh
+
 # 1.6.0
 - Ajout de fonctionnalités :
   - Intégration iframe cross-site complète (cookies session/CSRF avec sameSite: 'none', CSP pour Matomo)

@@ -17,6 +17,43 @@ const publicodesPackages = [
 // TODO: Remove this build script once packages are published to npm
 // and consumed as dependencies instead of local packages
 
+/**
+ * Detect which package manager is available and being used
+ * Priority: npm > pnpm > yarn (npm first for remote server compatibility)
+ */
+function detectPackageManager() {
+  try {
+    // Check for npm (most common, especially on remote servers)
+    execSync('npm --version', { stdio: 'pipe' })
+    return 'npm'
+  }
+  catch {
+    // npm not available
+  }
+
+  try {
+    execSync('pnpm --version', { stdio: 'pipe' })
+    return 'pnpm'
+  }
+  catch {
+    // pnpm not available
+  }
+
+  try {
+    execSync('yarn --version', { stdio: 'pipe' })
+    return 'yarn'
+  }
+  catch {
+    // yarn not available
+  }
+
+  logger.error('No package manager found (npm, pnpm, or yarn)')
+  process.exit(1)
+}
+
+const packageManager = detectPackageManager()
+logger.info(`Using package manager: ${packageManager}`)
+
 function buildPackage(packageName) {
   const packagePath = path.join('packages', packageName)
 
@@ -29,7 +66,7 @@ function buildPackage(packageName) {
 
   try {
     // Install dependencies
-    const installOutput = execSync('pnpm install', {
+    const installOutput = execSync(`${packageManager} install`, {
       cwd: packagePath,
       stdio: 'pipe',
       encoding: 'utf-8',
@@ -39,7 +76,7 @@ function buildPackage(packageName) {
     logger.outputBlock(installOutput)
 
     // Compile
-    const compileOutput = execSync('pnpm run compile', {
+    const compileOutput = execSync(`${packageManager} run compile`, {
       cwd: packagePath,
       stdio: 'pipe',
       encoding: 'utf-8',

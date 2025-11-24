@@ -1,5 +1,15 @@
 # CHANGELOG
 
+### 1.6.2
+- Corrections :
+  - Corrige l'erreur dans le formulaire de déménagement avec les étudiants salariés
+  - Préserve le statut 'etudiant' lors de la sélection de situation professionnelle
+  - Mise à jour de vue-dsfr et rendu des boutons radios riches
+  - Détection automatique du gestionnaire de paquets (npm/pnpm/yarn) pour le déploiement distant
+- Tests :
+  - Ajoute une suite complète de tests pour la détection des conflits de variables OpenFisca
+  - Tests de préservation du statut étudiant, mises à jour intentionnelles et détection de conflits
+
 ### 1.6.1
 - Corrections :
   - Corrige l'affichage de l'écran de choix lors de l'incrémentation de version du schéma

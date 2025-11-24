@@ -196,4 +196,76 @@ describe('openFiscaRequestBuilder', () => {
       }
     })
   })
+
+  describe('employed student scenario', () => {
+    it('should handle etudiant + salarie-hors-alternance without conflict', () => {
+      // The dispatcher now returns empty object for 'salarie-hors-alternance' when student
+      // This prevents conflict: activite stays 'etudiant' (student status takes precedence)
+      const builder = new OpenFiscaRequestBuilder()
+
+      builder.addAnswers({
+        'statut-professionnel': 'etudiant', // Sets activite='etudiant'
+        'situation-professionnelle': 'salarie-hors-alternance', // Returns {} - no conflict
+      })
+
+      const result = builder.build()
+
+      // Should succeed without errors
+      expect(result.success).toBe(true)
+      expect(builder.hasErrors()).toBe(false)
+
+      if (result.success) {
+        const individu = result.request[Entites.Individus][INDIVIDU_ID]
+        // Value should remain 'etudiant' (student status preserved)
+        expect(individu.activite).toBeDefined()
+        const period = Object.keys(individu.activite)[0]
+        expect(individu.activite[period]).toBe('etudiant')
+      }
+    })
+
+    it('should handle etudiant + sans-emploi without conflict', () => {
+      const builder = new OpenFiscaRequestBuilder()
+
+      builder.addAnswers({
+        'statut-professionnel': 'etudiant', // Sets activite='etudiant'
+        'situation-professionnelle': 'sans-emploi', // Returns {} - no conflict
+      })
+
+      const result = builder.build()
+
+      expect(result.success).toBe(true)
+      expect(builder.hasErrors()).toBe(false)
+
+      if (result.success) {
+        const individu = result.request[Entites.Individus][INDIVIDU_ID]
+        // Value should remain 'etudiant'
+        expect(individu.activite).toBeDefined()
+        const period = Object.keys(individu.activite)[0]
+        expect(individu.activite[period]).toBe('etudiant')
+      }
+    })
+
+    it('should handle etudiant + alternance without conflict', () => {
+      const builder = new OpenFiscaRequestBuilder()
+
+      builder.addAnswers({
+        'statut-professionnel': 'etudiant',
+        'situation-professionnelle': 'alternance', // Sets alternant variable, not activite
+      })
+
+      const result = builder.build()
+
+      expect(result.success).toBe(true)
+      expect(builder.hasErrors()).toBe(false)
+
+      if (result.success) {
+        const individu = result.request[Entites.Individus][INDIVIDU_ID]
+        // Should have both activite='etudiant' and alternant
+        expect(individu.activite).toBeDefined()
+        expect(individu.alternant).toBeDefined()
+        const period = Object.keys(individu.activite)[0]
+        expect(individu.activite[period]).toBe('etudiant')
+      }
+    })
+  })
 })

@@ -46,6 +46,7 @@ function moveTooltips() {
     class="custom-rich-radio-button"
     :options="options"
     :name="question.id"
+    rich
   />
   <div
     v-for="choice in (question.choices?.filter(choice => Boolean(choice.tooltip)) as (SurveyChoice)[])"

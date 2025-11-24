@@ -1,7 +1,7 @@
 {
   "name": "aides-simplifiees-app",
   "type": "module",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "license": "AGPL-3.0-only",
   "imports": {
     "#controllers/*": "./app/controllers/*.js",
@@ -66,7 +66,7 @@
     "@adonisjs/vite": "4.0.0",
     "@gouvfr/dsfr": "~1.14.2",
     "@gouvfr/dsfr-chart": "^2.0.4",
-    "@gouvminint/vue-dsfr": "^8.8.0",
+    "@gouvminint/vue-dsfr": "8.11.0",
     "@iconify/vue": "^5.0.0",
     "@iframe-resizer/child": "^5.5.7",
     "@iframe-resizer/parent": "^5.5.7",

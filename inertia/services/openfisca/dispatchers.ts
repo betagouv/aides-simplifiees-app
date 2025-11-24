@@ -1,5 +1,4 @@
 import {
-  ACTIVITY_STATUS,
   FORM_VALUES,
   LOGEMENT_STATUS,
   UNDEFINED_PERIOD_TYPE,
@@ -13,6 +12,14 @@ import { formatSurveyAnswerToRequest } from '~/services/openfisca/formatters'
 
 /**
  * Dispatch professional situation values to OpenFisca variables
+ *
+ * This dispatcher is used for the 'situation-professionnelle' question which
+ * appears only when statut-professionnel='etudiant'. It provides additional
+ * details about the student's professional situation.
+ *
+ * Note: For 'salarie-hors-alternance' (employed student) and 'sans-emploi' (unemployed student),
+ * we do NOT set the 'activite' variable because it's already set by 'statut-professionnel'='etudiant'.
+ * The student status takes precedence over employment status for eligibility purposes.
  */
 export const dispatchSituationProfessionnelle: DispatchFunction = function (
   answerKey: string,
@@ -31,9 +38,16 @@ export const dispatchSituationProfessionnelle: DispatchFunction = function (
     case FORM_VALUES.ALTERNANCE:
       return formatSurveyAnswerToRequest('alternant', period, answerValue)
     case FORM_VALUES.SALARIE_HORS_ALTERNANCE:
-      return formatSurveyAnswerToRequest('activite', period, ACTIVITY_STATUS.ACTIF)
+      // Student is employed but remains a student for eligibility purposes
+      // OpenFisca doesn't have a specific variable for "employed student"
+      // The 'activite' variable is already set to 'etudiant' by statut-professionnel
+      // Return empty object to avoid conflict
+      console.debug(`Étudiant salarié détecté - le statut 'etudiant' est conservé`)
+      return {}
     case FORM_VALUES.SANS_EMPLOI:
-      return formatSurveyAnswerToRequest('activite', period, ACTIVITY_STATUS.CHOMEUR)
+      // Student without employment - same as above, 'activite' already set to 'etudiant'
+      console.debug(`Étudiant sans emploi - le statut 'etudiant' est conservé`)
+      return {}
     default:
       console.debug(`Valeur inattendue ${answerKey}: ${answerValue}`)
       throw new UnexpectedValueError(answerKey)

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### 1.6.3
+- Corrections :
+  - Rend les migrations de base de données idempotentes avec vérifications hasTable/hasColumn
+  - Met à jour le script de build Docker pour supporter plusieurs tags (latest, preprod)
+
 ### 1.6.2
 - Corrections :
   - Corrige l'erreur dans le formulaire de déménagement avec les étudiants salariés

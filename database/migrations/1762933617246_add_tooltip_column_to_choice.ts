@@ -4,14 +4,20 @@ export default class extends BaseSchema {
   protected tableName = 'choices'
 
   async up() {
-    this.schema.alterTable(this.tableName, (table) => {
-      table.string('tooltip').nullable()
-    })
+    const hasColumn = await this.schema.hasColumn(this.tableName, 'tooltip')
+    if (!hasColumn) {
+      this.schema.alterTable(this.tableName, (table) => {
+        table.string('tooltip').nullable()
+      })
+    }
   }
 
   async down() {
-    this.schema.alterTable(this.tableName, (table) => {
-      table.dropColumn('tooltip')
-    })
+    const hasColumn = await this.schema.hasColumn(this.tableName, 'tooltip')
+    if (hasColumn) {
+      this.schema.alterTable(this.tableName, (table) => {
+        table.dropColumn('tooltip')
+      })
+    }
   }
 }

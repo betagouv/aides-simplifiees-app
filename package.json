@@ -28,6 +28,7 @@
     "build": "node ace build --ignore-ts-errors",
     "prepare": "husky",
     "migrate": "node ace migration:run",
+    "seed": "node ace db:seed",
     "build:iframe-integration": "node scripts/build_iframe_integration.js",
     "detect:icons": "node scripts/detect_icons.js",
     "build:icons": "vue-dsfr-icons -s scripts/build_icons_collections.js -t inertia/icon_collections.ts",

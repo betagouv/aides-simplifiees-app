@@ -141,10 +141,23 @@ function formatPeriod(
 
 function getChartData(data: ChartData[]): { x: string, y: string, name: string } {
   try {
+    // Check if data is valid
+    if (!data || data.length === 0) {
+      console.warn('No data available for chart')
+      return { x: '[[]]', y: '[[]]', name: '[""]' }
+    }
+    
+    // Validate each data point has points array
+    const validData = data.filter(d => d && d.points && Array.isArray(d.points))
+    if (validData.length === 0) {
+      console.warn('No valid data points found')
+      return { x: '[[]]', y: '[[]]', name: '[""]' }
+    }
+    
     return {
-      x: JSON.stringify(data.map(d => d.points.map(point => formatPeriod(point.x)))),
-      y: JSON.stringify(data.map(d => d.points.map(point => point.y))),
-      name: JSON.stringify(data.map(d => formatAction(d.z))),
+      x: JSON.stringify(validData.map(d => d.points.map(point => formatPeriod(point.x)))),
+      y: JSON.stringify(validData.map(d => d.points.map(point => point.y))),
+      name: JSON.stringify(validData.map(d => formatAction(d.z))),
     }
   }
   catch (error) {
@@ -155,6 +168,12 @@ function getChartData(data: ChartData[]): { x: string, y: string, name: string }
 
 function getTableData(data: ChartData[]): { x: string, y: string, name: string } {
   try {
+    // Check if data is empty or if first item doesn't have points
+    if (!data || data.length === 0 || !data[0] || !data[0].points || data[0].points.length === 0) {
+      console.warn('No data available for table')
+      return { x: '[[]]', y: '[[]]', name: '[""]' }
+    }
+    
     return {
       x: JSON.stringify(data[0].points.map(point => formatPeriod(point.x, true))),
       y: JSON.stringify(data.map(d => d.points.map(point => point.y))),
@@ -186,6 +205,11 @@ function getTableData(data: ChartData[]): { x: string, y: string, name: string }
     <SectionContainer type="page-footer">
       <div v-if="isLoading">
         <LoadingSpinner />
+      </div>
+      <div v-else-if="!groupedData || groupedData.length === 0">
+        <div class="fr-alert fr-alert--info">
+          <p>Aucune donnée statistique n'est disponible pour le moment.</p>
+        </div>
       </div>
       <div v-else>
         <div class="fr-grid-row fr-grid-row--gutters">

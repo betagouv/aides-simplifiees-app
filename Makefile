@@ -112,6 +112,19 @@ pull: ## Pull latest images
 	@$(COMPOSE_CMD) pull
 
 # =============================================================================
+# Docker Image Building
+# =============================================================================
+
+build-main-app-preprod: ## Build and push main-app image for preprod
+	@./infra/scripts/docker-build-app.sh preprod
+
+build-main-app-version: ## Build and push main-app image with version tag + latest
+	@./infra/scripts/docker-build-app.sh version
+
+build-leximpact: ## Build and push LexImpact image
+	@./infra/scripts/docker-build-leximpact.sh latest
+
+# =============================================================================
 # Service-specific Commands
 # =============================================================================
 

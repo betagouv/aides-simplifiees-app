@@ -102,7 +102,7 @@ status: ## Show service status
 	@$(COMPOSE_CMD) ps
 
 health: ## Check service health
-	@./infra/scripts/health-check.sh
+	@ENV=$(ENV) ./infra/scripts/health-check.sh
 
 clean: ## Stop and remove everything (including volumes!)
 	@$(COMPOSE_CMD) down -v --remove-orphans

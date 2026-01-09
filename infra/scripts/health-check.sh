@@ -8,6 +8,7 @@ set -e
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INFRA_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(dirname "$INFRA_DIR")"
 
 # Change to infra directory for docker compose commands
 cd "$INFRA_DIR"
@@ -21,12 +22,39 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Detect environment (dev/preprod/prod)
+ENV="${ENV:-dev}"
+if [ "$ENV" = "prod" ] || [ "$ENV" = "production" ]; then
+    ENV_FILE="$PROJECT_ROOT/.env.prod"
+    COMPOSE_FILE="docker-compose.prod.yml"
+elif [ "$ENV" = "preprod" ] || [ "$ENV" = "staging" ]; then
+    ENV_FILE="$PROJECT_ROOT/.env.preprod"
+    COMPOSE_FILE="docker-compose.preprod.yml"
+else
+    ENV_FILE="$PROJECT_ROOT/.env"
+    COMPOSE_FILE="docker-compose.dev.yml"
+fi
+
+echo "Environment: $ENV"
+echo "Compose file: $COMPOSE_FILE"
+
 # Load environment variables from .env file if it exists
-if [ -f ".env" ]; then
-    set -a  # automatically export all variables
-    source .env
-    set +a  # stop automatically exporting
-    echo "Environment variables loaded from .env file"
+if [ -f "$ENV_FILE" ]; then
+    # Use set -a to export variables, but handle the file more carefully
+    # to avoid bash syntax errors from unquoted values with special chars
+    set -a
+    # Use grep to filter out comments and empty lines, then eval each line
+    while IFS= read -r line || [ -n "$line" ]; do
+        # Skip empty lines and comments
+        if [[ -n "$line" && ! "$line" =~ ^[[:space:]]*# ]]; then
+            # Export the variable
+            eval "export $line" 2>/dev/null || true
+        fi
+    done < "$ENV_FILE"
+    set +a
+    echo "Environment variables loaded from $ENV_FILE"
+else
+    echo -e "${YELLOW}Warning: $ENV_FILE not found${NC}"
 fi
 
 # Load monitoring secret from environment
@@ -37,20 +65,36 @@ else
     echo -e "${YELLOW}Warning: MONITORING_SECRET not set, health checks may fail${NC}"
 fi
 
+# Docker compose command with proper file
+COMPOSE_CMD="docker compose --env-file $ENV_FILE -f $COMPOSE_FILE"
+
+# Check if Docker is available
+DOCKER_AVAILABLE=false
+if command -v docker &> /dev/null; then
+    if docker info &> /dev/null 2>&1; then
+        DOCKER_AVAILABLE=true
+        echo "Docker is available"
+    else
+        echo -e "${YELLOW}Docker command found but daemon not accessible${NC}"
+    fi
+else
+    echo -e "${YELLOW}Docker not available, skipping container checks${NC}"
+fi
+
 # Function to check service health
 check_service() {
     local service=$1
     local url=$2
     local expected_status=${3:-200}
     local use_monitoring_secret=${4:-false}
-    
+
     echo -n "Checking $service... "
-    
+
     local curl_cmd="curl -s -o /dev/null -w \"%{http_code}\""
     if [ "$use_monitoring_secret" = "true" ] && [ -n "$MONITORING_SECRET" ]; then
         curl_cmd="curl -s -o /dev/null -w \"%{http_code}\" -H \"x-monitoring-secret: $MONITORING_SECRET\""
     fi
-    
+
     local status_code=$(eval "$curl_cmd \"$url\"" 2>/dev/null)
     if echo "$status_code" | grep -E "^(200|404|500)$" > /dev/null; then
         if [ "$status_code" = "500" ]; then
@@ -68,30 +112,47 @@ check_service() {
 # Function to check Docker service status
 check_docker_service() {
     local service=$1
+
+    if [ "$DOCKER_AVAILABLE" = false ]; then
+        return 0  # Skip check if Docker not available
+    fi
+
     echo -n "Checking Docker service $service... "
-    
-    local status=$(docker compose ps --services | grep "^$service$" > /dev/null && echo "running" || echo "not_running")
-    if [ "$status" = "running" ]; then
-        echo -e "${GREEN}RUNNING${NC}"
-        return 0
+
+    # Use the proper compose command with the correct file
+    if $COMPOSE_CMD ps --services 2>/dev/null | grep -q "^$service$"; then
+        local status=$($COMPOSE_CMD ps --format json "$service" 2>/dev/null | grep -o '"State":"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+        if [ "$status" = "running" ]; then
+            echo -e "${GREEN}RUNNING${NC}"
+            return 0
+        else
+            echo -e "${YELLOW}NOT RUNNING (state: $status)${NC}"
+            return 1
+        fi
     else
-        echo -e "${RED}NOT RUNNING${NC}"
+        echo -e "${YELLOW}NOT FOUND${NC}"
         return 1
     fi
 }
 
-echo "Docker Services Status:"
-echo "-------------------------"
+echo ""
+if [ "$DOCKER_AVAILABLE" = true ]; then
+    echo "Docker Services Status:"
+    echo "-------------------------"
 
-# Check Docker services
-DOCKER_SERVICES=("main-app" "openfisca" "leximpact" "db")
-docker_status=0
+    # Check Docker services
+    DOCKER_SERVICES=("main-app" "openfisca" "leximpact" "db")
+    docker_status=0
 
-for service in "${DOCKER_SERVICES[@]}"; do
-    if ! check_docker_service "$service"; then
-        docker_status=1
-    fi
-done
+    for service in "${DOCKER_SERVICES[@]}"; do
+        if ! check_docker_service "$service"; then
+            docker_status=1
+        fi
+    done
+else
+    echo "Skipping Docker service checks (Docker not available)"
+    docker_status=0  # Don't fail if Docker not available in preprod
+fi
 
 echo ""
 echo "HTTP Health Checks:"
@@ -116,16 +177,20 @@ if ! check_service "Health Endpoint" "http://localhost:$MAIN_PORT/health" 200 tr
 fi
 
 # Check OpenFisca API (if port is exposed in dev mode)
-if docker compose ps | grep "openfisca" | grep "5001" > /dev/null; then
-    if ! check_service "OpenFisca API" "http://localhost:5001/spec"; then
-        http_status=1
+if [ "$DOCKER_AVAILABLE" = true ]; then
+    if $COMPOSE_CMD ps 2>/dev/null | grep "openfisca" | grep -q "5001"; then
+        if ! check_service "OpenFisca API" "http://localhost:5001/spec"; then
+            http_status=1
+        fi
     fi
 fi
 
 # Check LexImpact API (if port is exposed in dev mode)
-if docker compose ps | grep "leximpact" | grep "3000" > /dev/null; then
-    if ! check_service "LexImpact API" "http://localhost:3000/"; then
-        http_status=1
+if [ "$DOCKER_AVAILABLE" = true ]; then
+    if $COMPOSE_CMD ps 2>/dev/null | grep "leximpact" | grep -q "3000"; then
+        if ! check_service "LexImpact API" "http://localhost:3000/"; then
+            http_status=1
+        fi
     fi
 fi
 
@@ -134,13 +199,18 @@ echo "Database Status:"
 echo "------------------"
 
 # Check database connectivity
-echo -n "Checking database connection... "
-if docker compose exec -T db pg_isready -U aides-simplifiees > /dev/null 2>&1; then
-    echo -e "${GREEN}OK${NC}"
-    db_status=0
+if [ "$DOCKER_AVAILABLE" = true ]; then
+    echo -n "Checking database connection... "
+    if $COMPOSE_CMD exec -T db pg_isready -U aides-simplifiees > /dev/null 2>&1; then
+        echo -e "${GREEN}OK${NC}"
+        db_status=0
+    else
+        echo -e "${RED}FAILED${NC}"
+        db_status=1
+    fi
 else
-    echo -e "${RED}FAILED${NC}"
-    db_status=1
+    echo "Skipping database check (Docker not available)"
+    db_status=0  # Don't fail if Docker not available
 fi
 
 echo ""
@@ -149,11 +219,15 @@ echo "----------"
 
 overall_status=0
 
-if [ $docker_status -eq 0 ]; then
-    echo -e "Docker Services: ${GREEN}ALL RUNNING${NC}"
+if [ "$DOCKER_AVAILABLE" = true ]; then
+    if [ $docker_status -eq 0 ]; then
+        echo -e "Docker Services: ${GREEN}ALL RUNNING${NC}"
+    else
+        echo -e "Docker Services: ${RED}SOME ISSUES${NC}"
+        overall_status=1
+    fi
 else
-    echo -e "Docker Services: ${RED}SOME ISSUES${NC}"
-    overall_status=1
+    echo -e "Docker Services: ${YELLOW}SKIPPED (not available)${NC}"
 fi
 
 if [ $http_status -eq 0 ]; then
@@ -166,8 +240,12 @@ fi
 if [ $db_status -eq 0 ]; then
     echo -e "Database: ${GREEN}OK${NC}"
 else
-    echo -e "Database: ${RED}ISSUES${NC}"
-    overall_status=1
+    if [ "$DOCKER_AVAILABLE" = true ]; then
+        echo -e "Database: ${RED}ISSUES${NC}"
+        overall_status=1
+    else
+        echo -e "Database: ${YELLOW}SKIPPED${NC}"
+    fi
 fi
 
 echo ""

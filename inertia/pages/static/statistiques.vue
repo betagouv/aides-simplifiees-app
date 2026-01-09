@@ -146,14 +146,14 @@ function getChartData(data: ChartData[]): { x: string, y: string, name: string }
       console.warn('No data available for chart')
       return { x: '[[]]', y: '[[]]', name: '[""]' }
     }
-    
+
     // Validate each data point has points array
     const validData = data.filter(d => d && d.points && Array.isArray(d.points))
     if (validData.length === 0) {
       console.warn('No valid data points found')
       return { x: '[[]]', y: '[[]]', name: '[""]' }
     }
-    
+
     return {
       x: JSON.stringify(validData.map(d => d.points.map(point => formatPeriod(point.x)))),
       y: JSON.stringify(validData.map(d => d.points.map(point => point.y))),
@@ -173,11 +173,18 @@ function getTableData(data: ChartData[]): { x: string, y: string, name: string }
       console.warn('No data available for table')
       return { x: '[[]]', y: '[[]]', name: '[""]' }
     }
-    
+
+    // Additional validation for all data items
+    const validData = data.filter(d => d && d.points && Array.isArray(d.points) && d.points.length > 0)
+    if (validData.length === 0) {
+      console.warn('No valid data points found for table')
+      return { x: '[[]]', y: '[[]]', name: '[""]' }
+    }
+
     return {
-      x: JSON.stringify(data[0].points.map(point => formatPeriod(point.x, true))),
-      y: JSON.stringify(data.map(d => d.points.map(point => point.y))),
-      name: JSON.stringify(data.map(d => formatAction(d.z))),
+      x: JSON.stringify(validData[0].points.map(point => formatPeriod(point.x, true))),
+      y: JSON.stringify(validData.map(d => d.points.map(point => point.y))),
+      name: JSON.stringify(validData.map(d => formatAction(d.z))),
     }
   }
   catch (error) {

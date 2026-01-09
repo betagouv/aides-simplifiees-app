@@ -70,4 +70,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   LEXIMPACT_URL: Env.schema.string(),
   OPENFISCA_URL: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for monitoring and debugging
+  |----------------------------------------------------------
+  */
+  MONITORING_SECRET: Env.schema.string.optional(),
 })

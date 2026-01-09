@@ -19,4 +19,9 @@ export function validateEnvironment() {
   if (appEnv !== 'production') {
     logger.info(`Matomo tracking is disabled (${appEnv} mode).`)
   }
+
+  // MONITORING_SECRET is required in production and staging
+  if ((appEnv === 'production' || appEnv === 'staging') && !env.get('MONITORING_SECRET')) {
+    throw new Error('MONITORING_SECRET is required in production and staging environments')
+  }
 }

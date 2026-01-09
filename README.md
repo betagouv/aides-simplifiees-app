@@ -2,6 +2,9 @@
 
 [Aides Simplifiées](https://aides.beta.numerique.gouv.fr/) est une plateforme permettant de simuler son éligibilité à plusieurs aides financières. Ce projet repose sur AdonisJS, Inertia.js, Vue.js et le système de design de l'État français (DSFR).
 
+**🏗️ Documentation Infra:** [docs/infrastructure.md](docs/infrastructure.md)
+**📐 Architecture App:** [docs/architecture.llm.txt](docs/architecture.llm.txt)
+
 ## Pré-requis
 
 Pour exécuter ce projet, vous aurez besoin des éléments suivants :
@@ -30,7 +33,7 @@ Pour exécuter ce projet, vous aurez besoin des éléments suivants :
 ### 1. Cloner le dépôt
 ```bash
 git clone <url-du-repo>
-cd aides-simplifiees-adonis
+cd aides-simplifiees-app
 ```
 
 ### 2. Installer les dépendances
@@ -49,7 +52,7 @@ cp .vscode/settings.example.json .vscode/settings.json
 
 ### 3. Configurer les variables d'environnement
 ```bash
-cp .env.example .env
+cp .env.template .env
 ```
 
 ### 4. Générer la clé d'application
@@ -57,33 +60,52 @@ cp .env.example .env
 node ace generate:key
 ```
 
-### 5. Peupler la base de données
-
-Assurez vous d'avoir PostgreSQL en cours d'exécution et créez une base de données. Ensuite, exécutez les migrations et les seeders :
-
+### 5. Démarrer les dépendances (Docker)
 ```bash
-node ace migration:fresh --seed
+make dev
 ```
 
-## Commandes disponibles
+La commande `make dev` démarre PostgreSQL, OpenFisca et LexImpact via Docker.
 
-### Développement
+### 6. Initialiser la base de données
+```bash
+node ace migration:run --force
+node ace db:seed
+```
 
-Lancer le serveur en mode développement :
+### 7. Lancer le serveur de développement
 ```bash
 pnpm dev
 ```
 
-### Build de production
+## Commandes disponibles
 
-Générer le build de production :
+> **💡 Commandes principales :** `make help` pour voir toutes les options
+
+### Développement
+
 ```bash
-pnpm build
+make dev              # Démarrer les dépendances (DB, OpenFisca, LexImpact)
+pnpm dev              # Lancer le serveur local (Adonis + Vite)
 ```
 
-Servir le build de production :
+### Infrastructure & Environnements
+
 ```bash
-pnpm start
+make logs             # Voir les logs de l'infra
+make db-shell         # Accéder au shell SQL
+make db-backup        # Créer un dump de la DB
+make clean            # Tout arrêter et nettoyer
+```
+
+Pour plus de détails sur l'infrastructure (Prod, Preprod), voir [docs/infrastructure.md](docs/infrastructure.md).
+
+### Build et déploiement
+
+```bash
+make build                  # Build de production
+make docker-build-app       # Build image Docker App
+make docker-build-leximpact # Build image Docker LexImpact
 ```
 
 ### Tests

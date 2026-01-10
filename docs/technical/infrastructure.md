@@ -112,3 +112,55 @@ The script `infra/scripts/docker-build-app.sh` handles:
 ### CI/CD Integration
 
 These commands can be used in GitHub Actions workflows to automatically build and push images upon meaningful events (push to main, release creation).
+
+## Resource Limits
+
+Docker container resource limits are configurable via environment variables. This allows tuning CPU and memory allocation per environment without modifying Docker Compose files.
+
+### Configuration
+
+Resource limits are defined in environment files (`.env.prod`, `.env.preprod`) and consumed by Docker Compose via variable substitution with defaults.
+
+| Variable | Description | Prod Default | Preprod Default |
+|----------|-------------|--------------|-----------------|
+| `APP_CPU_LIMIT` | Main app CPU limit | 2.0 | 0.5 |
+| `APP_MEM_LIMIT` | Main app memory limit | 512M | 192M |
+| `OPENFISCA_CPU_LIMIT` | OpenFisca CPU limit | 3.5 | 1.0 |
+| `OPENFISCA_MEM_LIMIT` | OpenFisca memory limit | 3G | 1G |
+| `LEXIMPACT_CPU_LIMIT` | LexImpact CPU limit | 1.0 | 0.25 |
+| `LEXIMPACT_MEM_LIMIT` | LexImpact memory limit | 256M | 64M |
+| `DB_CPU_LIMIT` | PostgreSQL CPU limit | 2.0 | 0.5 |
+| `DB_MEM_LIMIT` | PostgreSQL memory limit | 1G | 256M |
+| `BACKUP_CPU_LIMIT` | Backup service CPU limit | 0.25 | 0.1 |
+| `BACKUP_MEM_LIMIT` | Backup service memory limit | 64M | 32M |
+
+Each limit variable has a corresponding `*_RESERVATION` variable for minimum guaranteed resources.
+
+### Server Sizing Guidelines
+
+For a server with **4 CPU / 8 GB RAM**:
+
+| Environment | Total CPU Limits | Total Memory Limits |
+|-------------|------------------|---------------------|
+| Production | ~8.75 (soft) | ~4.8 GB |
+| Preprod | ~2.35 (soft) | ~1.5 GB |
+| **Combined** | ~11.1 (soft) | ~6.3 GB |
+
+> **Note**: CPU limits are "soft" - containers share available cores. Memory limits are hard caps.
+
+### Tuning Recommendations
+
+- **OpenFisca** is memory-intensive (~300MB per worker). With 4 workers in production, allocate at least 2GB.
+- **PostgreSQL** benefits from memory for query caching. Allocate 512MB-1GB for production workloads.
+- **Main App** is lightweight. 256-512MB is sufficient for most traffic.
+- Reserve ~1GB for the host OS and system processes.
+
+### Monitoring Resource Usage
+
+```bash
+# Live container stats
+docker stats
+
+# Check current limits
+docker inspect --format='{{.Name}}: Memory={{.HostConfig.Memory}} CPUs={{.HostConfig.NanoCpus}}' $(docker ps -q)
+```

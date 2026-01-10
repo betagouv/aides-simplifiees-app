@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 1.7.1
+- Infrastructure :
+  - Configuration des limites de ressources Docker par environnement via des variables d'environnement
+
 ### 1.7.0
 - Fonctionnalités & infrastructure :
   - Refonte de l'infrastructure Docker et de la documentation de déploiement

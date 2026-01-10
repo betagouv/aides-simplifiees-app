@@ -1,5 +1,22 @@
 # CHANGELOG
 
+### 1.7.0
+- Fonctionnalités & infrastructure :
+  - Refonte de l'infrastructure Docker et de la documentation de déploiement
+  - Validation stricte des variables d'environnement et de la connexion base de données au démarrage
+  - Ajout de cibles Makefile pour faciliter le build Docker
+  - Support du tagging de version dans les scripts de build Docker
+  - Ajout d'une protection par secret sur le endpoint de monitoring
+- Documentation :
+  - Documentation exhaustive de l'architecture (Vues, Événements, Infrastructure, Logging, Tests)
+  - Mise à jour des conventions et règles critiques
+- Corrections :
+  - Amélioration de la robustesse des scripts de health-check
+  - Correction de l'intégration Matomo (gestion des données vides)
+  - Utilisation unifiée de la configuration d'environnement (appEnv) dans le frontend
+- Tests :
+  - Création automatique de la base de données de test si elle n'existe pas au lancement de `pnpm test`
+
 ### 1.6.3
 - Corrections :
   - Rend les migrations de base de données idempotentes avec vérifications hasTable/hasColumn

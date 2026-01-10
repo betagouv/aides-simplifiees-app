@@ -1,14 +1,12 @@
 #!/bin/bash
 set -e
 
-# =============================================================================
 # LexImpact Docker Build Script
-# =============================================================================
 # Builds the LexImpact Territoires Docker image for Aides Simplifiées
 # Usage: scripts/docker-build-leximpact.sh [TAG]
-# =============================================================================
 
 # Colors for output
+RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
@@ -41,21 +39,17 @@ if [ "$TAG" = "help" ] || [ "$TAG" = "-h" ] || [ "$TAG" = "--help" ]; then
     exit 0
 fi
 
-echo -e "${BLUE}Building multi-platform LexImpact Territoires Docker image...${NC}"
-echo -e "${YELLOW}Target:${NC} $REGISTRY/leximpact-territoires:$TAG"
-echo -e "${YELLOW}Platforms:${NC} linux/amd64, linux/arm64"
-echo ""
+echo -e "${BLUE}Building:${NC} $REGISTRY/leximpact-territoires:$TAG"
 
 # Check if territoires repository exists
 if [ ! -d "$PROJECT_ROOT/../territoires" ]; then
-    echo "📥 Cloning territoires repository..."
+    echo "Cloning territoires repository..."
     git clone https://git.leximpact.dev/leximpact/territoires/territoires.git "$PROJECT_ROOT/../territoires"
-    echo ""
 fi
 
 # Verify Dockerfile exists
 if [ ! -f "$PROJECT_ROOT/infra/dockerfiles/leximpact.Dockerfile" ]; then
-    echo "❌ Dockerfile not found: $PROJECT_ROOT/infra/dockerfiles/leximpact.Dockerfile"
+    echo -e "${RED}Error: Dockerfile not found: $PROJECT_ROOT/infra/dockerfiles/leximpact.Dockerfile${NC}"
     exit 1
 fi
 
@@ -67,5 +61,5 @@ docker buildx build \
     "$PROJECT_ROOT/../territoires"
 
 echo ""
-echo -e "${GREEN}✅ Build and push completed successfully!${NC}"
+echo -e "${GREEN}Done.${NC}"
 echo "Image available at: $REGISTRY/leximpact-territoires:$TAG"

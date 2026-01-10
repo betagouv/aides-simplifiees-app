@@ -1,13 +1,9 @@
-# =============================================================================
-# DEVELOPMENT - Standalone Docker Compose (Dependencies only)
-# Usage: docker compose -f docker-compose.dev.yml up -d
-#        Then run main-app locally: cd ../.. && pnpm run dev
-# =============================================================================
+# DEVELOPMENT Docker Compose (Dependencies only)
+
 name: aides-simplifiees-dev
 
-# -----------------------------------------------------------------------------
 # YAML Anchors - Reusable configurations
-# -----------------------------------------------------------------------------
+
 x-healthcheck-defaults: &healthcheck-defaults
   interval: 30s
   timeout: 10s
@@ -21,29 +17,22 @@ x-network: &network
   networks:
     - aides-simplifiees-network-dev
 
-# -----------------------------------------------------------------------------
 # Volumes
-# -----------------------------------------------------------------------------
+
 volumes:
   dbdata_dev:
     driver: local
 
-# -----------------------------------------------------------------------------
 # Networks
-# -----------------------------------------------------------------------------
+
 networks:
   aides-simplifiees-network-dev:
     driver: bridge
 
-# -----------------------------------------------------------------------------
-# Services (Dependencies only - main-app runs locally with pnpm run dev)
-# Migrations run locally: cd ../.. && pnpm migrate && pnpm seed
-# -----------------------------------------------------------------------------
+# Services (Dependencies only: main-app, migration and seeds runs locally)
 services:
 
-  # ---------------------------------------------------------------------------
   # OpenFisca Calculation Engine
-  # ---------------------------------------------------------------------------
   openfisca:
     build:
       context: ../../aides-calculatrice-back
@@ -62,9 +51,7 @@ services:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/spec')"]
     <<: [*restart-policy, *network]
 
-  # ---------------------------------------------------------------------------
   # LexImpact Territoires API
-  # ---------------------------------------------------------------------------
   leximpact:
     build:
       context: ../../territoires
@@ -83,9 +70,7 @@ services:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
     <<: [*restart-policy, *network]
 
-  # ---------------------------------------------------------------------------
   # PostgreSQL Database
-  # ---------------------------------------------------------------------------
   db:
     image: postgres:17-alpine
     env_file: ../.env

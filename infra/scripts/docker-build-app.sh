@@ -1,14 +1,12 @@
 #!/bin/bash
 set -e
 
-# =============================================================================
 # Main App Docker Build Script
-# =============================================================================
 # Builds the main Aides Simplifiées application Docker image
 # Usage: scripts/docker-build-app.sh [TAG|version]
-# =============================================================================
 
 # Colors for output
+RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
@@ -40,23 +38,16 @@ fi
 if [ "$TAG_INPUT" = "version" ]; then
     VERSION_TAG=$(node -p "require('./package.json').version" 2>/dev/null)
     if [ -z "$VERSION_TAG" ]; then
-        echo "❌ Could not read version from package.json"
+        echo -e "${RED}Error: Could not read version from package.json${NC}"
         exit 1
     fi
     TAGS="-t $REGISTRY/aides-simplifiees-app:$VERSION_TAG -t $REGISTRY/aides-simplifiees-app:latest"
-    echo -e "${BLUE}Building multi-platform main app Docker image...${NC}"
-    echo -e "${YELLOW}Targets:${NC}"
-    echo "  - $REGISTRY/aides-simplifiees-app:$VERSION_TAG"
-    echo "  - $REGISTRY/aides-simplifiees-app:latest"
+    echo -e "${BLUE}Building:${NC} $REGISTRY/aides-simplifiees-app:$VERSION_TAG, latest"
 else
     TAG="$TAG_INPUT"
     TAGS="-t $REGISTRY/aides-simplifiees-app:$TAG"
-    echo -e "${BLUE}Building multi-platform main app Docker image...${NC}"
-    echo -e "${YELLOW}Target:${NC} $REGISTRY/aides-simplifiees-app:$TAG"
+    echo -e "${BLUE}Building:${NC} $REGISTRY/aides-simplifiees-app:$TAG"
 fi
-
-echo -e "${YELLOW}Platforms:${NC} linux/amd64, linux/arm64"
-echo ""
 
 docker buildx build \
     --platform linux/amd64,linux/arm64 \
@@ -66,11 +57,10 @@ docker buildx build \
     .
 
 echo ""
-echo -e "${GREEN}✅ Build and push completed successfully!${NC}"
+echo -e "${GREEN}Done.${NC}"
 if [ "$TAG_INPUT" = "version" ]; then
-    echo "Images available at:"
-    echo "  - $REGISTRY/aides-simplifiees-app:$VERSION_TAG"
-    echo "  - $REGISTRY/aides-simplifiees-app:latest"
+    echo "Image available at: $REGISTRY/aides-simplifiees-app:$VERSION_TAG"
+    echo "Image available at: $REGISTRY/aides-simplifiees-app:latest"
 else
     echo "Image available at: $REGISTRY/aides-simplifiees-app:$TAG"
 fi

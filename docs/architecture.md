@@ -388,16 +388,28 @@ Always use these aliases for backend imports.
 
 ## Domain Documentation
 
-For detailed information about specific domains, refer to:
-- `docs/domains/simulateurs.llm.txt`: Simulator feature
-- `docs/domains/form-submission.llm.txt`: Result storage
-- `docs/domains/publicodes.llm.txt`: Calculation engine (client-side)
-- `docs/domains/openfisca.llm.txt`: Calculation engine (server-side)
-- `docs/domains/aides.llm.txt`: Financial aids catalog
-- `docs/domains/admin.llm.txt`: CMS functionality
-- `docs/domains/content.llm.txt`: Pages and notions
-- `docs/domains/iframe-integration.llm.txt`: Partner embedding system
-- `docs/domains/api-integrations.llm.txt`: External service integrations
-- `docs/domains/views.llm.txt`: Pages and components (Vue.js UI)
-- `docs/domains/stores.llm.txt`: State management (Pinia stores)
-- `docs/domains/services.llm.txt`: Internal business logic services
+### Business Features
+- **Simulateurs (Core)**: `docs/features/simulateurs.md`
+- **Aides (Catalog)**: `docs/features/aides.md`
+- **Administration**: `docs/features/admin.md`
+- **Form Submissions**: `docs/features/form-submission.md`
+- **Content Management**: `docs/features/content.md`
+
+### Technical Architecture
+- **Internal Services**: `docs/technical/services.md`
+- **Views & Components**: `docs/technical/views.md`
+- **State Management**: `docs/technical/stores.md`
+- **Infrastructure**: `docs/technical/infrastructure.md`
+- **Logging**: `docs/technical/logging.md`
+- **Events**: `docs/technical/events.md`
+
+### Integrations
+- **Publicodes Engine**: `docs/integrations/publicodes.md`
+- **OpenFisca Engine**: `docs/integrations/openfisca.md`
+- **IFrame Integration**: `docs/integrations/iframe-integration.md`
+- **Démarches Simplifiées**: `docs/integrations/demarches-simplifiees.md`
+- **API Integrations**: `docs/integrations/api-integrations.md`
+
+## Coding Conventions
+
+For detailed coding patterns and examples, see `docs/conventions.md`.

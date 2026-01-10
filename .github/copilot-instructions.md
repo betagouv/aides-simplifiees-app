@@ -60,15 +60,12 @@ For large changes, STOP and plan first:
 
 `docs/conventions.md`: Detailed coding patterns, boilerplate, and examples. **Reference this for all code generation.**
 
-### Domain-Specific Files
+### Specific Documentation Files
 
-Create `.md` files to document:
-
-- **Controllers**: `app/controllers/<domain>/<name>.md`
-- **Services**: `app/services/<name>.md`
-- **Models**: `app/models/<name>.md`
-- **Inertia Pages**: `inertia/pages/<domain>/<name>.md`
-- **Composables**: `inertia/composables/<name>.md`
+Refer to the "Domain Documentation Map" in `docs/architecture.md` to find the relevant file for:
+- **Features**: `docs/features/*.md` (Simulations, Aides, Admin...)
+- **Technical**: `docs/technical/*.md` (Services, Views, Stores...)
+- **Integrations**: `docs/integrations/*.md` (Publicodes, OpenFisca...)
 
 ### Plan Files
 

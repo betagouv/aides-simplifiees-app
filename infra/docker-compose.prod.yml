@@ -27,7 +27,15 @@ x-network: &network
   networks:
     - aides-simplifiees-network-prod
 
-# -----------------------------------------------------------------------------
+x-app-env: &app-env
+  NODE_ENV: production
+  HOST: 0.0.0.0
+  PORT: 3333
+  DB_HOST: db
+  DB_PORT: 5432
+  LEXIMPACT_URL: http://leximpact:3000
+  OPENFISCA_URL: http://openfisca:5000/calculate
+
 # Volumes
 # -----------------------------------------------------------------------------
 volumes:
@@ -57,13 +65,7 @@ services:
     init: true
     env_file: ../.env.prod
     environment:
-      NODE_ENV: production
-      HOST: 0.0.0.0
-      PORT: 3333
-      DB_HOST: db
-      DB_PORT: 5432
-      LEXIMPACT_URL: http://leximpact:3000
-      OPENFISCA_URL: http://openfisca:5000/calculate
+      <<: *app-env
     ports:
       - "8080:3333"
     volumes:
@@ -152,8 +154,7 @@ services:
     image: ghcr.io/betagouv/aides-simplifiees-app:latest
     env_file: ../.env.prod
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
+      <<: *app-env
     command: ["node", "build/bin/console", "migration:run", "--force"]
     depends_on:
       db:
@@ -170,8 +171,7 @@ services:
     image: ghcr.io/betagouv/aides-simplifiees-app:latest
     env_file: ../.env.prod
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
+      <<: *app-env
     command: ["node", "build/bin/console", "db:seed"]
     depends_on:
       db-migrate:

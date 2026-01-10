@@ -87,3 +87,28 @@ make secrets
 - Docker & Docker Compose
 - Git
 - Make
+
+## Docker Images
+
+We use specific scripts to build and push multi-architecture images (`amd64` and `arm64`) to the GitHub Container Registry.
+
+### Commands
+
+| Command | Usage | Script Used |
+|---------|-------|-------------|
+| `make build-main-app-preprod` | Manual build for Preproduction | `infra/scripts/docker-build-app.sh preprod` |
+| `make build-main-app-version` | Manual build for Release | `infra/scripts/docker-build-app.sh version` |
+| `make build-leximpact` | Build LexImpact service | `infra/scripts/docker-build-leximpact.sh latest` |
+
+### Build Script Strategy
+
+The script `infra/scripts/docker-build-app.sh` handles:
+1.  **Multi-Platform Build**: Uses `docker buildx` to target `linux/amd64` and `linux/arm64`.
+2.  **Tagging**:
+    - `preprod` -> Tags image as `:preprod`.
+    - `version` -> Reads `package.json` version, tags as `:x.y.z` AND `:latest`.
+3.  **Registry**: Pushes to `ghcr.io/betagouv/aides-simplifiees-app`.
+
+### CI/CD Integration
+
+These commands can be used in GitHub Actions workflows to automatically build and push images upon meaningful events (push to main, release creation).

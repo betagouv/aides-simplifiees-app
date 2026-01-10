@@ -1,0 +1,72 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+      - preprod
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'preprod'
+        type: choice
+        options:
+          - preprod
+          - prod
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine image tag
+        id: tag
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "tag=version" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" = "preprod" ]; then
+            echo "tag=preprod" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and push Docker image
+        run: |
+          # Use coherent build script from infra directory
+          ./infra/scripts/docker-build-app.sh ${{ steps.tag.outputs.tag }}
+
+  notify-deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main' || github.ref_name == 'preprod'
+
+    steps:
+      - name: Deployment notification
+        run: |
+          echo "🚀 New image pushed: ghcr.io/${{ github.repository }}:${{ github.ref_name == 'main' && 'latest' || 'preprod' }}"
+          echo ""
+          echo "To deploy on server:"
+          echo "  cd /path/to/aides-simplifiees-app/infra"
+          echo "  make ${{ github.ref_name == 'main' && 'prod' || 'preprod' }}"

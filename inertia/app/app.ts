@@ -52,22 +52,23 @@ createInertiaApp({
 
     // Get config values from the page props
     const initialPageProps = props.initialPage.props as Partial<SharedProps>
+    const appEnv = initialPageProps.appEnv ?? 'development'
     const matomoHost = initialPageProps.matomoUrl ?? null
     const matomoSiteId = initialPageProps.matomoSiteId
       ? Number.parseInt(initialPageProps.matomoSiteId, 10)
       : null
 
-    // Only initialize Matomo if we have valid config
-    if (matomoHost !== null && matomoSiteId !== null) {
+    // Only initialize Matomo in production
+    // Other environments (development, test, staging) should not send events
+    if (matomoHost !== null && matomoSiteId !== null && appEnv === 'production') {
       app.use(VueMatomo, {
         host: matomoHost,
         siteId: matomoSiteId,
       })
 
-      if (import.meta.env.MODE === 'production') {
-        // Type assertion needed: Matomo's _paq is an external library without TypeScript definitions
-        ;(window as any)._paq.push(['setCookieSameSite', 'None'])
-      }
+      // Required for cross-site iframe embedding
+      // Type assertion needed: Matomo's _paq is an external library without TypeScript definitions
+      ;(window as any)._paq.push(['setCookieSameSite', 'None'])
     }
 
     // Register icon collections

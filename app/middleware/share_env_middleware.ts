@@ -5,10 +5,11 @@ import env from '#start/env'
 /**
  * Shared environment variables configuration
  * This object defines what environment variables are shared with the client
+ * All variables are accessed via the validated env schema
  */
 export const sharedEnvConfig = {
   appName: env.get('APP_NAME'),
-  isPreprod: env.get('IS_PREPROD', 'false') === 'true',
+  appEnv: env.get('APP_ENV'),
   publicAppUrl: env.get('PUBLIC_APP_URL'),
   matomoUrl: env.get('MATOMO_URL'),
   matomoSiteId: env.get('MATOMO_SITE_ID'),

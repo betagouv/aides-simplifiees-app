@@ -28,6 +28,7 @@
     "build": "node ace build --ignore-ts-errors",
     "prepare": "husky",
     "migrate": "node ace migration:run",
+    "seed": "node ace db:seed",
     "build:iframe-integration": "node scripts/build_iframe_integration.js",
     "detect:icons": "node scripts/detect_icons.js",
     "build:icons": "vue-dsfr-icons -s scripts/build_icons_collections.js -t inertia/icon_collections.ts",
@@ -52,7 +53,9 @@
     "test:coverage": "c8 node ace test",
     "coverage:report": "c8 report --reporter=html --reporter=text --reporter=lcov",
     "coverage:check": "c8 check-coverage",
-    "coverage:open": "open coverage/index.html"
+    "coverage:open": "open coverage/index.html",
+    "docker:build": "bash scripts/docker-build.sh version",
+    "docker:build:preprod": "bash scripts/docker-build.sh preprod"
   },
   "dependencies": {
     "@adonisjs/auth": "^9.5.0",

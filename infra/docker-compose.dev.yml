@@ -1,0 +1,107 @@
+# =============================================================================
+# DEVELOPMENT - Standalone Docker Compose (Dependencies only)
+# Usage: docker compose -f docker-compose.dev.yml up -d
+#        Then run main-app locally: cd ../.. && pnpm run dev
+# =============================================================================
+name: aides-simplifiees-dev
+
+# -----------------------------------------------------------------------------
+# YAML Anchors - Reusable configurations
+# -----------------------------------------------------------------------------
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+x-restart-policy: &restart-policy
+  restart: unless-stopped
+
+x-network: &network
+  networks:
+    - aides-simplifiees-network-dev
+
+# -----------------------------------------------------------------------------
+# Volumes
+# -----------------------------------------------------------------------------
+volumes:
+  dbdata_dev:
+    driver: local
+
+# -----------------------------------------------------------------------------
+# Networks
+# -----------------------------------------------------------------------------
+networks:
+  aides-simplifiees-network-dev:
+    driver: bridge
+
+# -----------------------------------------------------------------------------
+# Services (Dependencies only - main-app runs locally with pnpm run dev)
+# Migrations run locally: cd ../.. && pnpm migrate && pnpm seed
+# -----------------------------------------------------------------------------
+services:
+
+  # ---------------------------------------------------------------------------
+  # OpenFisca Calculation Engine
+  # ---------------------------------------------------------------------------
+  openfisca:
+    build:
+      context: ../../aides-calculatrice-back
+      dockerfile: Dockerfile
+    image: aides-calculatrice-back:dev
+    init: true
+    command: ["openfisca", "serve", "--country-package", "openfisca_france", "--bind", "0.0.0.0:5000", "--timeout", "120"]
+    ports:
+      - "5001:5000"  # Port 5001 (macOS uses 5000 for ControlCenter)
+      - "5678:5678"  # Python debugging
+    volumes:
+      - ../../aides-calculatrice-back:/app
+      - /app/__pycache__
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/spec')"]
+    <<: [*restart-policy, *network]
+
+  # ---------------------------------------------------------------------------
+  # LexImpact Territoires API
+  # ---------------------------------------------------------------------------
+  leximpact:
+    build:
+      context: ../../territoires
+      dockerfile: ../aides-simplifiees-app/infra/dockerfiles/leximpact.Dockerfile
+      target: production
+    image: leximpact-territoires:dev
+    init: true
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "3000:3000"  # Direct access for local main-app
+    healthcheck:
+      <<: *healthcheck-defaults
+      start_period: 30s
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+    <<: [*restart-policy, *network]
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:17-alpine
+    env_file: ../.env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - dbdata_dev:/var/lib/postgresql/data
+      - ./backups_dev:/backups
+    ports:
+      - "5432:5432"  # Direct access for local main-app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aides-simplifiees -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    <<: [*restart-policy, *network]

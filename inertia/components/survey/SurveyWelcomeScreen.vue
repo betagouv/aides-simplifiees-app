@@ -14,7 +14,8 @@ const props = defineProps<{
 
 const { isIframe } = useIframeDisplay()
 const page = usePage<SharedProps>()
-const isPreprod = page.props.isPreprod
+const appEnv = page.props.appEnv
+const isPreprod = appEnv === 'staging'
 const introPhrase = computed(() => {
   switch (props.simulateur.slug) {
     case 'entreprise-innovation':

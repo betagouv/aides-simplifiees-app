@@ -1,0 +1,13 @@
+# Infrastructure - Environment files (contain secrets)
+.env
+.env.prod
+.env.preprod
+.env.local
+
+# Database backups (can be large)
+backups/
+backups_*/
+*.sql
+
+# IDE
+.idea/

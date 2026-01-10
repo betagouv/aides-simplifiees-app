@@ -9,9 +9,7 @@
 
 import { IFRAME_SCRIPT_LATEST_VERSION } from '#config/iframe_integration'
 import throttleMiddleware from '#middleware/throttle_middleware'
-import env from '#start/env'
 import { middleware } from '#start/kernel'
-import app from '@adonisjs/core/services/app'
 import router from '@adonisjs/core/services/router'
 
 /**

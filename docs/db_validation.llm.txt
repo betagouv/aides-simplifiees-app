@@ -1,0 +1,41 @@
+# Database Validation
+
+This module validates database connectivity and schema integrity during application boot.
+
+## Purpose
+
+Prevents the application from starting successfully but then failing on the first user request when:
+- The database doesn't exist
+- The database exists but hasn't been migrated
+- The migrations table is empty
+
+## Integration
+
+Called by [start/events.ts](start/events.ts) during the `http:server_ready` event, after environment validation but before accepting requests.
+
+## Validation Steps
+
+1. **Database Connectivity**: Tests basic connection with `SELECT 1`
+2. **Migrations Table**: Checks for existence of `adonis_schema` table
+3. **Migration Count**: Verifies at least one migration has been run
+
+## Error Messages
+
+Provides helpful error messages with specific commands based on `APP_ENV`:
+
+- **Development**: Suggests `node ace migration:run --force` and `node ace db:seed`
+- **Staging/Production**: Suggests `make db-migrate ENV=preprod/prod` and `make db-seed ENV=preprod/prod`
+
+## Exit Behavior
+
+When validation fails:
+- Logs a detailed error message with box formatting
+- Exits with code 1 before the HTTP server accepts connections
+- Prevents silent failures that only appear on first user request
+
+## Related Files
+
+- [start/events.ts](start/events.ts): Calls this validation
+- [start/env_validation.ts](start/env_validation.ts): Validates environment variables first
+- [start/kernel.ts](start/kernel.ts): HTTP kernel configuration
+- [adonisrc.ts](adonisrc.ts): Preloads events.ts during boot

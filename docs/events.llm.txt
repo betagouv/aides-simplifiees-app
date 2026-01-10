@@ -1,0 +1,37 @@
+# Application Events
+
+This module registers event listeners for the application lifecycle.
+
+## Purpose
+
+Coordinates startup validations that must complete before the application accepts HTTP requests.
+
+## Registered Events
+
+### http:server_ready
+
+Triggered when the HTTP server is ready to accept connections.
+
+**Validation Sequence:**
+1. **Environment Validation** ([start/env_validation.ts](start/env_validation.ts))
+   - Validates required environment variables
+   - Checks APP_ENV configuration
+   - Ensures MONITORING_SECRET exists in production/staging
+
+2. **Database Validation** ([start/db_validation.ts](start/db_validation.ts))
+   - Tests database connectivity
+   - Verifies migrations have been run
+   - Counts applied migrations
+
+**Exit on Failure:**
+If any validation fails, the process exits with code 1 before accepting HTTP requests.
+
+## Integration
+
+Preloaded in [adonisrc.ts](adonisrc.ts) alongside routes and kernel configuration.
+
+## Related Files
+
+- [start/env_validation.ts](start/env_validation.ts): Environment variable checks
+- [start/db_validation.ts](start/db_validation.ts): Database connectivity and schema checks
+- [adonisrc.ts](adonisrc.ts): Application configuration

@@ -41,13 +41,13 @@ applyTo: "**"
    - Publicodes forms, aide display
    - Data visualization, charts
    - Any visual or interactive functionality (Inertia pages)
-3. Update affected `.llm.txt` documentation files ONLY after user validation for bug fixes
-4. Use STATIC REFERENCE style in `.llm.txt` files:
+3. Update affected `.md` documentation files ONLY after user validation for bug fixes
+4. Use STATIC REFERENCE style in documentation files:
    - Present tense only ("handles", "provides", "uses")
    - NO temporal language: "before/after", "completed", "resolved", "Phase X"
    - NO dates, objectives, or problem descriptions
    - Describe HOW it works NOW, not how it changed
-5. Plan files (`.plan.llm.txt`) CAN use historical language
+5. Plan files (`.plan.md`) CAN use historical language
 6. Verify changes compile/run correctly
 
 ## Tests and Validation
@@ -62,15 +62,15 @@ applyTo: "**"
 
 ## Documentation Types
 
-- **`.llm.txt`** = Static reference (timeless, current state only)
-- **`.plan.llm.txt`** = Historical tracking (objectives, dates, before/after OK)
-- **`.md`** = [CRITICAL] NEVER MENTION OR TRY TO CREATE OR UPDATE ANY MARKDOWN FILE unless user explicitly asks
+- **`.md`** = Static reference documentation (timeless, current state only)
+- **`.plan.md`** = Historical tracking (objectives, dates, before/after OK)
+- Documentation lives in `docs/` directory (see `docs/architecture.md` for map)
 
 ## Quick Self-Check
 
 Ask yourself after completing work:
-- Did I update the relevant `.llm.txt` files?
-- Did I remove temporal language from `.llm.txt` files?
+- Did I update the relevant documentation files in `docs/`?
+- Did I remove temporal language from reference docs?
 - Does the documentation describe the current state, not the change?
 - For large tasks: Did I create/update the plan file?
 - Did I use the appropriate workflow (plan-first vs direct edit)?
@@ -82,8 +82,8 @@ Ask yourself after completing work:
 1. **UPDATING DOCS BEFORE USER VALIDATES FIX** - NEVER document until user confirms it works
 2. **ASSUMING RENDERING FIXES WORK FROM COMPILATION** - TypeScript/build success does NOT mean visual functionality works
 3. Using npm or yarn instead of pnpm
-4. Implementing feature but not updating `.llm.txt` docs (after validation)
-5. Adding "completed" or "Phase X" markers to `.llm.txt` files
+4. Implementing feature but not updating documentation (after validation)
+5. Adding "completed" or "Phase X" markers to reference documentation
 6. Leaving future enhancements in docs when feature is implemented
 7. Using "we added" or "this was changed" in reference docs
 8. Forgetting to mark plan file tasks as complete
@@ -122,4 +122,4 @@ Ask yourself after completing work:
 When conversation grows long:
 - Summaries MUST include "Critical Rules Compliance" section
 - Reference this file in summaries for quick re-orientation
-- Include list of updated `.llm.txt` files in summary
+- Include list of updated documentation files in summary

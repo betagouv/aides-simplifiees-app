@@ -101,7 +101,7 @@ Created: YYYY-MM-DD
 - [ ] Accessibility tests
 
 ## Documentation Updated
-- [ ] `file.llm.txt`
+- [ ] `docs/technical/*.md` or `docs/features/*.md`
 
 ## History
 - YYYY-MM-DD: [Changes made]

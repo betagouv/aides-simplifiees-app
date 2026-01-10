@@ -400,3 +400,4 @@ For detailed information about specific domains, refer to:
 - `docs/domains/api-integrations.llm.txt`: External service integrations
 - `docs/domains/views.llm.txt`: Pages and components (Vue.js UI)
 - `docs/domains/stores.llm.txt`: State management (Pinia stores)
+- `docs/domains/services.llm.txt`: Internal business logic services

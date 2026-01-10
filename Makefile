@@ -41,12 +41,10 @@ help: ## Show this help message
 # =============================================================================
 
 secrets: ## Generate secure values for secrets
-	@echo "Génération de valeurs sécurisées pour les secrets..."
 	@DB_PASS=$$(openssl rand -base64 32 | tr -d '=+/' | cut -c1-25); \
 	APP_KEY=$$(openssl rand -base64 32 | tr -d '=+/' | cut -c1-32); \
 	ADMIN_PASS=$$(openssl rand -base64 32 | tr -d '=+/' | cut -c1-20); \
 	MONITOR_SECRET=$$(openssl rand -base64 48 | tr -d '=+/' | cut -c1-40); \
-	echo "Valeurs générées (à copier dans votre .env):"; \
 	echo "DB_PASSWORD=$$DB_PASS"; \
 	echo "APP_KEY=$$APP_KEY"; \
 	echo "ADMIN_PASSWORD=$$ADMIN_PASS"; \
@@ -58,18 +56,9 @@ secrets: ## Generate secure values for secrets
 
 dev: ## Start development dependencies (DB, OpenFisca, LexImpact)
 	@$(MAKE) up ENV=dev
-	@echo ""
-	@echo "✅ Dépendances démarrées!"
-	@echo "   - PostgreSQL:  localhost:5432"
-	@echo "   - OpenFisca:   localhost:5001 (⚠️  port 5000 utilisé par macOS)"
-	@echo "   - LexImpact:   localhost:3000"
-	@echo ""
-	@echo "👉 Initialisez la base de données (première fois):"
-	@echo "   node ace migration:run --force"
-	@echo "   node ace db:seed"
-	@echo ""
-	@echo "👉 Lancez main-app localement:"
-	@echo "   pnpm dev"
+	@echo "Dependencies started: PostgreSQL :5432, OpenFisca :5001, LexImpact :3000"
+	@echo "First time: node ace migration:run --force && node ace db:seed"
+	@echo "Then: pnpm dev"
 
 prod: ## Start production environment
 	@$(MAKE) pull ENV=prod
@@ -157,15 +146,12 @@ db-shell: ## Open database shell
 # =============================================================================
 
 db-migrate: ## Run database migrations via Docker
-	@echo "Exécution des migrations..."
 	@$(COMPOSE_CMD) run --rm db-migrate
 
 db-seed: ## Run database seeders via Docker
-	@echo "Exécution des seeders..."
 	@$(COMPOSE_CMD) run --rm db-seed
 
 db-backup: ## Create database backup
-	@echo "Création d'une sauvegarde..."
 	@mkdir -p infra/backups_$(ENV)
 	@$(COMPOSE_CMD) exec db pg_dump -U aides-simplifiees $(DB_NAME) > infra/backups_$(ENV)/backup_$$(date +%Y%m%d_%H%M%S).sql
 

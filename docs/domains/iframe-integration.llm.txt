@@ -149,7 +149,7 @@ window.addEventListener('aides-simplifiees-message', (event) => {
 - **Static CORS Middleware**: `static_cors_middleware.ts`
   - Allows all origins for `/assets/iframe-integration*` files
   - Enables cross-origin embedding
-  
+
 - **Preserve Iframe Middleware**: `preserve_iframe_param_middleware.ts`
   - Checks referer for `iframe=true` parameter
   - Redirects to preserve iframe mode across navigation
@@ -247,6 +247,28 @@ The integration script uses modern JavaScript (ES modules, CustomEvents) and req
 4. Test in staging environment first
 5. Monitor console for errors if `data-log="true"`
 6. Listen to custom events for advanced integration
+
+## DevOps & Automation
+
+### Git Hooks (Husky)
+A pre-commit hook ensures synchronization between source code and generated assets.
+
+**Triggers**:
+- Changes in `src/assets/iframe-integration.js`
+- Changes in `config/iframe_integration.ts`
+- Changes in `vite.iframe-integration.config.ts`
+
+**Automatic Actions**:
+1. Rebuilds the iframe script (`pnpm build:iframe-integration`)
+2. Generates new SRI hash
+3. Updates `config/iframe_integration.ts` (if version changed)
+4. Stages generated files
+5. Blocks commit if synchronization fails
+
+### Versioning Strategy
+- **File Structure**: `public/assets/iframe-integration@{version}.js`
+- **Latest Version**: Controlled by `IFRAME_SCRIPT_LATEST_VERSION` constant
+- **Integrity List**: Historical array of `{ version, integrity }` objects to support older integrations
 
 ## Related Domains
 

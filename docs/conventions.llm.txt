@@ -136,3 +136,37 @@ Typical middleware order (see `start/kernel.ts`):
 2. Session
 3. Auth (or Guest or Silent Auth depending on route)
 4. Admin (for admin routes)
+
+## Testing Strategies
+
+### Backend (Japa)
+For backend controllers, services, and models.
+
+```typescript
+// tests/unit/example_service.spec.ts
+import { test } from '@japa/runner'
+
+test.group('Example Service', () => {
+  test('it handles business logic', async ({ assert }) => {
+    // ...
+  })
+})
+```
+
+### Frontend (Vitest)
+For Vue components, composables, and utility functions.
+Use `~` alias for `inertia/` directory.
+
+```typescript
+// tests/frontend/example_component.spec.ts
+import { describe, it, expect } from 'vitest'
+import { mount } from '@vue/test-utils'
+import ExampleComponent from '~/components/ExampleComponent.vue'
+
+describe('ExampleComponent', () => {
+  it('renders properly', () => {
+    const wrapper = mount(ExampleComponent)
+    expect(wrapper.text()).toContain('Hello')
+  })
+})
+```

@@ -10,8 +10,7 @@ applyTo: "**"
 ## Before Starting ANY Task
 
 1. **ALWAYS** read `docs/architecture.md` FIRST to understand the context (MANDATORY - NO EXCEPTIONS)
-2. **ALWAYS** read `docs/conventions.md` if generating code to follow patterns
-3. **ALWAYS** read `.github/copilot-critical-rules.md` to ensure compliance with all rules
+2. **ALWAYS** read `.github/copilot-critical-rules.md` to ensure compliance with all rules
 4. Identify which domain-specific `.md` files are relevant
 5. Choose approach: Direct Edit (1-3 files) or Plan-First (4+ files)
 6. For 4+ files: Create `.plan.md` before editing code

@@ -414,4 +414,4 @@ Always use these aliases for backend imports.
 
 ## Coding Conventions
 
-For detailed coding patterns and examples, see `docs/conventions.md`.
+Please refer to existing code in the repository to follow patterns.

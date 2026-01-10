@@ -58,7 +58,7 @@ For large changes, STOP and plan first:
 
 ### Code Conventions File
 
-`docs/conventions.md`: Detailed coding patterns, boilerplate, and examples. **Reference this for all code generation.**
+(Removed)
 
 ### Specific Documentation Files
 
@@ -109,10 +109,9 @@ Created: YYYY-MM-DD
 
 ## Code Conventions
 
-For detailed code conventions, patterns, and boilerplate examples, **ALWAYS** refer to `docs/conventions.md`.
-
 **Key Stack Rules**:
 - **Backend**: AdonisJS v6 (TypeScript) with Lucid ORM & VineJS validation
+
 - **Frontend**: Vue.js 3 + Inertia.js + DSFR (VueDsfr)
 - **Package Manager**: `pnpm` (Strict)
 

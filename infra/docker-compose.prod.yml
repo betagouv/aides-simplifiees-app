@@ -33,6 +33,58 @@ x-app-env: &app-env
   LEXIMPACT_URL: http://leximpact:3000
   OPENFISCA_URL: http://openfisca:5000/calculate
 
+# Resource limits for production (configurable via environment variables)
+# Defaults are conservative; override in .env.prod for your server capacity
+x-resources-app: &resources-app
+  deploy:
+    resources:
+      limits:
+        cpus: '${APP_CPU_LIMIT:-2.0}'
+        memory: ${APP_MEM_LIMIT:-512M}
+      reservations:
+        cpus: '${APP_CPU_RESERVATION:-0.5}'
+        memory: ${APP_MEM_RESERVATION:-256M}
+
+x-resources-openfisca: &resources-openfisca
+  deploy:
+    resources:
+      limits:
+        cpus: '${OPENFISCA_CPU_LIMIT:-3.5}'
+        memory: ${OPENFISCA_MEM_LIMIT:-3G}
+      reservations:
+        cpus: '${OPENFISCA_CPU_RESERVATION:-1.0}'
+        memory: ${OPENFISCA_MEM_RESERVATION:-1G}
+
+x-resources-leximpact: &resources-leximpact
+  deploy:
+    resources:
+      limits:
+        cpus: '${LEXIMPACT_CPU_LIMIT:-1.0}'
+        memory: ${LEXIMPACT_MEM_LIMIT:-256M}
+      reservations:
+        cpus: '${LEXIMPACT_CPU_RESERVATION:-0.25}'
+        memory: ${LEXIMPACT_MEM_RESERVATION:-128M}
+
+x-resources-db: &resources-db
+  deploy:
+    resources:
+      limits:
+        cpus: '${DB_CPU_LIMIT:-2.0}'
+        memory: ${DB_MEM_LIMIT:-1G}
+      reservations:
+        cpus: '${DB_CPU_RESERVATION:-0.5}'
+        memory: ${DB_MEM_RESERVATION:-256M}
+
+x-resources-backup: &resources-backup
+  deploy:
+    resources:
+      limits:
+        cpus: '${BACKUP_CPU_LIMIT:-0.25}'
+        memory: ${BACKUP_MEM_LIMIT:-64M}
+      reservations:
+        cpus: '${BACKUP_CPU_RESERVATION:-0.1}'
+        memory: ${BACKUP_MEM_RESERVATION:-32M}
+
 # Volumes
 
 volumes:
@@ -66,7 +118,7 @@ services:
     healthcheck:
       <<: *healthcheck-defaults
       test: ["CMD", "node", "-e", "const http = require('http'); const options = { hostname: '127.0.0.1', port: 3333, path: '/health', headers: { 'x-monitoring-secret': process.env.MONITORING_SECRET || '' } }; http.get(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
-    <<: [*restart-policy, *network, *security-defaults]
+    <<: [*restart-policy, *network, *security-defaults, *resources-app]
     depends_on:
       db:
         condition: service_healthy
@@ -81,7 +133,7 @@ services:
   openfisca:
     image: ghcr.io/betagouv/aides-calculatrice-back:latest
     init: true
-    command: ["openfisca", "serve", "--country-package", "openfisca_france", "--bind", "0.0.0.0:5000", "--timeout", "120", "--workers", "2"]
+    command: ["openfisca", "serve", "--country-package", "openfisca_france", "--bind", "0.0.0.0:5000", "--timeout", "120", "--workers", "4"]
     expose:
       - "5000"
     healthcheck:
@@ -94,7 +146,7 @@ services:
       - /tmp
       - /app/logs
       - /app/openfisca_logs
-    <<: [*restart-policy, *network]
+    <<: [*restart-policy, *network, *resources-openfisca]
 
   # LexImpact Territoires API
   leximpact:
@@ -109,7 +161,7 @@ services:
       <<: *healthcheck-defaults
       start_period: 30s
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
-    <<: [*restart-policy, *network, *security-defaults]
+    <<: [*restart-policy, *network, *security-defaults, *resources-leximpact]
 
   # PostgreSQL Database
   db:
@@ -132,7 +184,7 @@ services:
       retries: 5
     security_opt:
       - no-new-privileges:true
-    <<: [*restart-policy, *network]
+    <<: [*restart-policy, *network, *resources-db]
 
   # Database Migration (runs once on deploy)
   db-migrate:
@@ -197,4 +249,4 @@ services:
         condition: service_healthy
     security_opt:
       - no-new-privileges:true
-    <<: [*restart-policy, *network]
+    <<: [*restart-policy, *network, *resources-backup]

@@ -60,12 +60,8 @@ services:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 3333
-      LOG_LEVEL: info
-      SESSION_DRIVER: cookie
       DB_HOST: db
       DB_PORT: 5432
-      DB_USER: aides-simplifiees
-      DB_DATABASE: aides-simplifiees-prod
       LEXIMPACT_URL: http://leximpact:3000
       OPENFISCA_URL: http://openfisca:5000/calculate
     ports:
@@ -131,8 +127,8 @@ services:
     image: postgres:17-alpine
     env_file: ../.env.prod
     environment:
-      POSTGRES_USER: aides-simplifiees
-      POSTGRES_DB: aides-simplifiees-prod
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
@@ -158,8 +154,6 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-      DB_USER: aides-simplifiees
-      DB_DATABASE: aides-simplifiees-prod
     command: ["node", "build/bin/console", "migration:run", "--force"]
     depends_on:
       db:
@@ -178,8 +172,6 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-      DB_USER: aides-simplifiees
-      DB_DATABASE: aides-simplifiees-prod
     command: ["node", "build/bin/console", "db:seed"]
     depends_on:
       db-migrate:
@@ -196,8 +188,8 @@ services:
     image: postgres:17-alpine
     env_file: ../.env.prod
     environment:
-      POSTGRES_USER: aides-simplifiees
-      POSTGRES_DB: aides-simplifiees-prod
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_DATABASE}
       PGPASSWORD: ${DB_PASSWORD}
     volumes:
       - dbdata_prod:/var/lib/postgresql/data:ro

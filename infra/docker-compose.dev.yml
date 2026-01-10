@@ -25,7 +25,7 @@ x-network: &network
 # Volumes
 # -----------------------------------------------------------------------------
 volumes:
-  dbdata:
+  dbdata_dev:
     driver: local
 
 # -----------------------------------------------------------------------------
@@ -90,13 +90,13 @@ services:
     image: postgres:17-alpine
     env_file: ../.env
     environment:
-      POSTGRES_USER: aides-simplifiees
-      POSTGRES_DB: aides-simplifiees
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - dbdata:/var/lib/postgresql/data
-      - ./backups:/backups
+      - dbdata_dev:/var/lib/postgresql/data
+      - ./backups_dev:/backups
     ports:
       - "5432:5432"  # Direct access for local main-app
     healthcheck:

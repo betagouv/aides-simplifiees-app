@@ -1,12 +1,9 @@
-# =============================================================================
-# PREPRODUCTION - Standalone Docker Compose
-# Usage: docker compose -f docker-compose.preprod.yml up -d
-# =============================================================================
+# PREPRODUCTION Docker Compose
+
 name: aides-simplifiees-preprod
 
-# -----------------------------------------------------------------------------
 # YAML Anchors - Reusable configurations
-# -----------------------------------------------------------------------------
+
 x-healthcheck-defaults: &healthcheck-defaults
   interval: 30s
   timeout: 10s
@@ -37,28 +34,24 @@ x-app-env: &app-env
   OPENFISCA_URL: http://openfisca:5000/calculate
 
 # Volumes
-# -----------------------------------------------------------------------------
+
 volumes:
   dbdata_preprod:
     driver: local
   app_logs_preprod:
     driver: local
 
-# -----------------------------------------------------------------------------
 # Networks
-# -----------------------------------------------------------------------------
+
 networks:
   aides-simplifiees-network-preprod:
     driver: bridge
 
-# -----------------------------------------------------------------------------
 # Services
-# -----------------------------------------------------------------------------
+
 services:
 
-  # ---------------------------------------------------------------------------
   # Main Application (AdonisJS)
-  # ---------------------------------------------------------------------------
   main-app:
     image: ghcr.io/betagouv/aides-simplifiees-app:preprod
     init: true
@@ -83,9 +76,7 @@ services:
       db-seed:
         condition: service_completed_successfully
 
-  # ---------------------------------------------------------------------------
   # OpenFisca Calculation Engine
-  # ---------------------------------------------------------------------------
   openfisca:
     image: ghcr.io/betagouv/aides-calculatrice-back:latest
     init: true
@@ -104,9 +95,7 @@ services:
       - /app/openfisca_logs
     <<: [*restart-policy, *network]
 
-  # ---------------------------------------------------------------------------
   # LexImpact Territoires API
-  # ---------------------------------------------------------------------------
   leximpact:
     image: ghcr.io/betagouv/leximpact-territoires:latest
     init: true
@@ -121,9 +110,7 @@ services:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
     <<: [*restart-policy, *network, *security-defaults]
 
-  # ---------------------------------------------------------------------------
   # PostgreSQL Database
-  # ---------------------------------------------------------------------------
   db:
     image: postgres:17-alpine
     env_file: ../.env.preprod
@@ -146,9 +133,7 @@ services:
       - no-new-privileges:true
     <<: [*restart-policy, *network]
 
-  # ---------------------------------------------------------------------------
   # Database Migration (runs once on deploy)
-  # ---------------------------------------------------------------------------
   db-migrate:
     image: ghcr.io/betagouv/aides-simplifiees-app:preprod
     env_file: ../.env.preprod
@@ -163,9 +148,7 @@ services:
     <<: *network
     restart: "no"
 
-  # ---------------------------------------------------------------------------
   # Database Seeding (runs once on deploy)
-  # ---------------------------------------------------------------------------
   db-seed:
     image: ghcr.io/betagouv/aides-simplifiees-app:preprod
     env_file: ../.env.preprod
@@ -180,9 +163,7 @@ services:
     <<: *network
     restart: "no"
 
-  # ---------------------------------------------------------------------------
   # Automated Database Backup (daily, 7-day retention)
-  # ---------------------------------------------------------------------------
   db-backup:
     image: postgres:17-alpine
     env_file: ../.env.preprod

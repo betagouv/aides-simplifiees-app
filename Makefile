@@ -26,19 +26,14 @@ COMPOSE_CMD := docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE)
 
 .PHONY: help dev prod preprod build up down logs status health clean
 
-# =============================================================================
 # Aides Simplifiées - Unified Makefile
-# =============================================================================
 
 help: ## Show this help message
 	@echo "Aides Simplifiées - Available Commands"
-	@echo "======================================="
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-# =============================================================================
 # Infrastructure Management
-# =============================================================================
 
 secrets: ## Generate secure values for secrets
 	@DB_PASS=$$(openssl rand -base64 32 | tr -d '=+/' | cut -c1-25); \
@@ -50,9 +45,7 @@ secrets: ## Generate secure values for secrets
 	echo "ADMIN_PASSWORD=$$ADMIN_PASS"; \
 	echo "MONITORING_SECRET=$$MONITOR_SECRET"
 
-# =============================================================================
 # Environment Management
-# =============================================================================
 
 dev: ## Start development dependencies (DB, OpenFisca, LexImpact)
 	@$(MAKE) up ENV=dev
@@ -68,10 +61,7 @@ preprod: ## Start preproduction environment
 	@$(MAKE) pull ENV=preprod
 	@$(MAKE) up ENV=preprod
 
-
-# =============================================================================
 # Docker Operations
-# =============================================================================
 
 build: ## Build all services
 	@$(COMPOSE_CMD) build
@@ -100,9 +90,7 @@ clean: ## Stop and remove everything (including volumes!)
 pull: ## Pull latest images
 	@$(COMPOSE_CMD) pull
 
-# =============================================================================
 # Docker Image Building
-# =============================================================================
 
 build-main-app-preprod: ## Build and push main-app image for preprod
 	@./infra/scripts/docker-build-app.sh preprod
@@ -113,9 +101,7 @@ build-main-app-version: ## Build and push main-app image with version tag + late
 build-leximpact: ## Build and push LexImpact image
 	@./infra/scripts/docker-build-leximpact.sh latest
 
-# =============================================================================
 # Service-specific Commands
-# =============================================================================
 
 main-app-logs: ## Show main-app logs only
 	@$(COMPOSE_CMD) logs -f main-app
@@ -141,9 +127,7 @@ leximpact-shell: ## Open shell in LexImpact container
 db-shell: ## Open database shell
 	@$(COMPOSE_CMD) exec db psql -U aides-simplifiees -d $(DB_NAME)
 
-# =============================================================================
 # Database Management
-# =============================================================================
 
 db-migrate: ## Run database migrations via Docker
 	@$(COMPOSE_CMD) run --rm db-migrate

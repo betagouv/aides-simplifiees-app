@@ -9,17 +9,17 @@ applyTo: "**"
 
 ## Before Starting ANY Task
 
-1. **ALWAYS** read `docs/architecture.llm.txt` FIRST to understand the context (MANDATORY - NO EXCEPTIONS)
-2. **ALWAYS** read `docs/conventions.llm.txt` if generating code to follow patterns
+1. **ALWAYS** read `docs/architecture.md` FIRST to understand the context (MANDATORY - NO EXCEPTIONS)
+2. **ALWAYS** read `docs/conventions.md` if generating code to follow patterns
 3. **ALWAYS** read `.github/copilot-critical-rules.md` to ensure compliance with all rules
-4. Identify which domain-specific `.llm.txt` files are relevant
+4. Identify which domain-specific `.md` files are relevant
 5. Choose approach: Direct Edit (1-3 files) or Plan-First (4+ files)
-6. For 4+ files: Create `.plan.llm.txt` before editing code
+6. For 4+ files: Create `.plan.md` before editing code
 
 ## During Code Changes
 
-1. Track which `.llm.txt` files need updates based on behavior changes
-2. For 4+ files: Stop and create `<name>.plan.llm.txt` with strategy before coding
+1. Track which `.md` files need updates based on behavior changes
+2. For 4+ files: Stop and create `<name>.plan.md` with strategy before coding
 3. Never use emojis in code, comments, docs, or responses
 4. Always use **pnpm**, never npm or yarn
 5. Respect AdonisJS structure (controllers, models, services, middleware)

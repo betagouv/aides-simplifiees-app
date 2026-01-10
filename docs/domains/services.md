@@ -16,7 +16,7 @@ Manages the lifecycle and business rules of simulators.
 ### `LoggingService`
 Provides structured logging with context.
 - **Responsibilities**: Error logging, performance tracking, security events.
-- **See also**: `docs/logging.llm.txt`.
+- **See also**: `docs/logging.md`.
 
 ### `MatomoReportingService`
 Handles interaction with the Matomo Analytics API.

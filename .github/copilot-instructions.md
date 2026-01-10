@@ -8,9 +8,9 @@ description: Detailed Copilot instructions for aides-simplifiees-app
 
 ## Context & Architecture
 
-**MANDATORY**: Before starting any task, read `docs/architecture.llm.txt` for the full project overview, technology stack, and global architecture.
+**MANDATORY**: Before starting any task, read `docs/architecture.md` for the full project overview, technology stack, and global architecture.
 
-For domain-specific details, refer to the documents listed in `docs/architecture.llm.txt`.
+For domain-specific details, refer to the documents listed in `docs/architecture.md`.
 
 ## Work Workflows
 
@@ -22,13 +22,13 @@ For small changes:
 2. Read necessary context
 3. Make the modifications
 4. Run relevant tests
-5. Update `.llm.txt` documentation (after user validation if bug fix)
+5. Update `.md` documentation (after user validation if bug fix)
 
 ### 2. Plan-First Workflow (4+ files)
 
 For large changes, STOP and plan first:
 
-1. **Create a plan file** `.plan.llm.txt` in the appropriate folder
+1. **Create a plan file** `.plan.md` in the appropriate folder
 2. Analyze architecture and dependencies
 3. Document objectives and steps:
    - Context and problem description
@@ -41,8 +41,8 @@ For large changes, STOP and plan first:
    - Follow the documented steps
    - Mark completed tasks in the plan file
    - Run tests after each phase
-6. Update the `.plan.llm.txt` with completion status
-7. Update affected `.llm.txt` files (after user validation)
+6. Update the `.plan.md` with completion status
+7. Update affected `.md` files (after user validation)
 
 **Why plan first for 4+ files?**
 - Reduces errors and rework
@@ -50,50 +50,29 @@ For large changes, STOP and plan first:
 - Makes implementation more efficient
 - Provides clear tracking of progress
 
-## LLM Documentation Structure
+## Documentation Structure
 
 ### Main Architecture File
 
-`docs/architecture.llm.txt`: Application overview. **Read this first.**
+`docs/architecture.md`: Application overview. **Read this first.**
 
 ### Code Conventions File
 
-`docs/conventions.llm.txt`: Detailed coding patterns, boilerplate, and examples. **Reference this for all code generation.**
+`docs/conventions.md`: Detailed coding patterns, boilerplate, and examples. **Reference this for all code generation.**
 
 ### Domain-Specific Files
 
-Create `.llm.txt` files to document:
+Create `.md` files to document:
 
-- **Controllers**: `app/controllers/<domain>/<name>.llm.txt`
-  - Controller responsibilities
-  - Routes handled
-  - Data validation
-  - Service interactions
-
-- **Services**: `app/services/<name>.llm.txt`
-  - Encapsulated business logic
-  - Dependencies
-  - Main methods
-
-- **Models**: `app/models/<name>.llm.txt`
-  - Relationships with other models
-  - Scopes and computed properties
-  - Hooks and events
-
-- **Inertia Pages**: `inertia/pages/<domain>/<name>.llm.txt`
-  - Vue components used
-  - Props received from controller
-  - Local state and composables
-  - User interactions
-
-- **Composables**: `inertia/composables/<name>.llm.txt`
-  - Reusable functionality
-  - Shared state
-  - Side effects
+- **Controllers**: `app/controllers/<domain>/<name>.md`
+- **Services**: `app/services/<name>.md`
+- **Models**: `app/models/<name>.md`
+- **Inertia Pages**: `inertia/pages/<domain>/<name>.md`
+- **Composables**: `inertia/composables/<name>.md`
 
 ### Plan Files
 
-`<folder>/<name>.plan.llm.txt`: Tracking for large changes
+`<folder>/<name>.plan.md`: Tracking for large changes.
 
 Recommended structure:
 ```markdown
@@ -133,7 +112,7 @@ Created: YYYY-MM-DD
 
 ## Code Conventions
 
-For detailed code conventions, patterns, and boilerplate examples, **ALWAYS** refer to `docs/conventions.llm.txt`.
+For detailed code conventions, patterns, and boilerplate examples, **ALWAYS** refer to `docs/conventions.md`.
 
 **Key Stack Rules**:
 - **Backend**: AdonisJS v6 (TypeScript) with Lucid ORM & VineJS validation
@@ -209,13 +188,13 @@ Before marking a task as complete:
 - [ ] Accessibility is respected (if UI changes)
 - [ ] Imports use aliases (`#controllers/*`, etc.)
 - [ ] pnpm is used (never npm/yarn)
-- [ ] `.llm.txt` documentation is up to date (after user validation)
+- [ ] `.md` documentation is up to date (after user validation)
 - [ ] Static reference style is used (no temporal language)
 - [ ] Visual changes have been validated by user
 
 ## Documentation Style Guide
 
-### `.llm.txt` Files (Static Reference)
+### `.md` Files (Static Reference)
 
 **DO**:
 - Use present tense: "handles", "provides", "uses"
@@ -241,7 +220,7 @@ It uses session-based auth and supports OAuth providers.
 - `logout()`: Ends the user session
 ```
 
-### `.plan.llm.txt` Files (Historical Tracking)
+### `.plan.md` Files (Historical Tracking)
 
 **CAN** include:
 - Dates and timestamps

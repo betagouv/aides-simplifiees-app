@@ -402,6 +402,8 @@ Always use these aliases for backend imports.
 - **Infrastructure**: `docs/technical/infrastructure.md`
 - **Logging**: `docs/technical/logging.md`
 - **Events**: `docs/technical/events.md`
+- **Testing**: `docs/technical/testing.md`
+- **Database & Data Model**: `docs/technical/database.md`
 
 ### Integrations
 - **Publicodes Engine**: `docs/integrations/publicodes.md`

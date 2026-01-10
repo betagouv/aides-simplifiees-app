@@ -9,9 +9,7 @@
 
 import { IFRAME_SCRIPT_LATEST_VERSION } from '#config/iframe_integration'
 import throttleMiddleware from '#middleware/throttle_middleware'
-import env from '#start/env'
 import { middleware } from '#start/kernel'
-import app from '@adonisjs/core/services/app'
 import router from '@adonisjs/core/services/router'
 
 /**
@@ -77,22 +75,7 @@ router.get('/cookies', [StaticPagesController, 'showCookies'])
 /**
  * API Routes
  */
-router
-  .get('/health', [HealthChecksController])
-  .use(({ request, response }, next) => {
-    // Allow health checks without secret in development
-    if (!app.inProduction) {
-      return next()
-    }
-
-    // In production, require monitoring secret header
-    const monitoringSecret = env.get('MONITORING_SECRET')
-    if (monitoringSecret && request.header('x-monitoring-secret') === monitoringSecret) {
-      return next()
-    }
-
-    response.unauthorized({ message: 'Unauthorized access' })
-  })
+router.get('/health', [HealthChecksController]).use(middleware.monitoring())
 
 // API routes with rate limiting
 router

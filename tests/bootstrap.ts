@@ -10,6 +10,7 @@ import { assert } from '@japa/assert'
 import { browserClient } from '@japa/browser-client'
 import { expect } from '@japa/expect'
 import { pluginAdonisJS } from '@japa/plugin-adonisjs'
+import { ensureTestDatabaseExists } from './utils/db_setup.js'
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
  */
@@ -43,7 +44,10 @@ export const plugins: Config['plugins'] = [
  */
 export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
   setup: [
-    () => testUtils.db().migrate(),
+    async () => {
+      await ensureTestDatabaseExists()
+      await testUtils.db().migrate()
+    },
   ],
   teardown: [],
 }

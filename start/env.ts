@@ -21,10 +21,27 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
+  | Variables for configuring the application
+  |----------------------------------------------------------
+  */
+  APP_NAME: Env.schema.string(),
+  PUBLIC_APP_URL: Env.schema.string(),
+  APP_ENV: Env.schema.enum(['development', 'test', 'staging', 'production'] as const),
+
+  /*
+  |----------------------------------------------------------
   | Variables for configuring session package
   |----------------------------------------------------------
   */
   SESSION_DRIVER: Env.schema.enum(['cookie', 'memory'] as const),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for admin authentication
+  |----------------------------------------------------------
+  */
+  ADMIN_LOGIN: Env.schema.string(),
+  ADMIN_PASSWORD: Env.schema.string(),
 
   /*
   |----------------------------------------------------------
@@ -42,9 +59,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for configuring Matomo analytics
   |----------------------------------------------------------
   */
-  MATOMO_URL: Env.schema.string.optional(),
-  MATOMO_TOKEN: Env.schema.string.optional(),
-  MATOMO_SITE_ID: Env.schema.string.optional(),
+  MATOMO_URL: Env.schema.string(),
+  MATOMO_TOKEN: Env.schema.string(),
+  MATOMO_SITE_ID: Env.schema.string(),
 
   /*
   |----------------------------------------------------------
@@ -52,4 +69,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   LEXIMPACT_URL: Env.schema.string(),
+  OPENFISCA_URL: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for monitoring and debugging
+  |----------------------------------------------------------
+  */
+  MONITORING_SECRET: Env.schema.string.optional(),
 })

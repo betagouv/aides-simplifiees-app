@@ -23,7 +23,8 @@ const schemeStore = useSchemeStore()
 
 const noticeMessage = 'Ce site est en cours de développement. Certaines fonctionnalités peuvent ne pas être disponibles ou ne pas fonctionner correctement.'
 const preprodMessage = 'Ce site est un environnement de test. Il peut contenir des erreurs ou des fonctionnalités incomplètes.'
-const isPreprod = page.props.isPreprod
+const appEnv = page.props.appEnv
+const isPreprod = appEnv === 'staging'
 const skipLinks = [
   {
     id: 'content',

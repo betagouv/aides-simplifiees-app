@@ -1,0 +1,199 @@
+# PREPRODUCTION Docker Compose
+
+name: aides-simplifiees-preprod
+
+# YAML Anchors - Reusable configurations
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+x-security-defaults: &security-defaults
+  security_opt:
+    - no-new-privileges:true
+  read_only: true
+  tmpfs:
+    - /tmp
+
+x-restart-policy: &restart-policy
+  restart: unless-stopped
+
+x-network: &network
+  networks:
+    - aides-simplifiees-network-preprod
+
+x-app-env: &app-env
+  NODE_ENV: production
+  HOST: 0.0.0.0
+  PORT: 3333
+  DB_HOST: db
+  DB_PORT: 5432
+  LEXIMPACT_URL: http://leximpact:3000
+  OPENFISCA_URL: http://openfisca:5000/calculate
+
+# Volumes
+
+volumes:
+  dbdata_preprod:
+    driver: local
+  app_logs_preprod:
+    driver: local
+
+# Networks
+
+networks:
+  aides-simplifiees-network-preprod:
+    driver: bridge
+
+# Services
+
+services:
+
+  # Main Application (AdonisJS)
+  main-app:
+    image: ghcr.io/betagouv/aides-simplifiees-app:preprod
+    init: true
+    env_file: ../.env.preprod
+    environment:
+      <<: *app-env
+    ports:
+      - "8081:3333"
+    volumes:
+      - app_logs_preprod:/app/logs
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "node", "-e", "const http = require('http'); const options = { hostname: '127.0.0.1', port: 3333, path: '/health', headers: { 'x-monitoring-secret': process.env.MONITORING_SECRET || '' } }; http.get(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
+    <<: [*restart-policy, *network, *security-defaults]
+    depends_on:
+      db:
+        condition: service_healthy
+      openfisca:
+        condition: service_healthy
+      leximpact:
+        condition: service_healthy
+      db-seed:
+        condition: service_completed_successfully
+
+  # OpenFisca Calculation Engine
+  openfisca:
+    image: ghcr.io/betagouv/aides-calculatrice-back:latest
+    init: true
+    command: ["openfisca", "serve", "--country-package", "openfisca_france", "--bind", "0.0.0.0:5000", "--timeout", "120", "--workers", "2"]
+    expose:
+      - "5000"
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/spec')"]
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/logs
+      - /app/openfisca_logs
+    <<: [*restart-policy, *network]
+
+  # LexImpact Territoires API
+  leximpact:
+    image: ghcr.io/betagouv/leximpact-territoires:latest
+    init: true
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    expose:
+      - "3000"
+    healthcheck:
+      <<: *healthcheck-defaults
+      start_period: 30s
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+    <<: [*restart-policy, *network, *security-defaults]
+
+  # PostgreSQL Database
+  db:
+    image: postgres:17-alpine
+    env_file: ../.env.preprod
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - dbdata_preprod:/var/lib/postgresql/data
+      - ./backups_preprod:/backups
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aides-simplifiees -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    <<: [*restart-policy, *network]
+
+  # Database Migration (runs once on deploy)
+  db-migrate:
+    image: ghcr.io/betagouv/aides-simplifiees-app:preprod
+    env_file: ../.env.preprod
+    environment:
+      <<: *app-env
+    command: ["node", "build/bin/console", "migration:run", "--force"]
+    depends_on:
+      db:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    <<: *network
+    restart: "no"
+
+  # Database Seeding (runs once on deploy)
+  db-seed:
+    image: ghcr.io/betagouv/aides-simplifiees-app:preprod
+    env_file: ../.env.preprod
+    environment:
+      <<: *app-env
+    command: ["node", "build/bin/console", "db:seed"]
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    security_opt:
+      - no-new-privileges:true
+    <<: *network
+    restart: "no"
+
+  # Automated Database Backup (daily, 7-day retention)
+  db-backup:
+    image: postgres:17-alpine
+    env_file: ../.env.preprod
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_DATABASE}
+      PGPASSWORD: ${DB_PASSWORD}
+    volumes:
+      - dbdata_preprod:/var/lib/postgresql/data:ro
+      - ./backups_preprod:/backups
+    command: >
+      sh -c "
+        echo 'Starting automated backup service...'
+        while true; do
+          echo 'Creating database backup...'
+          pg_dump -h db -U $$POSTGRES_USER -d $$POSTGRES_DB > /backups/backup_$$(date +%Y%m%d_%H%M%S).sql
+          if [ $$? -eq 0 ]; then
+            echo 'Backup created successfully'
+          else
+            echo 'Backup failed'
+          fi
+          echo 'Cleaning old backups (>7 days)...'
+          find /backups -name '*.sql' -mtime +7 -delete
+          echo 'Next backup in 24 hours...'
+          sleep 86400
+        done
+      "
+    depends_on:
+      db:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    <<: [*restart-policy, *network]

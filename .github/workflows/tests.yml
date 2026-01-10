@@ -62,6 +62,7 @@ jobs:
           DB_DATABASE: postgres
           APP_NAME: Aides simplifiées
           PUBLIC_APP_URL: http://localhost:3333
+          APP_ENV: test
           ADMIN_PASSWORD: change-me
           ADMIN_LOGIN: change-me@example.com
           MATOMO_URL: https://stats.beta.gouv.fr/

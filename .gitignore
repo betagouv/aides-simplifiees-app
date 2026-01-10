@@ -5,9 +5,8 @@ tmp
 
 # Secrets
 .env
-.env.local
-.env.production.local
-.env.development.local
+.env.prod
+.env.preprod
 
 
 # Build tools specific

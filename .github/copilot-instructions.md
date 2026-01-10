@@ -6,40 +6,11 @@ description: Detailed Copilot instructions for aides-simplifiees-app
 
 > **Note**: For a quick checklist, see `.github/copilot-critical-rules.md`
 
-## Project Overview
+## Context & Architecture
 
-**Aides Simplifiées** is a platform for simulating eligibility for multiple financial aids. The application uses a modern stack with AdonisJS for the backend and Vue.js/Inertia.js for the frontend.
+**MANDATORY**: Before starting any task, read `docs/architecture.md` for the full project overview, technology stack, and global architecture.
 
-### Technology Stack
-
-- **Backend**: AdonisJS v6 (TypeScript)
-  - Full-stack Node.js framework with MVC structure
-  - Lucid ORM for PostgreSQL
-  - Built-in authentication system
-  - Middleware for request handling
-
-- **Frontend**: Vue.js 3 + Inertia.js
-  - Inertia.js: framework for building SPAs with server-side rendering
-  - VueDsfr: Vue implementation of the French State Design System
-  - Vue 3 Composition API
-  - Strict TypeScript
-
-- **Build Tools**:
-  - Vite: bundler and development server
-  - Multi-build configuration (main app + iframe integration)
-
-- **Database**: PostgreSQL
-  - Migrations with Lucid
-  - Seeders for test data
-
-- **Testing**:
-  - Japa: AdonisJS test framework
-  - E2E tests with Playwright
-  - Accessibility tests (RGAA 4.1)
-
-- **Calculation Engine**: Publicodes
-  - Calculation rules in `publicodes/`
-  - Form generation with `@publicodes/forms`
+For domain-specific details, refer to the documents listed in `docs/architecture.md`.
 
 ## Work Workflows
 
@@ -51,13 +22,13 @@ For small changes:
 2. Read necessary context
 3. Make the modifications
 4. Run relevant tests
-5. Update `.llm.txt` documentation (after user validation if bug fix)
+5. Update `.md` documentation (after user validation if bug fix)
 
 ### 2. Plan-First Workflow (4+ files)
 
 For large changes, STOP and plan first:
 
-1. **Create a plan file** `.plan.llm.txt` in the appropriate folder
+1. **Create a plan file** `.plan.md` in the appropriate folder
 2. Analyze architecture and dependencies
 3. Document objectives and steps:
    - Context and problem description
@@ -70,8 +41,8 @@ For large changes, STOP and plan first:
    - Follow the documented steps
    - Mark completed tasks in the plan file
    - Run tests after each phase
-6. Update the `.plan.llm.txt` with completion status
-7. Update affected `.llm.txt` files (after user validation)
+6. Update the `.plan.md` with completion status
+7. Update affected `.md` files (after user validation)
 
 **Why plan first for 4+ files?**
 - Reduces errors and rework
@@ -79,51 +50,26 @@ For large changes, STOP and plan first:
 - Makes implementation more efficient
 - Provides clear tracking of progress
 
-## LLM Documentation Structure
+## Documentation Structure
 
 ### Main Architecture File
 
-`docs/architecture.llm.txt`: Application overview
+`docs/architecture.md`: Application overview. **Read this first.**
 
-- Global architecture (backend/frontend)
-- Main data flows
-- Patterns and conventions
-- External integrations
+### Code Conventions File
 
-### Domain-Specific Files
+(Removed)
 
-Create `.llm.txt` files to document:
+### Specific Documentation Files
 
-- **Controllers**: `app/controllers/<domain>/<name>.llm.txt`
-  - Controller responsibilities
-  - Routes handled
-  - Data validation
-  - Service interactions
-
-- **Services**: `app/services/<name>.llm.txt`
-  - Encapsulated business logic
-  - Dependencies
-  - Main methods
-
-- **Models**: `app/models/<name>.llm.txt`
-  - Relationships with other models
-  - Scopes and computed properties
-  - Hooks and events
-
-- **Inertia Pages**: `inertia/pages/<domain>/<name>.llm.txt`
-  - Vue components used
-  - Props received from controller
-  - Local state and composables
-  - User interactions
-
-- **Composables**: `inertia/composables/<name>.llm.txt`
-  - Reusable functionality
-  - Shared state
-  - Side effects
+Refer to the "Domain Documentation Map" in `docs/architecture.md` to find the relevant file for:
+- **Features**: `docs/features/*.md` (Simulations, Aides, Admin...)
+- **Technical**: `docs/technical/*.md` (Services, Views, Stores...)
+- **Integrations**: `docs/integrations/*.md` (Publicodes, OpenFisca...)
 
 ### Plan Files
 
-`<folder>/<name>.plan.llm.txt`: Tracking for large changes
+`<folder>/<name>.plan.md`: Tracking for large changes.
 
 Recommended structure:
 ```markdown
@@ -163,112 +109,11 @@ Created: YYYY-MM-DD
 
 ## Code Conventions
 
-### Backend (AdonisJS)
+**Key Stack Rules**:
+- **Backend**: AdonisJS v6 (TypeScript) with Lucid ORM & VineJS validation
 
-#### Controllers
-
-```typescript
-// app/controllers/<domain>/<name>_controller.ts
-import type { HttpContext } from '@adonisjs/core/http'
-
-export default class ExampleController {
-  // RESTful methods
-  async index({ inertia }: HttpContext) {
-    // Return an Inertia page
-    return inertia.render('Domain/Page', { data })
-  }
-
-  async store({ request, response }: HttpContext) {
-    // Create a resource
-  }
-}
-```
-
-#### Services
-
-```typescript
-// app/services/<name>_service.ts
-export default class ExampleService {
-  // Isolated business logic
-  async doSomething() {
-    // ...
-  }
-}
-```
-
-#### Models
-
-```typescript
-import type { HasMany } from '@adonisjs/lucid/types/relations'
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
-// app/models/<name>.ts
-import { DateTime } from 'luxon'
-
-export default class Example extends BaseModel {
-  @column({ isPrimary: true })
-  declare id: number
-
-  @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime
-
-  @hasMany(() => RelatedModel)
-  declare related: HasMany<typeof RelatedModel>
-}
-```
-
-### Frontend (Vue.js + Inertia)
-
-#### Inertia Pages
-
-```vue
-<!-- inertia/pages/<Domain>/<Name>.vue -->
-<script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
-import { computed } from 'vue'
-
-// Typed props
-interface Props {
-  data: SomeType
-}
-
-const props = defineProps<Props>()
-</script>
-
-<template>
-  <Head title="Page title" />
-  <div>
-    <!-- Content -->
-  </div>
-</template>
-```
-
-#### Components
-
-```vue
-<!-- inertia/components/<Name>.vue -->
-<script setup lang="ts">
-// Use DSFR via VueDsfr
-import { DsfrButton, DsfrInput } from '@gouvminint/vue-dsfr'
-
-interface Props {
-  modelValue: string
-}
-
-interface Emits {
-  (e: 'update:modelValue', value: string): void
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
-</script>
-
-<template>
-  <DsfrInput
-    :model-value="modelValue"
-    @update:model-value="emit('update:modelValue', $event)"
-  />
-</template>
-```
+- **Frontend**: Vue.js 3 + Inertia.js + DSFR (VueDsfr)
+- **Package Manager**: `pnpm` (Strict)
 
 ## Essential Commands
 
@@ -329,36 +174,6 @@ pnpm build:icons
 pnpm build:iframe-integration
 ```
 
-## Specific Patterns
-
-### Publicodes Form Handling
-
-Forms are dynamically generated from Publicodes rules:
-
-1. Rules defined in `publicodes/<name>/`
-2. Build with `pnpm build:publicodes`
-3. Render via `@publicodes/forms` in Vue components
-
-### DSFR Integration
-
-- Use VueDsfr components (`DsfrButton`, `DsfrInput`, etc.)
-- Respect RGAA accessibility guidelines
-- Test with `pnpm test:a11y`
-
-### State Management
-
-- Pinia stores in `inertia/stores/`
-- Composables for reusable logic in `inertia/composables/`
-- Inertia props for server data
-
-### Middleware
-
-Typical middleware order (see `start/kernel.ts`):
-1. CORS
-2. Session
-3. Auth (or Guest or Silent Auth depending on route)
-4. Admin (for admin routes)
-
 ## Code Review Checklist
 
 Before marking a task as complete:
@@ -369,13 +184,13 @@ Before marking a task as complete:
 - [ ] Accessibility is respected (if UI changes)
 - [ ] Imports use aliases (`#controllers/*`, etc.)
 - [ ] pnpm is used (never npm/yarn)
-- [ ] `.llm.txt` documentation is up to date (after user validation)
+- [ ] `.md` documentation is up to date (after user validation)
 - [ ] Static reference style is used (no temporal language)
 - [ ] Visual changes have been validated by user
 
 ## Documentation Style Guide
 
-### `.llm.txt` Files (Static Reference)
+### `.md` Files (Static Reference)
 
 **DO**:
 - Use present tense: "handles", "provides", "uses"
@@ -401,7 +216,7 @@ It uses session-based auth and supports OAuth providers.
 - `logout()`: Ends the user session
 ```
 
-### `.plan.llm.txt` Files (Historical Tracking)
+### `.plan.md` Files (Historical Tracking)
 
 **CAN** include:
 - Dates and timestamps

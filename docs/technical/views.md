@@ -130,6 +130,30 @@ Each admin section has `index.vue`, `create.vue`, `edit.vue` pattern.
 - `SchemeModal.vue`: Theme preference modal
 - `PartenairesSection.vue`: Partner logos
 - `MatomoOptOut.vue`: Analytics opt-out
+- `ErrorBoundary.vue`: Component error boundary
+
+### ErrorBoundary Component
+The `ErrorBoundary` component catches JavaScript errors in its child component tree, displays a fallback UI, and logs errors for tracking.
+
+**Props**:
+- `fallbackMessage?: string` - Custom error message (default: "Une erreur s'est produite.")
+- `showReload?: boolean` - Show reload button (default: true)
+
+**Usage**:
+```vue
+<template>
+  <ErrorBoundary fallback-message="Une erreur est survenue dans le formulaire">
+    <SimulationForm />
+  </ErrorBoundary>
+</template>
+```
+
+**Features**:
+- Captures errors via Vue's `onErrorCaptured` hook
+- Displays DSFR-styled error alert
+- Provides "Retry" button to reset error state
+- Optional "Reload page" button
+- Logs errors to console (ready for Sentry integration)
 
 ## Data Flow Patterns
 

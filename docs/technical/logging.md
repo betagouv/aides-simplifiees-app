@@ -45,3 +45,49 @@ Sensitive fields (`password`, `token`, `authorization`, `session`) are automatic
 ### Business Logging
 - `logBusinessEvent(event, context)`: Tracks domain-specific events.
 - `logFormSubmission(formType, ctx)`: Logs submission attempts.
+
+## Error Tracking
+
+### Overview
+The application provides an error tracking infrastructure that can integrate with external services like Sentry. The implementation uses a pluggable interface allowing easy replacement of the default console-based tracker.
+
+### Core Components
+- **Interface**: `ErrorTracker` (`shared/types/error_tracker.ts`)
+- **Backend Implementation**: `ConsoleErrorTracker` (same file)
+- **Frontend Utility**: `errorTracker` singleton (`inertia/utils/error_tracker.ts`)
+
+### ErrorTracker Interface
+```typescript
+interface ErrorTracker {
+  captureError(error: Error, context?: Record<string, unknown>): void
+  captureMessage(message: string, level: 'info' | 'warning' | 'error'): void
+  setUser(user: { id: string | number, email?: string }): void
+  clearUser(): void
+}
+```
+
+### Frontend Usage
+```typescript
+import { captureError, captureMessage } from '~/utils/error_tracker'
+
+// Capture an error with context
+captureError(error, { component: 'SimulationForm', action: 'submit' })
+
+// Capture a message
+captureMessage('User completed simulation', 'info')
+```
+
+### Sentry Integration
+The error tracker is designed for easy Sentry integration. Replace the `ConsoleErrorTracker` with a Sentry implementation when ready:
+
+```typescript
+// inertia/utils/error_tracker.ts
+import * as Sentry from '@sentry/vue'
+
+export const errorTracker: ErrorTracker = {
+  captureError: (error, context) => Sentry.captureException(error, { extra: context }),
+  captureMessage: (message, level) => Sentry.captureMessage(message, level),
+  setUser: (user) => Sentry.setUser(user),
+  clearUser: () => Sentry.setUser(null),
+}
+```

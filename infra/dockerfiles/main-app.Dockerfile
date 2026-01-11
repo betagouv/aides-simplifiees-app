@@ -1,4 +1,4 @@
-ARG NODE_IMAGE=node:22.16.0-alpine3.22
+ARG NODE_IMAGE=node:22.21.1-alpine3.22
 
 FROM $NODE_IMAGE AS base
 

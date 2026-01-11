@@ -2,6 +2,7 @@
   "name": "aides-simplifiees-app",
   "type": "module",
   "version": "1.7.1",
+  "packageManager": "pnpm@10.0.0",
   "license": "AGPL-3.0-only",
   "imports": {
     "#controllers/*": "./app/controllers/*.js",
@@ -21,6 +22,10 @@
     "#start/*": "./start/*.js",
     "#config/*": "./config/*.js",
     "#packages/*": "./packages/"
+  },
+  "engines": {
+    "node": "22.21.1",
+    "pnpm": ">=10.0.0"
   },
   "scripts": {
     "start": "node bin/server.js",

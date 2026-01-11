@@ -111,12 +111,12 @@ services:
     environment:
       <<: *app-env
     ports:
-      - "8081:3333"
+      - '8081:3333'
     volumes:
       - app_logs_preprod:/app/logs
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "node", "-e", "const http = require('http'); const options = { hostname: '127.0.0.1', port: 3333, path: '/health', headers: { 'x-monitoring-secret': process.env.MONITORING_SECRET || '' } }; http.get(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
+      test: [CMD, node, -e, "const http = require('http'); const options = { hostname: '127.0.0.1', port: 3333, path: '/health', headers: { 'x-monitoring-secret': process.env.MONITORING_SECRET || '' } }; http.get(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
     <<: [*restart-policy, *network, *security-defaults, *resources-app-preprod]
     depends_on:
       db:
@@ -132,12 +132,12 @@ services:
   openfisca:
     image: ghcr.io/betagouv/aides-calculatrice-back:latest
     init: true
-    command: ["openfisca", "serve", "--country-package", "openfisca_france", "--bind", "0.0.0.0:5000", "--timeout", "120", "--workers", "2"]
+    command: [openfisca, serve, --country-package, openfisca_france, --bind, '0.0.0.0:5000', --timeout, '120', --workers, '2']
     expose:
-      - "5000"
+      - '5000'
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/spec')"]
+      test: [CMD, python3, -c, "import urllib.request; urllib.request.urlopen('http://localhost:5000/spec')"]
     security_opt:
       - no-new-privileges:true
     read_only: true
@@ -155,11 +155,11 @@ services:
       NODE_ENV: production
       PORT: 3000
     expose:
-      - "3000"
+      - '3000'
     healthcheck:
       <<: *healthcheck-defaults
       start_period: 30s
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      test: [CMD, node, -e, "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
     <<: [*restart-policy, *network, *security-defaults, *resources-leximpact-preprod]
 
   # PostgreSQL Database
@@ -175,9 +175,9 @@ services:
       - dbdata_preprod:/var/lib/postgresql/data
       - ./backups_preprod:/backups
     expose:
-      - "5432"
+      - '5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aides-simplifiees -d postgres"]
+      test: [CMD-SHELL, pg_isready -U aides-simplifiees -d postgres]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -191,14 +191,14 @@ services:
     env_file: ../.env.preprod
     environment:
       <<: *app-env
-    command: ["node", "build/bin/console", "migration:run", "--force"]
+    command: [node, build/bin/console, 'migration:run', --force]
     depends_on:
       db:
         condition: service_healthy
     security_opt:
       - no-new-privileges:true
     <<: *network
-    restart: "no"
+    restart: no
 
   # Database Seeding (runs once on deploy)
   db-seed:
@@ -206,14 +206,14 @@ services:
     env_file: ../.env.preprod
     environment:
       <<: *app-env
-    command: ["node", "build/bin/console", "db:seed"]
+    command: [node, build/bin/console, 'db:seed']
     depends_on:
       db-migrate:
         condition: service_completed_successfully
     security_opt:
       - no-new-privileges:true
     <<: *network
-    restart: "no"
+    restart: no
 
   # Automated Database Backup (daily, 7-day retention)
   db-backup:

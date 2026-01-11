@@ -39,16 +39,16 @@ services:
       dockerfile: Dockerfile
     image: aides-calculatrice-back:dev
     init: true
-    command: ["openfisca", "serve", "--country-package", "openfisca_france", "--bind", "0.0.0.0:5000", "--timeout", "120"]
+    command: [openfisca, serve, --country-package, openfisca_france, --bind, '0.0.0.0:5000', --timeout, '120']
     ports:
-      - "5001:5000"  # Port 5001 (macOS uses 5000 for ControlCenter)
-      - "5678:5678"  # Python debugging
+      - '5001:5000' # Port 5001 (macOS uses 5000 for ControlCenter)
+      - '5678:5678' # Python debugging
     volumes:
       - ../../aides-calculatrice-back:/app
       - /app/__pycache__
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/spec')"]
+      test: [CMD, python3, -c, "import urllib.request; urllib.request.urlopen('http://localhost:5000/spec')"]
     <<: [*restart-policy, *network]
 
   # LexImpact Territoires API
@@ -63,11 +63,11 @@ services:
       NODE_ENV: production
       PORT: 3000
     ports:
-      - "3000:3000"  # Direct access for local main-app
+      - '3000:3000' # Direct access for local main-app
     healthcheck:
       <<: *healthcheck-defaults
       start_period: 30s
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      test: [CMD, node, -e, "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
     <<: [*restart-policy, *network]
 
   # PostgreSQL Database
@@ -83,9 +83,9 @@ services:
       - dbdata_dev:/var/lib/postgresql/data
       - ./backups_dev:/backups
     ports:
-      - "5432:5432"  # Direct access for local main-app
+      - '5432:5432' # Direct access for local main-app
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aides-simplifiees -d postgres"]
+      test: [CMD-SHELL, pg_isready -U aides-simplifiees -d postgres]
       interval: 10s
       timeout: 5s
       retries: 5

@@ -22,6 +22,12 @@ export default antfu(
     }
   },
   {
+    files: ['**/*.ts'],
+    rules: {
+      '@unicorn/filename-case': ['error', { case: 'snakeCase', ignore: ['\\.md$'] }],
+    }
+  },
+  {
     files: ['**/*.vue'],
     rules: {
       'vue/max-attributes-per-line': [

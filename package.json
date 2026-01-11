@@ -25,7 +25,7 @@
   "scripts": {
     "start": "node bin/server.js",
     "dev": "node ace serve --hmr",
-    "build": "node ace build --ignore-ts-errors",
+    "build": "node ace build",
     "prepare": "husky",
     "migrate": "node ace migration:run",
     "seed": "node ace db:seed",

@@ -6,7 +6,7 @@ import type { SharedProps } from '@adonisjs/inertia/types'
 import type { DefineComponent } from 'vue'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import VueDsfr from '@gouvminint/vue-dsfr'
-import { addCollection } from '@iconify/vue'
+import { addCollection, setCustomIconLoader } from '@iconify/vue'
 import { createInertiaApp, usePage } from '@inertiajs/vue3'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
@@ -76,6 +76,15 @@ createInertiaApp({
     for (const collection of collections) {
       addCollection(collection)
     }
+
+    // Set custom loader to catch missing icons and prevent API fetching
+    // This will throw an error in development if an icon is not bundled
+    setCustomIconLoader((name, prefix) => {
+      const errorMessage = `[Missing Icon] Icon "${prefix}:${name}" is not bundled. Run "pnpm detect:icons && pnpm build:icons" to bundle it.`
+      console.error(errorMessage)
+      // Return null to prevent API fetch, icon will not render
+      return null
+    }, 'ri')
 
     // Replace RouterLink with a custom component that uses Inertia's Link
     app.component('RouterLink', RouterLink)

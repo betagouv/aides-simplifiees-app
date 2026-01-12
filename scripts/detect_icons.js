@@ -15,6 +15,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { promisify } from 'node:util'
+import { BuildLogger } from './build_logger.js'
+
+const logger = new BuildLogger('icons')
 
 const readdir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)
@@ -115,6 +118,15 @@ async function getBundledIcons() {
 }
 
 /**
+ * Write detected icons to registry file
+ */
+function writeIconRegistry(sortedIcons) {
+  const registryPath = path.resolve(__dirname, 'detected_icons.json')
+  fs.writeFileSync(registryPath, JSON.stringify(sortedIcons, null, 2))
+  return registryPath
+}
+
+/**
  * Main function to scan directory and report icons
  */
 async function detectIcons(checkMode = false) {
@@ -155,34 +167,32 @@ async function detectIcons(checkMode = false) {
       const bundledIcons = await getBundledIcons()
 
       if (bundledIcons.size === 0) {
-        console.error('Error: No bundled icons found. Run "pnpm build:icons" first.')
+        logger.error('No bundled icons found. Run "pnpm build:icons" first.')
         process.exit(1)
       }
 
       const missingIcons = sortedIcons.filter(icon => !bundledIcons.has(icon))
 
       if (missingIcons.length > 0) {
-        console.error('Missing icons detected:')
+        logger.error(`Missing ${missingIcons.length} icon(s):`)
         for (const icon of missingIcons) {
           const usage = iconUsage.get(icon)
-          console.error(`  - ri:${icon} (${usage.join(', ')})`)
+          logger.outputBlock(`ri:${icon} used in ${usage.join(', ')}`)
         }
-        console.error('\nRun "pnpm detect:icons && pnpm build:icons" to fix this.')
+        logger.warning('Run "pnpm detect:icons && pnpm build:icons" to fix this.')
         process.exit(1)
       }
 
-      console.log(`All ${sortedIcons.length} icons are properly bundled.`)
+      logger.success(`All ${sortedIcons.length} icons are properly bundled`)
     }
     else {
-      // Output icons list for build_icons_collections.js
-      console.log(`Found ${sortedIcons.length} icons:`)
-      console.log(`const riIconNames = [`)
-      console.log(`  '${sortedIcons.join('\',\n  \'')}',`)
-      console.log(`]`)
+      // Write to registry file and output summary
+      writeIconRegistry(sortedIcons)
+      logger.success(`Detected ${sortedIcons.length} icons -> scripts/detected_icons.json`)
     }
   }
   catch (error) {
-    console.error('Error scanning files:', error)
+    logger.error(`Error scanning files: ${error.message}`)
     process.exit(1)
   }
 }

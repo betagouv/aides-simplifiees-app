@@ -14,6 +14,7 @@ import { createSSRApp, h } from 'vue'
 import VueMatomo from 'vue-matomo'
 import RouterLink from '~/components/RouterLink.vue'
 import collections from '~/icon_collections'
+import { captureMessage } from '~/utils/error_tracker'
 import { getLayout } from './shared'
 import '@gouvfr/dsfr/dist/core/core.main.min.css'
 import '@gouvfr/dsfr/dist/component/component.main.min.css'
@@ -78,11 +79,8 @@ createInertiaApp({
     }
 
     // Set custom loader to catch missing icons and prevent API fetching
-    // This will throw an error in development if an icon is not bundled
     setCustomIconLoader((name, prefix) => {
-      const errorMessage = `[Missing Icon] Icon "${prefix}:${name}" is not bundled. Run "pnpm detect:icons && pnpm build:icons" to bundle it.`
-      console.error(errorMessage)
-      // Return null to prevent API fetch, icon will not render
+      captureMessage(`Missing icon "${prefix}:${name}". Run "pnpm detect:icons && pnpm build:icons"`, 'warning')
       return null
     }, 'ri')
 

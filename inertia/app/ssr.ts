@@ -7,6 +7,7 @@ import { createPinia } from 'pinia'
 import { createSSRApp, h } from 'vue'
 import RouterLink from '~/components/RouterLink.vue'
 import collections from '~/icon_collections'
+import { captureMessage } from '~/utils/error_tracker'
 import { getLayout } from './shared'
 
 // Type kept as any: Inertia's page prop type is complex and varies per route
@@ -36,10 +37,8 @@ export default function render(page: any) {
       }
 
       // Set custom loader to catch missing icons and prevent API fetching
-      // This will log an error if an icon is not bundled
       setCustomIconLoader((name, prefix) => {
-        const errorMessage = `[Missing Icon] Icon "${prefix}:${name}" is not bundled. Run "pnpm detect:icons && pnpm build:icons" to bundle it.`
-        console.error(errorMessage)
+        captureMessage(`Missing icon "${prefix}:${name}". Run "pnpm detect:icons && pnpm build:icons"`, 'warning')
         return null
       }, 'ri')
 

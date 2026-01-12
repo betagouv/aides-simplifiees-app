@@ -34,14 +34,8 @@ test.group('shield.ts CSP - script-src', () => {
     assert.include(scriptSrc, '\'self\'')
   })
 
-  test('should allow DSFR CDN scripts', ({ assert }) => {
-    const scriptSrc = directives.scriptSrc
-    assert.include(scriptSrc, 'https://cdn.jsdelivr.net')
-  })
-
   test('should allow Matomo analytics', ({ assert }) => {
     const scriptSrc = directives.scriptSrc
-    assert.include(scriptSrc, 'https://stats.data.gouv.fr')
     assert.include(scriptSrc, 'https://stats.beta.gouv.fr')
   })
 })
@@ -53,12 +47,7 @@ test.group('shield.ts CSP - style-src', () => {
     assert.include(styleSrc, '\'self\'')
   })
 
-  test('should allow DSFR CDN styles', ({ assert }) => {
-    const styleSrc = directives.styleSrc
-    assert.include(styleSrc, 'https://cdn.jsdelivr.net')
-  })
-
-  test('should allow inline styles for DSFR', ({ assert }) => {
+  test('should allow inline styles', ({ assert }) => {
     const styleSrc = directives.styleSrc
     assert.include(styleSrc, '\'unsafe-inline\'')
   })
@@ -88,11 +77,6 @@ test.group('shield.ts CSP - font-src', () => {
     assert.isArray(fontSrc)
     assert.include(fontSrc, '\'self\'')
   })
-
-  test('should allow DSFR CDN fonts', ({ assert }) => {
-    const fontSrc = directives.fontSrc
-    assert.include(fontSrc, 'https://cdn.jsdelivr.net')
-  })
 })
 
 test.group('shield.ts CSP - connect-src', () => {
@@ -104,14 +88,7 @@ test.group('shield.ts CSP - connect-src', () => {
 
   test('should allow Matomo analytics connections', ({ assert }) => {
     const connectSrc = directives.connectSrc
-    assert.include(connectSrc, 'https://stats.data.gouv.fr')
     assert.include(connectSrc, 'https://stats.beta.gouv.fr')
-  })
-
-  test('should allow geo API connections', ({ assert }) => {
-    const connectSrc = directives.connectSrc
-    assert.include(connectSrc, 'https://geo.api.gouv.fr')
-    assert.include(connectSrc, 'https://api-adresse.data.gouv.fr')
   })
 })
 

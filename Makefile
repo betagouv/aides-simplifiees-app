@@ -7,6 +7,7 @@ ENV ?= dev
 
 # Docker compose file selection
 COMPOSE_FILE := infra/docker-compose.$(ENV).yml
+OVERRIDE_FILE := infra/docker-compose.override.yml
 
 # Environment file and Database name selection
 ifeq ($(ENV), prod)
@@ -22,7 +23,11 @@ else
 endif
 
 # Docker compose command with flags
-COMPOSE_CMD := docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE)
+ifeq ($(wildcard $(OVERRIDE_FILE)),$(OVERRIDE_FILE))
+    COMPOSE_CMD := docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) -f $(OVERRIDE_FILE)
+else
+    COMPOSE_CMD := docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE)
+endif
 
 .PHONY: help dev prod preprod build up down logs status health clean
 

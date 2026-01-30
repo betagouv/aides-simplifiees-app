@@ -14,7 +14,8 @@ import { createSSRApp, h } from 'vue'
 import VueMatomo from 'vue-matomo'
 import RouterLink from '~/components/RouterLink.vue'
 import collections from '~/icon_collections'
-import { captureMessage } from '~/utils/error_tracker'
+import { captureMessage, resetErrorTracker } from '~/utils/error_tracker'
+import { initSentry } from '~/utils/sentry_tracker'
 import { getLayout } from './shared'
 import '@gouvfr/dsfr/dist/core/core.main.min.css'
 import '@gouvfr/dsfr/dist/component/component.main.min.css'
@@ -47,14 +48,26 @@ createInertiaApp({
     const pinia = createPinia()
     pinia.use(piniaPluginPersistedstate)
 
+    // Get config values from the page props
+    const initialPageProps = props.initialPage.props as Partial<SharedProps>
+    const appEnv = initialPageProps.appEnv ?? 'development'
+
+    // Initialize Sentry for error tracking (before other plugins)
+    const sentryDsn = initialPageProps.sentryDsn
+    if (sentryDsn) {
+      initSentry(app, {
+        dsn: sentryDsn,
+        environment: appEnv,
+      })
+      // Reset error tracker to use Sentry now that it's initialized
+      resetErrorTracker()
+    }
+
     // Initialize DSFR
     app.use(VueDsfr)
     app.use(pinia)
     app.use(plugin)
 
-    // Get config values from the page props
-    const initialPageProps = props.initialPage.props as Partial<SharedProps>
-    const appEnv = initialPageProps.appEnv ?? 'development'
     const matomoHost = initialPageProps.matomoUrl ?? null
     const matomoSiteId = initialPageProps.matomoSiteId
       ? Number.parseInt(initialPageProps.matomoSiteId, 10)
@@ -86,6 +99,17 @@ createInertiaApp({
 
     // Replace RouterLink with a custom component that uses Inertia's Link
     app.component('RouterLink', RouterLink)
+
+    // Global Vue error handler to capture all uncaught errors (including @click handlers)
+    app.config.errorHandler = (err, instance, info) => {
+      console.error('Vue error:', err, info)
+      if (err instanceof Error) {
+        import('~/utils/error_tracker').then(({ captureError }) => {
+          captureError(err, { component: instance?.$options?.name, info })
+        })
+      }
+    }
+
     app.mount(el)
   },
 })

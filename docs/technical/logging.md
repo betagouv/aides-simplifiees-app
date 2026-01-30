@@ -49,12 +49,14 @@ Sensitive fields (`password`, `token`, `authorization`, `session`) are automatic
 ## Error Tracking
 
 ### Overview
-The application provides an error tracking infrastructure that can integrate with external services like Sentry. The implementation uses a pluggable interface allowing easy replacement of the default console-based tracker.
+The application provides an error tracking infrastructure integrated with Sentry for production error monitoring. The implementation uses a pluggable interface that automatically selects the appropriate tracker based on environment.
 
 ### Core Components
 - **Interface**: `ErrorTracker` (`shared/types/error_tracker.ts`)
-- **Backend Implementation**: `ConsoleErrorTracker` (same file)
-- **Frontend Utility**: `errorTracker` singleton (`inertia/utils/error_tracker.ts`)
+- **Console Implementation**: `ConsoleErrorTracker` (same file) - used in development
+- **Sentry Implementation**: `SentryErrorTracker` (`inertia/utils/sentry_tracker.ts`) - used in production
+- **Frontend Utility**: `captureError`, `captureMessage` (`inertia/utils/error_tracker.ts`)
+- **Backend Integration**: `HttpExceptionHandler` (`app/exceptions/handler.ts`)
 
 ### ErrorTracker Interface
 ```typescript
@@ -77,17 +79,33 @@ captureError(error, { component: 'SimulationForm', action: 'submit' })
 captureMessage('User completed simulation', 'info')
 ```
 
-### Sentry Integration
-The error tracker is designed for easy Sentry integration. Replace the `ConsoleErrorTracker` with a Sentry implementation when ready:
+### Sentry Configuration
+Sentry is automatically enabled when the `SENTRY_DSN` environment variable is set.
 
-```typescript
-// inertia/utils/error_tracker.ts
-import * as Sentry from '@sentry/vue'
+#### Environment Variables
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `SENTRY_DSN` | Sentry project DSN | Yes (for production) |
 
-export const errorTracker: ErrorTracker = {
-  captureError: (error, context) => Sentry.captureException(error, { extra: context }),
-  captureMessage: (message, level) => Sentry.captureMessage(message, level),
-  setUser: (user) => Sentry.setUser(user),
-  clearUser: () => Sentry.setUser(null),
-}
+#### Frontend Initialization
+Sentry is initialized in `inertia/app/app.ts` when the DSN is provided. The configuration includes:
+- Browser tracing integration for performance monitoring
+- Environment-based sample rates (10% in production, 100% in development)
+- Automatic filtering of sensitive headers (authorization, cookies)
+
+#### Backend Initialization
+The backend exception handler (`app/exceptions/handler.ts`) initializes Sentry when:
+- `SENTRY_DSN` is set
+- Application is running in production mode
+
+All unhandled exceptions are automatically captured with user context and request details.
+
+### Error Boundary
+The `ErrorBoundary` Vue component (`inertia/components/ErrorBoundary.vue`) captures component-level errors and reports them to Sentry automatically.
+
+```vue
+<ErrorBoundary fallback-message="Something went wrong">
+  <YourComponent />
+</ErrorBoundary>
 ```
+

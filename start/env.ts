@@ -9,6 +9,7 @@
 |
 */
 
+import process from 'node:process'
 import { Env } from '@adonisjs/core/env'
 
 // eslint-disable-next-line antfu/no-top-level-await
@@ -77,4 +78,13 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   MONITORING_SECRET: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for Sentry error tracking
+  |----------------------------------------------------------
+  */
+  SENTRY_DSN: process.env.APP_ENV === 'production' || process.env.APP_ENV === 'staging'
+    ? Env.schema.string()
+    : Env.schema.string.optional(),
 })

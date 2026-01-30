@@ -38,6 +38,7 @@ const shieldConfig = defineConfig({
       connectSrc: [
         '\'self\'',
         'https://stats.beta.gouv.fr', // Matomo analytics
+        'https://sentry.incubateur.net', // Sentry error tracking
         ...(isDevelopment
           ? [
               'ws://localhost:*', // Vite HMR websocket

@@ -45,6 +45,8 @@ FROM base AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules /app/node_modules
 COPY . .
+# Build publicodes packages before main build (required for vite bundling)
+RUN pnpm build:publicodes
 RUN --mount=type=cache,id=pnpm-store-build,target=/pnpm/store pnpm run build
 
 # Production stage

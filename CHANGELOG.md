@@ -1,5 +1,41 @@
 # CHANGELOG
 
+### 1.8.0
+- Fonctionnalités :
+  - Intégration de Sentry pour le suivi des erreurs et le monitoring
+  - Ajout d'une commande de synchronisation des statistiques depuis plusieurs sources
+  - Ajout d'un scheduler Docker pour la synchronisation automatique quotidienne des statistiques (02:00 UTC)
+  - Implémentation d'un loader d'icônes personnalisé pour éviter les appels API pour les icônes manquantes
+  - Ajout du type Result pour une gestion d'erreurs type-safe
+  - Ajout d'un utilitaire de suivi des erreurs frontend (ConsoleErrorTracker)
+  - Documentation de l'infrastructure de suivi des erreurs et du composant ErrorBoundary
+- Améliorations :
+  - Configuration CSP améliorée pour l'environnement de développement
+  - Mise à jour du processus de build des icônes avec un logging amélioré
+  - Mise à jour de Node.js vers la version 22.21.1
+  - Ajout de commandes Makefile pour la gestion des statistiques (stats-sync-logs, stats-sync-run, stats-sync-backfill)
+- Corrections :
+  - Correction du chemin d'import dans la configuration du test runner
+  - Génération d'emails uniques pour les utilisateurs de test pour éviter les conflits en exécution parallèle
+  - Suppression du flag ignore-ts-errors du script de build
+  - Résolution des erreurs TypeScript avec les déclarations auth et Vue module
+  - Amélioration de la clarté et de la structure des scripts de test
+  - Correction du build Docker : ajout de l'étape build:publicodes avant le build principal
+  - Correction du timeout des tests unitaires (2s → 10s) pour les opérations avec CSRF
+  - Correction du cache de l'action setup-publicodes (chemins incorrects)
+  - Suppression de la spécification de version pnpm dupliquée dans le workflow CI
+- Refactorisations :
+  - Suppression des tests CDN DSFR (script, style, fonts) de la configuration CSP
+  - Gestion du fichier docker-compose.override.yml dans le Makefile
+- Infrastructure :
+  - Optimisation du workflow Docker build avec cache GitHub Actions (partagé entre branches main/preprod)
+  - Amélioration du workflow Docker build avec support multi-plateforme et meilleur tagging
+  - Ajout de groupes de concurrence aux workflows GitHub Actions
+  - Ajout de timeouts aux jobs CI (15min tests, 30min build)
+  - Utilisation d'une image PostgreSQL versionnée (16-alpine) dans les tests CI
+- Tests :
+  - Ajout de tests unitaires pour les fonctionnalités de sécurité
+
 ### 1.7.1
 - Infrastructure :
   - Configuration des limites de ressources Docker par environnement via des variables d'environnement

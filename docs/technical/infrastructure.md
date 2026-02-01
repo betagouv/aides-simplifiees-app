@@ -88,6 +88,13 @@ make secrets
 - Git
 - Make
 
+### External Services Validation
+At startup (production/staging only), the application validates connectivity to external services:
+- **Matomo**: API authentication test
+- **OpenFisca**: Service availability check
+
+Validation failures log warnings to Sentry but do not block startup. See `start/external_services_validation.ts`.
+
 ## Docker Images
 
 We use specific scripts to build and push multi-architecture images (`amd64` and `arm64`) to the GitHub Container Registry.

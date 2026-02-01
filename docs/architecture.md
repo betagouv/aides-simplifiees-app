@@ -401,6 +401,7 @@ Always use these aliases for backend imports.
 - **State Management**: `docs/technical/stores.md`
 - **Infrastructure**: `docs/technical/infrastructure.md`
 - **Logging**: `docs/technical/logging.md`
+- **Analytics**: `docs/technical/matomo-analysis-consolidated.md`
 - **Events**: `docs/technical/events.md`
 - **Testing**: `docs/technical/testing.md`
 - **Database & Data Model**: `docs/technical/database.md`

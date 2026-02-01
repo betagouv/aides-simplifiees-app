@@ -50,7 +50,7 @@ Layouts wrap page content via `<slot />` mechanism.
 - `integrer-nos-simulateurs.vue`: Iframe integration guide
 - `contact.vue`: Contact form
 - `cookies.vue`: Cookie policy
-- `statistiques.vue`: Usage statistics
+- `statistiques.vue`: Usage statistics dashboard (multi-source, D3.js charts)
 
 **Simulator Pages** (`inertia/pages/simulateurs/`):
 - `index.vue`: Simulator catalog listing
@@ -120,6 +120,11 @@ Each admin section has `index.vue`, `create.vue`, `edit.vue` pattern.
 - Validation feedback
 - Rich text editors
 
+### Statistics Components (`inertia/components/stats/`)
+**Data Visualization**:
+- `SeriesToggle.vue`: Toggle visibility of chart series
+- `StatsSidebarContent.vue`: Date range and granularity controls
+
 ### Utility Components (`inertia/components/`)
 **Shared UI Elements**:
 - `DsfrLink.vue`: Inertia-aware links
@@ -154,6 +159,37 @@ The `ErrorBoundary` component catches JavaScript errors in its child component t
 - Provides "Retry" button to reset error state
 - Optional "Reload page" button
 - Logs errors to console (ready for Sentry integration)
+
+### Statistics Components (`inertia/components/stats/`)
+Components for the statistics dashboard visualization:
+
+**SeriesToggle.vue**:
+Allows users to toggle visibility of different data series in charts.
+- **Props**: `series: SeriesConfig[]`, `visibleSeries: string[]`
+- **Emits**: `update:visibleSeries`
+- **Features**: Checkbox toggles for each data series, grouped by source
+
+**StatsSidebarContent.vue**:
+Sidebar navigation for the statistics page with date range and granularity controls.
+- **Features**: Granularity selection (day/week/month/year), date range navigation
+
+### Statistics Page (`inertia/pages/static/statistiques.vue`)
+The statistics dashboard page provides visualization of survey completion metrics.
+
+**Features**:
+- Multi-source data display (form_submissions + Matomo)
+- Time series charts with D3.js
+- Configurable granularity (day, week, month, year)
+- Series visibility toggles
+- Data gap indicators for missing periods
+- Historical data context banner
+- Responsive sidebar layout
+
+**Data Flow**:
+1. Page receives aggregated statistics from `StatisticsController`
+2. `useStatisticsData` composable transforms data for chart rendering
+3. D3.js handles data grouping and aggregation
+4. Charts update reactively based on selected date range and visible series
 
 ## Data Flow Patterns
 

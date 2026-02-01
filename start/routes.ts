@@ -83,6 +83,14 @@ router
   .use(throttleMiddleware({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
 
 router
+  .get('/api/statistics/legacy', [StatisticsController, 'getStatisticsLegacy'])
+  .use(throttleMiddleware({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+
+router
+  .get('/api/statistics/compare', [StatisticsController, 'compareStatistics'])
+  .use(throttleMiddleware({ maxRequests: 10, windowMs: 60 * 1000 })) // 10 req/min (heavy operation)
+
+router
   .get('/api/autocomplete/communes', [GeoApiController, 'autocompleteCommunes'])
   .use(throttleMiddleware({ maxRequests: 60, windowMs: 60 * 1000 })) // 60 req/min
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { DsfrAlert, DsfrButton } from '@gouvminint/vue-dsfr'
 import { onErrorCaptured, ref } from 'vue'
+import { captureError } from '~/utils/error_tracker'
 
 interface Props {
   fallbackMessage?: string
@@ -17,7 +18,8 @@ const error = ref<Error | null>(null)
 onErrorCaptured((err) => {
   error.value = err
   console.error('Component error caught by ErrorBoundary:', err)
-  // TODO: Send to error tracking service (Sentry) when implemented
+  // Send to Sentry (or console in development)
+  captureError(err, { component: 'ErrorBoundary', source: 'onErrorCaptured' })
   return false // Prevent propagation
 })
 

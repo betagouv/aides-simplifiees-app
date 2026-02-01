@@ -13,6 +13,7 @@ export const sharedEnvConfig = {
   publicAppUrl: env.get('PUBLIC_APP_URL'),
   matomoUrl: env.get('MATOMO_URL'),
   matomoSiteId: env.get('MATOMO_SITE_ID'),
+  sentryDsn: env.get('SENTRY_DSN'),
 } as const
 
 /**

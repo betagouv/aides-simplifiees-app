@@ -1,19 +1,17 @@
-import type { ErrorTracker } from '~/../../shared/types/error_tracker'
-import { ConsoleErrorTracker } from '~/../../shared/types/error_tracker'
+import { captureError, captureMessage, getErrorTrackerInstance } from '~/utils/error_tracker'
 
 /**
  * Frontend error tracker instance
- * Currently uses console-based tracking
- * TODO: Replace with Sentry or other service in production
+ * Uses Sentry in production, console-based tracking in development
  */
-export const errorTracker: ErrorTracker = new ConsoleErrorTracker()
+export { getErrorTrackerInstance as getErrorTracker }
 
 /**
  * Initialize error tracking with user context
  */
 export function initErrorTracking(user?: { id: string | number, email?: string }) {
   if (user) {
-    errorTracker.setUser(user)
+    getErrorTrackerInstance().setUser(user)
   }
 }
 
@@ -21,12 +19,12 @@ export function initErrorTracking(user?: { id: string | number, email?: string }
  * Track a caught error with context
  */
 export function trackError(error: Error, context?: Record<string, unknown>) {
-  errorTracker.captureError(error, context)
+  captureError(error, context)
 }
 
 /**
  * Track a message
  */
 export function trackMessage(message: string, level: 'info' | 'warning' | 'error' = 'info') {
-  errorTracker.captureMessage(message, level)
+  captureMessage(message, level)
 }

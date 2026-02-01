@@ -6,12 +6,18 @@ permissions:
 on:
   pull_request:
     branches: [main, preprod]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       postgres:
-        image: postgres
+        image: postgres:16-alpine
         ports:
           - 5432:5432
         env:

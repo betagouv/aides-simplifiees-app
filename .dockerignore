@@ -60,11 +60,7 @@ package-lock.json
 .nvmrc
 .npmrc
 
-# Scripts that are only needed during build
-scripts/build_icons_collections.js
-scripts/build_iframe_integration.js
-scripts/build_publicodes.js
-scripts/detect_icons.js
+# Note: scripts/ folder is kept as some scripts are needed during Docker build
 
 # Keep these for production:
 # package.json - needed for dependencies

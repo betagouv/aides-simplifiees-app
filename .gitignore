@@ -40,3 +40,4 @@ coverage
 *.plan.llm.txt
 
 docker-compose.override.yml
+replications

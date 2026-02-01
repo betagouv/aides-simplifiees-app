@@ -29,7 +29,6 @@
   - Gestion du fichier docker-compose.override.yml dans le Makefile
 - Infrastructure :
   - Optimisation du workflow Docker build avec cache GitHub Actions (partagé entre branches main/preprod)
-  - Amélioration du workflow Docker build avec support multi-plateforme et meilleur tagging
   - Ajout de groupes de concurrence aux workflows GitHub Actions
   - Ajout de timeouts aux jobs CI (15min tests, 30min build)
   - Utilisation d'une image PostgreSQL versionnée (16-alpine) dans les tests CI

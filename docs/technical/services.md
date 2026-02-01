@@ -27,6 +27,11 @@ Server-side Matomo Analytics data extraction with bot traffic filtering.
 Manages statistics snapshots from multiple data providers (form_submissions, Matomo).
 - **Responsibilities**: Generating daily snapshots, aggregating by granularity, backfilling.
 - **CLI Command**: `node ace statistics:sync`
+- **Scheduling**: Automated via `statistics-sync` Docker service (runs daily at 02:00 UTC)
+- **Makefile Commands**:
+  - `make stats-sync-logs ENV=prod` - View sync logs
+  - `make stats-sync-run ENV=prod` - Run sync manually
+  - `make stats-sync-backfill ENV=prod` - Backfill historical data
 
 ## Frontend Services (`inertia/services/`)
 

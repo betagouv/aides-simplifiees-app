@@ -120,6 +120,15 @@ leximpact-logs: ## Show LexImpact logs only
 db-logs: ## Show database logs only
 	@$(COMPOSE_CMD) logs -f db
 
+stats-sync-logs: ## Show statistics-sync logs only
+	@$(COMPOSE_CMD) logs -f statistics-sync
+
+stats-sync-run: ## Run statistics sync manually
+	@$(COMPOSE_CMD) run --rm statistics-sync node build/bin/console statistics:sync
+
+stats-sync-backfill: ## Backfill all historical statistics
+	@$(COMPOSE_CMD) run --rm statistics-sync node build/bin/console statistics:sync --backfill
+
 main-app-shell: ## Open shell in main-app container
 	@$(COMPOSE_CMD) exec main-app sh
 

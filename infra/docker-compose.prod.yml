@@ -85,6 +85,16 @@ x-resources-backup: &resources-backup
         cpus: '${BACKUP_CPU_RESERVATION:-0.1}'
         memory: ${BACKUP_MEM_RESERVATION:-32M}
 
+x-resources-stats-sync: &resources-stats-sync
+  deploy:
+    resources:
+      limits:
+        cpus: '${STATS_SYNC_CPU_LIMIT:-0.5}'
+        memory: ${STATS_SYNC_MEM_LIMIT:-256M}
+      reservations:
+        cpus: '${STATS_SYNC_CPU_RESERVATION:-0.1}'
+        memory: ${STATS_SYNC_MEM_RESERVATION:-64M}
+
 # Volumes
 
 volumes:
@@ -250,3 +260,40 @@ services:
     security_opt:
       - no-new-privileges:true
     <<: [*restart-policy, *network, *resources-backup]
+
+  # Automated Statistics Sync (daily at 02:00 UTC)
+  statistics-sync:
+    image: ghcr.io/betagouv/aides-simplifiees-app:latest
+    init: true
+    env_file: ../.env.prod
+    environment:
+      <<: *app-env
+    command: >
+      sh -c "
+        echo 'Starting automated statistics sync service...'
+        echo 'Waiting until 02:00 UTC for first sync...'
+        while true; do
+          CURRENT_HOUR=$$(date -u +%H)
+          if [ \"$$CURRENT_HOUR\" = \"02\" ]; then
+            echo \"[$$(date -u +%Y-%m-%dT%H:%M:%SZ)] Running statistics sync...\"
+            node build/bin/console statistics:sync
+            if [ $$? -eq 0 ]; then
+              echo \"[$$(date -u +%Y-%m-%dT%H:%M:%SZ)] Statistics sync completed successfully\"
+            else
+              echo \"[$$(date -u +%Y-%m-%dT%H:%M:%SZ)] Statistics sync failed\"
+            fi
+            echo 'Next sync in ~24 hours...'
+            sleep 82800
+          else
+            sleep 3600
+          fi
+        done
+      "
+    depends_on:
+      db:
+        condition: service_healthy
+      main-app:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    <<: [*restart-policy, *network, *resources-stats-sync]

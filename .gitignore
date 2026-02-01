@@ -38,3 +38,6 @@ coverage
 
 # LLM planning documents
 *.plan.llm.txt
+
+docker-compose.override.yml
+replications

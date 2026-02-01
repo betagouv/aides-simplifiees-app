@@ -8,21 +8,26 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Target environment'
+        description: Target environment
         required: true
-        default: 'preprod'
+        default: preprod
         type: choice
         options:
           - preprod
           - prod
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
@@ -41,21 +46,48 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Determine image tag
-        id: tag
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+
+      # Tagging philosophy from docker-build-app.sh:
+      # - main branch: version from package.json + "latest" tag
+      # - preprod branch: "preprod" tag
+      # - other: commit SHA tag
+      - name: Get version from package.json
+        id: package-version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Determine tags
+        id: tags
         run: |
           if [ "${{ github.ref_name }}" = "main" ]; then
-            echo "tag=version" >> $GITHUB_OUTPUT
+            echo "tags=${{ env.REGISTRY_IMAGE }}:${{ steps.package-version.outputs.version }},${{ env.REGISTRY_IMAGE }}:latest" >> $GITHUB_OUTPUT
           elif [ "${{ github.ref_name }}" = "preprod" ]; then
-            echo "tag=preprod" >> $GITHUB_OUTPUT
+            echo "tags=${{ env.REGISTRY_IMAGE }}:preprod" >> $GITHUB_OUTPUT
           else
-            echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "tags=${{ env.REGISTRY_IMAGE }}:${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build and push Docker image
-        run: |
-          # Use coherent build script from infra directory
-          ./infra/scripts/docker-build-app.sh ${{ steps.tag.outputs.tag }}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/dockerfiles/main-app.Dockerfile
+          target: production
+          platforms: linux/amd64
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          cache-from: |
+            type=gha,scope=build-${{ github.ref_name }}
+            type=gha,scope=build-main
+            type=gha,scope=build-preprod
+          cache-to: type=gha,mode=max,scope=build-${{ github.ref_name }}
+          build-args: |
+            NODE_IMAGE=node:22.21.1-alpine3.22
 
   notify-deploy:
     needs: build-and-push
@@ -63,10 +95,26 @@ jobs:
     if: github.ref_name == 'main' || github.ref_name == 'preprod'
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from package.json
+        if: github.ref_name == 'main'
+        id: package-version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
       - name: Deployment notification
         run: |
-          echo "🚀 New image pushed: ghcr.io/${{ github.repository }}:${{ github.ref_name == 'main' && 'latest' || 'preprod' }}"
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "🚀 New images pushed:"
+            echo "  - ${{ env.REGISTRY_IMAGE }}:${{ steps.package-version.outputs.version }}"
+            echo "  - ${{ env.REGISTRY_IMAGE }}:latest"
+          else
+            echo "🚀 New image pushed: ${{ env.REGISTRY_IMAGE }}:preprod"
+          fi
           echo ""
           echo "To deploy on server:"
-          echo "  cd /path/to/aides-simplifiees-app/infra"
+          echo "  cd /path/to/aides-simplifiees-app"
           echo "  make ${{ github.ref_name == 'main' && 'prod' || 'preprod' }}"
+
+

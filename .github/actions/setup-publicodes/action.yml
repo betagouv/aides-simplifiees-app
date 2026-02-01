@@ -7,9 +7,9 @@ runs:
       uses: actions/cache@v4
       with:
         path: |
-          publicodes/*/dist
-          publicodes/*/node_modules
-        key: publicodes-${{ hashFiles('publicodes/**/package.json', 'publicodes/**/pnpm-lock.yaml') }}
+          packages/*/publicodes-build
+          packages/*/node_modules
+        key: publicodes-${{ hashFiles('packages/**/package.json', 'packages/**/src/**', 'pnpm-lock.yaml') }}
         restore-keys: |
           publicodes-
     - name: Build publicodes

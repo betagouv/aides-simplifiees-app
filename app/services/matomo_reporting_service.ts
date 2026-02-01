@@ -29,18 +29,112 @@ export interface TimePeriod {
   end: string // YYYY-MM-DD format
 }
 
+/**
+ * Data quality monitoring configuration
+ * Bot detection thresholds and anomaly detection settings
+ */
+export interface DataQualityConfig {
+  /** Maximum events/visit ratio before flagging as bot (default: 10) */
+  maxEventsPerVisit: number
+  /** Volume spike multiplier vs 7-day baseline to trigger alert (default: 3) */
+  volumeSpikeMultiplier: number
+  /** Minimum visits to consider data statistically significant (default: 5) */
+  minVisitsThreshold: number
+}
+
+/**
+ * Data quality alert structure
+ */
+export interface DataQualityAlert {
+  type: 'bot_traffic' | 'volume_spike' | 'unknown_action' | 'high_unknown_sources'
+  severity: 'warning' | 'critical'
+  message: string
+  details: Record<string, any>
+  timestamp: Date
+}
+
+const DEFAULT_DATA_QUALITY_CONFIG: DataQualityConfig = {
+  maxEventsPerVisit: 10,
+  volumeSpikeMultiplier: 3,
+  minVisitsThreshold: 5,
+}
+
 export default class MatomoReportingService {
   private loggingService: LoggingService
   private config: MatomoConfig
   private readonly requestTimeout = 5000
+  private dataQualityConfig: DataQualityConfig
+  private dataQualityAlerts: DataQualityAlert[] = []
 
   get endpoint(): string {
     return `${this.config.url}/index.php`
   }
 
-  constructor(config: MatomoConfig) {
+  constructor(config: MatomoConfig, dataQualityConfig?: Partial<DataQualityConfig>) {
     this.loggingService = new LoggingService(logger)
     this.config = config
+    this.dataQualityConfig = { ...DEFAULT_DATA_QUALITY_CONFIG, ...dataQualityConfig }
+  }
+
+  /**
+   * Get current data quality alerts
+   */
+  getDataQualityAlerts(): DataQualityAlert[] {
+    return [...this.dataQualityAlerts]
+  }
+
+  /**
+   * Clear all data quality alerts
+   */
+  clearDataQualityAlerts(): void {
+    this.dataQualityAlerts = []
+  }
+
+  /**
+   * Check if visit appears to be bot traffic based on events/visit ratio
+   * Normal users have 1-3 events/visit; bots often have 10+
+   */
+  private isLikelyBotTraffic(eventsPerVisit: number): boolean {
+    return eventsPerVisit > this.dataQualityConfig.maxEventsPerVisit
+  }
+
+  /**
+   * Add a data quality alert
+   */
+  private addDataQualityAlert(alert: Omit<DataQualityAlert, 'timestamp'>): void {
+    const fullAlert: DataQualityAlert = {
+      ...alert,
+      timestamp: new Date(),
+    }
+    this.dataQualityAlerts.push(fullAlert)
+
+    // Also log for monitoring
+    this.loggingService.logWarning(`Data quality alert: ${alert.type}`, undefined, {
+      alert: fullAlert,
+    })
+  }
+
+  /**
+   * Check volume against baseline and alert if spike detected
+   */
+  checkVolumeSpike(currentCount: number, baselineAverage: number, context: Record<string, any>): boolean {
+    if (baselineAverage === 0) {
+      return false
+    }
+
+    const ratio = currentCount / baselineAverage
+    const isSpike = ratio >= this.dataQualityConfig.volumeSpikeMultiplier
+
+    if (isSpike) {
+      this.addDataQualityAlert({
+        type: 'volume_spike',
+        severity: ratio >= 5 ? 'critical' : 'warning',
+        message: `Volume ${ratio.toFixed(1)}x baseline detected`,
+        details: { currentCount, baselineAverage, ratio, ...context },
+      })
+    }
+
+    return isSpike
   }
 
   async fetchEventsCount(
@@ -107,13 +201,17 @@ export default class MatomoReportingService {
             format: 'JSON',
             expanded: '1',
             flat: '1',
-            secondaryDimension: 'eventName',
+            // NOTE: Removed secondaryDimension to avoid data duplication
+            // Previously used 'eventName' which caused results to be split by source domain,
+            // leading to 100+ entries being summed together and massive over-counting
             showMetadata: '0',
           }
 
           // Use filter_column and filter_pattern to efficiently filter at API level
+          // Event labels are formatted as: "Action - [simulator-slug][source-domain]"
+          // Use strict pattern to exclude SQL injection attempts and other malformed event names
           Object.assign(baseParams, {
-            filter_pattern: `^${action} - \\[${simulateurSlug.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}\\]`,
+            filter_pattern: `^${action} - \\[${simulateurSlug}\\]`,
             filter_column: 'label',
           })
 
@@ -207,6 +305,17 @@ export default class MatomoReportingService {
 
           const periodData = bulkResults[resultIndex]
           if (Array.isArray(periodData)) {
+            // Log first item for debugging
+            if (periodData.length > 0) {
+              this.loggingService.logDebug('Bulk result item sample', {
+                action,
+                simulateurSlug,
+                period: `${period.start}-${period.end}`,
+                firstItem: JSON.stringify(periodData[0]),
+                itemCount: periodData.length,
+              })
+            }
+
             // Process the data for this specific action/simulator/period combination
             const count = this.extractCountFromActionData(periodData, action, simulateurSlug)
 
@@ -251,39 +360,130 @@ export default class MatomoReportingService {
   }
 
   /**
-   * Extract simulator ID from event name (e.g., "[simulator-id][source]" -> "simulator-id")
+   * Extract simulator ID from event label (e.g., "Start - [simulator-id][source]" -> "simulator-id")
+   * Handles both bulk API format (label field) and single API format (Events_EventName field)
    */
-  private extractSimulatorSlug(eventName?: string): string | null {
-    if (!eventName) {
+  private extractSimulatorSlug(eventLabel?: string): string | null {
+    if (!eventLabel) {
       return null
     }
 
-    const match = eventName.match(/\[(.*?)\]/)
+    // Match first bracketed value: "Action - [simulator-slug][source]" -> "simulator-slug"
+    const match = eventLabel.match(/\[(.*?)\]/)
     return match ? match[1] : null
   }
 
   /**
    * Extract count from action data for a specific simulator and action
+   *
+   * IMPORTANT: Matomo tracks events from multiple source domains:
+   * - Old server IP (e.g., 163.172.76.91) - former production infrastructure
+   * - Current domain (e.g., monlogementetudiant.beta.gouv.fr)
+   * - Generic referrers (e.g., [website]) - missing referrer headers
+   * - Various test/development domains
+   *
+   * All these sources represent LEGITIMATE traffic that must be SUMMED together,
+   * not treated as duplicates. Events split by source domain during migrations
+   * or across infrastructure are the SAME simulator accessed from different origins.
+   *
+   * This method:
+   * 1. Validates labels match strict format: "Action - [simulator][source]"
+   * 2. Filters out attack attempts (SQL injection, path traversal)
+   * 3. Sums events across all legitimate source domains
    */
   private extractCountFromActionData(actionData: MatomoEventData[], action: string, simulateurSlug: string): number {
-    let totalCount = 0
+    const matchedEvents: Array<{ label: string, count: number }> = []
+
+    // Strict regex to match only legitimate event labels: "Action - [simulator-slug][source]"
+    // This excludes SQL injection and path traversal attempts like:
+    // - "Start$(expr...) - [simulator][source]"
+    // - "../../../etc/passwd[simulator][source]Survey - Start"
+    const validLabelPattern = new RegExp(`^${action} - \\[${simulateurSlug}\\]\\[.+\\]$`)
 
     for (const event of actionData) {
-      const extractedSimulatorId = this.extractSimulatorSlug(event.Events_EventName)
+      // Bulk API uses 'label' field, single API uses 'Events_EventName'
+      const eventLabel = (event as any).label ?? event.Events_EventName
+
+      // Strict validation: only accept labels matching exact format
+      if (!eventLabel || !validLabelPattern.test(eventLabel)) {
+        continue
+      }
+
+      const extractedSimulatorId = this.extractSimulatorSlug(eventLabel)
+
+      // Double-check simulator ID matches (should always pass if regex matched)
       if (extractedSimulatorId === simulateurSlug) {
         // Use appropriate count based on action type
+        // Note: Bulk API returns values as strings, so we parse them
+        let count = 0
+        const visits = Number(event.nb_visits) || 1 // Default to 1 to avoid division by zero
+        const events = Number(event.nb_events) || 0
+
+        // Bot traffic filtering: skip entries with abnormally high events/visit ratio
+        // Normal users have 1-3 events/visit; bots often have 10+
+        const eventsPerVisit = visits > 0 ? events / visits : events
+        if (this.isLikelyBotTraffic(eventsPerVisit)) {
+          this.addDataQualityAlert({
+            type: 'bot_traffic',
+            severity: eventsPerVisit > 30 ? 'critical' : 'warning',
+            message: `Bot traffic detected: ${eventsPerVisit.toFixed(1)} events/visit`,
+            details: {
+              eventLabel,
+              events,
+              visits,
+              eventsPerVisit,
+              action,
+              simulateurSlug,
+            },
+          })
+          // Skip this entry - likely bot traffic
+          continue
+        }
+
         switch (action) {
           case 'Start':
           case 'Submit':
-            totalCount += event.nb_events ?? 0
+            count = events
             break
           case 'Eligibility':
-            totalCount += event.nb_visits ?? 0
+            count = visits
             break
+        }
+
+        if (count > 0) {
+          matchedEvents.push({ label: eventLabel, count })
         }
       }
     }
 
-    return totalCount
+    // Multiple entries with different source domains ([website], [subdomain.site.fr], etc.)
+    // represent events tracked from different referrer URLs - these should be SUMMED.
+    // Previously thought these were duplicates, but they're actually legitimate events
+    // from different traffic sources that Matomo separates when using certain filters.
+    if (matchedEvents.length > 1) {
+      this.loggingService.logWarning('Multiple source domains for same action/simulator/day', undefined, {
+        action,
+        simulateurSlug,
+        sourceCount: matchedEvents.length,
+        totalEvents: matchedEvents.reduce((sum, e) => sum + e.count, 0),
+        bySource: matchedEvents.map(e => ({ label: e.label, count: e.count })),
+      })
+    }
+
+    // Sum all matching events across different source domains
+    const count = matchedEvents.reduce((sum, e) => sum + e.count, 0)
+
+    // Log for debugging if no count found but data exists
+    if (count === 0 && actionData.length > 0) {
+      this.loggingService.logWarning('No matching events in action data', undefined, {
+        action,
+        simulateurSlug,
+        dataCount: actionData.length,
+        // Log 'label' field (bulk API) or 'Events_EventName' (single API)
+        eventLabels: actionData.slice(0, 3).map(e => (e as any).label ?? e.Events_EventName),
+      })
+    }
+
+    return count
   }
 }

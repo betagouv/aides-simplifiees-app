@@ -1,4 +1,7 @@
+import env from '#start/env'
 import { defineConfig } from '@adonisjs/shield'
+
+const isDevelopment = env.get('NODE_ENV') === 'development'
 
 const shieldConfig = defineConfig({
   /**
@@ -11,16 +14,17 @@ const shieldConfig = defineConfig({
       defaultSrc: ['\'self\''],
       scriptSrc: [
         '\'self\'',
-        '\'unsafe-inline\'', // Required for Vite HMR in dev and inline scripts
-        '\'unsafe-eval\'', // Required for Vue in dev mode
-        'https://cdn.jsdelivr.net', // For DSFR icons
-        'https://stats.data.gouv.fr', // Matomo analytics
-        'https://stats.beta.gouv.fr', // Matomo analytics (beta instance)
+        ...(isDevelopment
+          ? [
+              '\'unsafe-inline\'', // Required for Vite HMR in dev
+              '\'unsafe-eval\'', // Required for Vue in dev mode
+            ]
+          : []),
+        'https://stats.beta.gouv.fr', // Matomo analytics
       ],
       styleSrc: [
         '\'self\'',
-        '\'unsafe-inline\'', // Required for DSFR inline styles
-        'https://cdn.jsdelivr.net', // For DSFR styles
+        '\'unsafe-inline\'', // Required for Vue dynamic :style bindings
       ],
       imgSrc: [
         '\'self\'',
@@ -30,14 +34,17 @@ const shieldConfig = defineConfig({
       fontSrc: [
         '\'self\'',
         'data:',
-        'https://cdn.jsdelivr.net', // For DSFR fonts
       ],
       connectSrc: [
         '\'self\'',
-        'https://stats.data.gouv.fr', // Matomo analytics
-        'https://stats.beta.gouv.fr', // Matomo analytics (beta instance)
-        'https://geo.api.gouv.fr', // Address autocomplete
-        'https://api-adresse.data.gouv.fr', // Address autocomplete
+        'https://stats.beta.gouv.fr', // Matomo analytics
+        'https://sentry.incubateur.net', // Sentry error tracking
+        ...(isDevelopment
+          ? [
+              'ws://localhost:*', // Vite HMR websocket
+              'wss://localhost:*', // Vite HMR websocket (secure)
+            ]
+          : []),
       ],
       frameSrc: ['\'self\''],
       objectSrc: ['\'none\''],

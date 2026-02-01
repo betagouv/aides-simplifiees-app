@@ -85,6 +85,16 @@ x-resources-backup-preprod: &resources-backup-preprod
         cpus: '${BACKUP_CPU_RESERVATION:-0.05}'
         memory: ${BACKUP_MEM_RESERVATION:-16M}
 
+x-resources-stats-sync-preprod: &resources-stats-sync-preprod
+  deploy:
+    resources:
+      limits:
+        cpus: '${STATS_SYNC_CPU_LIMIT:-0.25}'
+        memory: ${STATS_SYNC_MEM_LIMIT:-128M}
+      reservations:
+        cpus: '${STATS_SYNC_CPU_RESERVATION:-0.05}'
+        memory: ${STATS_SYNC_MEM_RESERVATION:-32M}
+
 # Volumes
 
 volumes:
@@ -111,12 +121,12 @@ services:
     environment:
       <<: *app-env
     ports:
-      - "8081:3333"
+      - '8081:3333'
     volumes:
       - app_logs_preprod:/app/logs
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "node", "-e", "const http = require('http'); const options = { hostname: '127.0.0.1', port: 3333, path: '/health', headers: { 'x-monitoring-secret': process.env.MONITORING_SECRET || '' } }; http.get(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
+      test: [CMD, node, -e, "const http = require('http'); const options = { hostname: '127.0.0.1', port: 3333, path: '/health', headers: { 'x-monitoring-secret': process.env.MONITORING_SECRET || '' } }; http.get(options, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
     <<: [*restart-policy, *network, *security-defaults, *resources-app-preprod]
     depends_on:
       db:
@@ -132,12 +142,12 @@ services:
   openfisca:
     image: ghcr.io/betagouv/aides-calculatrice-back:latest
     init: true
-    command: ["openfisca", "serve", "--country-package", "openfisca_france", "--bind", "0.0.0.0:5000", "--timeout", "120", "--workers", "2"]
+    command: [openfisca, serve, --country-package, openfisca_france, --bind, '0.0.0.0:5000', --timeout, '120', --workers, '2']
     expose:
-      - "5000"
+      - '5000'
     healthcheck:
       <<: *healthcheck-defaults
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/spec')"]
+      test: [CMD, python3, -c, "import urllib.request; urllib.request.urlopen('http://localhost:5000/spec')"]
     security_opt:
       - no-new-privileges:true
     read_only: true
@@ -155,11 +165,11 @@ services:
       NODE_ENV: production
       PORT: 3000
     expose:
-      - "3000"
+      - '3000'
     healthcheck:
       <<: *healthcheck-defaults
       start_period: 30s
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      test: [CMD, node, -e, "require('http').get('http://localhost:3000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
     <<: [*restart-policy, *network, *security-defaults, *resources-leximpact-preprod]
 
   # PostgreSQL Database
@@ -175,9 +185,9 @@ services:
       - dbdata_preprod:/var/lib/postgresql/data
       - ./backups_preprod:/backups
     expose:
-      - "5432"
+      - '5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aides-simplifiees -d postgres"]
+      test: [CMD-SHELL, pg_isready -U aides-simplifiees -d postgres]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -191,14 +201,14 @@ services:
     env_file: ../.env.preprod
     environment:
       <<: *app-env
-    command: ["node", "build/bin/console", "migration:run", "--force"]
+    command: [node, build/bin/console, 'migration:run', --force]
     depends_on:
       db:
         condition: service_healthy
     security_opt:
       - no-new-privileges:true
     <<: *network
-    restart: "no"
+    restart: no
 
   # Database Seeding (runs once on deploy)
   db-seed:
@@ -206,14 +216,14 @@ services:
     env_file: ../.env.preprod
     environment:
       <<: *app-env
-    command: ["node", "build/bin/console", "db:seed"]
+    command: [node, build/bin/console, 'db:seed']
     depends_on:
       db-migrate:
         condition: service_completed_successfully
     security_opt:
       - no-new-privileges:true
     <<: *network
-    restart: "no"
+    restart: no
 
   # Automated Database Backup (daily, 7-day retention)
   db-backup:
@@ -249,3 +259,40 @@ services:
     security_opt:
       - no-new-privileges:true
     <<: [*restart-policy, *network, *resources-backup-preprod]
+
+  # Automated Statistics Sync (daily at 02:00 UTC)
+  statistics-sync:
+    image: ghcr.io/betagouv/aides-simplifiees-app:preprod
+    init: true
+    env_file: ../.env.preprod
+    environment:
+      <<: *app-env
+    command: >
+      sh -c "
+        echo 'Starting automated statistics sync service...'
+        echo 'Waiting until 02:00 UTC for first sync...'
+        while true; do
+          CURRENT_HOUR=$$(date -u +%H)
+          if [ \"$$CURRENT_HOUR\" = \"02\" ]; then
+            echo \"[$$(date -u +%Y-%m-%dT%H:%M:%SZ)] Running statistics sync...\"
+            node build/bin/console statistics:sync
+            if [ $$? -eq 0 ]; then
+              echo \"[$$(date -u +%Y-%m-%dT%H:%M:%SZ)] Statistics sync completed successfully\"
+            else
+              echo \"[$$(date -u +%Y-%m-%dT%H:%M:%SZ)] Statistics sync failed\"
+            fi
+            echo 'Next sync in ~24 hours...'
+            sleep 82800
+          else
+            sleep 3600
+          fi
+        done
+      "
+    depends_on:
+      db:
+        condition: service_healthy
+      main-app:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    <<: [*restart-policy, *network, *resources-stats-sync-preprod]

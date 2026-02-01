@@ -7,6 +7,7 @@ ENV ?= dev
 
 # Docker compose file selection
 COMPOSE_FILE := infra/docker-compose.$(ENV).yml
+OVERRIDE_FILE := infra/docker-compose.override.yml
 
 # Environment file and Database name selection
 ifeq ($(ENV), prod)
@@ -22,7 +23,11 @@ else
 endif
 
 # Docker compose command with flags
-COMPOSE_CMD := docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE)
+ifeq ($(wildcard $(OVERRIDE_FILE)),$(OVERRIDE_FILE))
+    COMPOSE_CMD := docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) -f $(OVERRIDE_FILE)
+else
+    COMPOSE_CMD := docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE)
+endif
 
 .PHONY: help dev prod preprod build up down logs status health clean
 
@@ -114,6 +119,15 @@ leximpact-logs: ## Show LexImpact logs only
 
 db-logs: ## Show database logs only
 	@$(COMPOSE_CMD) logs -f db
+
+stats-sync-logs: ## Show statistics-sync logs only
+	@$(COMPOSE_CMD) logs -f statistics-sync
+
+stats-sync-run: ## Run statistics sync manually
+	@$(COMPOSE_CMD) run --rm statistics-sync node build/bin/console statistics:sync
+
+stats-sync-backfill: ## Backfill all historical statistics
+	@$(COMPOSE_CMD) run --rm statistics-sync node build/bin/console statistics:sync --backfill
 
 main-app-shell: ## Open shell in main-app container
 	@$(COMPOSE_CMD) exec main-app sh

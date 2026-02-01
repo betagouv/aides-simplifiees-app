@@ -6,14 +6,42 @@ import { ExceptionHandler } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import logger from '@adonisjs/core/services/logger'
 import { errors as vinErrors } from '@vinejs/vine'
+import * as Sentry from '@sentry/node'
 import LoggingService from '#services/logging_service'
+import env from '#start/env'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   private loggingService: LoggingService
+  private sentryInitialized: boolean = false
 
   constructor() {
     super()
     this.loggingService = new LoggingService(logger)
+    this.initSentry()
+  }
+
+  /**
+   * Initialize Sentry for backend error tracking
+   */
+  private initSentry() {
+    const sentryDsn = env.get('SENTRY_DSN')
+    if (sentryDsn && app.inProduction) {
+      Sentry.init({
+        dsn: sentryDsn,
+        environment: env.get('APP_ENV'),
+        // Set tracesSampleRate to capture transactions for performance monitoring
+        tracesSampleRate: 0.1,
+        // Filter out sensitive data
+        beforeSend(event) {
+          if (event.request?.headers) {
+            delete event.request.headers.authorization
+            delete event.request.headers.cookie
+          }
+          return event
+        },
+      })
+      this.sentryInitialized = true
+    }
   }
 
   /**
@@ -81,6 +109,19 @@ export default class HttpExceptionHandler extends ExceptionHandler {
   async report(error: unknown, ctx: HttpContext) {
     if (process.env.NODE_ENV === 'test') {
       return
+    }
+
+    // Report to Sentry if initialized
+    if (this.sentryInitialized && error instanceof Error) {
+      Sentry.captureException(error, {
+        extra: this.context(ctx),
+        user: ctx.auth?.user
+          ? {
+              id: String(ctx.auth.user.id),
+              email: ctx.auth.user.email,
+            }
+          : undefined,
+      })
     }
 
     // Use enhanced logging service for better error reporting

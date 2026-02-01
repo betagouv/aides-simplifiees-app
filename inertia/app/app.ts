@@ -1,11 +1,12 @@
 /// <reference path="../../adonisrc.ts" />
 /// <reference path="../../config/inertia.ts" />
+/// <reference path="../../config/auth.ts" />
 
 import type { SharedProps } from '@adonisjs/inertia/types'
 import type { DefineComponent } from 'vue'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import VueDsfr from '@gouvminint/vue-dsfr'
-import { addCollection } from '@iconify/vue'
+import { addCollection, setCustomIconLoader } from '@iconify/vue'
 import { createInertiaApp, usePage } from '@inertiajs/vue3'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
@@ -13,6 +14,8 @@ import { createSSRApp, h } from 'vue'
 import VueMatomo from 'vue-matomo'
 import RouterLink from '~/components/RouterLink.vue'
 import collections from '~/icon_collections'
+import { captureMessage, resetErrorTracker } from '~/utils/error_tracker'
+import { initSentry } from '~/utils/sentry_tracker'
 import { getLayout } from './shared'
 import '@gouvfr/dsfr/dist/core/core.main.min.css'
 import '@gouvfr/dsfr/dist/component/component.main.min.css'
@@ -45,14 +48,26 @@ createInertiaApp({
     const pinia = createPinia()
     pinia.use(piniaPluginPersistedstate)
 
+    // Get config values from the page props
+    const initialPageProps = props.initialPage.props as Partial<SharedProps>
+    const appEnv = initialPageProps.appEnv ?? 'development'
+
+    // Initialize Sentry for error tracking (before other plugins)
+    const sentryDsn = initialPageProps.sentryDsn
+    if (sentryDsn) {
+      initSentry(app, {
+        dsn: sentryDsn,
+        environment: appEnv,
+      })
+      // Reset error tracker to use Sentry now that it's initialized
+      resetErrorTracker()
+    }
+
     // Initialize DSFR
     app.use(VueDsfr)
     app.use(pinia)
     app.use(plugin)
 
-    // Get config values from the page props
-    const initialPageProps = props.initialPage.props as Partial<SharedProps>
-    const appEnv = initialPageProps.appEnv ?? 'development'
     const matomoHost = initialPageProps.matomoUrl ?? null
     const matomoSiteId = initialPageProps.matomoSiteId
       ? Number.parseInt(initialPageProps.matomoSiteId, 10)
@@ -76,8 +91,25 @@ createInertiaApp({
       addCollection(collection)
     }
 
+    // Set custom loader to catch missing icons and prevent API fetching
+    setCustomIconLoader((name, prefix) => {
+      captureMessage(`Missing icon "${prefix}:${name}". Run "pnpm detect:icons && pnpm build:icons"`, 'warning')
+      return null
+    }, 'ri')
+
     // Replace RouterLink with a custom component that uses Inertia's Link
     app.component('RouterLink', RouterLink)
+
+    // Global Vue error handler to capture all uncaught errors (including @click handlers)
+    app.config.errorHandler = (err, instance, info) => {
+      console.error('Vue error:', err, info)
+      if (err instanceof Error) {
+        import('~/utils/error_tracker').then(({ captureError }) => {
+          captureError(err, { component: instance?.$options?.name, info })
+        })
+      }
+    }
+
     app.mount(el)
   },
 })

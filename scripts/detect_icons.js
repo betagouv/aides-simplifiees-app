@@ -6,12 +6,18 @@
  * and generates a report of unique icons used.
  *
  * Usage: node scripts/detect_icons.js
+ *
+ * Options:
+ *   --check    Compare detected icons against bundled icons and exit with error if missing
  */
 
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { promisify } from 'node:util'
+import { BuildLogger } from './build_logger.js'
+
+const logger = new BuildLogger('icons')
 
 const readdir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)
@@ -33,6 +39,9 @@ const ICON_PATTERNS = [
 // File extensions to scan
 const FILE_EXTENSIONS = ['.vue', '.ts', '.js', '.tsx', '.jsx']
 
+// Files to exclude from scanning (generated files)
+const EXCLUDED_FILES = ['icon_collections.ts']
+
 /**
  * Recursively scan a directory for files with specific extensions
  */
@@ -46,7 +55,7 @@ async function scanDirectory(dir) {
     if (entry.isDirectory()) {
       files.push(...(await scanDirectory(fullPath)))
     }
-    else if (FILE_EXTENSIONS.includes(path.extname(entry.name))) {
+    else if (FILE_EXTENSIONS.includes(path.extname(entry.name)) && !EXCLUDED_FILES.includes(entry.name)) {
       files.push(fullPath)
     }
   }
@@ -85,51 +94,45 @@ function extractIconsFromContent(content) {
 }
 
 /**
- * Generate a markdown report of icon usage
+ * Get bundled icon names from icon_collections.ts
  */
-function generateMarkdownReport(sortedIcons, iconUsage) {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const reportPath = path.join(process.cwd(), `icon-usage-report-${timestamp}.md`)
+async function getBundledIcons() {
+  const collectionsPath = path.resolve(__dirname, '../inertia/icon_collections.ts')
 
-  let markdown = `# Remix Icons Usage Report\n\n`
-  markdown += `Generated on: ${new Date().toLocaleString()}\n\n`
-  markdown += `Found ${sortedIcons.length} unique Remix icons.\n\n`
-
-  // Summary table
-  markdown += `## Icons Summary\n\n`
-  markdown += `| Icon Name | Usage Count |\n`
-  markdown += `|-----------|------------:|\n`
-
-  for (const icon of sortedIcons) {
-    const usageCount = iconUsage.get(icon).length
-    markdown += `| \`${icon}\` | ${usageCount} |\n`
+  if (!fs.existsSync(collectionsPath)) {
+    return new Set()
   }
 
-  // Code snippets for including in project
-  markdown += `\n## Integration Code\n\n`
+  const content = await readFile(collectionsPath, 'utf8')
 
-  // For scripts/build_icons_collections.js
-  markdown += `### For scripts/build_icons_collections.js\n\n`
-  markdown += '```javascript\n'
-  markdown += `const riIconNames = [\n`
-  markdown += `  '${sortedIcons.join('\',\n  \'')}',\n`
-  markdown += `];\n`
-  markdown += '```\n'
+  // Extract icon names from the bundled collection
+  // Look for pattern like 'icon-name': { body: in the icons object
+  const iconNames = new Set()
+  const iconNameRegex = /'([a-z0-9-]+)':\s*\{\s*body:/g
+  const matches = content.matchAll(iconNameRegex)
+  for (const match of matches) {
+    iconNames.add(match[1])
+  }
 
-  fs.writeFileSync(reportPath, markdown)
-  return reportPath
+  return iconNames
+}
+
+/**
+ * Write detected icons to registry file
+ */
+function writeIconRegistry(sortedIcons) {
+  const registryPath = path.resolve(__dirname, 'detected_icons.json')
+  fs.writeFileSync(registryPath, JSON.stringify(sortedIcons, null, 2))
+  return registryPath
 }
 
 /**
  * Main function to scan directory and report icons
  */
-async function detectIcons() {
+async function detectIcons(checkMode = false) {
   try {
-    console.log(`Scanning ${INERTIA_DIR} for Remix icons...`)
-
     // Get all files to scan
     const files = await scanDirectory(INERTIA_DIR)
-    console.log(`Found ${files.length} files to scan.`)
 
     // Array to store all icons found
     const allIcons = new Set()
@@ -159,35 +162,43 @@ async function detectIcons() {
     // Sort icons alphabetically
     const sortedIcons = Array.from(allIcons).sort()
 
-    // Generate report
-    console.log(`\nFound ${sortedIcons.length} unique Remix icons:\n`)
+    // Check mode: compare against bundled icons
+    if (checkMode) {
+      const bundledIcons = await getBundledIcons()
 
-    // Detailed report
-    console.log('Detailed Usage:')
-    console.log('==============')
-    for (const icon of sortedIcons) {
-      const usage = iconUsage.get(icon)
-      console.log(`- ${icon} (used in ${usage.length} file${usage.length !== 1 ? 's' : ''})`)
-      // Uncomment the following line to see which files use each icon
-      // console.log(`  Files: ${usage.join(', ')}`);
+      if (bundledIcons.size === 0) {
+        logger.error('No bundled icons found. Run "pnpm build:icons" first.')
+        process.exit(1)
+      }
+
+      const missingIcons = sortedIcons.filter(icon => !bundledIcons.has(icon))
+
+      if (missingIcons.length > 0) {
+        logger.error(`Missing ${missingIcons.length} icon(s):`)
+        for (const icon of missingIcons) {
+          const usage = iconUsage.get(icon)
+          logger.outputBlock(`ri:${icon} used in ${usage.join(', ')}`)
+        }
+        logger.warning('Run "pnpm detect:icons && pnpm build:icons" to fix this.')
+        process.exit(1)
+      }
+
+      logger.success(`All ${sortedIcons.length} icons are properly bundled`)
     }
-
-    // Format for scripts/build_icons_collections.js
-    console.log(`\nList for scripts/build_icons_collections.js:`)
-    console.log('=======================')
-    console.log(`const riIconNames = [`)
-    console.log(`  '${sortedIcons.join('\',\n  \'')}',`)
-    console.log(`];`)
-
-    // Generate markdown report
-    const reportPath = generateMarkdownReport(sortedIcons, iconUsage)
-    console.log(`\nDetailed report saved to: ${reportPath}`)
+    else {
+      // Write to registry file and output summary
+      writeIconRegistry(sortedIcons)
+      logger.success(`Detected ${sortedIcons.length} icons -> scripts/detected_icons.json`)
+    }
   }
   catch (error) {
-    console.error('Error scanning files:', error)
+    logger.error(`Error scanning files: ${error.message}`)
     process.exit(1)
   }
 }
 
 // Run the script
-detectIcons()
+const args = process.argv.slice(2)
+const checkMode = args.includes('--check')
+
+detectIcons(checkMode)

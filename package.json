@@ -36,7 +36,7 @@
     "seed": "node ace db:seed",
     "build:iframe-integration": "node scripts/build_iframe_integration.js",
     "detect:icons": "node scripts/detect_icons.js",
-    "build:icons": "vue-dsfr-icons -s scripts/build_icons_collections.js -t inertia/icon_collections.ts",
+    "build:icons": "node scripts/build_icons.js",
     "build:publicodes": "node scripts/build_publicodes.js",
     "lint": "eslint .",
     "format": "eslint --fix .",

@@ -6,7 +6,7 @@ import type { SharedProps } from '@adonisjs/inertia/types'
 import type { DefineComponent } from 'vue'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import VueDsfr from '@gouvminint/vue-dsfr'
-import { addCollection } from '@iconify/vue'
+import { addCollection, setCustomIconLoader } from '@iconify/vue'
 import { createInertiaApp, usePage } from '@inertiajs/vue3'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
@@ -14,6 +14,7 @@ import { createSSRApp, h } from 'vue'
 import VueMatomo from 'vue-matomo'
 import RouterLink from '~/components/RouterLink.vue'
 import collections from '~/icon_collections'
+import { captureMessage } from '~/utils/error_tracker'
 import { getLayout } from './shared'
 import '@gouvfr/dsfr/dist/core/core.main.min.css'
 import '@gouvfr/dsfr/dist/component/component.main.min.css'
@@ -76,6 +77,12 @@ createInertiaApp({
     for (const collection of collections) {
       addCollection(collection)
     }
+
+    // Set custom loader to catch missing icons and prevent API fetching
+    setCustomIconLoader((name, prefix) => {
+      captureMessage(`Missing icon "${prefix}:${name}". Run "pnpm detect:icons && pnpm build:icons"`, 'warning')
+      return null
+    }, 'ri')
 
     // Replace RouterLink with a custom component that uses Inertia's Link
     app.component('RouterLink', RouterLink)

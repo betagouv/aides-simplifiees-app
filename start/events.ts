@@ -6,6 +6,7 @@
 
 import process from 'node:process'
 import { validateDatabase } from '#start/db_validation'
+import { validateExternalServices } from '#start/external_services_validation'
 import emitter from '@adonisjs/core/services/emitter'
 import logger from '@adonisjs/core/services/logger'
 import { validateEnvironment } from './env_validation.js'
@@ -20,6 +21,9 @@ emitter.on('http:server_ready', async () => {
 
     // Then validate database connectivity and schema
     await validateDatabase()
+
+    // Validate external services (Matomo, OpenFisca) in production/staging
+    await validateExternalServices()
 
     logger.info('Application validations completed successfully')
   }

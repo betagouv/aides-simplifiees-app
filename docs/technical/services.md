@@ -19,8 +19,14 @@ Provides structured logging with context.
 - **See also**: `docs/logging.md`.
 
 ### `MatomoReportingService`
-Handles interaction with the Matomo Analytics API.
-- **Responsibilities**: Sending server-side tracking events, retrieving usage statistics.
+Server-side Matomo Analytics data extraction with bot traffic filtering.
+- **Responsibilities**: Retrieving usage statistics, data quality monitoring.
+- **See also**: `docs/technical/matomo-analysis-consolidated.md`
+
+### `StatisticsSnapshotService`
+Manages statistics snapshots from multiple data providers (form_submissions, Matomo).
+- **Responsibilities**: Generating daily snapshots, aggregating by granularity, backfilling.
+- **CLI Command**: `node ace statistics:sync`
 
 ## Frontend Services (`inertia/services/`)
 
@@ -45,6 +51,11 @@ Client-side eligibility calculation engine using Publicodes.
   2. Maps user answers to Publicodes variables.
   3. Evaluates eligibility for specific *dispositifs*.
 - **Usage**: Real-time feedback in `use_survey_eligibility`.
+
+### `MatomoService` (`matomo_service.ts`)
+Client-side tracking with flow session management and rate limiting.
+- **Responsibilities**: Survey event tracking, source detection (main site vs iframes).
+- **See also**: `docs/technical/matomo-analysis-consolidated.md`
 
 ## Patterns
 

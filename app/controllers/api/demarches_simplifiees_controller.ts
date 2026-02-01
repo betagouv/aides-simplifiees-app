@@ -8,7 +8,7 @@ import axios from 'axios'
 export default class DemarchesSimplifiedController {
   /**
    * Create a prefilled dossier on Démarches Simplifiées
-   * 
+   *
    * This endpoint:
    * 1. Retrieves the form submission answers using the hash
    * 2. Maps the answers to DS fields based on aide configuration
@@ -60,7 +60,7 @@ export default class DemarchesSimplifiedController {
       for (const [dsFieldKey, questionId] of Object.entries(aide.dsFieldMapping)) {
         if (answers[questionId] !== undefined) {
           let value = answers[questionId]
-          
+
           // Handle combobox answers (stored as JSON string)
           if (typeof value === 'string' && value.startsWith('{')) {
             try {
@@ -71,7 +71,7 @@ export default class DemarchesSimplifiedController {
               // If parsing fails, use the value as is
             }
           }
-          
+
           dsPayload[dsFieldKey] = value
         }
       }
@@ -84,7 +84,7 @@ export default class DemarchesSimplifiedController {
 
       // Make the request to Démarches Simplifiées API
       const dsUrl = `https://www.demarches-simplifiees.fr/api/public/v1/demarches/${aide.dsDemarcheId}/dossiers`
-      
+
       try {
         const dsResponse = await axios.post(
           dsUrl,
@@ -136,4 +136,3 @@ export default class DemarchesSimplifiedController {
     }
   }
 }
-

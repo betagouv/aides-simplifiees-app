@@ -1,6 +1,6 @@
 # Dockerfile pour LexImpact Territoires
 # Ce Dockerfile est maintenu ici car le projet source ne fournit pas de Dockerfile
-ARG NODE_IMAGE=node:22.16.0-alpine3.22
+ARG NODE_IMAGE=node:22.21.1-alpine3.22
 
 FROM $NODE_IMAGE AS base
 

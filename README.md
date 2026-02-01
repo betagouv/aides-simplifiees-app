@@ -17,8 +17,8 @@ Nous maintenons une documentation détaillée dans le dossier `docs/`. Voici les
 
 ## Pré-requis
 
-- [Node.js](https://nodejs.org/fr) (v20+)
-- [PNPM](https://pnpm.io/fr/) (gestionnaire de paquets)
+- [Node.js](https://nodejs.org/fr) v22.21.1
+- [PNPM](https://pnpm.io/fr/) v10+ (gestionnaire de paquets)
 - [Docker](https://www.docker.com/) (pour la base de données et les services tiers)
 
 ## Installation rapide

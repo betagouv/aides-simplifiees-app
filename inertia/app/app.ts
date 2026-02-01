@@ -1,5 +1,6 @@
 /// <reference path="../../adonisrc.ts" />
 /// <reference path="../../config/inertia.ts" />
+/// <reference path="../../config/auth.ts" />
 
 import type { SharedProps } from '@adonisjs/inertia/types'
 import type { DefineComponent } from 'vue'

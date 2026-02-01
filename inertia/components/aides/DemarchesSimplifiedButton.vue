@@ -31,7 +31,7 @@ async function handlePrefillDossier() {
       status.value = 'success'
       // Open the prefilled dossier in a new tab
       window.open(response.data.dossierUrl, '_blank')
-      
+
       // Reset status after a delay
       setTimeout(() => {
         status.value = 'idle'
@@ -45,7 +45,7 @@ async function handlePrefillDossier() {
     status.value = 'error'
     errorMessage.value = error.response?.data?.error || 'Une erreur est survenue lors de la création du dossier prérempli'
     console.error('Error creating prefilled DS dossier:', error)
-    
+
     // Reset status after a delay
     setTimeout(() => {
       status.value = 'idle'
@@ -67,7 +67,7 @@ async function handlePrefillDossier() {
       icon-right
       @click="handlePrefillDossier"
     />
-    
+
     <p
       v-if="status === 'success'"
       class="fr-text--sm fr-text--bold fr-mt-2w"
@@ -75,7 +75,7 @@ async function handlePrefillDossier() {
     >
       ✓ Dossier créé avec succès ! Redirection en cours...
     </p>
-    
+
     <p
       v-if="status === 'error'"
       class="fr-text--sm fr-text--bold fr-mt-2w"
@@ -98,4 +98,3 @@ async function handlePrefillDossier() {
   border-radius: 0.5rem;
 }
 </style>
-

@@ -260,10 +260,9 @@ Always use these aliases for backend imports.
 - Customizable theme and variables
 
 ### Iconify
-- Icon library
-- Collections automatically detected
-- Build with: `pnpm build:icons`
-- Used via component or direct import
+- Remix Icons collection (`@iconify-json/ri`)
+- Format: `ri:icon-name` (not `ri-icon-name`)
+- Commands: `pnpm detect:icons`, `pnpm build:icons`, `pnpm check:icons`
 
 ### OpenFisca (Optional)
 - Tax-benefit microsimulation engine

@@ -73,7 +73,7 @@ const quickLinks = computed(() => {
   const links: DsfrHeaderMenuLinkProps[] = [
     {
       label: 'Affichage',
-      icon: { name: 'ri-sun-line', ssr: true },
+      icon: { name: 'ri:sun-line', ssr: true },
       button: true,
       onClick: schemeStore.openModal,
     },
@@ -90,7 +90,7 @@ const quickLinks = computed(() => {
   else {
     /* links.push({
       label: 'Connexion',
-      icon: { name: 'ri-login-box-line', ssr: true },
+      icon: { name: 'ri:login-box-line', ssr: true },
       button: true,
       onClick: () => router.visit('/login'),
     }) */

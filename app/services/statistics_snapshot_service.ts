@@ -14,6 +14,7 @@ export interface AggregationParams {
   startDate: string // YYYY-MM-DD (UTC)
   endDate: string // YYYY-MM-DD (UTC)
   simulateurSlug?: string
+  simulateurSlugs?: string[] // Filter to specific simulators (e.g., published only)
   source?: StatisticsSource
   sources?: StatisticsSource[] // Support multiple sources
 }
@@ -314,7 +315,7 @@ export default class StatisticsSnapshotService {
     const timer = this.loggingService.startTimer('get_aggregated_stats', params)
 
     try {
-      const { granularity, startDate, endDate, simulateurSlug, source, sources } = params
+      const { granularity, startDate, endDate, simulateurSlug, simulateurSlugs, source, sources } = params
 
       // Build the date truncation based on granularity
       const truncFn = this.getDateTruncFunction(granularity)
@@ -337,6 +338,9 @@ export default class StatisticsSnapshotService {
 
       if (simulateurSlug) {
         query = query.where('simulateur_slug', simulateurSlug)
+      }
+      else if (simulateurSlugs && simulateurSlugs.length > 0) {
+        query = query.whereIn('simulateur_slug', simulateurSlugs)
       }
 
       // Support both single source and multiple sources

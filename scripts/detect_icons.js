@@ -29,11 +29,12 @@ const INERTIA_DIR = path.resolve(__dirname, '../inertia')
 
 // Regex patterns to find Remix icons
 const ICON_PATTERNS = [
-  // Pattern for string literals like 'ri:icon-name' or "ri:icon-name"
+  // Pattern for string literals like 'ri:icon-name' or "ri:icon-name" (standard Iconify format)
   /['"](ri:[a-z0-9-]+)['"]/g,
 
-  // Pattern for icon name in TypeScript/JavaScript object like 'ri-icon-name': '...'
-  /['"]ri-([a-z0-9-]+)['"]:/g,
+  // Pattern for string literals like 'ri-icon-name' or "ri-icon-name" (legacy/alternative format)
+  // Note: This format is NOT recommended. Use 'ri:icon-name' instead.
+  /['"](ri-[a-z0-9-]+)['"]/g,
 ]
 
 // File extensions to scan
@@ -84,8 +85,9 @@ function extractIconsFromContent(content) {
         icons.add(capturedIcon.substring(3))
       }
       else if (capturedIcon.startsWith('ri-')) {
-        // For patterns like 'ri-icon-name', keep 'icon-name'
-        icons.add(capturedIcon)
+        // For patterns like 'ri-icon-name', convert to 'icon-name' (strip 'ri-' prefix)
+        // Note: This format is NOT recommended. Use 'ri:icon-name' instead.
+        icons.add(capturedIcon.substring(3))
       }
     }
   }

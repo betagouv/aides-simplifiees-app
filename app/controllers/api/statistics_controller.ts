@@ -167,11 +167,14 @@ export default class StatisticsController {
 
       if (hasSnapshots) {
         // Use pre-aggregated snapshots with multi-source support
+        // Filter to only published simulators unless a specific one is requested
+        const publishedSlugs = publishedSimulators.map(s => s.slug)
         const aggregated = await this.snapshotService.getAggregatedStats({
           granularity,
           startDate,
           endDate,
           simulateurSlug,
+          simulateurSlugs: simulateurSlug ? undefined : publishedSlugs,
           sources: requestedSources,
         })
 

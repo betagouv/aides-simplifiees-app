@@ -9,11 +9,71 @@ export default antfu(
     typescript: true,
   },
   globalIgnores([
+    // Build & dependencies
     'public/assets/**',
     '**/publicodes-build/**',
-    '**/publicodes-build/**',
-    '**/publicodes/**/README.md',
+    'node_modules/**',
+    'build/**',
+    'tmp/**',
+    'dist/**',
+
+    // Coverage & reports
+    'coverage/**',
+    '.nyc_output/**',
+    'reports/**',
+    '*.lcov',
+
+    // Database & backups
+    'replications/**',
+    'infra/backups*/**',
+    'database/seeders_data/**',
+
+    // Logs & cache
+    'logs/**',
+    '.mypy_cache/**',
+
+    // Config & env files
+    '.env*',
+    '.DS_Store',
+    '.npmrc',
+    '.nvmrc',
+    '.prettier-config',
+    '.c8rc.json',
+    '.editorconfig',
+    '.dockerignore',
+    'browserconfig.xml',
+
+    // Git & CI/CD
+    '.git/**',
+    '.github/**',
+    '.githooks/**',
+    '.husky/**',
+    '.gitignore',
+
+    // Editor configs
+    '.vscode/**',
+    '.fleet/**',
+    '.idea/**',
+
+    // Docs & specific files
     'docs/**',
+    '**/publicodes/**/README.md',
+    'CHANGELOG.md',
+    'LICENSE',
+    'README.md',
+    'Makefile',
+    'logfile',
+    'package-lock.json',
+
+    // Query & data files
+    'queries/**',
+    '**/detected_icons.json',
+
+    // Infrastructure
+    'infra/**',
+
+    // SQL dumps
+    '*.sql',
   ]),
   {
     rules: {

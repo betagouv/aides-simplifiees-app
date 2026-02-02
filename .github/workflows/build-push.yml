@@ -116,5 +116,3 @@ jobs:
           echo "To deploy on server:"
           echo "  cd /path/to/aides-simplifiees-app"
           echo "  make ${{ github.ref_name == 'main' && 'prod' || 'preprod' }}"
-
-

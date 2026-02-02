@@ -57,7 +57,7 @@ function handleCancel() {
             content="Gérez les cas de test (personas) pour ce simulateur afin de faciliter les tests et la validation."
             :button="{
               label: 'Gérer les personas',
-              icon: { name: 'ri-user-line', ssr: true },
+              icon: { name: 'ri:user-line', ssr: true },
               secondary: true,
               onClick: () => {
                 router.visit(`/admin/simulateurs/${simulateur.id}/personas`)

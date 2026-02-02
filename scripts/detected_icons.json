@@ -18,6 +18,7 @@
   "government-line",
   "home-4-line",
   "information-line",
+  "login-box-line",
   "logout-box-line",
   "magic-line",
   "menu-line",
@@ -27,5 +28,7 @@
   "save-2-line",
   "save-line",
   "scales-3-line",
-  "truck-line"
+  "sun-line",
+  "truck-line",
+  "user-line"
 ]

@@ -25,6 +25,11 @@ test.group('API StatisticsController', (group) => {
       title: 'Simulateur non publié',
       status: 'draft', // This should NOT appear in results
     })
+    await Simulateur.create({
+      slug: 'unlisted-simulator',
+      title: 'Simulateur non répertorié',
+      status: 'unlisted', // This should NOT appear in results either
+    })
   })
 
   test('GET /api/statistics should return statistics data', async ({ client, assert }) => {
@@ -51,6 +56,9 @@ test.group('API StatisticsController', (group) => {
 
     // Verify unpublished simulator is not included
     assert.notProperty(responseBody.simulatorTitles, 'unpublished-simulator')
+
+    // Verify unlisted simulator is not included
+    assert.notProperty(responseBody.simulatorTitles, 'unlisted-simulator')
 
     // Verify meta contains expected fields
     assert.property(responseBody.meta, 'sources')

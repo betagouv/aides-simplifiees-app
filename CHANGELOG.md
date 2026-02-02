@@ -1,5 +1,16 @@
 # CHANGELOG
 
+### 1.8.1
+- Fonctionnalités :
+  - Filtrage des statistiques pour n'afficher que les simulateurs publiés
+- Améliorations :
+  - Migration des icônes vers le format standard Iconify (ri:icon-name) avec mise à jour de la documentation et du script de détection
+  - Amélioration de la configuration ESLint avec plus de fichiers ignorés
+- Refactorisations :
+  - Suppression de la validation d'environnement redondante au démarrage du serveur
+- Tests :
+  - Ajout de tests pour les simulateurs non listés dans les statistiques
+
 ### 1.8.0
 - Fonctionnalités :
   - Intégration de Sentry pour le suivi des erreurs et le monitoring
